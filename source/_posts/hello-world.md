@@ -1,7 +1,18 @@
 ---
-title: Hello World
+title: "文章标题"
+date: 2018-11-28
+categories: 文章分类 # 分类只能有1个
+tags: # 标签可以有多个
+- 标签1
+- 标签2
+- 更多标签
+cover: "https://avatars3.githubusercontent.com/u/12741723?s=460&v=4" # 文章封面图片URL
 ---
-Welcome to [Hexo](https://hexo.io/)! This is your very first post. Check [documentation](https://hexo.io/docs/) for more info. If you get any problems when using Hexo, you can find the answer in [troubleshooting](https://hexo.io/docs/troubleshooting.html) or you can ask me on [GitHub](https://github.com/hexojs/hexo/issues).
+文章摘要写在前面，支持markdown左右语法。
+
+<!-- more -->
+
+文章正文写在这里。
 
 ## Quick Start
 
