@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="冯雪超">
+  
+  
+  <title>规则引擎Drools模板编译 | Hexo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java,drools,">
+  
+
+  
+  <meta name="description" content="冯雪超的小站">
+
+  
+
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.1/dist/av-min.js" async></script>
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+    <script src="//unpkg.com/valine/dist/Valine.min.js" async></script>
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":true,"count":true},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2018-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "冯雪超",
+    share: {"twitter":true,"facebook":true,"weibo":true,"qq":true,"wechat":true},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">GODBMW</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 一个持续学习者</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/littlefxc/" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-05-05
+    </span>
+    
+      <span>
+        | <a href="/categories/Java/"><i class="fa fa-bookmark"></i>Java</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    规则引擎Drools模板编译
+  </h1>
+  
+  <article class="passage-article">
+    <h2 id="规则引擎-Drools-模板编译"><a href="#规则引擎-Drools-模板编译" class="headerlink" title="规则引擎 Drools 模板编译"></a>规则引擎 Drools 模板编译</h2><h2 id="1-模板编译"><a href="#1-模板编译" class="headerlink" title="1.模板编译"></a>1.模板编译</h2><h3 id="1-1依赖"><a href="#1-1依赖" class="headerlink" title="1.1依赖"></a>1.1依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.drools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>drools-templates<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>7.7.0.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-2建立模板"><a href="#1-2建立模板" class="headerlink" title="1.2建立模板"></a>1.2建立模板</h3><p>新建模板文件 test.drt</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">template header</span><br><span class="line">condition</span><br><span class="line">execution</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> template</span><br><span class="line"></span><br><span class="line">template <span class="string">"this is a test"</span></span><br><span class="line"></span><br><span class="line">    rule <span class="string">"test_@&#123;row.rowNumber&#125;"</span></span><br><span class="line">        when</span><br><span class="line">            @&#123;condition&#125;</span><br><span class="line">        then</span><br><span class="line">            System.out.println(@&#123;execution&#125;);</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">end template</span><br></pre></td></tr></table></figure>
+<p>说明<br>规则模板主要由两部分构成：</p>
+<p>Template header 定义了在模板中使用的变量。<br>模板中以 “template name” 开头, 以”end template” 结尾, 中间定义了模板的内容。变量占位符使用 @{variable_name} .<br>@{row.rowNumber}是一个特殊的变量, 每次会按顺序生成一个行号, 可用于区分规则名。</p>
+<h2 id="1-3-渲染模板生成规则文件"><a href="#1-3-渲染模板生成规则文件" class="headerlink" title="1.3 渲染模板生成规则文件"></a>1.3 渲染模板生成规则文件</h2><p>渲染模板的流程，先将数据封装为 DataProvider，然后通过 DataProviderCompiler 使用 DataProvider 将模板编译为 DRL。</p>
+<p>Drools支持数组类型的DataProvider, ArrayDataProvider实现了DataProvider,  示例</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">InputStream templateStream = DataDrivenTemplateExample.class.getResourceAsStream(<span class="string">"/rules/SimpleTemplateExample.drt"</span>);</span><br><span class="line"><span class="comment">// @&#123;row.rowNumber&#125;=数组下标, @&#123;condition&#125;=规则条件, @&#123;execution&#125;=规则动作</span></span><br><span class="line">DataProvider data = <span class="keyword">new</span> ArrayDataProvider(<span class="keyword">new</span> String[][]&#123;</span><br><span class="line">    <span class="keyword">new</span> String[]&#123;<span class="string">"String(this == \"规则条件\")"</span>, <span class="string">"\"规则动作\""</span>&#125;</span><br><span class="line">&#125;);</span><br><span class="line">DataProviderCompiler converter = <span class="keyword">new</span> DataProviderCompiler();</span><br><span class="line">String drl = converter.compile(data, templateStream);</span><br></pre></td></tr></table></figure>
+<h3 id="1-4-编译规则"><a href="#1-4-编译规则" class="headerlink" title="1.4 编译规则"></a>1.4 编译规则</h3><p>在模板渲染、编译成规则文件后，就可以正常的编译DRL规则文件， 新建会话等。<br> KieHelper 是 Drools提供的工具类, 可用于编译DRL规则文件， 新建会话等。<br>ps: 也可以使用其他的方式编译，这里只是为了简单</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">KieHelper helper = <span class="keyword">new</span> KieHelper();</span><br><span class="line">helper.addContent(drl, ResourceType.DRL);</span><br><span class="line">KieSession kieSession = helper.build().newKieSession();</span><br><span class="line">kieSession.insert(<span class="keyword">new</span> String(<span class="string">"Hello, World!"</span>));</span><br><span class="line">kieSession.fireAllRules();</span><br><span class="line">kieSession.dispose();</span><br></pre></td></tr></table></figure>
+<h3 id="1-5-模板编译示例"><a href="#1-5-模板编译示例" class="headerlink" title="1.5 模板编译示例"></a>1.5 模板编译示例</h3><h4 id="1-5-1-DRT模板文件-template-drt"><a href="#1-5-1-DRT模板文件-template-drt" class="headerlink" title="1.5.1 DRT模板文件 template.drt"></a>1.5.1 DRT模板文件 template.drt</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">template header</span><br><span class="line">condition</span><br><span class="line">execution</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> template</span><br><span class="line"></span><br><span class="line">template <span class="string">"this is a test"</span></span><br><span class="line"></span><br><span class="line">    rule <span class="string">"test_@&#123;row.rowNumber&#125;"</span></span><br><span class="line">        when</span><br><span class="line">            @&#123;condition&#125;</span><br><span class="line">        then</span><br><span class="line">            System.out.println(@&#123;execution&#125;);</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">end template</span><br></pre></td></tr></table></figure>
+<h4 id="1-5-2-单元测试"><a href="#1-5-2-单元测试" class="headerlink" title="1.5.2 单元测试"></a>1.5.2 单元测试</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> KnowledgeBuilder builder;</span><br><span class="line">KieBase kieBase;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BeforeClass</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">beforeClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        builder = KnowledgeBuilderFactory.newKnowledgeBuilder();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 1. 从本地模板DRT文件得到输入流</span></span><br><span class="line"><span class="comment">         * 2. 创建一个 ArrayDataProvider , 二维数组中元素按顺序与DRT文件中定义的变量一一对应</span></span><br><span class="line"><span class="comment">         * 3. 创建一个 DataProviderCompiler 对象用compile()方法渲染, 将二维数组中的元素一一填充到DRT模板中, 得到DRL(规则)字符串</span></span><br><span class="line"><span class="comment">         * 4. 加载DRL(规则)字符串</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        String pathToDrt = <span class="string">"E:\\template.drt"</span>;</span><br><span class="line">        <span class="keyword">try</span> (InputStream stream = <span class="keyword">new</span> FileInputStream(pathToDrt)) &#123;</span><br><span class="line">            DataProvider dataProvider = <span class="keyword">new</span> ArrayDataProvider(<span class="keyword">new</span> String[][]&#123;</span><br><span class="line">                    <span class="keyword">new</span> String[]&#123;<span class="string">"String(this == \"规则条件\")"</span>, <span class="string">"\"规则动作\""</span>&#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            DataProviderCompiler compiler = <span class="keyword">new</span> DataProviderCompiler();</span><br><span class="line">            String DRL = compiler.compile(dataProvider, stream);</span><br><span class="line">            System.out.println(<span class="string">"-----模板DRT渲染后的DRL-----"</span>);</span><br><span class="line">            System.out.println(DRL);</span><br><span class="line">            System.out.println(<span class="string">"-----模板DRT渲染后的DRL-----"</span>);</span><br><span class="line">            <span class="keyword">byte</span>[] drlBytes = DRL.getBytes(<span class="string">"UTF-8"</span>);</span><br><span class="line">            Resource resourceTemplate = ResourceFactory.newByteArrayResource(drlBytes);</span><br><span class="line">            builder.add(resourceTemplate, ResourceType.DRL);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        builder.add(resourceNative, ResourceType.DRL);</span><br><span class="line"><span class="comment">//        builder.add(resourceRemote, ResourceType.DRL);</span></span><br><span class="line">        kieBase = builder.newKieBase();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        KieSession kieSession = kieBase.newKieSession();</span><br><span class="line">        kieSession.insert(<span class="string">"规则条件"</span>);</span><br><span class="line">        kieSession.fireAllRules();</span><br><span class="line">        kieSession.dispose();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="1-5-3-输出"><a href="#1-5-3-输出" class="headerlink" title="1.5.3 输出"></a>1.5.3 输出</h4><blockquote>
+</blockquote>
+<pre><code>-----模板DRT渲染后的DRL-----
+package template
+rule &quot;test_0&quot;
+    when
+        String(this == &quot;规则条件&quot;)
+    then
+        System.out.println(&quot;规则动作&quot;);
+end
+-----模板DRT渲染后的DRL-----
+规则动作
+</code></pre><h2 id="2-本地加载与远程加载"><a href="#2-本地加载与远程加载" class="headerlink" title="2 本地加载与远程加载"></a>2 本地加载与远程加载</h2><h3 id="2-1-创建本地DRL文件"><a href="#2-1-创建本地DRL文件" class="headerlink" title="2.1 创建本地DRL文件"></a>2.1 创建本地DRL文件</h3><p>创建远程的DRL文件，地址为 E:\native.drl</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> rules.<span class="keyword">native</span>;</span><br><span class="line">dialect  <span class="string">"mvel"</span></span><br><span class="line"></span><br><span class="line">rule <span class="string">"native"</span></span><br><span class="line">    when</span><br><span class="line">    then</span><br><span class="line">        System.out.println(<span class="string">"本地加载成功"</span>);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-创建远程DRL文件"><a href="#2-2-创建远程DRL文件" class="headerlink" title="2.2 创建远程DRL文件"></a>2.2 创建远程DRL文件</h3><p>创建远程的DRL文件，地址为 <a href="http://localhost:8761/remote.drl" target="_blank" rel="noopener">http://localhost:8761/remote.drl</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> rules.remote;</span><br><span class="line">dialect  <span class="string">"mvel"</span></span><br><span class="line"></span><br><span class="line">rule <span class="string">"remote"</span></span><br><span class="line">    when</span><br><span class="line">    then</span><br><span class="line">        System.out.println(<span class="string">"远程加载成功"</span>);</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-单元测试"><a href="#2-3-单元测试" class="headerlink" title="2.3 单元测试"></a>2.3 单元测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> KnowledgeBuilder builder;</span><br><span class="line">    KieBase kieBase;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BeforeClass</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">beforeClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        builder = KnowledgeBuilderFactory.newKnowledgeBuilder();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 本地加载DRL</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        Resource resourceNative = ResourceFactory.newFileResource(<span class="string">"E:\\native.drl"</span>);</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 远程加载URL</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        String url = <span class="string">"http://localhost:8761/remote.drl"</span>;</span><br><span class="line">Resource resourceRemote = ResourceFactory.newUrlResource(url );</span><br><span class="line"><span class="comment">// 加载方式的不同</span></span><br><span class="line">builder.add(resourceNative, ResourceType.DRL);</span><br><span class="line">builder.add(resourceRemote, ResourceType.DRL);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testNativeAndRemote</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        KieSession kieSession = kieBase.newKieSession();</span><br><span class="line">        kieSession.fireAllRules();</span><br><span class="line">        kieSession.dispose();</span><br><span class="line">    &#125;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-输出"><a href="#2-4-输出" class="headerlink" title="2.4 输出"></a>2.4 输出</h3><blockquote>
+<p>远程加载成功<br>本地加载成功</p>
+</blockquote>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>关键API：<br>Resource: 资源类，规则文件的加载<br>KnowledgeBuilder: 收集编译已经编写好的规则文件(drl)</p>
+<p>从整体的收集、编译、执行上看，远程加载与本地加载大同小异，无非就是在使用Resource时加载规则文件上的不同。使用模板则在此基础上，需要将模板(drt)编译成规则(drl)。</p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#规则引擎-Drools-模板编译"><span class="toc-text">规则引擎 Drools 模板编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-模板编译"><span class="toc-text">1.模板编译</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1依赖"><span class="toc-text">1.1依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2建立模板"><span class="toc-text">1.2建立模板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-渲染模板生成规则文件"><span class="toc-text">1.3 渲染模板生成规则文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-编译规则"><span class="toc-text">1.4 编译规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-模板编译示例"><span class="toc-text">1.5 模板编译示例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-1-DRT模板文件-template-drt"><span class="toc-text">1.5.1 DRT模板文件 template.drt</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-2-单元测试"><span class="toc-text">1.5.2 单元测试</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-5-3-输出"><span class="toc-text">1.5.3 输出</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-本地加载与远程加载"><span class="toc-text">2 本地加载与远程加载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-创建本地DRL文件"><span class="toc-text">2.1 创建本地DRL文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-创建远程DRL文件"><span class="toc-text">2.2 创建远程DRL文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-单元测试"><span class="toc-text">2.3 单元测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-输出"><span class="toc-text">2.4 输出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-总结"><span class="toc-text">3 总结</span></a></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 冯雪超</div>
+      
+        <div>
+          原文链接: 
+          <a href target="_blank">http://yoursite.com/passages/规则引擎Drools模板编译/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/drools/"><i class="fa fa-tags"></i>drools</a>
+    
+    </div>
+  
+</div>
+
+    </main>
+    
+      
+<div class="site-comment-contanier" data-plateform="leancloud">
+  
+    <p id="site-comment-info">
+      <i class="fa fa-spinner fa-spin"></i> 评论加载中
+    </p>
+    <div id="site-comment"></div>
+  
+</div>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">博客推荐</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/" target="_blank">GodBMW</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="http://ruanyifeng.com/" target="_blank">阮一峰的个人网站</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">系列教程</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/categories/webpack4%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B/" target="_blank">webpack4系列教程</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/design-patterns/" target="_blank">设计模式手册</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">抓到我</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://juejin.im/user/5b91fcf06fb9a05d3c7fd4a5" target="_blank">掘金</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="https://segmentfault.com/" target="_blank">思否</a>
+            </span>
+          
+        </div>
+      
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+      <div class="site-footer-info">
+        <i class="fa fa-paw"></i> 您是本站第 <span id="site-count"></span> 位访客
+      </div>
+    
+    
+      <div class="site-footer-info">
+        <i class="fa fa-at"></i> Email: yuanxin.me@gmail.com
+      </div>
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="AliPay">
+              
+                <p>AliPay</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="javascript:void(0);" data-enable="false">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/hello-world/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+      <a href="#site-comment" data-enable="true">
+        <i class="fa fa-commenting"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+    <a id="share-btn-twitter" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-twitter"></i>
+    </a>
+  
+  
+    <a id="share-btn-facebook" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-facebook"></i>
+    </a>
+  
+  
+    <a id="share-btn-weibo" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-weibo"></i>
+    </a>
+  
+  
+    <a id="share-btn-qq" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-qq"></i>
+    </a>
+  
+  
+    <a id="share-btn-wechat" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-wechat"></i>
+    </a>
+  
+</div>
+    
+
+
+  <script async>
+  (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+  })();
+  </script>
+
+
+
+
+    
+  </body>
+</html>
