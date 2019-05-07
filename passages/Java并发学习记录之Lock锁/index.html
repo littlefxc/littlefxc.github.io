@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="冯雪超">
+  
+  
+  <title>Java并发学习记录之Lock锁 | Hexo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java,多线程,">
+  
+
+  
+  <meta name="description" content="锁是用于通过多个线程控制对共享资源的访问的工具。一般来说，锁提供对共享资源的独占访问：一次只能有一个线程可以获取锁，并且对共享资源的所有访问都要求首先获取锁。 但是，一些锁可能允许并发访问共享资源，如ReadWriteLock的读写锁。">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2018-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "冯雪超",
+    share: {"twitter":true,"facebook":true,"weibo":true,"qq":true,"wechat":true},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">GODBMW</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 一个持续学习者</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/littlefxc/" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-05-07
+    </span>
+    
+      <span>
+        | <a href="/categories/Java/"><i class="fa fa-bookmark"></i>Java</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Java并发学习记录之Lock锁
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="Java-并发学习记录之-Lock-锁"><a href="#Java-并发学习记录之-Lock-锁" class="headerlink" title="Java 并发学习记录之 Lock 锁"></a>Java 并发学习记录之 Lock 锁</h1><p>@[toc]</p>
+<h2 id="Lock-接口"><a href="#Lock-接口" class="headerlink" title="Lock 接口"></a>Lock 接口</h2><p>锁是用于通过多个线程控制对共享资源的访问的工具。一般来说，锁提供对共享资源的独占访问：一次只能有一个线程可以获取锁，并且对共享资源的所有访问都要求首先获取锁。 但是，一些锁可能允许并发访问共享资源，如ReadWriteLock的读写锁。</p>
+<p>在Lock接口出现之前，Java程序是靠synchronized关键字实现锁功能的。JDK1.5之后并发包中新增了Lock接口以及相关实现类来实现锁功能。虽然缺少了隐式获取释放锁的便捷性，但是却拥有了锁获取与释放的可操作性、可中断的获取锁以及超时获取锁等多种 synchronized 关键字所不具备的同步特性。</p>
+<h3 id="简单用法"><a href="#简单用法" class="headerlink" title="简单用法"></a>简单用法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Lock lock=<span class="keyword">new</span> ReentrantLock();</span><br><span class="line">lock.lock();</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">  </span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  lock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为 Lock 是接口所以使用时要结合它的实现类，另外在 finall 语句块中释放锁的目的是保证获取到锁之后，最终能够被释放。同时注意最好不要把获取锁的过程写在 try 语句块中，因为如果在获取锁时发生了异常，异常抛出的同时也会导致锁无故释放。</p>
+<h3 id="Lock接口提供的synchronized关键字不具备的主要特性："><a href="#Lock接口提供的synchronized关键字不具备的主要特性：" class="headerlink" title="Lock接口提供的synchronized关键字不具备的主要特性："></a>Lock接口提供的synchronized关键字不具备的主要特性：</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>尝试非阻塞地获取锁</td>
+<td>当前线程尝试获取锁，如果这一时刻锁没有被其他线程获取到，则成功获取并持有锁</td>
+</tr>
+<tr>
+<td>能被中断地获取锁</td>
+<td>获取到锁的线程能够响应中断，当获取到锁的线程被中断时，中断异常将会被抛出，同时锁会被释放</td>
+</tr>
+<tr>
+<td>超时获取锁</td>
+<td>在指定的截止时间之前获取锁， 超过截止时间后仍旧无法获取则返回</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Lock接口基本的方法："><a href="#Lock接口基本的方法：" class="headerlink" title="Lock接口基本的方法："></a>Lock接口基本的方法：</h3><table>
+<thead>
+<tr>
+<th>方法名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void lock()</td>
+<td>获得锁。如果锁不可用，则当前线程将被禁用以进行线程调度，并处于休眠状态，直到获取锁。</td>
+</tr>
+<tr>
+<td>void lockInterruptibly()</td>
+<td>获取锁，如果可用并立即返回。如果锁不可用，那么当前线程将被禁用以进行线程调度，并且处于休眠状态，和lock()方法不同的是在锁的获取中可以中断当前线程（相应中断）。</td>
+</tr>
+<tr>
+<td>Condition newCondition()</td>
+<td>获取等待通知组件，该组件和当前的锁绑定，当前线程只有获得了锁，才能调用该组件的wait()方法，而调用后，当前线程将释放锁。</td>
+</tr>
+<tr>
+<td>boolean tryLock()</td>
+<td>只有在调用时才可以获得锁。如果可用，则获取锁定，并立即返回值为true；如果锁不可用，则此方法将立即返回值为false 。</td>
+</tr>
+<tr>
+<td>boolean tryLock(long time, TimeUnit unit)</td>
+<td>超时获取锁，当前线程在一下三种情况下会返回：<br>1. 当前线程在超时时间内获得了锁；<br>2.当前线程在超时时间内被中断；<br>3.超时时间结束，返回false.</td>
+</tr>
+<tr>
+<td>void unlock()</td>
+<td>释放锁。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="对同步器-AbstractQueuedSynchronizer-的分析"><a href="#对同步器-AbstractQueuedSynchronizer-的分析" class="headerlink" title="对同步器 AbstractQueuedSynchronizer 的分析"></a>对同步器 AbstractQueuedSynchronizer 的分析</h3><ul>
+<li style="list-style: none"><input type="checkbox"> Java并发学习记录之同步器AbstractQueuedSynchronizer</li>
+</ul>
+<h2 id="Lock-实现类：ReentrantLock"><a href="#Lock-实现类：ReentrantLock" class="headerlink" title="Lock 实现类：ReentrantLock"></a>Lock 实现类：ReentrantLock</h2><p>重入锁 ReentrantLock，顾名思义，就是支持重进入的锁，它表示该锁能够支持一个线程对资源的重复加锁。除此之外，还支持获取锁时的公平和非公平锁选择。</p>
+<h3 id="加锁2次释放2次"><a href="#加锁2次释放2次" class="headerlink" title="加锁2次释放2次"></a>加锁2次释放2次</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.littlefxc.examples.base.thread.lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/2/28</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReentrantLockR</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 加锁"</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            lock.lock();<span class="comment">// 重进入验证</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">                System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 循环计数 = "</span> + i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();<span class="comment">// 锁的释放</span></span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 解锁"</span>);</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ReentrantLockR lockR = <span class="keyword">new</span> ReentrantLockR();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(lockR);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(lockR);</span><br><span class="line">        Thread t3 = <span class="keyword">new</span> Thread(lockR);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t3.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190305213555836.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>可以看到，运行结果是只有当线程运行完毕后才会释放锁，其它线程才能获得锁-&gt;执行业务代码-&gt;释放锁。<strong>其他线程的执行顺序是不确定的</strong>（为了这个图运行了很多遍）。</p>
+<p>仔细观察代码，可以我加了两遍锁，同时也释放了两遍锁。</p>
+<h3 id="如果，加锁两次释放一次："><a href="#如果，加锁两次释放一次：" class="headerlink" title="如果，加锁两次释放一次："></a>如果，加锁两次释放一次：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    lock.lock();<span class="comment">// 重进入验证</span></span><br><span class="line">    System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 加锁"</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 循环计数 = "</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"><span class="comment">//      lock.unlock();// 锁的释放</span></span><br><span class="line">        System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 解锁"</span>);</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190305213701157.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="又如果，加锁1次却释放锁两次，就会抛异常："><a href="#又如果，加锁1次却释放锁两次，就会抛异常：" class="headerlink" title="又如果，加锁1次却释放锁两次，就会抛异常："></a>又如果，加锁1次却释放锁两次，就会抛异常：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="comment">//lock.lock();// 重进入验证</span></span><br><span class="line">    System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 加锁"</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">5</span>; i++) &#123;</span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 循环计数 = "</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();<span class="comment">// 锁的释放</span></span><br><span class="line">        System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 解锁"</span>);</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p><img src="https://img-blog.csdnimg.cn/2019030521374275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="公平与非公平获取锁的区别"><a href="#公平与非公平获取锁的区别" class="headerlink" title="公平与非公平获取锁的区别"></a>公平与非公平获取锁的区别</h3><p>如果一个锁是公平的，那么锁的获取顺序就应该符合请求的绝对时间顺序，也就是 FIFO。</p>
+<p>ReentrantLock 的 非公平锁的获取（源码）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ReentrantLock 的 公平锁的获取（源码）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Fair version of tryAcquire.  Don't grant access unless</span></span><br><span class="line"><span class="comment"> * recursive call or no waiters or is first.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">            compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">"Maximum lock count exceeded"</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对比两个方法的不同点只是获取公平锁判断条件多了 <code>hasQueuedPredecessors()</code> 方法，即加入了同步队列中当前是否有前驱结点的判断，如果该方法返回 true，则表示当前线程需要等待前驱线程获取锁并释放锁之后才能继续获取锁。</p>
+<p>当你看到 ReentrantLock 的构造函数，为什么非公平锁会被设定为默认的实现呢？</p>
+<p>要知道一个刚释放锁的线程再次获取锁的几率会非常大，使得其他线程只能在同步队列中等待，从而让非公平锁使线程“饥饿”， 这是因为虽然公平锁保证了锁的获取按照 FIFO 原则，但代价是进行了大量的线程切换。非公平锁虽然可能会造成线程“饥饿”，但极少的线程切换，保证了更大的吞吐量。</p>
+<h2 id="读写锁：ReadWriteLock"><a href="#读写锁：ReadWriteLock" class="headerlink" title="读写锁：ReadWriteLock"></a>读写锁：ReadWriteLock</h2><p>之前学习过的如 <code>synchronized</code> 关键字、<code>ReentrantLock</code> 重入锁都是排他锁，这些锁在同一时刻只允许一个线程进行访问。读写锁不同，在同一时刻允许多个<strong>读线程</strong>访问，但是在<strong>写线程</strong>访问时，所有的读线程和其它线程均会被阻塞。读写锁维护了一对锁（读锁-&gt;共享锁和写锁-&gt;排他锁），通过分离读锁和写锁，使得并发性相比一般的排他锁有了很大的提升。</p>
+<p>假设有这样一种情况，在程序中定义了一个共享的缓存数据结构，它在大部分的时间读服务（如查询）使用的很多，而写的服务很少，但每次写完后数据对读的服务可见。（读：很多；写：很少）</p>
+<p>在这种情况下，你很可能会使用等待/通知机制来实现从而保证数据不会出现脏读。</p>
+<p>改用读写锁来实现的话，只需在读操作时获取读锁，写操作时获取写锁。当前线程进行写操作时，其它的读写线程阻塞，当档期那线程的写锁释放后，其它线程继续执行，而如果其它线程都是读线程，那么都允许执行。</p>
+<p>也就是说，在读大于写的情况下，使用读写锁具有比其他排他锁更好的并发性和吞吐量。</p>
+<h3 id="ReadWriteLock-的实现类-ReentrantReadWriteLock-的特性"><a href="#ReadWriteLock-的实现类-ReentrantReadWriteLock-的特性" class="headerlink" title="ReadWriteLock 的实现类 ReentrantReadWriteLock 的特性"></a>ReadWriteLock 的实现类 ReentrantReadWriteLock 的特性</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>公平性选择</td>
+<td>支持非公平（默认）和公平的锁获取方式，吞吐量上来看还是非公平优于公平</td>
+</tr>
+<tr>
+<td>重进入</td>
+<td>该锁支持重进入，以读写线程为例：读线程在获取了读锁之后，能够再次获取读锁。而写线程在获取了写锁之后能够再次获取写锁也能够同时获取读锁</td>
+</tr>
+<tr>
+<td>锁降级</td>
+<td>遵循获取写锁、获取读锁再释放写锁的次序，写锁能够降级称为读锁</td>
+</tr>
+</tbody>
+</table>
+<h3 id="读写锁-ReentrantReadWriteLock-的使用测试"><a href="#读写锁-ReentrantReadWriteLock-的使用测试" class="headerlink" title="读写锁 ReentrantReadWriteLock 的使用测试"></a>读写锁 ReentrantReadWriteLock 的使用测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.littlefxc.examples.base.thread.lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantReadWriteLock;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/3/1</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReentrantReadWriteLockTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ReentrantReadWriteLock lock = <span class="keyword">new</span> ReentrantReadWriteLock();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.readLock().lock();</span><br><span class="line">                System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 获得读锁 "</span> + System.currentTimeMillis());</span><br><span class="line">                Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.readLock().unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock.writeLock().lock();</span><br><span class="line">                System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 获得写锁 "</span> + System.currentTimeMillis());</span><br><span class="line">                Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock.writeLock().unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码中，read() 方法中是关于读锁的操作， write() 方法中是关于写锁的操作。为了加强效果，分别让两个操作都睡眠 10s。</p>
+<p>接下来将使用这两个方法进行组合从而进行三方面的测试：测试多个读锁间的不互斥、测试读锁与写锁互斥、测试写锁与写锁互斥。</p>
+<h4 id="测试多个读锁间的不互斥"><a href="#测试多个读锁间的不互斥" class="headerlink" title="测试多个读锁间的不互斥"></a>测试多个读锁间的不互斥</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    ReentrantReadWriteLockTest rwlSample = <span class="keyword">new</span> ReentrantReadWriteLockTest();</span><br><span class="line">    Thread t1 = <span class="keyword">new</span> Thread(() -&gt; rwlSample.read());</span><br><span class="line">    Thread t2 = <span class="keyword">new</span> Thread(() -&gt; rwlSample.read());</span><br><span class="line">    t1.start();</span><br><span class="line">    t2.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行后，发现两个线程几乎同时获得读锁。</p>
+<h4 id="测试读锁与写锁互斥"><a href="#测试读锁与写锁互斥" class="headerlink" title="测试读锁与写锁互斥"></a>测试读锁与写锁互斥</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    ReentrantReadWriteLockTest rwlSample = <span class="keyword">new</span> ReentrantReadWriteLockTest();</span><br><span class="line">    Thread t1 = <span class="keyword">new</span> Thread(() -&gt; rwlSample.read());</span><br><span class="line">    Thread t2 = <span class="keyword">new</span> Thread(() -&gt; rwlSample.write());</span><br><span class="line">    t1.start();</span><br><span class="line">    t2.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行后，发现两个线程互斥。</p>
+<h4 id="测试写锁与写锁互斥"><a href="#测试写锁与写锁互斥" class="headerlink" title="测试写锁与写锁互斥"></a>测试写锁与写锁互斥</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    ReentrantReadWriteLockTest rwlSample = <span class="keyword">new</span> ReentrantReadWriteLockTest();</span><br><span class="line">    Thread t1 = <span class="keyword">new</span> Thread(() -&gt; rwlSample.write());</span><br><span class="line">    Thread t2 = <span class="keyword">new</span> Thread(() -&gt; rwlSample.write());</span><br><span class="line">    t1.start();</span><br><span class="line">    t2.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行后，发现两个线程互斥。</p>
+<h3 id="对读写锁的分析"><a href="#对读写锁的分析" class="headerlink" title="对读写锁的分析"></a>对读写锁的分析</h3><ul>
+<li style="list-style: none"><input type="checkbox"> Java并发学习记录之读写锁分析</li>
+</ul>
+<h2 id="Condition-接口"><a href="#Condition-接口" class="headerlink" title="Condition 接口"></a>Condition 接口</h2><p><code>synchronized</code> 关键字与 <code>wait()</code> 和 <code>notify/notifyAll()</code> 方法相结合可以实现等待/通知机制，<br><code>Lock</code> 接口同样定义了等待/通知两种类型的方法，和前者一样，当前线程在调用这些方法前，<br>需要提前获取到 <code>Condition</code> 对象关联的锁。<code>Condition</code> 对象是由 <code>Lock</code> 接口实现类创建出来的<br><code>Condition condition = lock.newCondition();</code>。</p>
+<p>在使用 notify/notifyAll()方法进行通知时，被通知的线程是有JVM选择的，<br>使用 Lock 类结合 Condition 实例可以实现“选择性通知”，这个功能非常重要，<br>而且是 Condition 接口默认提供的。</p>
+<p>但是 synchronized 关键字就相当于整个 Lock 对象中只有一个 Condition 实例，<br>所有的线程都注册在它一个身上。如果执行 <code>notifyAll()</code> 方法的话就会通知所有处于等待状态的线程这样会造成很大的效率问题，<br>而 Condition 实例的 <code>signalAll()</code> 方法只会唤醒注册在该 Condition 实例中的所有等待线程。</p>
+<p>Condition 定义的（部分）方法介绍：</p>
+<table>
+<thead>
+<tr>
+<th>方法名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void await() throws InterruptedException</td>
+<td>当前线程进入等待状态直到被通知或中断，当前线程将进入运行状态且从 await() 方法返回的情况，包括：<br> 其它线程调用该 Condition 的 signal() 或 signalAll() 方法，而当前线程被选中唤醒<ul><li>其它线程（调用 interrupt() 方法）中断当前线程</li><li>如果当前等待线程从 await() 方法返回，那么表明该线程已经获取了 Condition 对象所对应的锁</li></ul></td>
+</tr>
+<tr>
+<td>void awaitUninterruptibly()</td>
+<td>当前线程进入等待状态直到被通知，对中断不敏感</td>
+</tr>
+<tr>
+<td>long awaitNanos(long nanosTimeout) throws InterruptedException</td>
+<td>当前线程进入等待状态直到被通知、中断或者到某个时间。返回值表示剩余时间，如果返回值是 0 或者负数，就表示超时</td>
+</tr>
+<tr>
+<td>long awaitNanos(long nanosTimeout) throws InterruptedException</td>
+<td>当前线程进入等待状态直到被通知、中断或者到某个时间。如果没有到指定时间就被通知返回 true，否则返回 false</td>
+</tr>
+<tr>
+<td>boolean awaitUntil(Date deadline) throws InterruptedException</td>
+<td>遵循获取写锁、获取读锁再释放写锁的次序，写锁能够降级称为读锁</td>
+</tr>
+<tr>
+<td>void signal()</td>
+<td>唤醒一个等待在 Condition 实例上的线程</td>
+</tr>
+<tr>
+<td>void signalAll()</td>
+<td>唤醒所有等待在 Condition 实例上的线程</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Condition-使用示例"><a href="#Condition-使用示例" class="headerlink" title="Condition 使用示例"></a>Condition 使用示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.littlefxc.examples.base.thread.lock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Condition;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-03-05</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConditionSample</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"></span><br><span class="line">    Condition condition = lock.newCondition();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">conditionWait</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 释放锁并开始等待"</span>);</span><br><span class="line">            <span class="keyword">long</span> l = System.currentTimeMillis();</span><br><span class="line">            condition.await();</span><br><span class="line">            <span class="keyword">long</span> time = System.currentTimeMillis() - l;</span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 获得锁并结束等待, 等待时间是 "</span> + time + <span class="string">"ms"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">conditionSignal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        lock.lock();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 开始释放锁并通知线程等待队列"</span>);</span><br><span class="line">            condition.signal();</span><br><span class="line">            Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">            System.out.println(<span class="string">"线程 "</span> + Thread.currentThread().getId() + <span class="string">" 释放锁并通知线程等待队列"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ConditionSample sample = <span class="keyword">new</span> ConditionSample();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(() -&gt; sample.conditionWait());</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(() -&gt; sample.conditionSignal());</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190305213817994.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>在使用 wait/notify 实现等待通知机制的时候我们知道必须执行完 notify() 方法所在的 synchronized 代码块后才释放锁。<br>在这里也一样，必须执行完 signal 所在的 try 语句块之后才释放锁，condition.await() 后的语句才能被执行。</p>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p>《Java并发编程的艺术》<br>《Java并发编程实战》</p>
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Java-并发学习记录之-Lock-锁"><span class="toc-text">Java 并发学习记录之 Lock 锁</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Lock-接口"><span class="toc-text">Lock 接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#简单用法"><span class="toc-text">简单用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lock接口提供的synchronized关键字不具备的主要特性："><span class="toc-text">Lock接口提供的synchronized关键字不具备的主要特性：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Lock接口基本的方法："><span class="toc-text">Lock接口基本的方法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对同步器-AbstractQueuedSynchronizer-的分析"><span class="toc-text">对同步器 AbstractQueuedSynchronizer 的分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Lock-实现类：ReentrantLock"><span class="toc-text">Lock 实现类：ReentrantLock</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#加锁2次释放2次"><span class="toc-text">加锁2次释放2次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如果，加锁两次释放一次："><span class="toc-text">如果，加锁两次释放一次：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#又如果，加锁1次却释放锁两次，就会抛异常："><span class="toc-text">又如果，加锁1次却释放锁两次，就会抛异常：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#公平与非公平获取锁的区别"><span class="toc-text">公平与非公平获取锁的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#读写锁：ReadWriteLock"><span class="toc-text">读写锁：ReadWriteLock</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ReadWriteLock-的实现类-ReentrantReadWriteLock-的特性"><span class="toc-text">ReadWriteLock 的实现类 ReentrantReadWriteLock 的特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#读写锁-ReentrantReadWriteLock-的使用测试"><span class="toc-text">读写锁 ReentrantReadWriteLock 的使用测试</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#测试多个读锁间的不互斥"><span class="toc-text">测试多个读锁间的不互斥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#测试读锁与写锁互斥"><span class="toc-text">测试读锁与写锁互斥</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#测试写锁与写锁互斥"><span class="toc-text">测试写锁与写锁互斥</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对读写锁的分析"><span class="toc-text">对读写锁的分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Condition-接口"><span class="toc-text">Condition 接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Condition-使用示例"><span class="toc-text">Condition 使用示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考："><span class="toc-text">参考：</span></a></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 冯雪超</div>
+      
+        <div>
+          原文链接: 
+          <a href target="_blank">http://yoursite.com/passages/Java并发学习记录之Lock锁/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/多线程/"><i class="fa fa-tags"></i>多线程</a>
+    
+    </div>
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">博客推荐</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/" target="_blank">GodBMW</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="http://ruanyifeng.com/" target="_blank">阮一峰的个人网站</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">系列教程</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/categories/webpack4%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B/" target="_blank">webpack4系列教程</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/design-patterns/" target="_blank">设计模式手册</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">抓到我</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://blog.csdn.net/Little_fxc" target="_blank">CSDN</a>
+            </span>
+          
+        </div>
+      
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+      <div class="site-footer-info">
+        <i class="fa fa-at"></i> Email: fengxuechao.littlefxc@gmail.com
+      </div>
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="AliPay">
+              
+                <p>AliPay</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="/passages/Java集合学习之ArrayList/" data-enable="true">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/Java并发学习记录之ThreadLocal/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+    <a id="share-btn-twitter" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-twitter"></i>
+    </a>
+  
+  
+    <a id="share-btn-facebook" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-facebook"></i>
+    </a>
+  
+  
+    <a id="share-btn-weibo" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-weibo"></i>
+    </a>
+  
+  
+    <a id="share-btn-qq" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-qq"></i>
+    </a>
+  
+  
+    <a id="share-btn-wechat" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-wechat"></i>
+    </a>
+  
+</div>
+    
+
+
+  <script async>
+  (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+  })();
+  </script>
+
+
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="冯雪超">
+  
+  
+  <title>Spring+MyBatis+MySQL主从分离 | Hexo</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Java,mysql,mybatis,spring,">
+  
+
+  
+  <meta name="description" content="冯雪超的小站">
+
+  
+
+  
+
+  
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+  
+
+  
+
+  
+
+  <script>
+  // theme-ad's config script
+  // it can be used in every script
+  
+  window.AD_CONFIG = {
+    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
+    welcome: {"enable":false,"interval":30},
+    start_time: "2018-02-10",
+    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
+    is_post: true,
+    lock: false,
+    author: "冯雪超",
+    share: {"twitter":true,"facebook":true,"weibo":true,"qq":true,"wechat":true},
+    mathjax: true,
+    page_type: "",
+    root: "/"
+  };
+</script>
+
+  <script src="/vendor/sha256.min.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/index.js"></script>
+<script src="/vendor/qrcode.min.js"></script>
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/index.css">
+<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
+
+  
+</head>
+  <body>
+    <header class="site-header">
+  <div class="site-header-brand">
+    
+      <span class="site-header-brand-title">
+        <a href="/">GODBMW</a>
+      </span>
+    
+    
+      <span class="site-header-brand-motto"> | 一个持续学习者</span>
+    
+  </div>
+  <div class="site-header-right">
+    <nav class="site-header-navigation">
+      
+        <a href="/" target="_self">首页</a>
+      
+        <a href="/archives/" target="_self">归档</a>
+      
+        <a href="/tags/" target="_self">标签</a>
+      
+        <a href="/categories/" target="_self">分类</a>
+      
+        <a href="/friends/" target="_self">友链</a>
+      
+        <a href="/about/" target="_self">关于</a>
+      
+    </nav>
+    <div class="site-header-btn">
+      
+        <a href="https://github.com/littlefxc/" target="_blank" id="site-github">
+          <i class="fa fa-github-alt"></i>
+        </a>
+      
+      <a href="javascript:void(0);" id="site-search">
+        <i class="fa fa-search"></i>
+      </a>
+      <a href="javascript:void(0);" id="site-nav-btn">
+        <i class="fa fa-ellipsis-v"></i>
+      </a>
+    </div>
+  </div>
+</header>
+<nav class="table-content" id="site-nav">
+  <div class="table-content-title">
+    <span>导航</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc">
+      
+        <li class="toc-item">
+          <a href="/" target="_self">
+            首页
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/archives/" target="_self">
+            归档
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/tags/" target="_self">
+            标签
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/categories/" target="_self">
+            分类
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/friends/" target="_self">
+            友链
+          </a>
+        </li>
+      
+        <li class="toc-item">
+          <a href="/about/" target="_self">
+            关于
+          </a>
+        </li>
+      
+    </ol>
+  </div>
+</nav>
+<div id="site-process"></div>
+    <main>
+      
+  <div class="passage">
+  <div class="passage-meta">
+    <span>
+      <i class="fa fa-calendar"></i>2019-05-07
+    </span>
+    
+      <span>
+        | <a href="/categories/Java/"><i class="fa fa-bookmark"></i>Java</a>
+      </span>
+    
+    
+      <span>
+        | <i class="fa fa-unlock-alt"></i>UNLOCK
+      </span>
+    
+  </div>
+  <h1 class="passage-title">
+    Spring+MyBatis+MySQL主从分离
+  </h1>
+  
+  <article class="passage-article">
+    <h1 id="Spring-MyBatis-MySQL主从分离"><a href="#Spring-MyBatis-MySQL主从分离" class="headerlink" title="Spring + MyBatis + MySQL主从分离"></a>Spring + MyBatis + MySQL主从分离</h1><p>@[toc]</p>
+<h2 id="基于-Docker-的-MySQL-主从复制搭建"><a href="#基于-Docker-的-MySQL-主从复制搭建" class="headerlink" title="基于 Docker 的 MySQL 主从复制搭建"></a>基于 Docker 的 MySQL 主从复制搭建</h2><p><a href="https://blog.csdn.net/Little_fxc/article/details/89477284" target="_blank" rel="noopener">基于 Docker 的 MySQL 主从复制搭建</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在大型应用程序中，配置主从数据库并使用读写分离是常见的设计模式。而要对现有的代码在不多改变源码的情况下，<br>可以使用 Spring 的 <code>AbstractRoutingDataSource</code> 和 Mybatis 的 <code>Interceptor</code> 为核心做到感知mysql读写分离</p>
+<h2 id="配置多数据源"><a href="#配置多数据源" class="headerlink" title="配置多数据源"></a>配置多数据源</h2><p>使用了 druid 数据库连接池，配置 master datasource 为写数据库，配置 slave datasource 为读数据库。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">spring.datasource.druid.filter.slf4j.enabled=true</span></span><br><span class="line"><span class="string">spring.datasource.druid.filter.slf4j.statement-create-after-log-enabled=false</span></span><br><span class="line"><span class="string">spring.datasource.druid.filter.slf4j.statement-close-after-log-enabled=false</span></span><br><span class="line"><span class="string">spring.datasource.druid.filter.slf4j.result-set-open-after-log-enabled=false</span></span><br><span class="line"><span class="string">spring.datasource.druid.filter.slf4j.result-set-close-after-log-enabled=false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># master datasource</span></span><br><span class="line"><span class="string">spring.datasource.druid.master.driver-class-name=com.mysql.cj.jdbc.Driver</span></span><br><span class="line"><span class="string">spring.datasource.druid.master.url=jdbc:mysql://localhost:3306/learn?useSSl=false</span></span><br><span class="line"><span class="string">spring.datasource.druid.master.password=root</span></span><br><span class="line"><span class="string">spring.datasource.druid.master.username=root</span></span><br><span class="line"><span class="comment"># slave datasource</span></span><br><span class="line"><span class="string">spring.datasource.druid.slave.driver-class-name=com.mysql.cj.jdbc.Driver</span></span><br><span class="line"><span class="string">spring.datasource.druid.slave.url=jdbc:mysql://localhost:3307/learn?useSSl=false</span></span><br><span class="line"><span class="string">spring.datasource.druid.slave.password=root</span></span><br><span class="line"><span class="string">spring.datasource.druid.slave.username=root</span></span><br><span class="line"></span><br><span class="line"><span class="string">spring.jackson.date-format=yyyy-MM-dd</span> <span class="attr">HH:mm:ss</span></span><br><span class="line"><span class="string">spring.jackson.time-zone=GMT+8</span></span><br><span class="line"><span class="string">spring.jackson.default-property-inclusion=always</span></span><br><span class="line"><span class="string">spring.jackson.property-naming-strategy=SNAKE_CASE</span></span><br><span class="line"></span><br><span class="line"><span class="string">mybatis.type-aliases-package=com.fengxuechao.examples.rwdb.entity</span></span><br><span class="line"><span class="string">mybatis.configuration.use-generated-keys=true</span></span><br><span class="line"><span class="string">mybatis.configuration.map-underscore-to-camel-case=true</span></span><br><span class="line"><span class="string">mybatis.configuration.default-fetch-size=100</span></span><br><span class="line"><span class="string">mybatis.configuration.default-statement-timeout=30</span></span><br><span class="line"><span class="string">mybatis.configuration.cache-enabled=true</span></span><br><span class="line"></span><br><span class="line"><span class="string">logging.level.root=info</span></span><br><span class="line"><span class="string">logging.level.com.fengxuechao.examples.rwdb=debug</span></span><br><span class="line"><span class="string">logging.level.druid.sql.Statement=error</span></span><br></pre></td></tr></table></figure>
+<h2 id="使用-Spring-的-AbstractRoutingDataSource-动态切换数据源"><a href="#使用-Spring-的-AbstractRoutingDataSource-动态切换数据源" class="headerlink" title="使用 Spring 的 AbstractRoutingDataSource 动态切换数据源"></a>使用 Spring 的 AbstractRoutingDataSource 动态切换数据源</h2><h3 id="用枚举标记读写数据源"><a href="#用枚举标记读写数据源" class="headerlink" title="用枚举标记读写数据源"></a>用枚举标记读写数据源</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> RoutingType &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 代表写数据库</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MASTER,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 代表读数据库</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    SLAVE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="用-ThreadLocal-记录当前线程数据源"><a href="#用-ThreadLocal-记录当前线程数据源" class="headerlink" title="用 ThreadLocal 记录当前线程数据源"></a>用 ThreadLocal 记录当前线程数据源</h3><p>在Servlet的线程模型中，使用ThreadLocal存储key最合适，因此，编写一个RoutingDataSourceContext，来设置并动态存储key：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoutingDataSourceContext</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;RoutingType&gt; contextHolder = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="title">RoutingDataSourceContext</span><span class="params">(RoutingType routingType)</span> </span>&#123;</span><br><span class="line">      contextHolder.set(routingType);</span><br><span class="line">   &#125;</span><br><span class="line">	</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setRoutingType</span><span class="params">(RoutingType routingType)</span> </span>&#123;</span><br><span class="line">      Assert.notNull(routingType, <span class="string">"routingType cannot be null"</span>);</span><br><span class="line">      contextHolder.set(routingType);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RoutingType <span class="title">getRoutingType</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> contextHolder.get();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      contextHolder.remove();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      clear();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自定义路由数据源实现"><a href="#自定义路由数据源实现" class="headerlink" title="自定义路由数据源实现"></a>自定义路由数据源实现</h3><p>用Spring内置的RoutingDataSource，把两个真实的数据源代理为一个动态数据源：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoutingDataSource</span> <span class="keyword">extends</span> <span class="title">AbstractRoutingDataSource</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Object <span class="title">determineCurrentLookupKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> RoutingDataSourceContext.getRoutingType();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="配置路由数据源"><a href="#配置路由数据源" class="headerlink" title="配置路由数据源"></a>配置路由数据源</h3><p>对于 <code>RoutingDataSource</code> 需要在SpringBoot中配置好并设置为主数据源：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableTransactionManagement</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DbConfig</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 写数据库</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.master"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">masterDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 读数据库</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConfigurationProperties</span>(<span class="string">"spring.datasource.druid.slave"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">slaveDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DruidDataSourceBuilder.create().build();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 路由数据源</span></span><br><span class="line"><span class="comment">     * 一定要加 <span class="doctag">@Primary</span> 使得 &#123;<span class="doctag">@link</span> MybatisInterceptor&#125; 插件生效</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DataSource <span class="title">dataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"create routing datasource..."</span>);</span><br><span class="line">        Map&lt;Object, Object&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        map.put(RoutingType.MASTER, masterDataSource());</span><br><span class="line">        map.put(RoutingType.SLAVE, slaveDataSource());</span><br><span class="line">        RoutingDataSource routing = <span class="keyword">new</span> RoutingDataSource();</span><br><span class="line">        routing.setTargetDataSources(map);</span><br><span class="line">        routing.setDefaultTargetDataSource(masterDataSource());</span><br><span class="line">        <span class="keyword">return</span> routing;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 添加 MybatisInterceptor 拦截器</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dataSource</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SqlSessionFactoryBean <span class="title">sqlSessionFactory</span><span class="params">(DataSource dataSource)</span> </span>&#123;</span><br><span class="line">        SqlSessionFactoryBean sfb = <span class="keyword">new</span> SqlSessionFactoryBean();</span><br><span class="line">        sfb.setDataSource(dataSource);</span><br><span class="line">        sfb.setPlugins(<span class="keyword">new</span> Interceptor[]&#123;<span class="keyword">new</span> MybatisInterceptor()&#125;);</span><br><span class="line">        <span class="keyword">return</span> sfb;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用-MyBatis-的-Interceptor-拦截器对update使用写库，对query使用读库"><a href="#使用-MyBatis-的-Interceptor-拦截器对update使用写库，对query使用读库" class="headerlink" title="使用 MyBatis 的 Interceptor 拦截器对update使用写库，对query使用读库"></a>使用 MyBatis 的 Interceptor 拦截器对update使用写库，对query使用读库</h2><p>原理：</p>
+<p>查看 <code>org.apache.ibatis.executor.Executor</code> 可以发现 MyBatis 执行 sql 的语句都在这里边了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 执行sql 的 update, delete, insert</span></span><br><span class="line">  <span class="function"><span class="keyword">int</span> <span class="title">update</span><span class="params">(MappedStatement ms, Object parameter)</span> <span class="keyword">throws</span> SQLException</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 执行sql 的 select</span></span><br><span class="line">  &lt;E&gt; <span class="function">List&lt;E&gt; <span class="title">query</span><span class="params">(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey cacheKey, BoundSql boundSql)</span> <span class="keyword">throws</span> SQLException</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 执行sql 的 select</span></span><br><span class="line">  &lt;E&gt; <span class="function">List&lt;E&gt; <span class="title">query</span><span class="params">(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler)</span> <span class="keyword">throws</span> SQLException</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只要拦截这三个方法，是的 update() 方法使用写数据库，query() 方法使用读数据库就可以做到在不改写原业务代码的情况下使用多数据源，同时让Spring事务也正常运行。 </p>
+<p>拦截器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 拦截器，对update使用写库，对query使用读库</span></span><br><span class="line"><span class="comment"> * 优势：源代码不变（通过mybatis拦截器），易扩展</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-03-22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Intercepts</span>(&#123;</span><br><span class="line">        <span class="meta">@Signature</span>(</span><br><span class="line">                type = Executor.class,</span><br><span class="line">                method = <span class="string">"update"</span>,</span><br><span class="line">                args = &#123;MappedStatement.class, Object.class&#125;),</span><br><span class="line">        <span class="meta">@Signature</span>(</span><br><span class="line">                type = Executor.class,</span><br><span class="line">                method = <span class="string">"query"</span>,</span><br><span class="line">                args = &#123;MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class&#125;),</span><br><span class="line">&#125;)</span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MybatisInterceptor</span> <span class="keyword">implements</span> <span class="title">Interceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用map对象缓存数据，数据量大的话，此处需要优化。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Map&lt;String, RoutingType&gt; cacheMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 通过正则表达式，拦截sql语句匹配类型设置数据源。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String REGEX = <span class="string">".*insert\\u0020.*|.*delete\\u0020.*|.*update\\u0020.*"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Invocation invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> synchronizationActive = TransactionSynchronizationManager.isSynchronizationActive();</span><br><span class="line">        <span class="keyword">if</span> (!synchronizationActive) &#123;</span><br><span class="line">            Object[] objects = invocation.getArgs();</span><br><span class="line">            MappedStatement ms = (MappedStatement) objects[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">            RoutingType routingType;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> ((routingType = cacheMap.get(ms.getId())) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">//读方法</span></span><br><span class="line">                <span class="keyword">if</span> (ms.getSqlCommandType().equals(SqlCommandType.SELECT)) &#123;</span><br><span class="line">                    <span class="comment">//!selectKey 为自增id查询主键(SELECT LAST_INSERT_ID() )方法，使用主库</span></span><br><span class="line">                    <span class="keyword">if</span> (ms.getId().contains(SelectKeyGenerator.SELECT_KEY_SUFFIX)) &#123;</span><br><span class="line">                        routingType = RoutingType.MASTER;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        BoundSql boundSql = ms.getSqlSource().getBoundSql(objects[<span class="number">1</span>]);</span><br><span class="line">                        String sql = boundSql.getSql().toLowerCase(Locale.CHINA).replaceAll(<span class="string">"[\\t\\n\\r]"</span>, <span class="string">" "</span>);</span><br><span class="line">                        <span class="keyword">if</span> (sql.matches(REGEX)) &#123;</span><br><span class="line">                            routingType = RoutingType.MASTER;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            routingType = RoutingType.SLAVE;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    routingType = RoutingType.MASTER;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (log.isDebugEnabled())&#123;</span><br><span class="line">                    log.debug(<span class="string">"设置方法[&#123;&#125;] use [&#123;&#125;] Strategy, SqlCommandType [&#123;&#125;].."</span>, ms.getId(), routingType.name(), ms.getSqlCommandType().name());</span><br><span class="line">                &#125;</span><br><span class="line">                cacheMap.put(ms.getId(), routingType);</span><br><span class="line">            &#125;</span><br><span class="line">            RoutingDataSourceContext.setRoutingType(routingType);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> invocation.proceed();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">plugin</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (target <span class="keyword">instanceof</span> Executor) &#123;</span><br><span class="line">            <span class="keyword">return</span> Plugin.wrap(target, <span class="keyword">this</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> target;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setProperties</span><span class="params">(Properties properties)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：需要在 Mybatis 的 SqlSessionFactory 中将此拦截器放入</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 添加 MybatisInterceptor 拦截器</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dataSource</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> SqlSessionFactoryBean <span class="title">sqlSessionFactory</span><span class="params">(DataSource dataSource)</span> </span>&#123;</span><br><span class="line">    SqlSessionFactoryBean sfb = <span class="keyword">new</span> SqlSessionFactoryBean();</span><br><span class="line">    sfb.setDataSource(dataSource);</span><br><span class="line">    sfb.setPlugins(<span class="keyword">new</span> Interceptor[]&#123;<span class="keyword">new</span> MybatisInterceptor()&#125;);</span><br><span class="line">    <span class="keyword">return</span> sfb;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CityMapper</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"SELECT id,name,city_code as cityCode,post_code as postCode FROM city WHERE id = #&#123;id&#125; limit 1"</span>)</span><br><span class="line">    <span class="function">City <span class="title">findById</span><span class="params">(Integer id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Insert</span>(<span class="string">"INSERT INTO city(name, city_code, post_code) VALUES(#&#123;name&#125;, #&#123;cityCode&#125;, #&#123;postCode&#125;)"</span>)</span><br><span class="line">    <span class="meta">@Options</span>(useGeneratedKeys = <span class="keyword">true</span>, keyProperty = <span class="string">"id"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">insert</span><span class="params">(City city)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Select</span>(<span class="string">"SELECT * FROM city WHERE id = #&#123;id&#125; limit 100"</span>)</span><br><span class="line">    <span class="function">List&lt;City&gt; <span class="title">findAll</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">	<span class="meta">@Update</span>(<span class="string">"UPDATE city SET name=#&#123;name&#125;,city_code=#&#123;cityCode&#125;,post_code=#&#123;postCode&#125; WHERE id =#&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">update</span><span class="params">(City city)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/3/22</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/city"</span>)</span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CityController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    CityMapper cityMapper;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//    @RoutingWith(value = RoutingType.SLAVE)</span></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/&#123;id&#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> City <span class="title">get</span><span class="params">(@PathVariable Integer id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> cityMapper.findById(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;City&gt; <span class="title">list</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> cityMapper.findAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PutMapping</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> City <span class="title">update</span><span class="params">(@RequestBody City city)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (city.getId() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            cityMapper.update(city);</span><br><span class="line">            cityMapper.findById(city.getId());</span><br><span class="line">            <span class="keyword">return</span> city;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>日志：</p>
+<p><img src="https://img-blog.csdnimg.cn/20190426091910423.png" alt="在这里插入图片描述"></p>
+<p>参考：</p>
+<p><a href="https://www.liaoxuefeng.com/article/00151054582348974482c20f7d8431ead5bc32b30354705000" target="_blank" rel="noopener">https://www.liaoxuefeng.com/article/00151054582348974482c20f7d8431ead5bc32b30354705000</a></p>
+<p><a href="https://www.cnblogs.com/fangjian0423/p/mybatis-interceptor.html" target="_blank" rel="noopener">https://www.cnblogs.com/fangjian0423/p/mybatis-interceptor.html</a></p>
+
+  </article>
+  <aside class="table-content" id="site-toc">
+  <div class="table-content-title">
+    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
+    <span>目录</span>
+  </div>
+  <div class="table-content-main">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Spring-MyBatis-MySQL主从分离"><span class="toc-text">Spring + MyBatis + MySQL主从分离</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#基于-Docker-的-MySQL-主从复制搭建"><span class="toc-text">基于 Docker 的 MySQL 主从复制搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置多数据源"><span class="toc-text">配置多数据源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用-Spring-的-AbstractRoutingDataSource-动态切换数据源"><span class="toc-text">使用 Spring 的 AbstractRoutingDataSource 动态切换数据源</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#用枚举标记读写数据源"><span class="toc-text">用枚举标记读写数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用-ThreadLocal-记录当前线程数据源"><span class="toc-text">用 ThreadLocal 记录当前线程数据源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义路由数据源实现"><span class="toc-text">自定义路由数据源实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置路由数据源"><span class="toc-text">配置路由数据源</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用-MyBatis-的-Interceptor-拦截器对update使用写库，对query使用读库"><span class="toc-text">使用 MyBatis 的 Interceptor 拦截器对update使用写库，对query使用读库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#测试"><span class="toc-text">测试</span></a></li></ol></li></ol>
+  </div>
+</aside>
+  
+    <aside class="passage-copyright">
+      <div>本文作者: 冯雪超</div>
+      
+        <div>
+          原文链接: 
+          <a href target="_blank">http://yoursite.com/passages/Spring-MyBatis-MySQL主从分离/</a>
+        </div>
+      
+      <div>
+        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
+      </div>
+    </aside>
+  
+  
+    <div class="passage-tags">
+     
+      <a href="/tags/mysql/"><i class="fa fa-tags"></i>mysql</a>
+     
+      <a href="/tags/mybatis/"><i class="fa fa-tags"></i>mybatis</a>
+     
+      <a href="/tags/spring/"><i class="fa fa-tags"></i>spring</a>
+    
+    </div>
+  
+</div>
+
+    </main>
+    
+    <div class="site-footer-wrapper">
+  <footer class="site-footer">
+    
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">博客推荐</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/" target="_blank">GodBMW</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="http://ruanyifeng.com/" target="_blank">阮一峰的个人网站</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">系列教程</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/categories/webpack4%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B/" target="_blank">webpack4系列教程</a>
+            </span>
+          
+            <span class="site-footer-item">
+              <a href="https://godbmw.com/design-patterns/" target="_blank">设计模式手册</a>
+            </span>
+          
+        </div>
+      
+        <div class="site-footer-col">
+          <h5 class="site-footer-title">抓到我</h5>
+          
+            <span class="site-footer-item">
+              <a href="https://blog.csdn.net/Little_fxc" target="_blank">CSDN</a>
+            </span>
+          
+        </div>
+      
+    
+    <div class="site-footer-info">
+      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
+    </div>
+    
+    
+      <div class="site-footer-info">
+        <i class="fa fa-at"></i> Email: fengxuechao.littlefxc@gmail.com
+      </div>
+    
+    <div class="site-footer-info">
+      <i class="fa fa-copyright"></i> 
+      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
+      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
+      All rights reserved.
+    </div>
+  </footer>
+</div>
+    <div id="site-layer" style="display:none;">
+  <div class="site-layer-content">
+    <div class="site-layer-header">
+      <span class="site-layer-header-title" id="site-layer-title"></span>
+      <i class="fa fa-close" id="site-layer-close"></i>
+    </div>
+    <div class="site-layer-body" id="site-layer-container">
+      <div class="site-layer-input" id="site-layer-search" style="display: none;">
+        <input type="text">
+        <i class="fa fa-search"></i>
+      </div>
+      
+        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
+          
+            <div>
+              <img src="/images/wechat.png" alt="WeChat">
+              
+                <p>WeChat</p>
+              
+            </div>
+          
+            <div>
+              <img src="/images/alipay.png" alt="AliPay">
+              
+                <p>AliPay</p>
+              
+            </div>
+          
+        </div>
+      
+      <div id="site-layer-welcome" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+    
+
+<div class="bottom-bar">
+  <div class="bottom-bar-left">
+    <a href="javascript:void(0);" data-enable="false">
+      <i class="fa fa-arrow-left"></i>
+    </a>
+    <a href="/passages/Docker-mysql主从配置/" data-enable="true">
+      <i class="fa fa-arrow-right"></i>
+    </a>
+  </div>
+  <div class="bottom-bar-right">
+    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
+      <i class="fa fa-bars"></i>
+    </a>
+    
+    <a href="javascript:void(0);" id="site-toggle-share-btn">
+      <i class="fa fa-share-alt"></i>
+    </a>
+    
+      <a href="javascript:void(0);" id="site-reward">
+        <i class="fa fa-thumbs-up"></i>
+      </a>
+    
+    <a href="javascript:void(0);" id="back-top-btn">
+      <i class="fa fa-chevron-up"></i>
+    </a>
+  </div>
+</div>
+    <div id="share-btn">
+  
+    <a id="share-btn-twitter" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-twitter"></i>
+    </a>
+  
+  
+    <a id="share-btn-facebook" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-facebook"></i>
+    </a>
+  
+  
+    <a id="share-btn-weibo" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-weibo"></i>
+    </a>
+  
+  
+    <a id="share-btn-qq" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-qq"></i>
+    </a>
+  
+  
+    <a id="share-btn-wechat" href="javascript:void(0);" target="_blank">
+      <i class="fa fa-wechat"></i>
+    </a>
+  
+</div>
+    
+
+
+  <script async>
+  (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+  })();
+  </script>
+
+
+
+
+    
+  </body>
+</html>
