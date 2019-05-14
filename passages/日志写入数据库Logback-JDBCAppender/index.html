@@ -1,184 +1,447 @@
 <!DOCTYPE html>
-<html>
+
+
+
+
+
+
+
+
+
+
+
+
   
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
 <head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="utf-8">
-  <meta name="author" content="冯雪超">
-  
-  
-  <title>日志写入数据库Logback-JDBCAppender | Hexo</title>
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
-    <meta name="keywords" content="Java,日志,logback,">
-  
 
-  
-  <meta name="description" content="冯雪超的小站">
 
-  
 
-  
 
-  
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
-  
 
-  
 
-  
 
-  <script>
-  // theme-ad's config script
-  // it can be used in every script
-  
-  window.AD_CONFIG = {
-    leancloud: {"appid":"Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz","appkey":"WaR7nrzhliHj9aVwdQzkdlGd","comment":false,"count":false},
-    welcome: {"enable":false,"interval":30},
-    start_time: "2018-02-10",
-    passwords: ["efe07af7441da2b69c4a41e42e73be4db47f66010a56900788a458354a7373ec", ],
-    is_post: true,
-    lock: false,
-    author: "冯雪超",
-    share: {"twitter":true,"facebook":true,"weibo":true,"qq":true,"wechat":true},
-    mathjax: true,
-    page_type: "",
-    root: "/"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
   };
 </script>
 
-  <script src="/vendor/sha256.min.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/index.js"></script>
-<script src="/vendor/qrcode.min.js"></script>
 
   
-    <link rel="icon" href="/images/favicon.ico">
-    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+
+
+
+
+  <meta name="description" content="Logback-DBAppenderDBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。这三个表是 logging_event、logging_event_property 和 logging_event_exception。在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。它们可以在 logback-classic/src/mai">
+<meta name="keywords" content="日志,logback">
+<meta property="og:type" content="article">
+<meta property="og:title" content="日志写入数据库Logback-JDBCAppender">
+<meta property="og:url" content="http://yoursite.com/passages/日志写入数据库Logback-JDBCAppender/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Logback-DBAppenderDBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。这三个表是 logging_event、logging_event_property 和 logging_event_exception。在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。它们可以在 logback-classic/src/mai">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-06T12:22:58.607Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="日志写入数据库Logback-JDBCAppender">
+<meta name="twitter:description" content="Logback-DBAppenderDBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。这三个表是 logging_event、logging_event_property 和 logging_event_exception。在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。它们可以在 logback-classic/src/mai">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/passages/日志写入数据库Logback-JDBCAppender/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>日志写入数据库Logback-JDBCAppender | Hexo</title>
   
 
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="/css/index.css">
-<link rel="stylesheet" href="/styles/components/highlight/highlight.css">
 
-  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
 </head>
-  <body>
-    <header class="site-header">
-  <div class="site-header-brand">
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
     
-      <span class="site-header-brand-title">
-        <a href="/">GODBMW</a>
-      </span>
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
     
-    
-      <span class="site-header-brand-motto"> | 一个持续学习者</span>
-    
-  </div>
-  <div class="site-header-right">
-    <nav class="site-header-navigation">
-      
-        <a href="/" target="_self">首页</a>
-      
-        <a href="/archives/" target="_self">归档</a>
-      
-        <a href="/tags/" target="_self">标签</a>
-      
-        <a href="/categories/" target="_self">分类</a>
-      
-        <a href="/friends/" target="_self">友链</a>
-      
-        <a href="/about/" target="_self">关于</a>
-      
-    </nav>
-    <div class="site-header-btn">
-      
-        <a href="https://github.com/littlefxc/" target="_blank" id="site-github">
-          <i class="fa fa-github-alt"></i>
-        </a>
-      
-      <a href="javascript:void(0);" id="site-search">
-        <i class="fa fa-search"></i>
-      </a>
-      <a href="javascript:void(0);" id="site-nav-btn">
-        <i class="fa fa-ellipsis-v"></i>
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-  </div>
-</header>
-<nav class="table-content" id="site-nav">
-  <div class="table-content-title">
-    <span>导航</span>
-  </div>
-  <div class="table-content-main">
-    <ol class="toc">
-      
-        <li class="toc-item">
-          <a href="/" target="_self">
-            首页
-          </a>
-        </li>
-      
-        <li class="toc-item">
-          <a href="/archives/" target="_self">
-            归档
-          </a>
-        </li>
-      
-        <li class="toc-item">
-          <a href="/tags/" target="_self">
-            标签
-          </a>
-        </li>
-      
-        <li class="toc-item">
-          <a href="/categories/" target="_self">
-            分类
-          </a>
-        </li>
-      
-        <li class="toc-item">
-          <a href="/friends/" target="_self">
-            友链
-          </a>
-        </li>
-      
-        <li class="toc-item">
-          <a href="/about/" target="_self">
-            关于
-          </a>
-        </li>
-      
-    </ol>
-  </div>
-</nav>
-<div id="site-process"></div>
-    <main>
-      
-  <div class="passage">
-  <div class="passage-meta">
-    <span>
-      <i class="fa fa-calendar"></i>2019-05-06
-    </span>
-    
-      <span>
-        | <a href="/categories/Java/"><i class="fa fa-bookmark"></i>Java</a>
-      </span>
     
     
-      <span>
-        | <i class="fa fa-unlock-alt"></i>UNLOCK
-      </span>
-    
   </div>
-  <h1 class="passage-title">
-    日志写入数据库Logback-JDBCAppender
-  </h1>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
   
-  <article class="passage-article">
-    <h1 id="Logback-DBAppender"><a href="#Logback-DBAppender" class="headerlink" title="Logback-DBAppender"></a>Logback-DBAppender</h1><p>DBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。<br>这三个表是 <code>logging_event</code>、<code>logging_event_property</code> 和 <code>logging_event_exception</code>。<br>在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。<br>它们可以在 <code>logback-classic/src/main/java/ch/qos/logback/classic/db/script</code> 文件夹下找到。<br>对于每个最流行的数据库系统，都有一个特定的脚本。如果您的特定类型的数据库系统缺少脚本，那么应该很容易以现有脚本为例编写一个脚本。<br>如果JDBC驱动程序支持JDBC 3.0规范中引入的getGeneratedKeys方法，假设您已经创建了如上所述的适当的数据库表，那么就不需要额外的步骤。<br>否则，必须有适合您的数据库系统的sql方言。目前，logback有H2、HSQL、MS SQL Server、MySQL、Oracle、PostgreSQL、SQLLite和Sybase等多种方言。</p>
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/passages/日志写入数据库Logback-JDBCAppender/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avataaars.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">日志写入数据库Logback-JDBCAppender
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-06 20:21:39 / 修改时间：20:22:58" itemprop="dateCreated datePublished" datetime="2019-05-06T20:21:39+08:00">2019-05-06</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Logback-DBAppender"><a href="#Logback-DBAppender" class="headerlink" title="Logback-DBAppender"></a>Logback-DBAppender</h1><p>DBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。<br>这三个表是 <code>logging_event</code>、<code>logging_event_property</code> 和 <code>logging_event_exception</code>。<br>在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。<br>它们可以在 <code>logback-classic/src/main/java/ch/qos/logback/classic/db/script</code> 文件夹下找到。<br>对于每个最流行的数据库系统，都有一个特定的脚本。如果您的特定类型的数据库系统缺少脚本，那么应该很容易以现有脚本为例编写一个脚本。<br>如果JDBC驱动程序支持JDBC 3.0规范中引入的getGeneratedKeys方法，假设您已经创建了如上所述的适当的数据库表，那么就不需要额外的步骤。<br>否则，必须有适合您的数据库系统的sql方言。目前，logback有H2、HSQL、MS SQL Server、MySQL、Oracle、PostgreSQL、SQLLite和Sybase等多种方言。</p>
 <p>如前所述，logback使用三个表来存储日志事件数据:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> logging_event_property;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> logging_event_exception;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> logging_event;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> logging_event</span><br><span class="line">(</span><br><span class="line">    timestmp         <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    formatted_message  <span class="built_in">TEXT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    logger_name       <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    level_string      <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    thread_name       <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    reference_flag    <span class="built_in">SMALLINT</span>,</span><br><span class="line">    arg0              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    arg1              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    arg2              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    arg3              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    caller_filename   <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    caller_class      <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    caller_method     <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    caller_line       <span class="built_in">CHAR</span>(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    event_id          <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT PRIMARY <span class="keyword">KEY</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> logging_event_property</span><br><span class="line">(</span><br><span class="line">    event_id	      <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    mapped_key        <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    mapped_value      <span class="built_in">TEXT</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(event_id, mapped_key),</span><br><span class="line">    <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> (event_id) <span class="keyword">REFERENCES</span> logging_event(event_id)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> logging_event_exception</span><br><span class="line">(</span><br><span class="line">    event_id         <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    i                <span class="built_in">SMALLINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    trace_line       <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(event_id, i),</span><br><span class="line">    <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> (event_id) <span class="keyword">REFERENCES</span> logging_event(event_id)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
 <h2 id="maven-依赖"><a href="#maven-依赖" class="headerlink" title="maven 依赖"></a>maven 依赖</h2><p>通过使用 <code>platform-bom</code> 来管理依赖的版本问题。使用 druid 作为 JDBCAppender 的连接池。</p>
@@ -188,211 +451,469 @@
 <p><code>com.alibaba.druid.pool.DruidDataSource</code> 是数据源连接池，你也可以选择其它数据源连接池。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"STDOUT"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.ConsoleAppender"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.classic.encoder.PatternLayoutEncoder"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">pattern</span>&gt;</span>%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %logger&#123;50&#125; - %msg%n<span class="tag">&lt;/<span class="name">pattern</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"DB"</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.classic.db.DBAppender"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">connectionSource</span> <span class="attr">class</span>=<span class="string">"ch.qos.logback.core.db.DataSourceConnectionSource"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dataSource</span> <span class="attr">class</span>=<span class="string">"com.alibaba.druid.pool.DruidDataSource"</span>&gt;</span></span><br><span class="line">                <span class="comment">&lt;!-- DruidDataSource 中的属性配置 --&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">driverClassName</span>&gt;</span>com.mysql.jdbc.Driver<span class="tag">&lt;/<span class="name">driverClassName</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">url</span>&gt;</span>jdbc:mysql://192.168.120.63:3306/learn?useSSL=false<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">username</span>&gt;</span>root<span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">password</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dataSource</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">connectionSource</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">logger</span> <span class="attr">name</span>=<span class="string">"com.littlefxc.examples.logback"</span> <span class="attr">level</span>=<span class="string">"debug"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"debug"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"STDOUT"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"DB"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.littlefxc.examples.logback;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.slf4j.Logger;</span><br><span class="line"><span class="keyword">import</span> org.slf4j.LoggerFactory;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/2/12</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(App.class);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> l = System.currentTimeMillis();</span><br><span class="line">        log.debug(<span class="string">"This is debug"</span>);</span><br><span class="line">        <span class="keyword">long</span> r = System.currentTimeMillis();</span><br><span class="line">        System.out.println(r - l);</span><br><span class="line">        log.info(<span class="string">"This is info"</span>);</span><br><span class="line">        log.warn(<span class="string">"This is warn"</span>);</span><br><span class="line">        log.error(<span class="string">"This is error"</span>);</span><br><span class="line">        log.error(<span class="string">"This is exception"</span>, <span class="keyword">new</span> RuntimeException(<span class="string">"this is a exception"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/日志/" rel="tag"># 日志</a>
+          
+            <a href="/tags/logback/" rel="tag"># logback</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/passages/日志写入数据库Log4j2-JDBCAppender/" rel="next" title="日志写入数据库Log4j2-JDBCAppender">
+                <i class="fa fa-chevron-left"></i> 日志写入数据库Log4j2-JDBCAppender
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/passages/MySQL分布式事务原理探究/" rel="prev" title="MySQL分布式事务原理探究">
+                MySQL分布式事务原理探究 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
   </article>
-  <aside class="table-content" id="site-toc">
-  <div class="table-content-title">
-    <i class="fa fa-arrow-right fa-lg" id="site-toc-hide-btn"></i>
-    <span>目录</span>
-  </div>
-  <div class="table-content-main">
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Logback-DBAppender"><span class="toc-text">Logback-DBAppender</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#maven-依赖"><span class="toc-text">maven 依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#日志配置文件：logback-xml"><span class="toc-text">日志配置文件：logback.xml</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#启动"><span class="toc-text">启动</span></a></li></ol></li></ol>
-  </div>
-</aside>
-  
-    <aside class="passage-copyright">
-      <div>本文作者: 冯雪超</div>
-      
-        <div>
-          原文链接: 
-          <a href target="_blank">http://yoursite.com/passages/日志写入数据库Logback-JDBCAppender/</a>
-        </div>
-      
-      <div>
-        版权声明: 本博客所有文章除特别声明外, 均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议. 转载请注明出处!
-      </div>
-    </aside>
-  
-  
-    <div class="passage-tags">
-     
-      <a href="/tags/日志/"><i class="fa fa-tags"></i>日志</a>
-     
-      <a href="/tags/logback/"><i class="fa fa-tags"></i>logback</a>
-    
-    </div>
-  
-</div>
 
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avataaars.png" alt="冯雪超">
+            
+              <p class="site-author-name" itemprop="name">冯雪超</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/littlefxc" title="GitHub &rarr; https://github.com/littlefxc" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:fengxuechao.littlefxc@gmail.com" title="E-Mail &rarr; mailto:fengxuechao.littlefxc@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Logback-DBAppender"><span class="nav-number">1.</span> <span class="nav-text">Logback-DBAppender</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#maven-依赖"><span class="nav-number">1.1.</span> <span class="nav-text">maven 依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志配置文件：logback-xml"><span class="nav-number">1.2.</span> <span class="nav-text">日志配置文件：logback.xml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动"><span class="nav-number">1.3.</span> <span class="nav-text">启动</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
     </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">冯雪超</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
     
-    <div class="site-footer-wrapper">
-  <footer class="site-footer">
-    
-      
-        <div class="site-footer-col">
-          <h5 class="site-footer-title">博客推荐</h5>
-          
-            <span class="site-footer-item">
-              <a href="https://godbmw.com/" target="_blank">GodBMW</a>
-            </span>
-          
-            <span class="site-footer-item">
-              <a href="http://ruanyifeng.com/" target="_blank">阮一峰的个人网站</a>
-            </span>
-          
-        </div>
-      
-        <div class="site-footer-col">
-          <h5 class="site-footer-title">系列教程</h5>
-          
-            <span class="site-footer-item">
-              <a href="https://godbmw.com/categories/webpack4%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B/" target="_blank">webpack4系列教程</a>
-            </span>
-          
-            <span class="site-footer-item">
-              <a href="https://godbmw.com/design-patterns/" target="_blank">设计模式手册</a>
-            </span>
-          
-        </div>
-      
-        <div class="site-footer-col">
-          <h5 class="site-footer-title">抓到我</h5>
-          
-            <span class="site-footer-item">
-              <a href="https://blog.csdn.net/Little_fxc" target="_blank">CSDN</a>
-            </span>
-          
-        </div>
-      
-    
-    <div class="site-footer-info">
-      <i class="fa fa-clock-o"></i> 本站已稳定运行<span id="site-time"></span>
-    </div>
-    
-    
-      <div class="site-footer-info">
-        <i class="fa fa-at"></i> Email: fengxuechao.littlefxc@gmail.com
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
       </div>
     
-    <div class="site-footer-info">
-      <i class="fa fa-copyright"></i> 
-      2019 <a href="https://github.com/dongyuanxin/theme-ad/" target="_blank">Theme-AD</a>.
-      Created by <a href="https://godbmw.com/" target="_blank">GodBMW</a>.
-      All rights reserved.
-    </div>
-  </footer>
-</div>
-    <div id="site-layer" style="display:none;">
-  <div class="site-layer-content">
-    <div class="site-layer-header">
-      <span class="site-layer-header-title" id="site-layer-title"></span>
-      <i class="fa fa-close" id="site-layer-close"></i>
-    </div>
-    <div class="site-layer-body" id="site-layer-container">
-      <div class="site-layer-input" id="site-layer-search" style="display: none;">
-        <input type="text">
-        <i class="fa fa-search"></i>
-      </div>
-      
-        <div class="site-layer-reward" id="site-layer-reward" style="display: none;">
-          
-            <div>
-              <img src="/images/wechat.png" alt="WeChat">
-              
-                <p>WeChat</p>
-              
-            </div>
-          
-            <div>
-              <img src="/images/alipay.png" alt="AliPay">
-              
-                <p>AliPay</p>
-              
-            </div>
-          
-        </div>
-      
-      <div id="site-layer-welcome" style="display:none;"></div>
-    </div>
+
+    
+
+    
+
+    
   </div>
-</div>
-    
 
-<div class="bottom-bar">
-  <div class="bottom-bar-left">
-    <a href="/passages/MySQL分布式事务原理探究/" data-enable="true">
-      <i class="fa fa-arrow-left"></i>
-    </a>
-    <a href="/passages/日志写入数据库Log4j2-JDBCAppender/" data-enable="true">
-      <i class="fa fa-arrow-right"></i>
-    </a>
-  </div>
-  <div class="bottom-bar-right">
-    <a href="javascript:void(0);" data-enable="true" id="site-toc-show-btn">
-      <i class="fa fa-bars"></i>
-    </a>
-    
-    <a href="javascript:void(0);" id="site-toggle-share-btn">
-      <i class="fa fa-share-alt"></i>
-    </a>
-    
-      <a href="javascript:void(0);" id="site-reward">
-        <i class="fa fa-thumbs-up"></i>
-      </a>
-    
-    <a href="javascript:void(0);" id="back-top-btn">
-      <i class="fa fa-chevron-up"></i>
-    </a>
-  </div>
-</div>
-    <div id="share-btn">
   
-    <a id="share-btn-twitter" href="javascript:void(0);" target="_blank">
-      <i class="fa fa-twitter"></i>
-    </a>
-  
-  
-    <a id="share-btn-facebook" href="javascript:void(0);" target="_blank">
-      <i class="fa fa-facebook"></i>
-    </a>
-  
-  
-    <a id="share-btn-weibo" href="javascript:void(0);" target="_blank">
-      <i class="fa fa-weibo"></i>
-    </a>
-  
-  
-    <a id="share-btn-qq" href="javascript:void(0);" target="_blank">
-      <i class="fa fa-qq"></i>
-    </a>
-  
-  
-    <a id="share-btn-wechat" href="javascript:void(0);" target="_blank">
-      <i class="fa fa-wechat"></i>
-    </a>
-  
-</div>
-    
 
-
-  <script async>
-  (function(){
-      var bp = document.createElement('script');
-      var curProtocol = window.location.protocol.split(':')[0];
-      if (curProtocol === 'https') {
-          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
-      }
-      else {
-          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
-      }
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(bp, s);
-  })();
-  </script>
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
 
 
 
 
-    
-  </body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
 </html>
