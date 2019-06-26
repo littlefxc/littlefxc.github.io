@@ -1,10 +1,10 @@
 ---
 title: Spring-Security-Oauth2第一篇之授权认证
 date: 2019-05-07 19:28:45
-categories: Java
+categories: oauth2
 tags:
-- spring
 - oauth2
+- spring-boot
 ---
 
 # Spring-Security-Oauth2第一篇
