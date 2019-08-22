@@ -310,7 +310,7 @@ logstash 与 Kafka 的简单配置
 ```yaml
 input {
      kafka {
-        topics => "applog"    
+        topics => "applog"
         bootstrap_servers => "Kafka服务器IP:9092,Kafka服务器IP:9092"
         codec => "json"
     }

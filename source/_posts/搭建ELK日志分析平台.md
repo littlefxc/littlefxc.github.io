@@ -30,57 +30,5 @@ tags:
 
 2. 安装 Logstash
 
-    - 手动安装 Logstash
-
-        ```sh
-
-        ```
-
-    - APT 工具安装
-
-        ```sh
-        # 下载并安装公共签名密钥：
-        wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-        # 可能需要安装 apt-transport-https
-        sudo apt-get install apt-transport-https
-        # 添加库定义文件到 /etc/apt/sources.list.d/elastic-7.x.list
-        echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
-        # 更新并安装
-        sudo apt-get update && sudo apt-get install logstash
-        ```
-
-    - YUM 工具安装
-
-        下载并安装公共签名密钥：
-
-        ```sh
-        rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
-        ```
-
-        在 `/etc/yum.repos.d/` 文件夹中将下面的内容添加到 `logstash.repo` 文件中
-
-        ```sh
-        [logstash-7.x]
-        name=Elastic repository for 7.x packages
-        baseurl=https://artifacts.elastic.co/packages/7.x/yum
-        gpgcheck=1
-        gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
-        enabled=1
-        autorefresh=1
-        type=rpm-md
-        ```
-
-        安装 Logstash
-
-        ```sh
-        sudo yum install logstash
-        ```
-
-    - Docker 拉取镜像
-
-        ```sh
-        docker pull docker.elastic.co/logstash/logstash:7.1.1
-        ```
-
 3. 安装 elasticsearch 集群
 
