@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="搭建ELK日志分析平台Logstash下载直接下载官方发布的二进制包的，可以访问 https://www.elastic.co/downloads/logstash 页面找对应操作系统和版本，点击下载即可。不过更推荐使用软件仓库完成安装。 安装 确保系统环境中安装了 JDK8 及以上  在 Linux 中配置 JAVA 环境：  123export JAVA_HOME=/usr/local/jav">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-13T13:38:57.000Z">
+<meta property="og:updated_time" content="2019-08-07T08:13:35.539Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="搭建ELK日志分析平台">
 <meta name="twitter:description" content="搭建ELK日志分析平台Logstash下载直接下载官方发布的二进制包的，可以访问 https://www.elastic.co/downloads/logstash 页面找对应操作系统和版本，点击下载即可。不过更推荐使用软件仓库完成安装。 安装 确保系统环境中安装了 JDK8 及以上  在 Linux 中配置 JAVA 环境：  123export JAVA_HOME=/usr/local/jav">
@@ -420,7 +420,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-06-13 21:38:57" itemprop="dateModified" datetime="2019-06-13T21:38:57+08:00">2019-06-13</time>
+                <time title="修改时间：2019-08-07 16:13:35" itemprop="dateModified" datetime="2019-08-07T16:13:35+08:00">2019-08-07</time>
               
             
           </span>
@@ -479,25 +479,6 @@
  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java/jdk1.8.0_112</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$PATH</span></span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>安装 Logstash</p>
-<ul>
-<li><p>手动安装 Logstash</p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>APT 工具安装</p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载并安装公共签名密钥：</span></span><br><span class="line">wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -</span><br><span class="line"><span class="comment"># 可能需要安装 apt-transport-https</span></span><br><span class="line">sudo apt-get install apt-transport-https</span><br><span class="line"><span class="comment"># 添加库定义文件到 /etc/apt/sources.list.d/elastic-7.x.list</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"deb https://artifacts.elastic.co/packages/7.x/apt stable main"</span> | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list</span><br><span class="line"><span class="comment"># 更新并安装</span></span><br><span class="line">sudo apt-get update &amp;&amp; sudo apt-get install logstash</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>YUM 工具安装</p>
-<p>  下载并安装公共签名密钥：</p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch</span><br></pre></td></tr></table></figure>
-<p>  在 <code>/etc/yum.repos.d/</code> 文件夹中将下面的内容添加到 <code>logstash.repo</code> 文件中</p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[logstash-7.x]</span><br><span class="line">name=Elastic repository <span class="keyword">for</span> 7.x packages</span><br><span class="line">baseurl=https://artifacts.elastic.co/packages/7.x/yum</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch</span><br><span class="line">enabled=1</span><br><span class="line">autorefresh=1</span><br><span class="line"><span class="built_in">type</span>=rpm-md</span><br></pre></td></tr></table></figure>
-<p>  安装 Logstash</p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install logstash</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Docker 拉取镜像</p>
-  <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull docker.elastic.co/logstash/logstash:7.1.1</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
 </li>
 <li><p>安装 elasticsearch 集群</p>
 </li>
@@ -627,7 +608,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">47</span>
+                    <span class="site-state-item-count">56</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -668,7 +649,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">12</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -749,7 +738,15 @@
                     
                       
                     
-                    <span class="site-state-item-count">32</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
