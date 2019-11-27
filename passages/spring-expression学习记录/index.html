@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Spring SpEl 表达式语言 - 学习记录SpEL是类似于OGNL和JSF EL的表达式语言，能够在运行时构建复杂表达式，存取对象属性、对象方法调用等。所有的SpEL都支持XML和Annotation两种方式，格式：#{ expressoin } Maven 依赖因为 spring-context 依赖中包含 spring-expression，所以选择它。 123456&amp;lt;depend">
+<meta name="keywords" content="spring,spring-expression">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring-expression学习记录">
+<meta property="og:url" content="http://yoursite.com/passages/spring-expression学习记录/index.html">
+<meta property="og:site_name" content="littlefxc&#39;s blog">
+<meta property="og:description" content="Spring SpEl 表达式语言 - 学习记录SpEL是类似于OGNL和JSF EL的表达式语言，能够在运行时构建复杂表达式，存取对象属性、对象方法调用等。所有的SpEL都支持XML和Annotation两种方式，格式：#{ expressoin } Maven 依赖因为 spring-context 依赖中包含 spring-expression，所以选择它。 123456&amp;lt;depend">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-05-06T12:14:19.753Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spring-expression学习记录">
+<meta name="twitter:description" content="Spring SpEl 表达式语言 - 学习记录SpEL是类似于OGNL和JSF EL的表达式语言，能够在运行时构建复杂表达式，存取对象属性、对象方法调用等。所有的SpEL都支持XML和Annotation两种方式，格式：#{ expressoin } Maven 依赖因为 spring-context 依赖中包含 spring-expression，所以选择它。 123456&amp;lt;depend">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/passages/spring-expression学习记录/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>spring-expression学习记录 | littlefxc's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">littlefxc's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/littlefxc" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/passages/spring-expression学习记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">spring-expression学习记录
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-06 20:13:40 / 修改时间：20:14:19" itemprop="dateCreated datePublished" datetime="2019-05-06T20:13:40+08:00">2019-05-06</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Spring-SpEl-表达式语言-学习记录"><a href="#Spring-SpEl-表达式语言-学习记录" class="headerlink" title="Spring SpEl 表达式语言 - 学习记录"></a>Spring SpEl 表达式语言 - 学习记录</h1><p>SpEL是类似于OGNL和JSF EL的表达式语言，能够在运行时构建复杂表达式，存取对象属性、对象方法调用等。<br>所有的SpEL都支持XML和Annotation两种方式，格式：<code>#{ expressoin }</code></p>
+<h2 id="Maven-依赖"><a href="#Maven-依赖" class="headerlink" title="Maven 依赖"></a>Maven 依赖</h2><p>因为 <code>spring-context</code> 依赖中包含 <code>spring-expression</code>，所以选择它。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-context<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在后面的一系列的测试中，都有用到在 <code>@Before</code> 中的元素。我仅仅只是将一份这份单元测试类分解了而已。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpelTest</span> </span>&#123;</span><br><span class="line">    ExpressionParser parser;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试 XML 配置 SpEl</span></span><br><span class="line">    User user;</span><br><span class="line"></span><br><span class="line">    BeanFactory beanFactory;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 测试注解配置 SpEl</span></span><br><span class="line">    FieldValueTestBean fieldValueTestBean;</span><br><span class="line"></span><br><span class="line">    MovieRecommender movieRecommender;</span><br><span class="line"></span><br><span class="line">    PropertyValueTestBean propertyValueTestBean;</span><br><span class="line"></span><br><span class="line">    StandardEvaluationContext context;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发明家列表</span></span><br><span class="line">    List&lt;Inventor&gt; inventorList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发明家特斯拉</span></span><br><span class="line">    Inventor inventorTesla;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发明家爱迪生</span></span><br><span class="line">    Inventor inventorEdlson;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发明家贝尔</span></span><br><span class="line">    Inventor inventorBell;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发明家数组</span></span><br><span class="line">    Inventor[] inventorArrays;</span><br><span class="line"></span><br><span class="line">    Society society;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化Spring</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        beanFactory = <span class="keyword">new</span> ClassPathXmlApplicationContext(<span class="string">"classpath:spring-root.xml"</span>);</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 允许 SpEl 表达式访问 IOC 容器中的 bean</span></span><br><span class="line">            <span class="comment">// SpEL支持使用 "@" 符号来引用Bean, 在引用Bean时需要使用BeanResolver接口实现来查找Bean, Spring提供BeanFactoryResolver实现</span></span><br><span class="line">            context = <span class="keyword">new</span> StandardEvaluationContext();</span><br><span class="line">            context.setBeanResolver(<span class="keyword">new</span> BeanFactoryResolver(beanFactory));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// SpEl 解析器</span></span><br><span class="line">        parser = (ExpressionParser) beanFactory.getBean(<span class="string">"parser"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// XML 配置 SpEl</span></span><br><span class="line">        user = (User) beanFactory.getBean(<span class="string">"user"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 注解配置 SpEl</span></span><br><span class="line">        fieldValueTestBean = (FieldValueTestBean) beanFactory.getBean(<span class="string">"fieldValueTestBean"</span>);</span><br><span class="line">        movieRecommender = (MovieRecommender) beanFactory.getBean(<span class="string">"movieRecommender"</span>);</span><br><span class="line">        propertyValueTestBean = (PropertyValueTestBean) beanFactory.getBean(<span class="string">"propertyValueTestBean"</span>);</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 设置 SpEl 的 根对象</span></span><br><span class="line">            inventorTesla = <span class="keyword">new</span> Inventor(<span class="string">"尼古拉·特斯拉"</span>, <span class="string">"塞尔维亚裔美籍"</span>);</span><br><span class="line">            inventorTesla.setPlaceOfBirth(<span class="keyword">new</span> PlaceOfBirth(<span class="string">"利卡-塞尼县"</span>, <span class="string">"克罗地亚"</span>));</span><br><span class="line"></span><br><span class="line">            inventorEdlson = <span class="keyword">new</span> Inventor(<span class="string">"托马斯·阿尔瓦·爱迪生"</span>, <span class="string">"美国"</span>);</span><br><span class="line">            inventorEdlson.setPlaceOfBirth(<span class="keyword">new</span> PlaceOfBirth(<span class="string">"米兰"</span>, <span class="string">"美国俄亥俄州"</span>));</span><br><span class="line"></span><br><span class="line">            inventorBell = <span class="keyword">new</span> Inventor(<span class="string">"亚历山大·格拉汉姆·贝尔"</span>, <span class="string">"美国"</span>);</span><br><span class="line">            inventorBell.setPlaceOfBirth(<span class="keyword">new</span> PlaceOfBirth(<span class="string">"爱丁堡"</span>, <span class="string">"英国苏格兰"</span>));</span><br><span class="line"></span><br><span class="line">            inventorList.add(inventorTesla);</span><br><span class="line">            inventorList.add(inventorEdlson);</span><br><span class="line">            inventorList.add(inventorBell);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 数组和列表的内容通过使用方括号表示法获得</span></span><br><span class="line">            Inventor[] inventorArrays = <span class="keyword">new</span> Inventor[<span class="number">3</span>];</span><br><span class="line">            inventorArrays = inventorList.toArray(inventorArrays);</span><br><span class="line"></span><br><span class="line">            society = <span class="keyword">new</span> Society();</span><br><span class="line">            society.getOfficers().put(Society.President, inventorEdlson);</span><br><span class="line">            society.getOfficers().put(Society.Advisors, inventorList);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="1-入门"><a href="#1-入门" class="headerlink" title="1. 入门"></a>1. 入门</h2><h3 id="支持执行字符串表达式"><a href="#支持执行字符串表达式" class="headerlink" title="支持执行字符串表达式"></a>支持执行字符串表达式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ExpressionParser parser = <span class="keyword">new</span> SpelExpressionParser();</span><br><span class="line">    Expression exp = parser.parseExpression(<span class="string">"'Hello World'"</span>);</span><br><span class="line">    String message = (String) exp.getValue();</span><br><span class="line">    Assert.assertEquals(<span class="string">"Hello World"</span>, message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="SpEL支持广泛的功能，例如调用方法，访问属性和调用构造函数"><a href="#SpEL支持广泛的功能，例如调用方法，访问属性和调用构造函数" class="headerlink" title="SpEL支持广泛的功能，例如调用方法，访问属性和调用构造函数"></a>SpEL支持广泛的功能，例如调用方法，访问属性和调用构造函数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ExpressionParser parser = <span class="keyword">new</span> SpelExpressionParser();</span><br><span class="line">    <span class="comment">// 调用方法</span></span><br><span class="line">    Expression exp = parser.parseExpression(<span class="string">"'Hello World'.concat('!')"</span>);</span><br><span class="line">    String message = (String) exp.getValue();</span><br><span class="line">    Assert.assertEquals(<span class="string">"Hello World!"</span>, message);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用属性</span></span><br><span class="line">    exp = parser.parseExpression(<span class="string">"'Hello World'.bytes"</span>);</span><br><span class="line">    <span class="keyword">byte</span>[] bytesE = <span class="string">"Hello World"</span>.getBytes();</span><br><span class="line">    <span class="keyword">byte</span>[] bytesA = (<span class="keyword">byte</span>[]) exp.getValue();</span><br><span class="line">    Assert.assertArrayEquals(bytesE, bytesA);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// SpEL还通过使用标准点表示法（例如prop1.prop2.prop3）和属性值的设置来支持嵌套属性。也可以访问公共字段。</span></span><br><span class="line">    exp = parser.parseExpression(<span class="string">"'Hello World'.bytes.length"</span>);</span><br><span class="line">    <span class="keyword">int</span> lengthE = <span class="string">"Hello World"</span>.getBytes().length;</span><br><span class="line">    <span class="keyword">int</span> lengthA = (<span class="keyword">int</span>) exp.getValue();</span><br><span class="line">    Assert.assertEquals(lengthE, lengthA);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用构造方法</span></span><br><span class="line">    exp = parser.parseExpression(<span class="string">"new String('hello world').toUpperCase()"</span>);</span><br><span class="line">    String constructorA = exp.getValue(String.class);</span><br><span class="line">    Assert.assertEquals(<span class="string">"HELLO WORLD"</span>, constructorA);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="SpEL的更常见用法是提供针对特定对象实例（称为根对象）计算的表达式字符串"><a href="#SpEL的更常见用法是提供针对特定对象实例（称为根对象）计算的表达式字符串" class="headerlink" title="SpEL的更常见用法是提供针对特定对象实例（称为根对象）计算的表达式字符串"></a>SpEL的更常见用法是提供针对特定对象实例（称为根对象）计算的表达式字符串</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ExpressionParser parser = <span class="keyword">new</span> SpelExpressionParser();</span><br><span class="line"></span><br><span class="line">    Expression exp = parser.parseExpression(<span class="string">"username == 'fxc'"</span>);</span><br><span class="line">    Boolean expValue = exp.getValue(user, Boolean.class);</span><br><span class="line">    Assert.assertEquals(<span class="keyword">true</span>, expValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Spring-Beans-中的-SpEl-表达式-Bean-的引用"><a href="#Spring-Beans-中的-SpEl-表达式-Bean-的引用" class="headerlink" title="Spring Beans 中的 SpEl 表达式, Bean 的引用"></a>Spring Beans 中的 SpEl 表达式, Bean 的引用</h3><p>Spring SpEL 可以在 XML 配置文件中使用，同样可以在注解配置中使用例如 <code>@Value(&quot;#{expression}&quot;)</code>。</p>
+<p>Spring 允许 SpEl 表达式访问 IOC 容器中的 bean，SpEL支持使用 <code>@</code> 符号来引用Bean, 在引用 Bean 时需要使用 <code>BeanResolver</code> 接口实现来查找Bean, Spring提供 <code>BeanFactoryResolver</code> 实现</p>
+<p>ClassPathXmlApplicationContext 实现默认会把 <code>System.getProperties()</code> 注册名为<code>systemProperties</code> 的 Bean，因此使用 <code>@systemProperties</code> 来引用该 Bean。</p>
+<h4 id="在-Spring-配置文件中使用-SpEl-表达式"><a href="#在-Spring-配置文件中使用-SpEl-表达式" class="headerlink" title="在 Spring 配置文件中使用 SpEl 表达式"></a>在 Spring 配置文件中使用 SpEl 表达式</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">       <span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:property-placeholder</span> <span class="attr">location</span>=<span class="string">"classpath:application.properties"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">context:component-scan</span> <span class="attr">base-package</span>=<span class="string">"com.littlefxc.examples.spel"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"parser"</span> <span class="attr">class</span>=<span class="string">"org.springframework.expression.spel.standard.SpelExpressionParser"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 同样也适用于 Java Config, 例如 @Value("#&#123;systemProperties['user.country']&#125;") --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"user"</span> <span class="attr">class</span>=<span class="string">"com.littlefxc.examples.spel.User"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"username"</span> <span class="attr">value</span>=<span class="string">"fxc"</span>/&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--&lt;property name="uuid" value="#&#123;T(java.util.UUID).randomUUID().toString()&#125;"/&gt;--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"uuid"</span> <span class="attr">value</span>=<span class="string">"$&#123;user.uuid&#125;"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"place"</span> <span class="attr">value</span>=<span class="string">"#&#123;systemProperties['user.country']&#125;"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"age"</span> <span class="attr">value</span>=<span class="string">"$&#123;user.age&#125;"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>application.properties</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">user.uuid=#&#123;T(java.util.UUID).randomUUID().toString()&#125;</span></span><br><span class="line"><span class="string">user.age=18</span></span><br></pre></td></tr></table></figure>
+<h4 id="在注解中用法1：在成员属性上使用-SpEL-表达式"><a href="#在注解中用法1：在成员属性上使用-SpEL-表达式" class="headerlink" title="在注解中用法1：在成员属性上使用 SpEL 表达式"></a>在注解中用法1：在成员属性上使用 SpEL 表达式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.littlefxc.examples.spel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Value;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/1/24</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FieldValueTestBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"#&#123; systemProperties['user.country'] &#125;"</span>)</span><br><span class="line">    <span class="keyword">private</span> String defaultLocale;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 setter getter</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="在注解中用法2：在构造方法上使用-SpEL-表达式"><a href="#在注解中用法2：在构造方法上使用-SpEL-表达式" class="headerlink" title="在注解中用法2：在构造方法上使用 SpEL 表达式"></a>在注解中用法2：在构造方法上使用 SpEL 表达式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MovieRecommender</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String movieName;</span><br><span class="line">    <span class="keyword">private</span> String defaultLocale;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MovieRecommender</span><span class="params">(@Value(<span class="string">"#&#123; systemProperties['user.country'] &#125;"</span>)</span> String defaultLocale) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.defaultLocale = defaultLocale;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 setter getter</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="在注解中用法3：在属性设置方法上使用-SpEL-表达式"><a href="#在注解中用法3：在属性设置方法上使用-SpEL-表达式" class="headerlink" title="在注解中用法3：在属性设置方法上使用 SpEL 表达式"></a>在注解中用法3：在属性设置方法上使用 SpEL 表达式</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.littlefxc.examples.spel;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Value;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PropertyValueTestBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String defaultLocale;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDefaultLocale</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.defaultLocale;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value</span>(<span class="string">"#&#123; systemProperties['user.country'] &#125;"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDefaultLocale</span><span class="params">(String defaultLocale)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.defaultLocale = defaultLocale;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 允许 SpEl 表达式访问 IOC 容器中的 bean</span></span><br><span class="line">    <span class="comment">// SpEL支持使用 "@" 符号来引用Bean, 在引用Bean时需要使用BeanResolver接口实现来查找Bean, Spring提供BeanFactoryResolver实现</span></span><br><span class="line">    <span class="comment">// ClassPathXmlApplicationContext 实现默认会把"System.getProperties()"注册为"systemProperties"Bean，因此我们使用 "@systemProperties"来引用该Bean</span></span><br><span class="line">    Properties result1 = parser.parseExpression(<span class="string">"@systemProperties"</span>).getValue(context, Properties.class);</span><br><span class="line">    System.out.println(result1.getProperty(<span class="string">"user.dir"</span>, <span class="string">"环境变量中没有该属性"</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// XML 配置</span></span><br><span class="line">    User userActual = parser.parseExpression(<span class="string">"@user"</span>).getValue(context, User.class);</span><br><span class="line">    Assert.assertSame(user, userActual);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注解配置</span></span><br><span class="line">    Assert.assertSame(movieRecommender, parser.parseExpression(<span class="string">"@movieRecommender"</span>).getValue(context, MovieRecommender.class));</span><br><span class="line">    Assert.assertSame(propertyValueTestBean, parser.parseExpression(<span class="string">"@propertyValueTestBean"</span>).getValue(context, PropertyValueTestBean.class));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-字面量表达式"><a href="#2-字面量表达式" class="headerlink" title="2. 字面量表达式"></a>2. 字面量表达式</h2><p>SpEL支持的字面量包括：字符串、数字类型（int、long、float、double）、布尔类型、null类型。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>字符串</td>
+<td>String str1 = parser.parseExpression(“‘Hello World!’”).getValue(String.class); <br> String str2 = parser.parseExpression(“\“Hello World!\“”).getValue(String.class);</td>
+</tr>
+<tr>
+<td>数字类型</td>
+<td>int int1 = parser.parseExpression(“1”).getValue(Integer.class); <br> long long1 = parser.parseExpression(“-1L”).getValue(long.class); <br> float float1 = parser.parseExpression(“1.1”).getValue(Float.class); <br> double double1 = parser.parseExpression(“1.1E+2”).getValue(double.class); <br> int hex1 = parser.parseExpression(“0xa”).getValue(Integer.class); <br> long hex2 = parser.parseExpression(“0xaL”).getValue(long.class);</td>
+</tr>
+<tr>
+<td>布尔类型</td>
+<td>boolean true1 = parser.parseExpression(“true”).getValue(boolean.class); <br> boolean false1 = parser.parseExpression(“false”).getValue(boolean.class);</td>
+</tr>
+<tr>
+<td>null类型</td>
+<td>Object null1 = parser.parseExpression(“null”).getValue(Object.class);</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test5</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ExpressionParser parser = <span class="keyword">new</span> SpelExpressionParser();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// evals to "Hello World"</span></span><br><span class="line">    String helloWorld = (String) parser.parseExpression(<span class="string">"'Hello World'"</span>).getValue();</span><br><span class="line">    Assert.assertEquals(<span class="string">"Hello World"</span>, helloWorld);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 浮点型字面量</span></span><br><span class="line">    <span class="keyword">double</span> avogadrosNumber = (Double) parser.parseExpression(<span class="string">"6.0221415E+23"</span>).getValue();</span><br><span class="line">    Assert.assertEquals(Double.valueOf(<span class="string">"6.0221415E+23"</span>), avogadrosNumber, Double.MIN_VALUE);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// evals to 2147483647</span></span><br><span class="line">    <span class="keyword">int</span> maxValue = (Integer) parser.parseExpression(<span class="string">"0x7FFFFFFF"</span>).getValue();</span><br><span class="line">    Assert.assertEquals(<span class="number">2147483647</span>, maxValue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">boolean</span> trueValue = (Boolean) parser.parseExpression(<span class="string">"true"</span>).getValue();</span><br><span class="line">    Assert.assertTrue(trueValue);</span><br><span class="line"></span><br><span class="line">    Object nullValue = parser.parseExpression(<span class="string">"null"</span>).getValue();</span><br><span class="line">    Assert.assertNull(nullValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-集合的表达式-Properties-Arrays-Lists-Maps-and-Indexers"><a href="#3-集合的表达式-Properties-Arrays-Lists-Maps-and-Indexers" class="headerlink" title="3. 集合的表达式(Properties, Arrays, Lists, Maps, and Indexers)"></a>3. 集合的表达式(Properties, Arrays, Lists, Maps, and Indexers)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 集合的表达式</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> java.util.Properties</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> java.util.Arrays</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> java.util.List</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> java.util.Map</span></span><br><span class="line"><span class="comment">     * Index 索引</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test6</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 属性名称的第一个字母不区分大小写</span></span><br><span class="line">        <span class="comment">// 数组和列表的内容通过使用方括号表示法获得</span></span><br><span class="line">        <span class="keyword">int</span> year = (Integer) parser.parseExpression(<span class="string">"Birthdate.Year = 1856"</span>).getValue(context);</span><br><span class="line">        String city = (String) parser.parseExpression(<span class="string">"placeOfBirth.City"</span>).getValue(context);</span><br><span class="line">        Assert.assertEquals(<span class="number">1856</span>, year);</span><br><span class="line">        Assert.assertEquals(<span class="string">"利卡-塞尼县"</span>, city);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 列表</span></span><br><span class="line">        context.setRootObject(inventorList);</span><br><span class="line">        String birthCity = parser</span><br><span class="line">                .parseExpression(<span class="string">"[0].placeOfBirth.City"</span>)</span><br><span class="line">                .getValue(context, String.class);</span><br><span class="line">        Assert.assertEquals(<span class="string">"利卡-塞尼县"</span>, birthCity);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 字典</span></span><br><span class="line">        context.setRootObject(society);</span><br><span class="line">        <span class="comment">// 改变字典的值的某个属性</span></span><br><span class="line">        parser.parseExpression(<span class="string">"Officers['president'].placeOfBirth.City"</span>)</span><br><span class="line">                .setValue(context, <span class="string">"随便"</span>);</span><br><span class="line">        <span class="comment">// 获取字典的值的某个属性</span></span><br><span class="line">        birthCity = (String) parser</span><br><span class="line">                .parseExpression(<span class="string">"officers['president'].placeOfBirth.City"</span>)</span><br><span class="line">                .getValue(context);</span><br><span class="line">        Assert.assertEquals(<span class="string">"随便"</span>, birthCity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-内联列表-Inline-Lists"><a href="#4-内联列表-Inline-Lists" class="headerlink" title="4. 内联列表( Inline Lists )"></a>4. 内联列表( Inline Lists )</h2><p>可以使用{}符号直接在表达式中表示列表.{}本身表示一个空列表。出于性能原因，如果列表本身完全由固定的文字组成，那么将创建一个常量列表来表示表达式(而不是在每个表达式上构建一个新的列表)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 内联列表(Inline Lists)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span>(expected = UnsupportedOperationException.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test7_1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 将返回不可修改的空List</span></span><br><span class="line">    List list = parser.parseExpression(<span class="string">"&#123;&#125;"</span>).getValue(List.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 对于字面量列表也将返回不可修改的List</span></span><br><span class="line">    List list2 = parser.parseExpression(<span class="string">"&#123;1,2,3,4&#125;"</span>).getValue(List.class);</span><br><span class="line">    <span class="comment">// 不会进行不可修改处理</span></span><br><span class="line">    list2.set(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 内联列表(Inline Lists)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test7_2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 对于列表中只要有一个不是字面量表达式，将只返回原始List</span></span><br><span class="line">    List&lt;List&lt;Integer&gt;&gt; list = parser.parseExpression(<span class="string">"&#123;&#123;1+2, 2+4&#125;,&#123;3, 4+4&#125;&#125;"</span>).getValue(List.class);</span><br><span class="line">    <span class="comment">// 操作的不是原始列表</span></span><br><span class="line">    list.get(<span class="number">0</span>).set(<span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">    Integer value = parser.parseExpression(<span class="string">"&#123;&#123;1+2, 2+4&#125;,&#123;3, 4+4&#125;&#125;[0][0]"</span>).getValue(Integer.class);</span><br><span class="line">    Assert.assertEquals(<span class="number">1</span>, list.get(<span class="number">0</span>).get(<span class="number">0</span>).intValue());</span><br><span class="line">    Assert.assertEquals(<span class="number">3</span>, value.intValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-内联字典-Inline-Maps"><a href="#5-内联字典-Inline-Maps" class="headerlink" title="5. 内联字典( Inline Maps )"></a>5. 内联字典( Inline Maps )</h2><p>您可以使用熟悉的Java语法来构建数组，也可以提供一个初始化器来在构建时填充数组。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 内联字典(Inline Maps)</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test8</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="comment">// evaluates to a Java map containing the two entries</span></span><br><span class="line">       Map inventorInfo = (Map) parser.parseExpression(<span class="string">"&#123;name:'Nikola',dob:'10-July-1856'&#125;"</span>).getValue(context);</span><br><span class="line">       Assert.assertEquals(<span class="string">"Nikola"</span>, inventorInfo.get(<span class="string">"name"</span>));</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 字典中的字典</span></span><br><span class="line">       Map mapOfMaps = (Map) parser</span><br><span class="line">               .parseExpression(<span class="string">"&#123;name:&#123;first:'Nikola',last:'Tesla'&#125;,dob:&#123;day:10,month:'July',year:1856&#125;&#125;"</span>)</span><br><span class="line">               .getValue(context);</span><br><span class="line">       Map tesla = (Map) mapOfMaps.get(<span class="string">"name"</span>);</span><br><span class="line">       Assert.assertEquals(<span class="string">"Tesla"</span>, tesla.get(<span class="string">"last"</span>));</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 空字典 &#123;:&#125;</span></span><br><span class="line">       Map emptyMap = (Map) parser.parseExpression(<span class="string">"&#123;:&#125;"</span>).getValue(context);</span><br><span class="line">       Assert.assertEquals(<span class="number">0</span>, emptyMap.size());</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>{:}本身表示一个空映射。出于性能原因，如果映射本身由固定的文字或其他嵌套的常量结构(列表或映射)组成，则创建常量映射来表示表达式(而不是在每个表达式上构建新的映射)。</p>
+<h2 id="6-数组构造-Array-Construction"><a href="#6-数组构造-Array-Construction" class="headerlink" title="6. 数组构造(Array Construction)"></a>6. 数组构造(Array Construction)</h2><p>您可以使用熟悉的Java语法来构建数组，也可以提供一个初始化器来在构建时填充数组</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数组创建(Array Construction):相似的 Java 数组语法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test9</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span>[] numbers1 = (<span class="keyword">int</span>[]) parser.parseExpression(<span class="string">"new int[4]"</span>).getValue(context);</span><br><span class="line">        Assert.assertArrayEquals(<span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>], numbers1);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Array with initializer</span></span><br><span class="line">        <span class="keyword">int</span>[] numbers2 = (<span class="keyword">int</span>[]) parser.parseExpression(<span class="string">"new int[]&#123;1,2,3&#125;"</span>).getValue(context);</span><br><span class="line">        Assert.assertArrayEquals(<span class="keyword">new</span> <span class="keyword">int</span>[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;, numbers2);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Multi dimensional array</span></span><br><span class="line">        <span class="keyword">int</span>[][] numbers3 = (<span class="keyword">int</span>[][]) parser.parseExpression(<span class="string">"new int[4][5]"</span>).getValue(context);</span><br><span class="line">        Assert.assertArrayEquals(<span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">4</span>][<span class="number">5</span>], numbers3);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在构造多维数组时，无法初始化，也就是 <code>&quot;new int[4][5]&quot;</code> 后面无法添加<code>{}</code></p>
+<h2 id="8-方法调用"><a href="#8-方法调用" class="headerlink" title="8. 方法调用"></a>8. 方法调用</h2><p>您可以使用典型的Java编程语法来调用方法。您还可以对文字调用方法。还支持变量参数。下面的示例展示了如何调用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 方法调用</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test10</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="comment">// string literal, evaluates to "bc"</span></span><br><span class="line">       String bc = parser.parseExpression(<span class="string">"'abc'.substring(1, 3)"</span>).getValue(String.class);</span><br><span class="line">       Assert.assertEquals(<span class="string">"bc"</span>, bc);</span><br><span class="line"></span><br><span class="line">       society.getMembers().add(inventorTesla);</span><br><span class="line">       context.setRootObject(society);</span><br><span class="line">       <span class="comment">// evaluates to true</span></span><br><span class="line">       <span class="keyword">boolean</span> isMember = parser.parseExpression(<span class="string">"isMember('尼古拉·特斯拉')"</span>)</span><br><span class="line">               .getValue(context, Boolean.class);</span><br><span class="line">       Assert.assertTrue(isMember);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="9-运算符"><a href="#9-运算符" class="headerlink" title="9. 运算符"></a>9. 运算符</h2><h3 id="9-1-关系运算符"><a href="#9-1-关系运算符" class="headerlink" title="9.1. 关系运算符"></a>9.1. 关系运算符</h3><p>关系运算符(等于、不等于、小于、小于或等于、大于、大于或等于)通过使用标准运算符表示法得到支持。下面的清单显示了一些操作符示例:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 运算符：关系运算符</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test11</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 关系运算符(等于、不等于、小于、小于或等于、大于、大于或等于、instanceof、正则表达式)</span></span><br><span class="line">        <span class="comment">// lt (&lt;) gt (&gt;) le (&lt;=) ge (&gt;=) eq (==) ne (!=) div (/) mod (%) not (!) 可以在XML文档中替换相应的符号</span></span><br><span class="line">        <span class="comment">// evaluates to true</span></span><br><span class="line">        <span class="keyword">boolean</span> flag = parser.parseExpression(<span class="string">"2 == 2"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertTrue(flag);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to false</span></span><br><span class="line">        flag = parser.parseExpression(<span class="string">"2 &lt; -5.0"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertFalse(flag);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to true</span></span><br><span class="line">        flag = parser.parseExpression(<span class="string">"'black' &lt; 'block'"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertTrue(flag);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to false</span></span><br><span class="line">        flag = parser.parseExpression(</span><br><span class="line">                <span class="string">"'xyz' instanceof T(Integer)"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertFalse(flag);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to true</span></span><br><span class="line">        flag = parser.parseExpression(</span><br><span class="line">                <span class="string">"'5.00' matches '^-?\\d+(\\.\\d&#123;2&#125;)?$'"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertTrue(flag);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//evaluates to false</span></span><br><span class="line">        flag = parser.parseExpression(</span><br><span class="line">                <span class="string">"'5.0067' matches '^-?\\d+(\\.\\d&#123;2&#125;)?$'"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertFalse(flag);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>每个符号运算符也可以指定为纯字母等价的。这避免了使用的符号对嵌入表达式的文档类型具有特殊意义的问题(例如在XML文档中).</p>
+<ul>
+<li>lt (&lt;)</li>
+<li>gt (&gt;)</li>
+<li>le (&lt;=)</li>
+<li>ge (&gt;=)</li>
+<li>eq (==)</li>
+<li>ne (!=)</li>
+<li>div (/)</li>
+<li>mod (%)</li>
+<li>not (!)</li>
+</ul>
+<h3 id="9-2-逻辑运算符"><a href="#9-2-逻辑运算符" class="headerlink" title="9.2. 逻辑运算符"></a>9.2. 逻辑运算符</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 运算符：逻辑运算符</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test12</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        society.getMembers().add(inventorTesla);</span><br><span class="line">        society.getMembers().add(inventorEdlson);</span><br><span class="line">        context.setRootObject(society);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// -- AND --</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to false</span></span><br><span class="line">        <span class="keyword">boolean</span> flagAnd = parser.parseExpression(<span class="string">"true and false"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertFalse(flagAnd);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to true</span></span><br><span class="line">        String expression = <span class="string">"isMember('尼古拉·特斯拉') and isMember('托马斯·阿尔瓦·爱迪生')"</span>;</span><br><span class="line">        flagAnd = parser.parseExpression(expression).getValue(context, Boolean.class);</span><br><span class="line">        Assert.assertTrue(flagAnd);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// -- OR --</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to true</span></span><br><span class="line">        <span class="keyword">boolean</span> flagOr = parser.parseExpression(<span class="string">"true or false"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertTrue(flagOr);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to true</span></span><br><span class="line">        expression = <span class="string">"isMember('尼古拉·特斯拉') or isMember('托马斯·阿尔瓦·爱迪生')"</span>;</span><br><span class="line">        flagOr = parser.parseExpression(expression).getValue(context, Boolean.class);</span><br><span class="line">        Assert.assertTrue(flagOr);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// -- NOT --</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// evaluates to false</span></span><br><span class="line">        <span class="keyword">boolean</span> flagNot = parser.parseExpression(<span class="string">"!true"</span>).getValue(Boolean.class);</span><br><span class="line">        Assert.assertFalse(flagNot);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// -- AND and NOT --</span></span><br><span class="line">        expression = <span class="string">"isMember('尼古拉·特斯拉') and !isMember('托马斯·阿尔瓦·爱迪生')"</span>;</span><br><span class="line">        <span class="keyword">boolean</span> flagAndNot = parser.parseExpression(expression).getValue(context, Boolean.class);</span><br><span class="line">        Assert.assertFalse(flagAndNot);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="9-3-赋值运算符"><a href="#9-3-赋值运算符" class="headerlink" title="9.3. 赋值运算符"></a>9.3. 赋值运算符</h3><p>若要设置属性，请使用赋值运算符(=)。这通常在对setValue的调用中完成，但也可以在对getValue的调用中完成。下面的代码展示了使用赋值运算符的两种方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 运算符：赋值运算符</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@Test</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test14</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Inventor inventor = <span class="keyword">new</span> Inventor();</span><br><span class="line"></span><br><span class="line">    parser.parseExpression(<span class="string">"Name"</span>).setValue(context, inventor, <span class="string">"Alexander Graham"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// alternatively</span></span><br><span class="line">    String bell = parser.parseExpression(</span><br><span class="line">        <span class="string">"Name = 'Alexander Graham Bell'"</span>).getValue(context, inventor, String.class);</span><br><span class="line"></span><br><span class="line">    Assert.assertEquals(<span class="string">"Alexander Graham Bell"</span>, bell);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="10-构造函数"><a href="#10-构造函数" class="headerlink" title="10. 构造函数"></a>10. 构造函数</h2><p>您可以通过使用新的操作符来调用构造函数。除了基本类型(int、float等)和字符串之外，应该对所有类型使用全限定类名。下面的例子展示了如何使用新的操作符来调用构造函数:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 类类型表达式：使用"T(Type)"来表示java.lang.Class实例，"Type"必须是类全限定名，"java.lang"包除外，即该包下的类可以不指定包名；</span></span><br><span class="line"><span class="comment">     * 使用类类型表达式还可以进行访问类静态方法及类静态字段。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test15</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Inventor einstein = parser.parseExpression(</span><br><span class="line">                <span class="string">"new com.littlefxc.examples.spel.Inventor('爱因斯坦', '德国')"</span>)</span><br><span class="line">                .getValue(Inventor.class);</span><br><span class="line">        Assert.assertEquals(<span class="keyword">new</span> Inventor(<span class="string">"爱因斯坦"</span>, <span class="string">"德国"</span>).getName(), einstein.getName());</span><br><span class="line"></span><br><span class="line">        context.setRootObject(society);</span><br><span class="line">        <span class="comment">//create new inventor instance within add method of List</span></span><br><span class="line">        parser.parseExpression(<span class="string">"Members.add(new com.littlefxc.examples.spel.Inventor('爱因斯坦', '德国'))"</span>).getValue(context);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="11-变量定义及引用"><a href="#11-变量定义及引用" class="headerlink" title="11. 变量定义及引用"></a>11. 变量定义及引用</h2><p>可以使用#variableName语法引用表达式中的变量。变量是通过在EvaluationContext实现上使用setVariable方法设置的。下面的例子展示了如何使用变量:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 变量定义及引用</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * 变量定义通过 EvaluationContext 接口的 setVariable(variableName, value) 方法定义；&lt;br&gt;</span></span><br><span class="line"><span class="comment">     * 在表达式中使用 "#variableName" 引用；&lt;br&gt;</span></span><br><span class="line"><span class="comment">     * 除了引用自定义变量，SpEL还允许引用根对象及当前上下文对象，使用 "#root" 引用根对象，使用 "#this" 引用当前上下文对象；&lt;br&gt;</span></span><br><span class="line"><span class="comment">     * &lt;/p&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test16</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Inventor tesla = <span class="keyword">new</span> Inventor(<span class="string">"Nikola Tesla"</span>, <span class="string">"Serbian"</span>);</span><br><span class="line"></span><br><span class="line">        EvaluationContext context = SimpleEvaluationContext.forReadWriteDataBinding().build();</span><br><span class="line">        context.setVariable(<span class="string">"newName"</span>, <span class="string">"Mike Tesla"</span>);</span><br><span class="line"></span><br><span class="line">        parser.parseExpression(<span class="string">"Name = #newName"</span>).getValue(context, tesla);<span class="comment">// "Mike Tesla"</span></span><br><span class="line"><span class="comment">//        parser.parseExpression("#root.Name = #newName").getValue(context, tesla);// "Mike Tesla"</span></span><br><span class="line">        Assert.assertEquals(<span class="string">"Mike Tesla"</span>, tesla.getName());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// create an array of integers</span></span><br><span class="line">        List&lt;Integer&gt; primes = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        primes.addAll(Arrays.asList(<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">11</span>, <span class="number">13</span>, <span class="number">17</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// create parser and set variable 'primes' as the array of integers</span></span><br><span class="line">        context.setVariable(<span class="string">"primes"</span>, primes);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 通过使用诸如 (using selection ?&#123;...&#125;) 这样的选择表达式，选择列表中所有大于10的数字</span></span><br><span class="line">        <span class="comment">// evaluates to [11, 13, 17]</span></span><br><span class="line">        List&lt;Integer&gt; primesGreaterThanTen = (List&lt;Integer&gt;) parser</span><br><span class="line">                .parseExpression(<span class="string">"#primes.?[#this&gt;10]"</span>).getValue(context);</span><br><span class="line"></span><br><span class="line">        System.out.println(primesGreaterThanTen);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="12-自定义函数"><a href="#12-自定义函数" class="headerlink" title="12. 自定义函数"></a>12. 自定义函数</h2><p>您可以通过注册可在表达式字符串中调用的用户定义函数来扩展SpEL。 该功能通过EvaluationContext注册。 以下示例显示如何注册用户定义的函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 自定义函数</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * 目前只支持类静态方法注册为自定义函数；&lt;br&gt;</span></span><br><span class="line"><span class="comment">     * SpEL使用StandardEvaluationContext的registerFunction方法进行注册自定义函数，</span></span><br><span class="line"><span class="comment">     * 其实完全可以使用setVariable代替，两者其实本质是一样的；</span></span><br><span class="line"><span class="comment">     * &lt;/p&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test17</span><span class="params">()</span> <span class="keyword">throws</span> NoSuchMethodException </span>&#123;</span><br><span class="line">        Method parseInt = Integer.class.getDeclaredMethod(<span class="string">"parseInt"</span>, String.class);</span><br><span class="line">        <span class="comment">// 自定义函数推荐用 context.registerFunction("fnName", fn)</span></span><br><span class="line">        context.registerFunction(<span class="string">"parseInt"</span>, parseInt);</span><br><span class="line">        context.setVariable(<span class="string">"parseInt2"</span>, parseInt);</span><br><span class="line">        Boolean bool = parser.parseExpression(<span class="string">"#parseInt('3') == #parseInt2('3')"</span>).getValue(context, Boolean.class);</span><br><span class="line">        Assert.assertTrue(bool);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="13-三目运算及Elivis运算表达式"><a href="#13-三目运算及Elivis运算表达式" class="headerlink" title="13. 三目运算及Elivis运算表达式"></a>13. 三目运算及Elivis运算表达式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 三目运算及Elivis运算表达式</span></span><br><span class="line"><span class="comment"> * &lt;br&gt;</span></span><br><span class="line"><span class="comment"> * 三目运算符 "表达式1?表达式2:表达式3"用于构造三目运算表达式，如"2&gt;1?true:false"将返回true；</span></span><br><span class="line"><span class="comment"> * &lt;br&gt;</span></span><br><span class="line"><span class="comment"> * Elivis运算符 "表达式1?:表达式2" 从Groovy语言引入用于简化三目运算符的，</span></span><br><span class="line"><span class="comment"> * 当 表达式1 为 非null 时则返回 表达式1，</span></span><br><span class="line"><span class="comment"> * 当 表达式1 为 null 时则返回 表达式2，</span></span><br><span class="line"><span class="comment"> * 简化了三目运算符方式 "表达式1?表达式1:表达式2"，如 "null?:false" 将返回 false，而 "true?:false" 将返回true；</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test18</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> int1 = parser.parseExpression(<span class="string">"true and false ? 1 : 0"</span>).getValue(Integer.class);</span><br><span class="line">    Assert.assertEquals(<span class="number">0</span>, int1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果是 null, 返回 false</span></span><br><span class="line">    Boolean bool1 = parser.parseExpression(<span class="string">"null ?: false"</span>).getValue(Boolean.class);</span><br><span class="line">    Assert.assertFalse(bool1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// true 不是 null, 返回 true</span></span><br><span class="line">    Boolean bool2 = parser.parseExpression(<span class="string">"true ?: false"</span>).getValue(Boolean.class);</span><br><span class="line">    Assert.assertTrue(bool2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 稍微复杂点</span></span><br><span class="line">    Inventor tesla = <span class="keyword">new</span> Inventor(<span class="string">"Nikola Tesla"</span>, <span class="string">"Serbian"</span>);</span><br><span class="line">    String name = parser.parseExpression(<span class="string">"Name?:'Elvis Presley'"</span>).getValue(context, tesla, String.class);</span><br><span class="line">    Assert.assertEquals(<span class="string">"Nikola Tesla"</span>, name);  <span class="comment">// Nikola Tesla</span></span><br><span class="line"></span><br><span class="line">    tesla.setName(<span class="keyword">null</span>);</span><br><span class="line">    name = parser.parseExpression(<span class="string">"Name?:'Elvis Presley'"</span>).getValue(context, tesla, String.class);</span><br><span class="line">    Assert.assertEquals(<span class="string">"Elvis Presley"</span>, name);  <span class="comment">// Elvis Presley</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 可以把Elivis运算表达式作为 默认值 例如 : @Value("#&#123;systemProperties['pop3.port'] ?: 25&#125;")</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="14-安全的导航操作符"><a href="#14-安全的导航操作符" class="headerlink" title="14. 安全的导航操作符"></a>14. 安全的导航操作符</h2><p>安全导航操作符用于避免NullPointerException并来自Groovy语言。 通常，在引用对象时，可能需要在访问对象的方法或属性之前验证它是否为null。 为避免这种情况，安全导航操作符返回null而不是抛出异常。 以下示例显示如何使用安全导航运算符：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 安全的导航操作符：</span></span><br><span class="line"><span class="comment">     * 安全导航操作符用于避免NullPointerException，它来自Groovy语言。</span></span><br><span class="line"><span class="comment">     * 通常，当您有一个对象的引用时，您可能需要在访问该对象的方法或属性之前验证它是否为null。为了避免这种情况，安全导航操作符返回null，而不是抛出异常。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test19</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Inventor tesla = <span class="keyword">new</span> Inventor(<span class="string">"Nikola Tesla"</span>, <span class="string">"Serbian"</span>);</span><br><span class="line">        tesla.setPlaceOfBirth(<span class="keyword">new</span> PlaceOfBirth(<span class="string">"Smiljan"</span>));</span><br><span class="line"></span><br><span class="line">        String city = parser.parseExpression(<span class="string">"PlaceOfBirth?.City"</span>).getValue(context, tesla, String.class);</span><br><span class="line">        Assert.assertEquals(<span class="string">"Smiljan"</span>, city);  <span class="comment">// Smiljan</span></span><br><span class="line"></span><br><span class="line">        tesla.setPlaceOfBirth(<span class="keyword">null</span>);</span><br><span class="line">        city = parser.parseExpression(<span class="string">"PlaceOfBirth?.City"</span>).getValue(context, tesla, String.class);</span><br><span class="line">        Assert.assertNull(city);  <span class="comment">// null - 没有抛出空指针异常(NullPointerException)!!!</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="15-集合选择-Collection-Selection"><a href="#15-集合选择-Collection-Selection" class="headerlink" title="15. 集合选择(Collection Selection)"></a>15. 集合选择(Collection Selection)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 集合选择(Collection Selection)：</span></span><br><span class="line"><span class="comment">     * 选择表达式允许通过从源集合的条目中进行选择，将源集合转换为另一个集合。</span></span><br><span class="line"><span class="comment">     * 选择表达式通过使用形如 ".?[selectionExpression]" 的语法。它筛选集合并返回包含原始元素子集的新集合。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test20</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        society.getMembers().addAll(inventorList);</span><br><span class="line">        context.setRootObject(society);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从列表中选出国籍是美国的元素，然后组成新的列表</span></span><br><span class="line">        List&lt;Inventor&gt; list = (List&lt;Inventor&gt;) parser</span><br><span class="line">                .parseExpression(<span class="string">"Members.?[Nationality == '塞尔维亚裔美籍']"</span>)</span><br><span class="line">                .getValue(context);</span><br><span class="line">        Assert.assertEquals(<span class="number">1</span>, list.size()); <span class="comment">// 只有特斯拉是塞尔维亚裔美籍</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 从原字典中选出值大于27的元素，然后组成新的字典</span></span><br><span class="line">        Map&lt;String, Integer&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        map.put(<span class="string">"a"</span>, <span class="number">26</span>);</span><br><span class="line">        map.put(<span class="string">"b"</span>, <span class="number">27</span>);</span><br><span class="line">        map.put(<span class="string">"c"</span>, <span class="number">28</span>);</span><br><span class="line">        context.setVariable(<span class="string">"map"</span>, map);</span><br><span class="line">        Map newMap = (Map) parser.parseExpression(<span class="string">"#map.?[value&lt;27]"</span>).getValue(context);</span><br><span class="line">        Assert.assertEquals(<span class="number">1</span>, newMap.size());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="16-集合投影-Collection-Projection"><a href="#16-集合投影-Collection-Projection" class="headerlink" title="16. 集合投影(Collection Projection)"></a>16. 集合投影(Collection Projection)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 集合投影:</span></span><br><span class="line"><span class="comment">     * 投影让集合驱动子表达式的求值，结果是一个新的集合。</span></span><br><span class="line"><span class="comment">     * 投影的语法是 ".![projectionExpression]"。例如，假设我们有一个发明家列表，但是想要他们出生的城市列表。实际上，我们想要的是“出生地点”。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test21</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        society.getMembers().addAll(inventorList);</span><br><span class="line">        context.setRootObject(society);</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; placesOfBirth = (List) parser.parseExpression(<span class="string">"Members.![placeOfBirth.city]"</span>).getValue(context);</span><br><span class="line">        MatcherAssert.assertThat(placesOfBirth, IsIterableContainingInOrder.contains(<span class="string">"利卡-塞尼县"</span>, <span class="string">"米兰"</span>, <span class="string">"爱丁堡"</span>));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="17-引用"><a href="#17-引用" class="headerlink" title="17. 引用"></a>17. 引用</h2><p><a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#expressions" target="_blank" rel="noopener">Spring Expression Language (SpEL)</a></p>
+<p><a href="https://jinnianshilongnian.iteye.com/blog/1418309" target="_blank" rel="noopener">https://jinnianshilongnian.iteye.com/blog/1418309</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag"># spring</a>
+          
+            <a href="/tags/spring-expression/" rel="tag"># spring-expression</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/passages/spring-batch入门之CSV-to-DB/" rel="next" title="spring-batch入门之CSV-to-DB">
+                <i class="fa fa-chevron-left"></i> spring-batch入门之CSV-to-DB
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/passages/日志写入数据库Log4j2-JDBCAppender/" rel="prev" title="日志写入数据库Log4j2-JDBCAppender">
+                日志写入数据库Log4j2-JDBCAppender <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTA5Ny8yMTYxNA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">冯雪超</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">67</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">49</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/littlefxc" title="GitHub &rarr; https://github.com/littlefxc" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:fengxuechao.littlefxc@gmail.com" title="E-Mail &rarr; mailto:fengxuechao.littlefxc@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-SpEl-表达式语言-学习记录"><span class="nav-number">1.</span> <span class="nav-text">Spring SpEl 表达式语言 - 学习记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Maven-依赖"><span class="nav-number">1.1.</span> <span class="nav-text">Maven 依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化"><span class="nav-number">1.2.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-入门"><span class="nav-number">1.3.</span> <span class="nav-text">1. 入门</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#支持执行字符串表达式"><span class="nav-number">1.3.1.</span> <span class="nav-text">支持执行字符串表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpEL支持广泛的功能，例如调用方法，访问属性和调用构造函数"><span class="nav-number">1.3.2.</span> <span class="nav-text">SpEL支持广泛的功能，例如调用方法，访问属性和调用构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpEL的更常见用法是提供针对特定对象实例（称为根对象）计算的表达式字符串"><span class="nav-number">1.3.3.</span> <span class="nav-text">SpEL的更常见用法是提供针对特定对象实例（称为根对象）计算的表达式字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Beans-中的-SpEl-表达式-Bean-的引用"><span class="nav-number">1.3.4.</span> <span class="nav-text">Spring Beans 中的 SpEl 表达式, Bean 的引用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#在-Spring-配置文件中使用-SpEl-表达式"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">在 Spring 配置文件中使用 SpEl 表达式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在注解中用法1：在成员属性上使用-SpEL-表达式"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">在注解中用法1：在成员属性上使用 SpEL 表达式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在注解中用法2：在构造方法上使用-SpEL-表达式"><span class="nav-number">1.3.4.3.</span> <span class="nav-text">在注解中用法2：在构造方法上使用 SpEL 表达式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#在注解中用法3：在属性设置方法上使用-SpEL-表达式"><span class="nav-number">1.3.4.4.</span> <span class="nav-text">在注解中用法3：在属性设置方法上使用 SpEL 表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">1.3.5.</span> <span class="nav-text">测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-字面量表达式"><span class="nav-number">1.4.</span> <span class="nav-text">2. 字面量表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-集合的表达式-Properties-Arrays-Lists-Maps-and-Indexers"><span class="nav-number">1.5.</span> <span class="nav-text">3. 集合的表达式(Properties, Arrays, Lists, Maps, and Indexers)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-内联列表-Inline-Lists"><span class="nav-number">1.6.</span> <span class="nav-text">4. 内联列表( Inline Lists )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-内联字典-Inline-Maps"><span class="nav-number">1.7.</span> <span class="nav-text">5. 内联字典( Inline Maps )</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-数组构造-Array-Construction"><span class="nav-number">1.8.</span> <span class="nav-text">6. 数组构造(Array Construction)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-方法调用"><span class="nav-number">1.9.</span> <span class="nav-text">8. 方法调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-运算符"><span class="nav-number">1.10.</span> <span class="nav-text">9. 运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-关系运算符"><span class="nav-number">1.10.1.</span> <span class="nav-text">9.1. 关系运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-逻辑运算符"><span class="nav-number">1.10.2.</span> <span class="nav-text">9.2. 逻辑运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3-赋值运算符"><span class="nav-number">1.10.3.</span> <span class="nav-text">9.3. 赋值运算符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-构造函数"><span class="nav-number">1.11.</span> <span class="nav-text">10. 构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-变量定义及引用"><span class="nav-number">1.12.</span> <span class="nav-text">11. 变量定义及引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-自定义函数"><span class="nav-number">1.13.</span> <span class="nav-text">12. 自定义函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-三目运算及Elivis运算表达式"><span class="nav-number">1.14.</span> <span class="nav-text">13. 三目运算及Elivis运算表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14-安全的导航操作符"><span class="nav-number">1.15.</span> <span class="nav-text">14. 安全的导航操作符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-集合选择-Collection-Selection"><span class="nav-number">1.16.</span> <span class="nav-text">15. 集合选择(Collection Selection)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16-集合投影-Collection-Projection"><span class="nav-number">1.17.</span> <span class="nav-text">16. 集合投影(Collection Projection)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-引用"><span class="nav-number">1.18.</span> <span class="nav-text">17. 引用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">冯雪超</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'passages/spring-expression学习记录/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

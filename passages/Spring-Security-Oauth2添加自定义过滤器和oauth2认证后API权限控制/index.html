@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在搭建完 spring-security-oauth2 整个微服务框架后，来了一个需求：  每个微服务都需要对访问进行鉴权，每个微服务应用都需要明确当前访问用户和他的权限。  auth 系统的主要功能是授权认证和鉴权。 授权认证已经完成，那么如何对用户的访问进行鉴权呢？ 首先需要明确什么时候发生鉴权？ 鉴权发生在用户已经认证后携带了 access_token 信息但还没用访问到目标资源的时候。 知">
+<meta name="keywords" content="oauth2,spring-boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制">
+<meta property="og:url" content="http://yoursite.com/passages/Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制/index.html">
+<meta property="og:site_name" content="littlefxc&#39;s blog">
+<meta property="og:description" content="在搭建完 spring-security-oauth2 整个微服务框架后，来了一个需求：  每个微服务都需要对访问进行鉴权，每个微服务应用都需要明确当前访问用户和他的权限。  auth 系统的主要功能是授权认证和鉴权。 授权认证已经完成，那么如何对用户的访问进行鉴权呢？ 首先需要明确什么时候发生鉴权？ 鉴权发生在用户已经认证后携带了 access_token 信息但还没用访问到目标资源的时候。 知">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-26T03:16:41.952Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制">
+<meta name="twitter:description" content="在搭建完 spring-security-oauth2 整个微服务框架后，来了一个需求：  每个微服务都需要对访问进行鉴权，每个微服务应用都需要明确当前访问用户和他的权限。  auth 系统的主要功能是授权认证和鉴权。 授权认证已经完成，那么如何对用户的访问进行鉴权呢？ 首先需要明确什么时候发生鉴权？ 鉴权发生在用户已经认证后携带了 access_token 信息但还没用访问到目标资源的时候。 知">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/passages/Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制 | littlefxc's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">littlefxc's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/littlefxc" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/passages/Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-26 11:16:13 / 修改时间：11:16:41" itemprop="dateCreated datePublished" datetime="2019-06-26T11:16:13+08:00">2019-06-26</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/oauth2/" itemprop="url" rel="index"><span itemprop="name">oauth2</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在搭建完 spring-security-oauth2 整个微服务框架后，来了一个需求：</p>
+<blockquote>
+<p>每个微服务都需要对访问进行鉴权，每个微服务应用都需要明确当前访问用户和他的权限。</p>
+</blockquote>
+<p>auth 系统的主要功能是授权认证和鉴权。</p>
+<p>授权认证已经完成，那么如何对用户的访问进行鉴权呢？</p>
+<p>首先需要明确什么时候发生鉴权？</p>
+<p>鉴权发生在用户已经认证后携带了 access_token 信息但还没用访问到目标资源的时候。</p>
+<p>知道了鉴权发生的时间，需要明白怎么鉴权？</p>
+<p>我的想法是添加一个用于鉴权的过滤器，Spring Security 默认的过滤器链(<a href="https://docs.spring.io/spring-security/site/docs/5.0.0.M1/reference/htmlsingle/#ns-custom-filters" target="_blank" rel="noopener">官网</a>)：</p>
+<table>
+<thead>
+<tr>
+<th>别名</th>
+<th>类名称</th>
+<th>Namespace Element or Attribute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHANNEL_FILTER</td>
+<td>ChannelProcessingFilter</td>
+<td>http/intercept-url@requires-channel</td>
+</tr>
+<tr>
+<td>SECURITY_CONTEXT_FILTER</td>
+<td>SecurityContextPersistenceFilter</td>
+<td>http</td>
+</tr>
+<tr>
+<td>CONCURRENT_SESSION_FILTER</td>
+<td>ConcurrentSessionFilter</td>
+<td>session-management/concurrency-control</td>
+</tr>
+<tr>
+<td>HEADERS_FILTER</td>
+<td>HeaderWriterFilter</td>
+<td>http/headers</td>
+</tr>
+<tr>
+<td>CSRF_FILTER</td>
+<td>CsrfFilter</td>
+<td>http/csrf</td>
+</tr>
+<tr>
+<td>LOGOUT_FILTER</td>
+<td>LogoutFilter</td>
+<td>http/logout</td>
+</tr>
+<tr>
+<td>X509_FILTER</td>
+<td>X509AuthenticationFilter</td>
+<td>http/x509</td>
+</tr>
+<tr>
+<td>PRE_AUTH_FILTER</td>
+<td>AbstractPreAuthenticatedProcessingFilter( Subclasses)</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>CAS_FILTER</td>
+<td>CasAuthenticationFilter    N/A</td>
+</tr>
+<tr>
+<td>FORM_LOGIN_FILTER</td>
+<td>UsernamePasswordAuthenticationFilter</td>
+<td>http/form-login</td>
+</tr>
+<tr>
+<td>BASIC_AUTH_FILTER</td>
+<td>BasicAuthenticationFilter</td>
+<td>http/http-basic</td>
+</tr>
+<tr>
+<td>SERVLET_API_SUPPORT_FILTER</td>
+<td>SecurityContextHolderAwareRequestFilter</td>
+<td>http/@servlet-api-provision</td>
+</tr>
+<tr>
+<td>JAAS_API_SUPPORT_FILTER</td>
+<td>JaasApiIntegrationFilter</td>
+<td>http/@jaas-api-provision</td>
+</tr>
+<tr>
+<td>REMEMBER_ME_FILTER</td>
+<td>RememberMeAuthenticationFilter</td>
+<td>http/remember-me</td>
+</tr>
+<tr>
+<td>ANONYMOUS_FILTER</td>
+<td>AnonymousAuthenticationFilter</td>
+<td>http/anonymous</td>
+</tr>
+<tr>
+<td>SESSION_MANAGEMENT_FILTER</td>
+<td>SessionManagementFilter</td>
+<td>session-management</td>
+</tr>
+<tr>
+<td>EXCEPTION_TRANSLATION_FILTER</td>
+<td>ExceptionTranslationFilter</td>
+<td>http</td>
+</tr>
+<tr>
+<td>FILTER_SECURITY_INTERCEPTOR</td>
+<td>FilterSecurityInterceptor</td>
+<td>http</td>
+</tr>
+<tr>
+<td>SWITCH_USER_FILTER</td>
+<td>SwitchUserFilter</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>过滤器顺序从上到下</p>
+</blockquote>
+<p><code>FilterSecurityInterceptor</code> 是 filterchain 中比较复杂，也是比较核心的过滤器，主要负责web应用安全授权的工作。</p>
+<p>我想添加的过滤器是添加在 <code>FilterSecurityInterceptor</code> 之后。</p>
+<p><code>Oauth2FilterSecurityInterceptor</code> 是模仿 FilterSecurityInterceptor 实现，继承 AbstractSecurityInterceptor 和实现 Filter 接口。</p>
+<p>整个过程需要依赖 AuthenticationManager、AccessDecisionManager 和 FilterInvocationSecurityMetadataSource。</p>
+<ul>
+<li>AuthenticationManager是认证管理器，实现用户认证的入口；</li>
+<li>AccessDecisionManager是访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源；</li>
+<li>FilterInvocationSecurityMetadataSource是资源源数据定义，即定义某一资源可以被哪些角色访问。</li>
+</ul>
+<h2 id="自定义鉴权过滤器-Oauth2FilterSecurityInterceptor-的实现"><a href="#自定义鉴权过滤器-Oauth2FilterSecurityInterceptor-的实现" class="headerlink" title="自定义鉴权过滤器 Oauth2FilterSecurityInterceptor 的实现"></a>自定义鉴权过滤器 <code>Oauth2FilterSecurityInterceptor</code> 的实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.authorization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.SecurityMetadataSource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.intercept.AbstractSecurityInterceptor;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.intercept.InterceptorStatusToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.authentication.AuthenticationManager;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.web.FilterInvocation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.*;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 比较核心的过滤器: 主要负责web应用鉴权的工作。</span></span><br><span class="line"><span class="comment"> * 需要依赖:</span></span><br><span class="line"><span class="comment"> * - AuthenticationManager:认证管理器，实现用户认证的入口;</span></span><br><span class="line"><span class="comment"> * - AccessDecisionManager:访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源;</span></span><br><span class="line"><span class="comment"> * - FilterInvocationSecurityMetadataSource:资源源数据定义，即定义某一资源可以被哪些角色访问.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/6/17</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Oauth2FilterSecurityInterceptor</span> <span class="keyword">extends</span> <span class="title">AbstractSecurityInterceptor</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Oauth2FilterInvocationSecurityMetadataSource securityMetadataSource;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(FilterConfig filterConfig)</span> <span class="keyword">throws</span> ServletException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (log.isInfoEnabled()) &#123;</span><br><span class="line">            log.info(<span class="string">"Oauth2FilterSecurityInterceptor init"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest request, ServletResponse response, FilterChain chain)</span> <span class="keyword">throws</span> IOException, ServletException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (log.isInfoEnabled()) &#123;</span><br><span class="line">            log.info(<span class="string">"Oauth2FilterSecurityInterceptor doFilter"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        FilterInvocation filterInvocation = <span class="keyword">new</span> FilterInvocation(request, response, chain);</span><br><span class="line">        invoke(filterInvocation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">invoke</span><span class="params">(FilterInvocation filterInvocation)</span> <span class="keyword">throws</span> IOException, ServletException </span>&#123;</span><br><span class="line">        <span class="comment">// filterInvocation里面有一个被拦截的url</span></span><br><span class="line">        <span class="comment">// 里面调用 Oauth2AccessDecisionManager 的 getAttributes(Object object) 这个方法获取 filterInvocation 对应的所有权限</span></span><br><span class="line">        <span class="comment">// 再调用 Oauth2AccessDecisionManager 的 decide方法来校验用户的权限是否足够</span></span><br><span class="line">        InterceptorStatusToken interceptorStatusToken = <span class="keyword">super</span>.beforeInvocation(filterInvocation);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 执行下一个拦截器</span></span><br><span class="line">            filterInvocation.getChain().doFilter(filterInvocation.getRequest(), filterInvocation.getResponse());</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">super</span>.afterInvocation(interceptorStatusToken, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Class&lt;?&gt; getSecureObjectClass() &#123;</span><br><span class="line">        <span class="keyword">return</span> FilterInvocation.class;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 资源源数据定义，设置为自定义的 SecureResourceFilterInvocationDefinitionSource</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SecurityMetadataSource <span class="title">obtainSecurityMetadataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> securityMetadataSource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOauth2AccessDecisionManager</span><span class="params">(Oauth2AccessDecisionManager accessDecisionManager)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setAccessDecisionManager(accessDecisionManager);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAuthenticationManager</span><span class="params">(AuthenticationManager authenticationManager)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.setAuthenticationManager(authenticationManager);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecurityMetadataSource</span><span class="params">(Oauth2FilterInvocationSecurityMetadataSource securityMetadataSource)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.securityMetadataSource = securityMetadataSource;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看下父类的 <code>beforeInvocation</code> 方法，其中省略了一些不重要的代码片段:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractSecurityInterceptor</span> <span class="keyword">implements</span> <span class="title">InitializingBean</span>, <span class="title">ApplicationEventPublisherAware</span>, <span class="title">MessageSourceAware</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">protected</span> InterceptorStatusToken <span class="title">beforeInvocation</span><span class="params">(Object object)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 代码省略</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 根据 SecurityMetadataSource 获取配置的权限属性</span></span><br><span class="line">		Collection&lt;ConfigAttribute&gt; attributes = <span class="keyword">this</span>.obtainSecurityMetadataSource()</span><br><span class="line">				.getAttributes(object);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 代码省略</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断是否需要对认证实体重新认证，默认为否</span></span><br><span class="line">		Authentication authenticated = authenticateIfRequired();</span><br><span class="line"></span><br><span class="line">		<span class="comment">// Attempt authorization</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// 决策管理器开始决定是否授权，如果授权失败，直接抛出 AccessDeniedException</span></span><br><span class="line">	        <span class="keyword">this</span>.accessDecisionManager.decide(authenticated, object, attributes);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (AccessDeniedException accessDeniedException) &#123;</span><br><span class="line">			publishEvent(<span class="keyword">new</span> AuthorizationFailureEvent(object, attributes, authenticated,</span><br><span class="line">					accessDeniedException));</span><br><span class="line"></span><br><span class="line">			<span class="keyword">throw</span> accessDeniedException;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 代码省略</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="自定义资源源数据定义-Oauth2FilterInvocationSecurityMetadataSource"><a href="#自定义资源源数据定义-Oauth2FilterInvocationSecurityMetadataSource" class="headerlink" title="自定义资源源数据定义 Oauth2FilterInvocationSecurityMetadataSource"></a>自定义资源源数据定义 Oauth2FilterInvocationSecurityMetadataSource</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.authorization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.examples.auth.service.UserRolePermissionService;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.InitializingBean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.ConfigAttribute;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.SecurityConfig;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.web.FilterInvocation;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 资源源数据定义，即定义某一资源可以被哪些角色访问</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/6/14</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Oauth2FilterInvocationSecurityMetadataSource</span> <span class="keyword">implements</span> <span class="title">FilterInvocationSecurityMetadataSource</span>, <span class="title">InitializingBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> UserRolePermissionService service;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Oauth2FilterInvocationSecurityMetadataSource</span><span class="params">(UserRolePermissionService service)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.service = service;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Collection&lt;ConfigAttribute&gt; <span class="title">getAttributes</span><span class="params">(Object object)</span> <span class="keyword">throws</span> IllegalArgumentException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"/user/profile"</span>.equals(((FilterInvocation) object).getRequestUrl())) &#123;</span><br><span class="line">            <span class="comment">// [/user/profile] 不需要鉴权</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*if (object instanceof FilterInvocation) &#123;</span></span><br><span class="line"><span class="comment">            FilterInvocation fi = (FilterInvocation) object;</span></span><br><span class="line"><span class="comment">            String requestUrl = fi.getRequestUrl();</span></span><br><span class="line"><span class="comment">            // 返回请求所需的权限</span></span><br><span class="line"><span class="comment">            List&lt;Role&gt; roleList = service.findRoleListByPermissionUrl(requestUrl);</span></span><br><span class="line"><span class="comment">            String[] roleArray = new String[roleList.size()];</span></span><br><span class="line"><span class="comment">            roleArray = roleList.toArray(roleArray);</span></span><br><span class="line"><span class="comment">            return SecurityConfig.createList(roleArray);</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">        return Collections.EMPTY_LIST;*/</span></span><br><span class="line">        <span class="keyword">return</span> SecurityConfig.createList(<span class="string">"ROLE_ADMIN"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Collection&lt;ConfigAttribute&gt; <span class="title">getAllConfigAttributes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(Class&lt;?&gt; clazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterPropertiesSet</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了调试的方便，直接定死任何访问请求都需要管理员权限(/user/profile 除外)，调试通过后，再往里面添加业务逻辑代码。</p>
+<h2 id="自定义决策管理器-Oauth2AccessDecisionManager"><a href="#自定义决策管理器-Oauth2AccessDecisionManager" class="headerlink" title="自定义决策管理器 Oauth2AccessDecisionManager"></a>自定义决策管理器 Oauth2AccessDecisionManager</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.authorization;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.AccessDecisionManager;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.AccessDeniedException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.access.ConfigAttribute;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.authentication.InsufficientAuthenticationException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.GrantedAuthority;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.web.FilterInvocation;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 访问决策器，决定某个用户具有的角色，是否有足够的权限去访问某个资源</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/6/14</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Oauth2AccessDecisionManager</span> <span class="keyword">implements</span> <span class="title">AccessDecisionManager</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> authentication   用户凭证</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> resource         资源 URL</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> configAttributes 资源 URL 所需要的权限</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> AccessDeniedException               资源拒绝访问</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> InsufficientAuthenticationException 用户凭证不符</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">decide</span><span class="params">(Authentication authentication, Object resource, Collection&lt;ConfigAttribute&gt; configAttributes)</span></span></span><br><span class="line"><span class="function">            <span class="keyword">throws</span> AccessDeniedException, InsufficientAuthenticationException </span>&#123;</span><br><span class="line">        log.info(<span class="string">"[决策管理器]:开始判断请求 &#123;&#125; 需要的权限"</span>, ((FilterInvocation) resource).getRequestUrl());</span><br><span class="line">        <span class="keyword">if</span> (configAttributes == <span class="keyword">null</span> || configAttributes.isEmpty()) &#123;</span><br><span class="line">            log.info(<span class="string">"[决策管理器]:请求 &#123;&#125; 无需权限"</span>, ((FilterInvocation) resource).getRequestUrl());</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">"[决策管理器]:请求 &#123;&#125; 需要的权限 - &#123;&#125;"</span>, ((FilterInvocation) resource).getRequestUrl(), configAttributes);</span><br><span class="line">        <span class="comment">// 判断用户所拥有的权限，是否符合对应的Url权限，用户权限是实现 UserDetailsService#loadUserByUsername 返回用户所对应的权限</span></span><br><span class="line">        Iterator&lt;ConfigAttribute&gt; ite = configAttributes.iterator();</span><br><span class="line">        log.info(<span class="string">"[决策管理器]:用户 &#123;&#125; 拥有的权限 - &#123;&#125;"</span>, authentication.getName(), authentication.getAuthorities());</span><br><span class="line">        <span class="keyword">while</span> (ite.hasNext()) &#123;</span><br><span class="line">            ConfigAttribute neededAuthority = ite.next();</span><br><span class="line">            String neededAuthorityStr = neededAuthority.getAttribute();</span><br><span class="line">            <span class="keyword">for</span> (GrantedAuthority existingAuthority : authentication.getAuthorities()) &#123;</span><br><span class="line">                <span class="keyword">if</span> (neededAuthorityStr.equals(existingAuthority.getAuthority())) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">"[决策管理器]:用户 &#123;&#125; 没有访问资源 &#123;&#125; 的权限!"</span>, authentication.getName(), ((FilterInvocation) resource).getRequestUrl());</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AccessDeniedException(<span class="string">"权限不足!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(ConfigAttribute attribute)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 是否支持 FilterInvocationSecurityMetadataSource 需要将这里的false改为true</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clazz</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(Class&lt;?&gt; clazz)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="配置自定义鉴权过滤器-Oauth2FilterSecurityInterceptor-在-Spring-Security-过滤器链中的位置"><a href="#配置自定义鉴权过滤器-Oauth2FilterSecurityInterceptor-在-Spring-Security-过滤器链中的位置" class="headerlink" title="配置自定义鉴权过滤器 Oauth2FilterSecurityInterceptor 在 Spring Security 过滤器链中的位置"></a>配置自定义鉴权过滤器 <code>Oauth2FilterSecurityInterceptor</code> 在 Spring Security 过滤器链中的位置</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.examples.auth.authorization.Oauth2AccessDecisionManager;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.examples.auth.authorization.Oauth2FilterInvocationSecurityMetadataSource;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.examples.auth.authorization.Oauth2FilterSecurityInterceptor;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.authentication.AuthenticationManager;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.config.annotation.web.builders.HttpSecurity;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.web.access.intercept.FilterSecurityInterceptor;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/5/8</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@EnableResourceServer</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfig</span> <span class="keyword">extends</span> <span class="title">ResourceServerConfigurerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    AuthenticationManager manager;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Oauth2AccessDecisionManager accessDecisionManager;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    Oauth2FilterInvocationSecurityMetadataSource securityMetadataSource;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        http.authorizeRequests().anyRequest().authenticated();</span><br><span class="line">        http.addFilterAfter(createApiAuthenticationFilter(), FilterSecurityInterceptor.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * API权限控制</span></span><br><span class="line"><span class="comment">     * 过滤器优先度在 FilterSecurityInterceptor 之后</span></span><br><span class="line"><span class="comment">     * spring-security 的默认过滤器列表见 https://docs.spring.io/spring-security/site/docs/5.0.0.M1/reference/htmlsingle/#ns-custom-filters</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> Oauth2FilterSecurityInterceptor <span class="title">createApiAuthenticationFilter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Oauth2FilterSecurityInterceptor interceptor = <span class="keyword">new</span> Oauth2FilterSecurityInterceptor();</span><br><span class="line">        interceptor.setAuthenticationManager(manager);</span><br><span class="line">        interceptor.setAccessDecisionManager(accessDecisionManager);</span><br><span class="line">        interceptor.setSecurityMetadataSource(securityMetadataSource);</span><br><span class="line">        <span class="keyword">return</span> interceptor;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="配置用户权限"><a href="#配置用户权限" class="headerlink" title="配置用户权限"></a>配置用户权限</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.userdetails;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.authority.AuthorityUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.User;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetails;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UsernameNotFoundException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/5/15</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDetailsServiceImpl</span> <span class="keyword">implements</span> <span class="title">UserDetailsService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDetails <span class="title">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> User(username, <span class="string">"123456"</span>, AuthorityUtils.commaSeparatedStringToAuthorityList(<span class="string">"ROLE_USER"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="演示结果"><a href="#演示结果" class="headerlink" title="演示结果"></a>演示结果</h2><h3 id="用户拥有资源所需权限"><a href="#用户拥有资源所需权限" class="headerlink" title="用户拥有资源所需权限"></a>用户拥有资源所需权限</h3><p>请求：</p>
+<figure class="highlight"><figcaption><span>request</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">GET http://localhost:8080/order/1</span><br><span class="line"></span><br><span class="line">HTTP/1.1 <span class="number">200</span> </span><br><span class="line"><span class="attribute">X-Application-Context</span>: application:inMemory</span><br><span class="line"><span class="attribute">X-Content-Type-Options</span>: nosniff</span><br><span class="line"><span class="attribute">X-XSS-Protection</span>: 1; mode=block</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-cache, no-store, max-age=0, must-revalidate</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">Expires</span>: 0</span><br><span class="line"><span class="attribute">X-Frame-Options</span>: DENY</span><br><span class="line"><span class="attribute">Content-Type</span>: text/plain;charset=UTF-8</span><br><span class="line"><span class="attribute">Content-Length</span>: 12</span><br><span class="line"><span class="attribute">Date</span>: Tue, 18 Jun 2019 01:50:48 GMT</span><br><span class="line"></span><br><span class="line">order id : 1</span><br><span class="line"></span><br><span class="line">Response code: 200; Time: 57ms; Content length: 12 bytes</span><br></pre></td></tr></table></figure>
+<p>日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">2019-06-18 09:50:48.955  INFO 5288 --- [nio-8080-exec-3] .f.e.a.a.Oauth2FilterSecurityInterceptor : Oauth2FilterSecurityInterceptor doFilter</span><br><span class="line">2019-06-18 09:50:48.955 DEBUG 5288 --- [nio-8080-exec-3] .f.e.a.a.Oauth2FilterSecurityInterceptor : Secure object: FilterInvocation: URL: /order/1; Attributes: [ROLE_USER]</span><br><span class="line">2019-06-18 09:50:48.956 DEBUG 5288 --- [nio-8080-exec-3] .f.e.a.a.Oauth2FilterSecurityInterceptor : Previously Authenticated: org.springframework.security.oauth2.provider.OAuth2Authentication@f5aeefea: Principal: org.springframework.security.core.userdetails.User@36ebcb: Username: user; Password: [PROTECTED]; Enabled: true; AccountNonExpired: true; credentialsNonExpired: true; AccountNonLocked: true; Granted Authorities: ROLE_USER; Credentials: [PROTECTED]; Authenticated: true; Details: remoteAddress=127.0.0.1, tokenType=bearertokenValue=&lt;TOKEN&gt;; Granted Authorities: ROLE_USER</span><br><span class="line">2019-06-18 09:50:48.956  INFO 5288 --- [nio-8080-exec-3] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:开始判断请求 /order/1 需要的权限</span><br><span class="line">2019-06-18 09:50:48.956  INFO 5288 --- [nio-8080-exec-3] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:请求 /order/1 需要的权限 - [ROLE_USER]</span><br><span class="line">2019-06-18 09:50:48.956  INFO 5288 --- [nio-8080-exec-3] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:用户 user 拥有的权限 - [ROLE_USER]</span><br><span class="line">2019-06-18 09:50:48.956 DEBUG 5288 --- [nio-8080-exec-3] .f.e.a.a.Oauth2FilterSecurityInterceptor : Authorization successful</span><br><span class="line">2019-06-18 09:50:48.957 DEBUG 5288 --- [nio-8080-exec-3] .f.e.a.a.Oauth2FilterSecurityInterceptor : RunAsManager did not change Authentication object</span><br></pre></td></tr></table></figure>
+<h3 id="用户没有资源所需权限"><a href="#用户没有资源所需权限" class="headerlink" title="用户没有资源所需权限"></a>用户没有资源所需权限</h3><p>请求：</p>
+<figure class="highlight"><figcaption><span>request</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">GET http://localhost:8080/order/1</span><br><span class="line"></span><br><span class="line">HTTP/1.1 <span class="number">403</span> </span><br><span class="line"><span class="attribute">Cache-Control</span>: no-store</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">X-Content-Type-Options</span>: nosniff</span><br><span class="line"><span class="attribute">X-XSS-Protection</span>: 1; mode=block</span><br><span class="line"><span class="attribute">X-Frame-Options</span>: DENY</span><br><span class="line"><span class="attribute">Content-Type</span>: application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Transfer-Encoding</span>: chunked</span><br><span class="line"><span class="attribute">Date</span>: Tue, 18 Jun 2019 01:44:49 GMT</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  "error": "access_denied",</span><br><span class="line">  "error_description": "权限不足!"</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Response code: 403; Time: 35ms; Content length: 53 bytes</span><br></pre></td></tr></table></figure>
+<p>日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">2019-06-18 09:44:44.684  INFO 10624 --- [nio-8080-exec-2] .f.e.a.a.Oauth2FilterSecurityInterceptor : Oauth2FilterSecurityInterceptor doFilter</span><br><span class="line">2019-06-18 09:44:44.685 DEBUG 10624 --- [nio-8080-exec-2] .f.e.a.a.Oauth2FilterSecurityInterceptor : Public object - authentication not attempted</span><br><span class="line">2019-06-18 09:44:49.448  INFO 10624 --- [nio-8080-exec-6] .f.e.a.a.Oauth2FilterSecurityInterceptor : Oauth2FilterSecurityInterceptor doFilter</span><br><span class="line">2019-06-18 09:44:49.449 DEBUG 10624 --- [nio-8080-exec-6] .f.e.a.a.Oauth2FilterSecurityInterceptor : Secure object: FilterInvocation: URL: /order/1; Attributes: [ROLE_ADMIN]</span><br><span class="line">2019-06-18 09:44:49.449 DEBUG 10624 --- [nio-8080-exec-6] .f.e.a.a.Oauth2FilterSecurityInterceptor : Previously Authenticated: org.springframework.security.oauth2.provider.OAuth2Authentication@22d262ad: Principal: org.springframework.security.core.userdetails.User@36ebcb: Username: user; Password: [PROTECTED]; Enabled: true; AccountNonExpired: true; credentialsNonExpired: true; AccountNonLocked: true; Granted Authorities: ROLE_USER; Credentials: [PROTECTED]; Authenticated: true; Details: remoteAddress=127.0.0.1, tokenType=bearertokenValue=&lt;TOKEN&gt;; Granted Authorities: ROLE_USER</span><br><span class="line">2019-06-18 09:44:49.450  INFO 10624 --- [nio-8080-exec-6] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:开始判断请求 /order/1 需要的权限</span><br><span class="line">2019-06-18 09:44:49.450  INFO 10624 --- [nio-8080-exec-6] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:请求 /order/1 需要的权限 - [ROLE_ADMIN]</span><br><span class="line">2019-06-18 09:44:49.450  INFO 10624 --- [nio-8080-exec-6] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:用户 user 拥有的权限 - [ROLE_USER]</span><br><span class="line">2019-06-18 09:44:49.451  INFO 10624 --- [nio-8080-exec-6] c.f.e.a.a.Oauth2AccessDecisionManager    : [决策管理器]:用户 user 没有访问资源 /order/1 的权限!</span><br></pre></td></tr></table></figure>
+<p>返回结果和日志符合期望结果</p>
+<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="http://www.spring4all.com/article/422" target="_blank" rel="noopener">http://www.spring4all.com/article/422</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/oauth2/" rel="tag"># oauth2</a>
+          
+            <a href="/tags/spring-boot/" rel="tag"># spring-boot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/passages/Spring-Security-Oauth2令牌增加额外信息/" rel="next" title="Spring-Security-Oauth2令牌增加额外信息">
+                <i class="fa fa-chevron-left"></i> Spring-Security-Oauth2令牌增加额外信息
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/passages/Spring-Security-Oauth2如何增加自定义授权模式/" rel="prev" title="Spring-Security-Oauth2如何增加自定义授权模式">
+                Spring-Security-Oauth2如何增加自定义授权模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80NTA5Ny8yMTYxNA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">冯雪超</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">67</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">49</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/littlefxc" title="GitHub &rarr; https://github.com/littlefxc" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:fengxuechao.littlefxc@gmail.com" title="E-Mail &rarr; mailto:fengxuechao.littlefxc@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义鉴权过滤器-Oauth2FilterSecurityInterceptor-的实现"><span class="nav-number">1.</span> <span class="nav-text">自定义鉴权过滤器 Oauth2FilterSecurityInterceptor 的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义资源源数据定义-Oauth2FilterInvocationSecurityMetadataSource"><span class="nav-number">2.</span> <span class="nav-text">自定义资源源数据定义 Oauth2FilterInvocationSecurityMetadataSource</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自定义决策管理器-Oauth2AccessDecisionManager"><span class="nav-number">3.</span> <span class="nav-text">自定义决策管理器 Oauth2AccessDecisionManager</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置自定义鉴权过滤器-Oauth2FilterSecurityInterceptor-在-Spring-Security-过滤器链中的位置"><span class="nav-number">4.</span> <span class="nav-text">配置自定义鉴权过滤器 Oauth2FilterSecurityInterceptor 在 Spring Security 过滤器链中的位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置用户权限"><span class="nav-number">5.</span> <span class="nav-text">配置用户权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#演示结果"><span class="nav-number">6.</span> <span class="nav-text">演示结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用户拥有资源所需权限"><span class="nav-number">6.1.</span> <span class="nav-text">用户拥有资源所需权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用户没有资源所需权限"><span class="nav-number">6.2.</span> <span class="nav-text">用户没有资源所需权限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资源"><span class="nav-number">7.</span> <span class="nav-text">参考资源</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">冯雪超</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+    <script>
+  window.livereOptions = {
+    refer: 'passages/Spring-Security-Oauth2添加自定义过滤器和oauth2认证后API权限控制/'
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
