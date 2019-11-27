@@ -31,7 +31,7 @@ tags: 阅读笔记
 `SERIAL` 是 MySQL 中 `BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE` 的别名
 
 ```sql
-CREATE TABLE Accounts (
+CREATE TABLE IF NOT EXISTS Accounts (
     account_id         SERIAL PRIMARY KEY,
     account_name       VARCHAR(20),
     first_name         VARCHAR(20),
@@ -42,34 +42,64 @@ CREATE TABLE Accounts (
     hourly_rate        NUMERIC(9,2)
 );
 
-CREATE BugStatus (
-    status VARCHAR(20) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS BugStatus (
+    `status` VARCHAR(20) PRIMARY KEY
 );
 
-CREATE TABLE Bugs (
+CREATE TABLE IF NOT EXISTS Bugs (
     bug_id             SERIAL PRIMARY KEY,
     date_reported      DATE NOT NULL,
     summary            VARCHAR(80),
     description        VARCHAR(1000),
     resolition         VARCHAR(1000),
-    reported_by        BIGINT UNSINGNED NOT NULL,
-    assigned_to        BIGINT UNSINGNED,
-    verified_by        BIGINT UNSINGNED,
-    status             VARCHAR(20) NOT NULL DEFAULT 'NEW',
+    reported_by        BIGINT UNSIGNED NOT NULL,
+    assigned_to        BIGINT UNSIGNED,
+    verified_by        BIGINT UNSIGNED,
+    `status`           VARCHAR(20) NOT NULL DEFAULT 'NEW',
     priority           VARCHAR(20),
     hours              NUMERIC(9,2),
     FOREIGN KEY (reported_by) REFERENCES Accounts(account_id),
     FOREIGN KEY (assigned_to) REFERENCES Accounts(account_id),
     FOREIGN KEY (verified_by) REFERENCES Accounts(account_id),
-    FOREIGN KEY (status) REFERENCES BugStatus(status)
+    FOREIGN KEY (`status`) REFERENCES BugStatus(`status`)
 );
 
-CREATE TABLE Comments (
+CREATE TABLE IF NOT EXISTS Comments (
     comment_id         SERIAL PRIMARY KEY,
-    bug_id             BIGINT UNSINGNED NOT NULL,
-    author             BIGINT UNSINGNED NOT NULL,
+    bug_id             BIGINT UNSIGNED NOT NULL,
+    author             BIGINT UNSIGNED NOT NULL,
     comment_date       DATETIME NOT NULL,
     comment            TEXT NOT NULL,
-    FOREIGN KEY        TEXT NOT NULL,
+    FOREIGN KEY (bug_id) REFERENCES Bugs(bug_id),
+    FOREIGN KEY (author) REFERENCES Accounts(account_id)
+);
+
+CREATE TABLE IF NOT EXISTS Screenhots (
+    bug_id             BIGINT UNSIGNED NOT NULL,
+    image_id           BIGINT UNSIGNED NOT NULL,
+    screenshot_image   BLOB,
+    caption            VARCHAR(100),
+    PRIMARY KEY        (bug_id,image_id),
+    FOREIGN KEY (bug_id) REFERENCES Bugs(bug_id)
+);
+
+CREATE TABLE IF NOT EXISTS Tags (
+    bug_id             BIGINT UNSIGNED NOT NULL,
+    tag                VARCHAR(20) NOT NULL,
+    PRIMARY KEY        (bug_id,tag),
+    FOREIGN KEY (bug_id) REFERENCES Bugs(bug_id)
+);
+
+CREATE TABLE IF NOT EXISTS Products (
+    product_id         SERIAL PRIMARY KEY,
+    product_name       VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS BugsProducts (
+    bug_id             BIGINT UNSIGNED NOT NULL,
+    product_id         BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY        (bug_id,product_id),
+    FOREIGN KEY (bug_id) REFERENCES Bugs(bug_id),
+    FOREIGN KEY (product_id) REFERENCES Products(product_id)
 );
 ```
