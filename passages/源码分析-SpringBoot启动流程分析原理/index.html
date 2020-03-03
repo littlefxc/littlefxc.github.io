@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。  很多程序员都感慨Sp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码分析:SpringBoot启动流程分析原理">
+<meta property="og:url" content="http://yoursite.com/passages/源码分析-SpringBoot启动流程分析原理/index.html">
+<meta property="og:site_name" content="littlefxc&#39;s blog">
+<meta property="og:description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。  很多程序员都感慨Sp">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png">
+<meta property="og:image" content="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e1556970953076610600255.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e1556ab096a12ca07130437.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e1556ba09aace2108700359.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e1556de09173d5708440060.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e1556f20950b5a107350202.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e15571509d2b15206910274.png">
+<meta property="og:image" content="https://climg.mukewang.com/5e15572409d4dbf109450379.png">
+<meta property="og:updated_time" content="2020-02-26T12:52:34.304Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="源码分析:SpringBoot启动流程分析原理">
+<meta name="twitter:description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。  很多程序员都感慨Sp">
+<meta name="twitter:image" content="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/passages/源码分析-SpringBoot启动流程分析原理/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>源码分析:SpringBoot启动流程分析原理 | littlefxc's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">littlefxc's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/littlefxc" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/passages/源码分析-SpringBoot启动流程分析原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">源码分析:SpringBoot启动流程分析原理
+
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-26 20:51:54 / 修改时间：20:52:34" itemprop="dateCreated datePublished" datetime="2020-02-26T20:51:54+08:00">2020-02-26</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。</p>
+</blockquote>
+<p>很多程序员都感慨<strong><code>SpringBoot</code></strong>的到来大大解放了生产力，但是也有聪明的程序猿会多思考一下下，<strong><code>SpringBoot</code></strong>是怎么做到的约定的配置？它配置在了哪里？又是怎么启动的作用等等一系列的问号在跟女朋友花前月下的时候，依然会时不时冒出来。这严重影响了程序猿们的”幸”福生活，为了能广大”程序猿”同胞过上幸福美满的生活，今天咱么就来一起跟随源码探究下<strong><code>SpringBoot</code></strong>到底是如何做到”<strong>约定优于配置</strong>“的。</p>
+<p>首先，我们先介绍下我们的演示的项目环境，我们先试用<strong><code>Spring Initializr</code></strong>来创建一个<strong><code>SpirngBoot</code></strong>工程。我们使用的版本是<strong><code>SpringBoot 2.1.5.RELEASE</code></strong>。</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png"></p>
+<p>接下来就只在<strong>pom.xml</strong>文件中添加一个web工程的依赖，是为了观察后面容器类型的源码。</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><p>这样我们的环境就准备好了。</p>
+<p>我们跟着<strong>SpringBoot</strong>的源码来探究它的启动流程，首先，先找到这个应用程序的入口主方法，在上面打一个断点</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png"></p>
+<p>启动之后，<strong>F5</strong> 进入到 <code>run()</code> 方法</p>
+<pre><code>public static ConfigurableApplicationContext run(Class&lt;?&gt;[] primarySources,String[] args) {
+    return new SpringApplication(primarySources).run(args);
+}
+</code></pre><p>到这里会执行<code>new SpringApplication(primarySources)</code>创建spring应用对象，继续F5往下跟会执行<strong>SpringApplication构造器</strong></p>
+<pre><code>// SpringApplication构造器
+public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) {
+    // 资源加载器
+        this.resourceLoader = resourceLoader;
+        Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;);
+        this.primarySources = new LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));
+    // 1. 可能的web应用程序类型的类型。
+        this.webApplicationType = WebApplicationType.deduceFromClasspath();
+    // 2. 设置初始化应用context
+        setInitializers((Collection) getSpringFactoriesInstances(
+                ApplicationContextInitializer.class));
+    // 3.设置初始化监听    
+    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+    // 4. 推演主程序类    
+    this.mainApplicationClass = deduceMainApplicationClass();
+    }
+</code></pre><p>很多不为人知的事情都是发生在这个对象初始化的时候，这里我们都来一一解密</p>
+<pre><code>static WebApplicationType deduceFromClasspath() {
+        if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null)
+                &amp;&amp; !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
+                &amp;&amp; !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
+            return WebApplicationType.REACTIVE;
+        }
+        for (String className : SERVLET_INDICATOR_CLASSES) {
+            if (!ClassUtils.isPresent(className, null)) {
+                return WebApplicationType.NONE;
+            }
+        }
+    // 这里是我们测试web容器
+        return WebApplicationType.SERVLET;
+    }
+</code></pre><h1 id="一、推断-web-应用类型"><a href="#一、推断-web-应用类型" class="headerlink" title="一、推断 web 应用类型"></a>一、推断 web 应用类型</h1><p>这段代码是来推断我们的应用是哪种 web 应用程序</p>
+<pre><code>public enum WebApplicationType {
+
+    /**
+     * The application should not run as a web application and should not start an
+     * embedded web server.
+     */
+    NONE, // 不是web应用
+
+    /**
+     * The application should run as a servlet-based web application and should start an
+     * embedded servlet web server.
+     */
+    SERVLET, // servlet容器
+
+    /**
+     * The application should run as a reactive web application and should start an
+     * embedded reactive web server.
+     */
+    REACTIVE;  // 反应型web应用（webflux）
+</code></pre><p>当然一开始我们加入了web的依赖，所以我们是<code>servlet</code>容器，</p>
+<h1 id="二、初始化应用上下文"><a href="#二、初始化应用上下文" class="headerlink" title="二、初始化应用上下文"></a><strong>二、初始化应用上下文</strong></h1><p>在设置初始化应用context的时候 ，是先执行了getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，参数是ApplicationContextInitializer.class字节码对象</p>
+<pre><code>private &lt;T&gt; Collection&lt;T&gt; getSpringFactoriesInstances(Class&lt;T&gt; type,
+        Class&lt;?&gt;[] parameterTypes, Object... args) {
+        ClassLoader classLoader = getClassLoader();
+        // Use names and ensure unique to protect against duplicates
+        Set&lt;String&gt; names = new LinkedHashSet&lt;&gt;(
+      // 加载ApplicationContextInitializer.class类型的类
+       // 这里传入就是参数 ApplicationContextInitializer.clas
+         SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+    // 实例化加载到的类
+        List&lt;T&gt; instances = createSpringFactoriesInstances(type, parameterTypes,
+                classLoader, args, names);
+        AnnotationAwareOrderComparator.sort(instances);
+    // 返回
+    return instances;
+}
+
+public static List&lt;String&gt; loadFactoryNames(Class&lt;?&gt; factoryClass, @Nullable ClassLoader classLoader) {
+        String factoryClassName = factoryClass.getName();
+        return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
+}
+</code></pre><p>我们先来看看他是如何加载到这些类</p>
+<pre><code>private static Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(@Nullable ClassLoader classLoader) {
+    // 先从缓存中拿
+        MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);
+        if (result != null) {
+            return result;
+        }
+        try {
+// 去资源路径下加载
+public static final String ACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
+public static final String FACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
+    Enumeration&lt;URL&gt; urls = (classLoader != null ?    
+ classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :     ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION);            result = new LinkedMultiValueMap&lt;&gt;();
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                UrlResource resource = new UrlResource(url);
+                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+                for (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) {
+                    String factoryClassName = ((String) entry.getKey()).trim();
+                    for (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) {
+            result.add(factoryClassName, factoryName.trim());
+                    }
+                }
+            }
+            cache.put(classLoader, result);
+             // 返回所有的加载的类
+            return result;
+        }
+        catch (IOException ex) {
+            throw new IllegalArgumentException(&quot;Unable to load factories from location [&quot; +
+                    FACTORIES_RESOURCE_LOCATION + &quot;]&quot;, ex);
+        }
+    }
+</code></pre><p>这里有两个加载配置类的地方其实都指向了<strong><code>META-INF/spring.factories</code></strong>，通过断点我们可以看到应用程序是加载了以下几个jar下的<strong><code>spring.factores</code></strong>文件。</p>
+<p>双击Shift搜索spring.factories可以看到它存在于以下工程中</p>
+<p><img src="https://climg.mukewang.com/5e1556970953076610600255.png" alt="https://climg.mukewang.com/5e1556970953076610600255.png"></p>
+<p><strong><code>spring-boot-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong>（截图未完整截取）</p>
+<p><img src="https://climg.mukewang.com/5e1556ab096a12ca07130437.png" alt="https://climg.mukewang.com/5e1556ab096a12ca07130437.png"></p>
+<p><strong><code>spring-boot-autoconfigure-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
+<p><img src="https://climg.mukewang.com/5e1556ba09aace2108700359.png" alt="https://climg.mukewang.com/5e1556ba09aace2108700359.png"></p>
+<p><strong><code>spring-beans-5.1.7.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
+<p><img src="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png" alt="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png"></p>
+<p>从Map中根据<strong><code>org.springframework.context.ApplicationContextInitializer</code></strong>的类型拿到需要的类初始化类，断点进入<strong><code>getOrDefault(factoryClassName, Collections.emptyList());</code></strong>方法</p>
+<p><img src="https://climg.mukewang.com/5e1556de09173d5708440060.png" alt="https://climg.mukewang.com/5e1556de09173d5708440060.png"></p>
+<p>之后就是把加载到的需要初始化的类进行实例化添加到一个集合中等待备用</p>
+<pre><code>public void setInitializers(
+            Collection&lt;? extends ApplicationContextInitializer&lt;?&gt;&gt; initializers) {
+        this.initializers = new ArrayList&lt;&gt;();
+        this.initializers.addAll(initializers);
+    }
+</code></pre><h1 id="三、初始化监听器类"><a href="#三、初始化监听器类" class="headerlink" title="三、初始化监听器类"></a><strong>三、初始化监听器类</strong></h1><p>最关键的的还是这句</p>
+<p><img src="https://climg.mukewang.com/5e1556f20950b5a107350202.png" alt="https://climg.mukewang.com/5e1556f20950b5a107350202.png"></p>
+<p>当我们跟进去之后，会发现在初始化监听类的时候和上面初始化应用上下文是一样的代码。唯一不同的是<strong><code>getSpringFactoriesInstances(ApplicationListener.class))</code></strong>传进去的是<strong><code>ApplicationListener.class</code></strong>所以这里就不再赘述。</p>
+<h1 id="四、推演主程序类"><a href="#四、推演主程序类" class="headerlink" title="四、推演主程序类"></a><strong>四、推演主程序类</strong></h1><p>也就是这个最关键的代码了</p>
+<pre><code>**this.mainApplicationClass = deduceMainApplicationClass();**
+</code></pre><p><img src="https://climg.mukewang.com/5e15571509d2b15206910274.png" alt="https://climg.mukewang.com/5e15571509d2b15206910274.png"></p>
+<p><img src="https://climg.mukewang.com/5e15572409d4dbf109450379.png" alt="https://climg.mukewang.com/5e15572409d4dbf109450379.png"></p>
+<p>到这里就完成了<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的过程。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h1><p>这篇文章主要是给大家说了下<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的流程，大致可以分为四个步骤:</p>
+<ol>
+<li>推演web应用的类型（如果没有加web依赖类型NONE）</li>
+<li>初始化<strong><code>ApplicationContextInitializer</code></strong></li>
+<li>初始化<strong><code>ApplicationListener</code></strong></li>
+<li>推演出主程序类</li>
+</ol>
+<p>通过这样四个步骤就完成了第一步<strong><code>SpringApplication</code></strong>的初始化过程。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/passages/文件上传与魔数/" rel="next" title="文件上传与魔数">
+                <i class="fa fa-chevron-left"></i> 文件上传与魔数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/passages/RocketMQ/" rel="prev" title="RocketMQ">
+                RocketMQ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">冯雪超</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">71</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">52</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/littlefxc" title="GitHub &rarr; https://github.com/littlefxc" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:fengxuechao.littlefxc@gmail.com" title="E-Mail &rarr; mailto:fengxuechao.littlefxc@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、推断-web-应用类型"><span class="nav-number">1.</span> <span class="nav-text">一、推断 web 应用类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、初始化应用上下文"><span class="nav-number">2.</span> <span class="nav-text">二、初始化应用上下文</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、初始化监听器类"><span class="nav-number">3.</span> <span class="nav-text">三、初始化监听器类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、推演主程序类"><span class="nav-number">4.</span> <span class="nav-text">四、推演主程序类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">5.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">冯雪超</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.1.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
