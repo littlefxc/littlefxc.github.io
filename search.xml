@@ -1,6 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CentOS7下yum安装和配置NFS</title>
+    <url>/blog/passages/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/</url>
+    <content><![CDATA[<p>NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。</p>
+<p>根据官网说明 <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/ch-nfs" target="_blank" rel="noopener">Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4</a> 以后，支持 NFS v4.2 不需要 rpcbind 了，但是如果客户端只支持 NFC v3 则需要 rpcbind 这个服务。</p>
+<a id="more"></a>
+<p>本例演示环境：</p>
+<table>
+<thead>
+<tr>
+<th>hostname</th>
+<th>IP Address</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>k8s-master-1</td>
+<td>192.168.200.19</td>
+<td>服务端</td>
+</tr>
+<tr>
+<td>ip-192-168-154-14</td>
+<td>192.168.154.14</td>
+<td>客户端</td>
+</tr>
+<tr>
+<td>ip-192-168-154-15</td>
+<td>192.168.154.15</td>
+<td>客户端</td>
+</tr>
+<tr>
+<td>ip-192-168-154-16</td>
+<td>192.168.154.16</td>
+<td>客户端</td>
+</tr>
+</tbody>
+</table>
+<p><code>sudo yum install nfs-utils</code>, 只安装 nfs-utils 即可，rpcbind 属于它的依赖，也会安装上。</p>
+<h2 id="设置-NFS-服务开机启动"><a href="#设置-NFS-服务开机启动" class="headerlink" title="设置 NFS 服务开机启动"></a>设置 NFS 服务开机启动</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> rpcbind</span><br><span class="line">$ sudo systemctl <span class="built_in">enable</span> nfs</span><br></pre></td></tr></table></figure>
+<h2 id="启动-NFS-服务"><a href="#启动-NFS-服务" class="headerlink" title="启动 NFS 服务"></a>启动 NFS 服务</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start rpcbind</span><br><span class="line">$ sudo systemctl start nfs</span><br></pre></td></tr></table></figure>
+<h2 id="在各个服务器上关闭防火墙"><a href="#在各个服务器上关闭防火墙" class="headerlink" title="在各个服务器上关闭防火墙"></a>在各个服务器上关闭防火墙</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ systemctl stop firewalld.service            <span class="comment">#停止firewall</span></span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewalld.service         <span class="comment">#禁止firewall开机启动</span></span><br><span class="line">$ systemctl stop iptables.service             <span class="comment">#停止iptables</span></span><br><span class="line">$ systemctl <span class="built_in">disable</span> iptables.service          <span class="comment">#禁止iptables开机启动l</span></span><br></pre></td></tr></table></figure>
+<h2 id="配置共享目录"><a href="#配置共享目录" class="headerlink" title="配置共享目录"></a>配置共享目录</h2><p>服务启动之后，我们在服务端配置一个共享目录</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo mkdir /home/k8s-projects/k8s-nfs</span><br><span class="line">$ sudo chmod 755 /home/k8s-projects/k8s-nfs</span><br></pre></td></tr></table></figure>
+<p>根据这个目录，相应配置导出目录</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ sudo vi /etc/exports</span><br></pre></td></tr></table></figure>
+<p>添加如下配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/home/k8s-projects/k8s-nfs *(rw,sync,no_root_squash,no_all_squash)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>/data</code>: 共享目录位置。</li>
+<li><code>192.168.0.0/24</code>: 客户端 IP 范围，<code>*</code> 代表所有，即没有限制。</li>
+<li><code>rw</code>: 权限设置，可读可写。</li>
+<li><code>sync</code>: 同步共享目录。</li>
+<li><code>no_root_squash</code>: 可以使用 root 授权。</li>
+<li><code>no_all_squash</code>: 可以使用普通用户授权。</li>
+</ol>
+<p><code>:wq</code> 保存设置之后，重启 NFS 服务。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo exportfs -r //让上面的配置生效或者重启服务</span><br><span class="line">$ sudo systemctl restart nfs</span><br></pre></td></tr></table></figure>
+<p>可以检查一下本地的共享目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ showmount -e localhost</span><br><span class="line">Export list <span class="keyword">for</span> localhost:</span><br><span class="line">/home/k8s-projects/k8s-nfs *</span><br></pre></td></tr></table></figure>
+<p>这样，服务端就配置好了，接下来配置客户端，连接服务端，使用共享目录。</p>
+<h2 id="Linux-客户端安装"><a href="#Linux-客户端安装" class="headerlink" title="Linux 客户端安装"></a>Linux 客户端安装</h2><p>与服务端类似</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum install nfs-utils</span><br></pre></td></tr></table></figure>
+<h2 id="Linux-客户端配置"><a href="#Linux-客户端配置" class="headerlink" title="Linux 客户端配置"></a>Linux 客户端配置</h2><p>设置 rpcbind 服务的开机启动</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> rpcbind</span><br></pre></td></tr></table></figure>
+<p>启动 NFS 服务</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start rpcbind</span><br></pre></td></tr></table></figure>
+<p><em><code>注意</code></em></p>
+<blockquote>
+<p>客户端不需要打开防火墙，因为客户端时发出请求方，网络能连接到服务端即可。客户端也不需要开启 NFS 服务，因为不共享目录。</p>
+</blockquote>
+<h2 id="客户端连接-NFS"><a href="#客户端连接-NFS" class="headerlink" title="客户端连接 NFS"></a>客户端连接 NFS</h2><p>挂载</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo mount -t nfs 192.168.200.19:/home/k8s-projects/k8s-nfs /mnt/k8s-nf</span><br></pre></td></tr></table></figure>
+<p>挂载之后，可以使用 <code>mount</code> 命令查看一下</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ showmount -e 192.168.200.19</span><br><span class="line">Export list <span class="keyword">for</span> 192.168.200.19:</span><br><span class="line">/home/k8s-projects/k8s-nfs *</span><br><span class="line">/root/data/nfs-pic</span><br></pre></td></tr></table></figure>
+<p>这说明已经挂载成功了。</p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>nfs</tag>
+        <tag>centos</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成</title>
+    <url>/blog/passages/%E5%9F%BA%E4%BA%8EJenkins%E3%80%81SVN%E3%80%81Harbor%E3%80%81Helm%E5%92%8CKubernetes%E7%9A%84%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/</url>
+    <content><![CDATA[<p>本文介绍如何结合 Kubernetes + Jenkis + SVN + Harbor + Helm 实现一个完整的 CI/CD 流水线作业进行持续集成和持续部署。</p>
+<a id="more"></a>
+<h2 id="使用-Kubernetes-的动态存储"><a href="#使用-Kubernetes-的动态存储" class="headerlink" title="使用 Kubernetes 的动态存储"></a>使用 Kubernetes 的动态存储</h2><p>尽管通过 hostPath 或者 emptyDir 的方式可以用来来持久化我们的数据，但是显然我们还需要更加可靠的存储来保存应用的持久化数据，这样容器在重建后，依然可以使用之前的数据。但是显然存储资源和 CPU 资源以及内存资源有很大不同，为了屏蔽底层的技术实现细节，让用户更加方便的使用，Kubernetes 便引入了 PV 和 PVC 两个重要的资源对象来实现对存储的管理。</p>
+<p>本文中我们使用 StorageClass，要使用它就得安装对应的自动配置程序，比如我们这里存储后端使用的是 nfs，那么我们就需要使用到一个 nfs-client 的自动配置程序，我们也叫它 Provisioner，这个程序使用我们已经配置好的 nfs 服务器，来自动创建持久卷，也就是自动帮我们创建 PV。</p>
+<h3 id="CentOS-7-下-yum-安装和配置-NFS"><a href="#CentOS-7-下-yum-安装和配置-NFS" class="headerlink" title="CentOS 7 下 yum 安装和配置 NFS"></a>CentOS 7 下 yum 安装和配置 NFS</h3><a href="/blog/passages/CentOS7下yum安装和配置NFS/" title="CentOS7下yum安装和配置NFS">CentOS7下yum安装和配置NFS</a>
+<h3 id="安装-nfs-client-provisioner"><a href="#安装-nfs-client-provisioner" class="headerlink" title="安装 nfs-client-provisioner"></a>安装 nfs-client-provisioner</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">$ helm install nfs-client-provisioner-dev stable/nfs-client-provisioner --<span class="built_in">set</span> nfs.server=192.168.200.19 --<span class="built_in">set</span> nfs.path=/home/k8s-projects/k8s-nfs --<span class="built_in">set</span> storageClass.defaultClass=<span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h2 id="k8s-中安装-Jenkins"><a href="#k8s-中安装-Jenkins" class="headerlink" title="k8s 中安装 Jenkins"></a>k8s 中安装 Jenkins</h2><p>## </p>
+]]></content>
+      <categories>
+        <category>devops</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>helm</tag>
+        <tag>jenkins</tag>
+        <tag>CI/CD</tag>
+        <tag>svn</tag>
+        <tag>devops</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes数据持久化</title>
+    <url>/blog/passages/Kubernetes%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>PV</tag>
+        <tag>PVC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>kubernetes学习笔记</title>
+    <url>/blog/passages/kubernetesNotes/</url>
+    <content><![CDATA[<p>markdown编写的hexo博客文章内部怎么跳转?</p>
+<p><code></code></p>
+<p>相对路径引用资源文件</p>
+<p><code></code></p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
+<li><a href="/blog/passages/Kubenete集群安装指南/" title="Kubernetes集群安装指南">Kubernetes集群安装指南</a>
+</li>
+<li><a href="/blog/passages/CentOS7下yum安装和配置NFS/" title="CentOS7下yum安装和配置NFS">CentOS7下yum安装和配置NFS</a>
+</li>
+<li><a href="/blog/passages/Kubernetes数据持久化/" title="Kubernetes数据持久化">Kubernetes数据持久化</a>
+</li>
+<li><a href="/blog/passages/基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成/" title="基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成">基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成</a>
+</li>
+</ol>
+<a id="more"></a>
+]]></content>
+      <categories>
+        <category>学习笔记</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>helm</tag>
+        <tag>jenkins</tag>
+        <tag>CI/CD</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes集群安装指南</title>
+    <url>/blog/passages/Kubenete%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/</url>
+    <content><![CDATA[<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="查看系统版本"><a href="#查看系统版本" class="headerlink" title="查看系统版本"></a>查看系统版本</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/centos-release</span></span><br><span class="line">CentOS Linux release 7.6.1810 (Core)</span><br></pre></td></tr></table></figure>
+<h3 id="配置主机名"><a href="#配置主机名" class="headerlink" title="配置主机名"></a>配置主机名</h3><p>为将来要作为主节点的服务器设置主机名。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hostnamectl <span class="built_in">set</span>-hostname k8s-master-1 --static</span><br></pre></td></tr></table></figure>
+<h3 id="配置服务器hosts"><a href="#配置服务器hosts" class="headerlink" title="配置服务器hosts"></a>配置服务器hosts</h3><p>各个服务器上都要配置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/hosts</span></span><br><span class="line">127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 k8s-master-1</span><br><span class="line">::1         localhost localhost.localdomain localhost6 localhost6.localdomain6</span><br><span class="line">192.168.212.155 salt</span><br><span class="line"></span><br><span class="line">0.0.0.0 aliyun.one</span><br><span class="line">0.0.0.0 lsd.systemten.org</span><br><span class="line">0.0.0.0 pastebin.com</span><br><span class="line">0.0.0.0 pm.cpuminerpool.com</span><br><span class="line">0.0.0.0 systemten.org</span><br><span class="line"></span><br><span class="line">192.168.200.19 k8s-master-1</span><br><span class="line">192.168.154.14 ip-192-168-154-14</span><br><span class="line">192.168.154.15 ip-192-168-154-15</span><br><span class="line">192.168.154.16 ip-192-168-154-16</span><br></pre></td></tr></table></figure>
+<h3 id="关闭swap，注释swap分区"><a href="#关闭swap，注释swap分区" class="headerlink" title="关闭swap，注释swap分区"></a>关闭swap，注释swap分区</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># swapoff -a</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/fstab</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># /etc/fstab</span></span><br><span class="line"><span class="comment"># Created by anaconda on Mon Mar 26 20:43:49 2018</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Accessible filesystems, by reference, are maintained under '/dev/disk'</span></span><br><span class="line"><span class="comment"># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">/dev/mapper/centos-root /                       xfs     defaults        0 0</span><br><span class="line">UUID=848d5a8b-0ee9-481f-b1ff-833fb35cfd03 /boot                   xfs     defaults        0 0</span><br><span class="line">/dev/mapper/centos-home /home                   xfs     defaults        0 0</span><br><span class="line"><span class="comment">#/dev/mapper/centos-swap swap                    swap    defaults        0 0</span></span><br></pre></td></tr></table></figure>
+<h3 id="添加网易-yum-镜像"><a href="#添加网易-yum-镜像" class="headerlink" title="添加网易 yum 镜像"></a>添加网易 yum 镜像</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/yum.repos.d/CentOS-Base.repo</span></span><br><span class="line"><span class="comment"># CentOS-Base.repo</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The mirror system uses the connecting IP address of the client and the</span></span><br><span class="line"><span class="comment"># update status of each mirror to pick mirrors that are updated to and</span></span><br><span class="line"><span class="comment"># geographically close to the client.  You should use this for CentOS updates</span></span><br><span class="line"><span class="comment"># unless you are manually picking other mirrors.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If the mirrorlist= does not work for you, as a fall back you can try the</span></span><br><span class="line"><span class="comment"># remarked out baseurl= line instead.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">[base]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Base - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/os/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#released updates</span></span><br><span class="line">[updates]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Updates - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/updates/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#additional packages that may be useful</span></span><br><span class="line">[extras]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Extras - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/extras/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#additional packages that extend functionality of existing packages</span></span><br><span class="line">[centosplus]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Plus - 163.com</span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/centosplus/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br></pre></td></tr></table></figure>
+<h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><p>在各个服务器上关闭防火墙</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl stop firewalld.service            #停止firewall</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl disable firewalld.service         #禁止firewall开机启动</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl stop iptables.service             #停止iptables</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl disable iptables.service          #禁止iptables开机启动l</span></span><br></pre></td></tr></table></figure>
+<h3 id="配置内核参数，将桥接的IPv4流量传递到iptables的链"><a href="#配置内核参数，将桥接的IPv4流量传递到iptables的链" class="headerlink" title="配置内核参数，将桥接的IPv4流量传递到iptables的链"></a>配置内核参数，将桥接的IPv4流量传递到iptables的链</h3><p>各个服务器都要配置</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl --system</span><br></pre></td></tr></table></figure>
+<h3 id="禁用SELinux"><a href="#禁用SELinux" class="headerlink" title="禁用SELinux"></a>禁用SELinux</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># sestatus</span></span><br><span class="line">SELinux status: disabled</span><br></pre></td></tr></table></figure>
+<h2 id="安装配置-docker"><a href="#安装配置-docker" class="headerlink" title="安装配置 docker"></a>安装配置 docker</h2><p>官方文档地址：<a href="https://docs.docker.com/engine/install/centos/" target="_blank" rel="noopener">Install Docker Engine on CentOS</a></p>
+<p>Docker官方文档对安装步骤描述已经足够详细, 过程并不复杂, 本文便不再赘述.</p>
+<h3 id="安装-docker"><a href="#安装-docker" class="headerlink" title="安装 docker"></a>安装 docker</h3><p>本文安装docker的版本是<code>18.09</code>, 安装时请按照文档描述的方式明确指定版本号<code>yum install docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7 containerd.io</code>.</p>
+<h3 id="配置-docker"><a href="#配置-docker" class="headerlink" title="配置 docker"></a>配置 docker</h3><p>官方文档地址：<a href="https://kubernetes.io/zh/docs/setup/production-environment/container-runtimes/" target="_blank" rel="noopener">容器运行时</a></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"registry-mirrors"</span>: [<span class="string">"https://registry.docker-cn.com"</span>, <span class="string">"https://docker.mirrors.ustc.edu.cn"</span>, <span class="string">"https://fzhifedh.mirror.aliyuncs.com"</span>],</span><br><span class="line">  <span class="string">"insecure-registries"</span>: [<span class="string">"hub.51iwifi.com"</span>,<span class="string">"alpha-harbor.51iwifi.com"</span>,<span class="string">"192.168.195.2"</span>,<span class="string">"134.108.20.13"</span>],</span><br><span class="line">  <span class="string">"max-concurrent-downloads"</span>: 10,</span><br><span class="line">  <span class="string">"log-driver"</span>: <span class="string">"json-file"</span>,</span><br><span class="line">  <span class="string">"log-level"</span>: <span class="string">"warn"</span>,</span><br><span class="line">  <span class="string">"log-opts"</span>: &#123;</span><br><span class="line">    <span class="string">"max-size"</span>: <span class="string">"10m"</span>,</span><br><span class="line">    <span class="string">"max-file"</span>: <span class="string">"3"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="安装完后重启"><a href="#安装完后重启" class="headerlink" title="安装完后重启"></a>安装完后重启</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl enable docker</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl start docker</span></span><br></pre></td></tr></table></figure>
+<p>同样在各个服务器上都要保持一致</p>
+<h2 id="安装-Kubernetes-kubectl-kubelet-kubeadm"><a href="#安装-Kubernetes-kubectl-kubelet-kubeadm" class="headerlink" title="安装 Kubernetes(kubectl, kubelet, kubeadm)"></a>安装 Kubernetes(kubectl, kubelet, kubeadm)</h2><h3 id="添加阿里kubernetes源"><a href="#添加阿里kubernetes源" class="headerlink" title="添加阿里kubernetes源"></a>添加阿里kubernetes源</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span></span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">exclude=kube*</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl enable kubelet</span></span><br></pre></td></tr></table></figure>
+<h3 id="初始化-master-节点"><a href="#初始化-master-节点" class="headerlink" title="初始化 master 节点"></a>初始化 master 节点</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config print init-defaults &gt; kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
+<p>该文件有两处需要修改:</p>
+<p>将<code>advertiseAddress: 1.2.3.4</code>修改为本机地址<br>将<code>imageRepository: k8s.gcr.io</code>修改为<code>imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers</code></p>
+<p>修改完毕后文件如下:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeadm.k8s.io/v1beta2</span></span><br><span class="line"><span class="attr">bootstrapTokens:</span></span><br><span class="line"><span class="attr">- groups:</span></span><br><span class="line"><span class="attr">  - system:</span><span class="attr">bootstrappers:kubeadm:default-node-token</span></span><br><span class="line"><span class="attr">  token:</span> <span class="string">abcdef.0123456789abcdef</span></span><br><span class="line"><span class="attr">  ttl:</span> <span class="number">0</span><span class="string">s</span></span><br><span class="line"><span class="attr">  usages:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">signing</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">authentication</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">InitConfiguration</span></span><br><span class="line"><span class="attr">localAPIEndpoint:</span></span><br><span class="line"><span class="attr">  advertiseAddress:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="attr">  bindPort:</span> <span class="number">6443</span></span><br><span class="line"><span class="attr">nodeRegistration:</span></span><br><span class="line"><span class="attr">  criSocket:</span> <span class="string">/var/run/dockershim.sock</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">k8s-master-1</span></span><br><span class="line"><span class="attr">  taints:</span></span><br><span class="line"><span class="attr">  - effect:</span> <span class="string">NoSchedule</span></span><br><span class="line"><span class="attr">    key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiServer:</span></span><br><span class="line"><span class="attr">  timeoutForControlPlane:</span> <span class="number">4</span><span class="string">m0s</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeadm.k8s.io/v1beta2</span></span><br><span class="line"><span class="attr">certificatesDir:</span> <span class="string">/etc/kubernetes/pki</span></span><br><span class="line"><span class="attr">clusterName:</span> <span class="string">kubernetes</span></span><br><span class="line"><span class="attr">controllerManager:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="attr">dns:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">CoreDNS</span></span><br><span class="line"><span class="attr">etcd:</span></span><br><span class="line"><span class="attr">  local:</span></span><br><span class="line"><span class="attr">    dataDir:</span> <span class="string">/var/lib/etcd</span></span><br><span class="line"><span class="attr">imageRepository:</span> <span class="string">registry.cn-hangzhou.aliyuncs.com/google_containers</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterConfiguration</span></span><br><span class="line"><span class="attr">kubernetesVersion:</span> <span class="string">v1.18.0</span></span><br><span class="line"><span class="attr">networking:</span></span><br><span class="line"><span class="attr">  dnsDomain:</span> <span class="string">cluster.local</span></span><br><span class="line"><span class="attr">  serviceSubnet:</span> <span class="number">10.96</span><span class="number">.0</span><span class="number">.0</span><span class="string">/12</span></span><br><span class="line"><span class="attr">scheduler:</span> <span class="string">&#123;&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config images pull --config kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
+<h3 id="执行初始化"><a href="#执行初始化" class="headerlink" title="执行初始化"></a>执行初始化</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config images pull --config kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
+<p>等待执行完毕后, 会输出如下内容:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line">...</span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 192.168.200.19:6443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:a67698bdd29af4af0d70a563c4a17d1c751faabe65d7d3661eb90783568ecda6</span><br></pre></td></tr></table></figure>
+<p>最后两行需要保存下来, <code>kubeadm join ...</code>是其它worker节点加入所需要执行的命令.</p>
+<p>接下来配置环境, 让当前用户可以执行kubectl命令:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
+<p>查看节点，<code>kubectl get node</code></p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS     ROLES    AGE     VERSION</span><br><span class="line">k8s-master-1   NotReady   master   3m25s   v1.18.0</span><br></pre></td></tr></table></figure>
+<p>node节点为<code>NotReady</code>，因为 pod <code>coredns</code> 没有启动，缺少网络pod.</p>
+<h2 id="安装-calico-网络"><a href="#安装-calico-网络" class="headerlink" title="安装 calico 网络"></a>安装 calico 网络</h2><p>官方文档地址：<a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#instructions" target="_blank" rel="noopener">Instructions</a></p>
+<h3 id="下载-calico-的-k8s-文件"><a href="#下载-calico-的-k8s-文件" class="headerlink" title="下载 calico 的 k8s 文件"></a>下载 calico 的 k8s 文件</h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat kubeadm-init.yaml | grep serviceSubnet:</span></span><br><span class="line">  serviceSubnet: 10.96.0.0/12</span><br></pre></td></tr></table></figure>
+<p>打开 <code>calico.yaml</code>, 将<code>192.168.0.0/16</code>修改为<code>10.96.0.0/12</code></p>
+<blockquote>
+<p>需要注意的是, calico.yaml中的IP和kubeadm-init.yaml需要保持一致, 要么初始化前修改kubeadm-init.yaml, 要么初始化后修改calico.yaml.</p>
+</blockquote>
+<p>执行<code>kubectl apply -f calico.yaml</code>初始化网络.</p>
+<p>此时查看node信息, master的状态已经是<code>Ready</code>了.</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS   ROLES    AGE   VERSION</span><br><span class="line">k8s-master-1   Ready    master   15m   v1.18.0</span><br></pre></td></tr></table></figure>
+<h2 id="安装-dashboard"><a href="#安装-dashboard" class="headerlink" title="安装 dashboard"></a>安装 dashboard</h2><h3 id="部署-dashboard"><a href="#部署-dashboard" class="headerlink" title="部署 dashboard"></a>部署 dashboard</h3><p>官方文档：<a href="https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/" target="_blank" rel="noopener">网页界面 (Dashboard)</a></p>
+<p>官方部署dashboard的服务没使用nodeport，将yaml文件下载到本地，在service里添加<code>NodePort</code></p>
+<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>官方文档地址: <a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user" target="_blank" rel="noopener">Creating sample user</a></p>
+<p>创建一个用于登录Dashboard的用户. 创建文件<code>dashboard-adminuser.yaml</code>内容如下:</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">- kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure>
+<p>执行命令<code>kubectl apply -f dashboard-adminuser.yaml</code>.</p>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>官方文档地址：<a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user#bearer-token" target="_blank" rel="noopener">Bearer Token</a></p>
+<p>使用token进行登录，执行下面命令获取token</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-t4hxz  | grep token | awk <span class="string">'NR==3&#123;print $2&#125;'</span></span><br></pre></td></tr></table></figure>
+<p>复制该Token到登录页, 点击登录即可, 效果如下:</p>
+<p><img src="/blog/.com//Kubenete集群安装指南" alt="image"></p>
+<h2 id="添加其它-Worker-节点"><a href="#添加其它-Worker-节点" class="headerlink" title="添加其它 Worker 节点"></a>添加其它 Worker 节点</h2><p>在使用 <code>kubeadm</code> 初始化 master 节点后会有 <code>kubeadm join ...</code> 这样的返回信息，详见前文。</p>
+<p>同时，默认你已经在其它的服务器中已经安装了 docker, kubernetes. </p>
+<p>请注意在其它的服务器只需安装kubernetes，等初始化 master 节点后，执行如下命令将 Worker 加入集群:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">kubeadm join 192.168.200.19:6443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:a67698bdd29af4af0d70a563c4a17d1c751faabe65d7d3661eb90783568ecda6</span><br></pre></td></tr></table></figure>
+<p>添加完毕后, 在Master上查看节点状态:</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">[root@k8s-master-1 k8s-master]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME                STATUS   ROLES    AGE   VERSION</span><br><span class="line">ip-192-168-154-14   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">ip-192-168-154-15   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">ip-192-168-154-16   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">k8s-master-1        Ready    master   19d   v1.18.0</span><br></pre></td></tr></table></figure>
+<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="https://www.kubernetes.org.cn/7189.html" target="_blank" rel="noopener">使用kubeadm在Centos8上部署kubernetes1.18</a></p>
+<p><a href="https://blog.piaoruiqing.com/2019/09/17/kubernetes-1-installation/" target="_blank" rel="noopener">Kubernetes(一) 跟着官方文档从零搭建K8S</a></p>
+]]></content>
+      <categories>
+        <category>k8s</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+        <tag>安装指南</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>如何删除正在运行的nginx的日志</title>
     <url>/blog/passages/%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84nginx%E7%9A%84%E6%97%A5%E5%BF%97/</url>
     <content><![CDATA[<p>在删除nginx的日志的时候不要直接 <code>rm -f access.log</code>, 而是要 <code>echo &quot;&quot; &gt; access.log</code></p>
@@ -647,7 +873,7 @@ ribbon.MaxAutoRetriesNextServer=1
     <url>/blog/passages/%E9%A1%B9%E7%9B%AE%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<div id="hbe-security">
   <div class="hbe-input-container">
-  <input type="password" class="hbe-form-control" id="pass" placeholder="需要密码" />
+  <input type="password" class="hbe-form-control" id="pass" placeholder="需要密码">
     <label for="pass">需要密码</label>
     <div class="bottom-line"></div>
   </div>
@@ -655,7 +881,7 @@ ribbon.MaxAutoRetriesNextServer=1
 <div id="decryptionError" style="display: none;">Incorrect Password!</div>
 <div id="noContentError" style="display: none;">No content to display!</div>
 <div id="encrypt-blog" style="display:none">
-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
+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
 </div>
 <script src="/blog/lib/crypto-js.js"></script><script src="/blog/lib/blog-encrypt.js"></script><link href="/blog/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
       <categories>
