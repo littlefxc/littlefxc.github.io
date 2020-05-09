@@ -30,7 +30,7 @@ $ helm repo add bitnami https://charts.bitnami.com/bitnami
 
 ## 2.1 **CentOS 7 下 yum 安装和配置 NFS**
 
-[CentOS 7 下 yum 安装和配置 NFS](https://www.notion.so/CentOS-7-yum-NFS-f06ecd05f95e4dabaca98b54f3515a2a)
+{% post_link CentOS7下yum安装和配置NFS CentOS7下yum安装和配置NFS %}
 
 ## 2.2 安装 nfs-client-provisioner
 
