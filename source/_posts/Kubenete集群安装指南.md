@@ -14,6 +14,16 @@ categories: k8s
 CentOS Linux release 7.6.1810 (Core)
 ```
 
+**overlay2介绍**
+
+overlay的改进版，只支持4.0以上内核添加了Multiple lower layers in overlayfs的特性，所以overlay2可以直接造成muitiple lower layers不用像overlay一样要通过硬链接的方式(最大128层) centos的话支持3.10.0-514及以上内核版本也有此特性，所以消耗更少的inode
+
+docker官方overlay2的PR:
+[https://github.com/moby/moby/pull/22126](https://github.com/moby/moby/pull/22126)
+
+LINUX KERNERL 4.0 release说明：
+[https://kernelnewbies.org/Linux_4.0](https://kernelnewbies.org/Linux_4.0)
+
 ### 配置主机名
 
 为将来要作为主节点的服务器设置主机名。
