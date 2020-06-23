@@ -162,6 +162,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/zuul超时时间和重试设置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/zuul超时时间和重试设置/" class="post-title-link" itemprop="url">zuul超时时间和重试设置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-09-11 19:24:48 / 修改时间：19:41:47" itemprop="dateCreated datePublished" datetime="2019-09-11T19:24:48+08:00">2019-09-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Zuul-网关的超时设置"><a href="#Zuul-网关的超时设置" class="headerlink" title="Zuul 网关的超时设置"></a>Zuul 网关的超时设置</h2><p>Zuul（网关）的超时时间需要设置zuul、hystrix、ribbon等三部分：</p>
+<h3 id="zuul超时设置"><a href="#zuul超时设置" class="headerlink" title="zuul超时设置"></a>zuul超时设置</h3><pre><code>#zuul超时设置
+#默认1000
+zuul.host.socket-timeout-millis=2000
+#默认2000
+zuul.host.connect-timeout-millis=4000
+</code></pre><h3 id="hystrix超时设置"><a href="#hystrix超时设置" class="headerlink" title="hystrix超时设置"></a>hystrix超时设置</h3><pre><code>#熔断器启用
+feign.hystrix.enabled=true
+hystrix.command.default.execution.timeout.enabled=true
+#断路器的超时时间,下级服务返回超出熔断器时间，即便成功，消费端消息也是TIMEOUT,所以一般断路器的超时时间需要大于ribbon的超时时间，ribbon是真正去调用下级服务
+#当服务的返回时间大于ribbon的超时时间，会触发重试
+#断路器的超时时间默认为1000ms，太小了
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=60000
+
+# 为某个特定的服务配熔断时间
+hystrix.command.service-a.execution.isolation.thread.timeoutInMilliseconds=60000
+
+#断路器详细设置
+#当在配置时间窗口内达到此数量的失败后，进行短路。默认20个）
+#hystrix.command.default.circuitBreaker.requestVolumeThreshold=20
+#短路多久以后开始尝试是否恢复，默认5s）
+#hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds=5
+#出错百分比阈值，当达到此阈值后，开始短路。默认50%）
+#hystrix.command.default.circuitBreaker.errorThresholdPercentage=50%
+</code></pre><h2 id="ribbon超时设置"><a href="#ribbon超时设置" class="headerlink" title="ribbon超时设置"></a>ribbon超时设置</h2><pre><code>#ribbon请求连接的超时时间，限制3秒内必须请求到服务，并不限制服务处理的返回时间
+ribbon.ConnectTimeout=3000
+
+ribbon.SocketTimeout=5000
+#请求处理的超时时间 下级服务响应最大时间,超出时间消费方（路由也是消费方）返回timeout
+ribbon.ReadTimeout=5000
+
+# 单独设置某个服务的超时时间，会覆盖其他的超时时间限制，服务的名称以注册中心页面显示的名称为准，超时时间不可大于断路器的超时时间
+service-a.ribbon.ReadTimeout=50000
+service-a.ribbon.ConnectTimeout=50000
+</code></pre><h2 id="重试机制"><a href="#重试机制" class="headerlink" title="重试机制"></a>重试机制</h2><pre><code>#重试机制
+#该参数用来开启重试机制，默认是关闭
+spring.cloud.loadbalancer.retry.enabled=true
+#对所有操作请求都进行重试
+ribbon.OkToRetryOnAllOperations=true
+#对当前实例的重试次数
+ribbon.MaxAutoRetries=1
+#切换实例的重试次数
+ribbon.MaxAutoRetriesNextServer=1
+#根据如上配置，当访问到故障请求的时候，它会再尝试访问一次当前实例（次数由MaxAutoRetries配置），
+#如果不行，就换一个实例进行访问，如果还是不行，再换一次实例访问（更换次数由MaxAutoRetriesNextServer配置），
+#如果依然不行，返回失败信息。
+</code></pre>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/SpringEl-aop-jedis实现缓存管理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -264,7 +368,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-09-06 14:20:40" itemprop="dateModified" datetime="2019-09-06T14:20:40+08:00">2019-09-06</time>
+                <time title="修改时间：2020-06-03 08:36:15" itemprop="dateModified" datetime="2020-06-03T08:36:15+08:00">2020-06-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -852,73 +956,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/logstash/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/logstash/" class="post-title-link" itemprop="url">logstash</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-08-07 16:15:25 / 修改时间：16:17:48" itemprop="dateCreated datePublished" datetime="2019-08-07T16:15:25+08:00">2019-08-07</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -988,14 +1025,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-count">80</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/blog/categories/">
           
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
