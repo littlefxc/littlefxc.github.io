@@ -20,14 +20,26 @@
     var CONFIG = {"hostname":"littlefxc.gitee.io","root":"/blog/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 -">
+<meta name="keywords" content="hbase,大数据">
+<meta property="og:type" content="article">
 <meta property="og:title" content="hbase 1.4.13 安装部署">
 <meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/index.html">
 <meta property="og:site_name" content="littlefxc&#39;s blog">
+<meta property="og:description" content="认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 -">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-09-16T09:19:13.891Z">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185108081.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185132638.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png">
+<meta property="og:updated_time" content="2020-09-21T11:14:09.850Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hbase 1.4.13 安装部署">
+<meta name="twitter:description" content="认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 -">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png">
 
 <link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/">
 
@@ -189,6 +201,22 @@
 
               <time title="创建时间：2020-09-16 17:19:13" itemprop="dateCreated datePublished" datetime="2020-09-16T17:19:13+08:00">2020-09-16</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-21 19:14:09" itemprop="dateModified" datetime="2020-09-21T19:14:09+08:00">2020-09-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+            </span>
 
           
 
@@ -201,7 +229,128 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h1 id="认识HBase"><a href="#认识HBase" class="headerlink" title="认识HBase"></a>认识HBase</h1><h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase = Hadoop database，Hadoop数据库<br>开源数据库<br>官网：<a href="hbase.apache.org/">hbase.apache.org/</a><br>HBase源于Google的BigTable<br>Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。<br>当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。<br>HBase可执行基于Yarn平台的计算任务，但不擅长。</p>
+<p>&lt; !–more–&gt;</p>
+<h2 id="HBase集群角色"><a href="#HBase集群角色" class="headerlink" title="HBase集群角色"></a>HBase集群角色</h2><ul>
+<li>HDFS：<ul>
+<li>NameNode——主节点</li>
+<li>DataNode——数据存储节点</li>
+</ul>
+</li>
+<li>Yarn：<ul>
+<li>ResourceManager——全局的资源管理器</li>
+<li>NodeManager——分节点资源和任务管理器</li>
+</ul>
+</li>
+<li>HBase：<ul>
+<li>HMaster<ul>
+<li>负责Table表和RegionServer的监控管理工作</li>
+<li>处理元数据的变更</li>
+<li>对HRegionServer进行故障转移</li>
+<li>空闲时对数据进行负载均衡处理</li>
+<li>管理Region</li>
+<li>借助ZooKeeper发布位置到客户端</li>
+</ul>
+</li>
+<li>HRegionServer<ul>
+<li>负责Table数据的实际读写</li>
+<li>刷新缓存数据到HDFS</li>
+<li>处理Region</li>
+<li>可以进行数据压缩</li>
+<li>维护Hlog</li>
+<li>Region分片</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="hbase-架构"><a href="#hbase-架构" class="headerlink" title="hbase 架构"></a>hbase 架构</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png" alt="image-20200916184659443"></p>
+<p>HRegionServer结构：</p>
+<ul>
+<li>HLog：存储HBase的修改记录</li>
+<li>HRegion：根据rowkey（行键，类似id）分割的表的分片</li>
+<li>Store：对应HBase表中的一个列族，可存储多个字段</li>
+<li>HFile：真正的存储文件</li>
+<li>MemStore：保存当前的操作</li>
+<li>ZooKeeper：存放数据的元数据信息，负责维护RegionServer中保存的元数据信息</li>
+<li>DFS Client：存储数据信息到HDFS集群中</li>
+</ul>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
+<li>Hadoop集群环境</li>
+<li>ZooKeeper集群环境</li>
+</ul>
+<h2 id="服务器分配"><a href="#服务器分配" class="headerlink" title="服务器分配"></a>服务器分配</h2><table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>centos-node1</td>
+<td>192.168.99.101</td>
+</tr>
+<tr>
+<td>centos-node2</td>
+<td>192.168.99.102</td>
+</tr>
+<tr>
+<td>centos-node3</td>
+<td>192.168.99.103</td>
+</tr>
+</tbody>
+</table>
+<h2 id="解压安装文件到指定目录"><a href="#解压安装文件到指定目录" class="headerlink" title="解压安装文件到指定目录"></a>解压安装文件到指定目录</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zxvf hbase-1.4.13.tar.gz -C 目标目录</span><br></pre></td></tr></table></figure>
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><h3 id="hbase-env-sh"><a href="#hbase-env-sh" class="headerlink" title="hbase-env.sh"></a>hbase-env.sh</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-env.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The java implementation to use.  Java 1.7+ required.</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=jdk安装路径</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注释掉以下语句（jdk1.8中不需要这个配置）</span></span><br><span class="line"><span class="comment"># export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"><span class="comment"># export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Tell HBase whether it should manage it's own instance of Zookeeper or not.</span></span><br><span class="line"><span class="comment"># 关闭HBase自带的ZooKeeper</span></span><br><span class="line"><span class="built_in">export</span> HBASE_MANAGES_ZK=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h3 id="hbase-site-xml"><a href="#hbase-site-xml" class="headerlink" title="hbase-site.xml"></a>hbase-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-site.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 设置namenode所在位置（HDFS中存放的路径） --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://centos-node1:4000/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span>    </span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 是否开启集群 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">	<span class="comment">&lt;!-- HBase-0.9.8之前默认端口为60000 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>16000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16010<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16201<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16301<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- zookeeper集群的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="comment">&lt;!-- 注意不要有空格 --&gt;</span>  </span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node1,centos-node2,centos-node3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- hbase的元数据信息存储在zookeeper的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/zookeeper/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="regionservers"><a href="#regionservers" class="headerlink" title="regionservers"></a>regionservers</h3><p>加入节点主机名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">centos-node1</span><br><span class="line">centos-node2</span><br><span class="line">centos-node3</span><br></pre></td></tr></table></figure>
+<h2 id="解决依赖问题"><a href="#解决依赖问题" class="headerlink" title="解决依赖问题"></a>解决依赖问题</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/hbase/lib</span><br><span class="line">$ rm -fr hadoop-*</span><br><span class="line">$ rm -fr zookeeper-*</span><br></pre></td></tr></table></figure>
+<p>把相关版本的zookeeper和hadoop的依赖包导入到hbase/lib</p>
+<h2 id="软链接hadoop配置"><a href="#软链接hadoop配置" class="headerlink" title="软链接hadoop配置"></a>软链接hadoop配置</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/core-site.xml /usr/<span class="built_in">local</span>/hbase/conf/core-site.xml</span><br><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/hdfs-site.xml /usr/<span class="built_in">local</span>/hbase/conf/hdfs-site.xml</span><br></pre></td></tr></table></figure>
+<h2 id="复制到其他节点"><a href="#复制到其他节点" class="headerlink" title="复制到其他节点"></a>复制到其他节点</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node2:/usr/<span class="built_in">local</span>/</span><br><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node3:/usr/<span class="built_in">local</span>/</span><br></pre></td></tr></table></figure>
+<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/profile</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br><span class="line">JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br><span class="line">HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line">CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar:<span class="variable">$JRE_HOME</span>/lib</span><br><span class="line">ZOOKEEPER_HOME=/usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line">HBASE_HOME=/usr/<span class="built_in">local</span>/hbase</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$ZOOKEEPER_HOME</span>/bin:<span class="variable">$HBASE_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME ZOOKEEPER_HOME HBASE_HOME</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+<h2 id="修改防火墙"><a href="#修改防火墙" class="headerlink" title="修改防火墙"></a>修改防火墙</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务(端口不全)</span></span><br><span class="line">$ firewall-cmd --new-service=hbase --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16000/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16010/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16201/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16301/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 2181/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=hbase</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop firewalld</span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure>
+<h1 id="启动集群"><a href="#启动集群" class="headerlink" title="启动集群"></a>启动集群</h1><ul>
+<li>启动主节点<ul>
+<li><code>hbase-daemon.sh start master</code></li>
+</ul>
+</li>
+<li>启动从节点<ul>
+<li><code>hbase-daemon.sh start regionserver</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="关闭集群"><a href="#关闭集群" class="headerlink" title="关闭集群"></a>关闭集群</h1><ul>
+<li>关闭主节点<ul>
+<li><code>hbase-daemon.sh stop master</code></li>
+</ul>
+</li>
+<li>关闭从节点<ul>
+<li><code>hbase-daemon.sh stop regionserver</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="UI-展示"><a href="#UI-展示" class="headerlink" title="UI 展示"></a>UI 展示</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png" alt="image-20200921184311647"></p>
+<h1 id="hbase-shell的一些命令"><a href="#hbase-shell的一些命令" class="headerlink" title="hbase shell的一些命令"></a>hbase shell的一些命令</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入终端</span></span><br><span class="line">$ hbase shell</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185108081.png" alt="image-20200921185108081"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询表</span></span><br><span class="line">$ list</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185132638.png" alt="image-20200921185132638"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示服务器状态</span></span><br><span class="line">$ status</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png" alt="image-20200921185249611"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示当前用户</span></span><br><span class="line">$ whoami</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png" alt="image-20200921185450703"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line">$ create <span class="string">'表名'</span>, <span class="string">'列族1'</span>, <span class="string">'列族2'</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png" alt="image-20200921185551041"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 表的一些操作</span></span><br><span class="line"><span class="comment"># 全表扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 指定Rowkey扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span>, &#123;STARTROW =&gt; <span class="string">'Rowkey值'</span>, STOPROW =&gt; <span class="string">'Rowkey值'</span>&#125;</span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">$ describe <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 修改表结构信息</span></span><br><span class="line">$ alter <span class="string">'表名'</span>, &#123;NAME =&gt; <span class="string">'列族名'</span>, 变更字段名 =&gt; <span class="string">' '</span>&#125;</span><br><span class="line"><span class="comment"># 查询指定数据信息</span></span><br><span class="line"><span class="comment"># 指定具体的rowkey</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 指定具体的列</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span></span><br><span class="line"><span class="comment"># 统计表行数</span></span><br><span class="line">$ count <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 根据Rowkey进行统计</span></span><br><span class="line">$ count <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 表中添加数据信息。HBase只有覆盖没有修改,覆盖时对应表名、rowkey、列族、列名字段，输入新的值信息</span></span><br><span class="line">$ put <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span>, <span class="string">'值'</span></span><br><span class="line"><span class="comment"># 清空表</span></span><br><span class="line">$ truncate <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="comment"># 指定表不可用</span></span><br><span class="line">$ <span class="built_in">disable</span> <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">$ drop <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 退出终端</span></span><br><span class="line">$ <span class="built_in">exit</span></span><br><span class="line">$ quit</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
@@ -209,6 +358,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/hbase-大数据/" rel="tag"># hbase,大数据</a>
+          </div>
 
         
 
@@ -278,6 +430,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#认识HBase"><span class="nav-number">1.</span> <span class="nav-text">认识HBase</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HBase介绍"><span class="nav-number">1.1.</span> <span class="nav-text">HBase介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HBase集群角色"><span class="nav-number">1.2.</span> <span class="nav-text">HBase集群角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hbase-架构"><span class="nav-number">1.3.</span> <span class="nav-text">hbase 架构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">2.1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器分配"><span class="nav-number">2.2.</span> <span class="nav-text">服务器分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解压安装文件到指定目录"><span class="nav-number">2.3.</span> <span class="nav-text">解压安装文件到指定目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改配置文件"><span class="nav-number">2.4.</span> <span class="nav-text">修改配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hbase-env-sh"><span class="nav-number">2.4.1.</span> <span class="nav-text">hbase-env.sh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hbase-site-xml"><span class="nav-number">2.4.2.</span> <span class="nav-text">hbase-site.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#regionservers"><span class="nav-number">2.4.3.</span> <span class="nav-text">regionservers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决依赖问题"><span class="nav-number">2.5.</span> <span class="nav-text">解决依赖问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软链接hadoop配置"><span class="nav-number">2.6.</span> <span class="nav-text">软链接hadoop配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制到其他节点"><span class="nav-number">2.7.</span> <span class="nav-text">复制到其他节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置环境变量"><span class="nav-number">2.8.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改防火墙"><span class="nav-number">2.9.</span> <span class="nav-text">修改防火墙</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动集群"><span class="nav-number">3.</span> <span class="nav-text">启动集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关闭集群"><span class="nav-number">4.</span> <span class="nav-text">关闭集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UI-展示"><span class="nav-number">5.</span> <span class="nav-text">UI 展示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hbase-shell的一些命令"><span class="nav-number">6.</span> <span class="nav-text">hbase shell的一些命令</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -304,7 +457,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-count">70</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
