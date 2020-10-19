@@ -162,6 +162,209 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/linux安装Java的脚本/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/linux安装Java的脚本/" class="post-title-link" itemprop="url">linux安装Java的脚本</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-05-06 19:30:32 / 修改时间：19:31:32" itemprop="dateCreated datePublished" datetime="2019-05-06T19:30:32+08:00">2019-05-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="linux安装Java的脚本"><a href="#linux安装Java的脚本" class="headerlink" title="linux安装Java的脚本"></a>linux安装Java的脚本</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span> -ex</span><br><span class="line"></span><br><span class="line"><span class="comment"># UPDATE THESE URLs</span></span><br><span class="line"><span class="built_in">export</span> JDK_URL=https://download.oracle.com/otn-pub/java/jdk/8u191-b12/2787e4a523244c269598db4e85c51e0c/jdk-8u191-linux-x64.tar.gz</span><br><span class="line"><span class="built_in">export</span> UNLIMITED_STRENGTH_URL=http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip</span><br><span class="line"></span><br><span class="line"><span class="comment"># Download Oracle Java 8 accepting the license</span></span><br><span class="line">wget --no-cookies --header <span class="string">"Cookie: oraclelicense=accept-securebackup-cookie"</span> \</span><br><span class="line"><span class="variable">$&#123;JDK_URL&#125;</span></span><br><span class="line"><span class="comment"># Extract the archive</span></span><br><span class="line">tar -xzvf jdk-*.tar.gz</span><br><span class="line"><span class="comment"># clean up the tar</span></span><br><span class="line">rm -fr jdk-*.tar.gz</span><br><span class="line"><span class="comment"># mk the jvm dir</span></span><br><span class="line">sudo mkdir -p /usr/lib/jvm</span><br><span class="line"><span class="comment"># move the server jre</span></span><br><span class="line">sudo mv jdk1.8* /usr/lib/jvm/oracle_jdk8</span><br><span class="line"></span><br><span class="line"><span class="comment"># install unlimited strength policy</span></span><br><span class="line">wget --no-cookies --header <span class="string">"Cookie: oraclelicense=accept-securebackup-cookie"</span> \</span><br><span class="line"><span class="variable">$&#123;UNLIMITED_STRENGTH_URL&#125;</span></span><br><span class="line">unzip jce_policy-8.zip</span><br><span class="line">mv UnlimitedJCEPolicyJDK8/local_policy.jar /usr/lib/jvm/oracle_jdk8/jre/lib/security/</span><br><span class="line">mv UnlimitedJCEPolicyJDK8/US_export_policy.jar /usr/lib/jvm/oracle_jdk8/jre/lib/security/</span><br><span class="line"></span><br><span class="line">sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/oracle_jdk8/jre/bin/java 2000</span><br><span class="line">sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/oracle_jdk8/bin/javac 2000</span><br><span class="line"></span><br><span class="line">sudo <span class="built_in">echo</span> <span class="string">"export J2SDKDIR=/usr/lib/jvm/oracle_jdk8</span></span><br><span class="line"><span class="string">export J2REDIR=/usr/lib/jvm/oracle_jdk8/jre</span></span><br><span class="line"><span class="string">export PATH=<span class="variable">$PATH</span>:/usr/lib/jvm/oracle_jdk8/bin:/usr/lib/jvm/oracle_jdk8/db/bin:/usr/lib/jvm/oracle_jdk8/jre/bin</span></span><br><span class="line"><span class="string">export JAVA_HOME=/usr/lib/jvm/oracle_jdk8</span></span><br><span class="line"><span class="string">export DERBY_HOME=/usr/lib/jvm/oracle_jdk8/db"</span> | sudo tee -a /etc/profile.d/oraclejdk.sh</span><br></pre></td></tr></table></figure>
+<p>chmod +x 文件名.sh</p>
+<p>脚本来自 <a href="https://stackoverflow.com/questions/36478741/installing-oracle-jdk-on-windows-subsystem-for-linux" target="_blank" rel="noopener">https://stackoverflow.com/questions/36478741/installing-oracle-jdk-on-windows-subsystem-for-linux</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/MyBatis代码生成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/MyBatis代码生成/" class="post-title-link" itemprop="url">MyBatis代码生成</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-05-06 19:09:33 / 修改时间：19:23:32" itemprop="dateCreated datePublished" datetime="2019-05-06T19:09:33+08:00">2019-05-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>要使用generator插件自动生成相关文件，需要引入mybatis-generator-core这个包，在 <code>&lt;dependencys&gt;</code> 中加入</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/blog/passages/MyBatis代码生成/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/window删除右键管理员权限/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/window删除右键管理员权限/" class="post-title-link" itemprop="url">window删除右键管理员权限</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-05-06 19:06:00 / 修改时间：19:06:54" itemprop="dateCreated datePublished" datetime="2019-05-06T19:06:00+08:00">2019-05-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="删除右键管理员权限-reg"><a href="#删除右键管理员权限-reg" class="headerlink" title="删除右键管理员权限.reg"></a>删除右键管理员权限.reg</h2><figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Windows Registry Editor Version <span class="number">5</span>.<span class="number">00</span></span><br><span class="line">[-HKEY_CLASSES_ROOT\*\shell\runas]</span><br><span class="line">[-HKEY_CLASSES_ROOT\Directory\shell\runas]</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/window右键获取管理员权限/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -557,7 +760,7 @@ end
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -570,7 +773,7 @@ end
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">70</span>
+        <span class="site-state-item-count">73</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

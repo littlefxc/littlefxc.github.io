@@ -20,13 +20,13 @@
     var CONFIG = {"hostname":"littlefxc.gitee.io","root":"/blog/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 -">
+  <meta name="description" content="[TOC] 认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行">
 <meta name="keywords" content="hbase,大数据">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hbase 1.4.13 安装部署">
 <meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/index.html">
 <meta property="og:site_name" content="littlefxc&#39;s blog">
-<meta property="og:description" content="认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 -">
+<meta property="og:description" content="[TOC] 认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png">
@@ -35,10 +35,10 @@
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png">
-<meta property="og:updated_time" content="2020-09-21T11:14:09.850Z">
+<meta property="og:updated_time" content="2020-09-23T02:39:37.227Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hbase 1.4.13 安装部署">
-<meta name="twitter:description" content="认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 -">
+<meta name="twitter:description" content="[TOC] 认识HBaseHBase介绍HBase = Hadoop database，Hadoop数据库开源数据库官网：hbase.apache.org/HBase源于Google的BigTableApache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行">
 <meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png">
 
 <link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/">
@@ -206,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-21 19:14:09" itemprop="dateModified" datetime="2020-09-21T19:14:09+08:00">2020-09-21</time>
+                <time title="修改时间：2020-09-23 10:39:37" itemprop="dateModified" datetime="2020-09-23T10:39:37+08:00">2020-09-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -229,7 +229,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="认识HBase"><a href="#认识HBase" class="headerlink" title="认识HBase"></a>认识HBase</h1><h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase = Hadoop database，Hadoop数据库<br>开源数据库<br>官网：<a href="hbase.apache.org/">hbase.apache.org/</a><br>HBase源于Google的BigTable<br>Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。<br>当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。<br>HBase可执行基于Yarn平台的计算任务，但不擅长。</p>
+        <p>[TOC]</p>
+<h1 id="认识HBase"><a href="#认识HBase" class="headerlink" title="认识HBase"></a>认识HBase</h1><h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase = Hadoop database，Hadoop数据库<br>开源数据库<br>官网：<a href="hbase.apache.org/">hbase.apache.org/</a><br>HBase源于Google的BigTable<br>Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。<br>当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。<br>HBase可执行基于Yarn平台的计算任务，但不擅长。</p>
 <p>&lt; !–more–&gt;</p>
 <h2 id="HBase集群角色"><a href="#HBase集群角色" class="headerlink" title="HBase集群角色"></a>HBase集群角色</h2><ul>
 <li>HDFS：<ul>
@@ -350,6 +351,9 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line">$ create <span class="string">'表名'</span>, <span class="string">'列族1'</span>, <span class="string">'列族2'</span></span><br></pre></td></tr></table></figure>
 <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png" alt="image-20200921185551041"></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 表的一些操作</span></span><br><span class="line"><span class="comment"># 全表扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 指定Rowkey扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span>, &#123;STARTROW =&gt; <span class="string">'Rowkey值'</span>, STOPROW =&gt; <span class="string">'Rowkey值'</span>&#125;</span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">$ describe <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 修改表结构信息</span></span><br><span class="line">$ alter <span class="string">'表名'</span>, &#123;NAME =&gt; <span class="string">'列族名'</span>, 变更字段名 =&gt; <span class="string">' '</span>&#125;</span><br><span class="line"><span class="comment"># 查询指定数据信息</span></span><br><span class="line"><span class="comment"># 指定具体的rowkey</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 指定具体的列</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span></span><br><span class="line"><span class="comment"># 统计表行数</span></span><br><span class="line">$ count <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 根据Rowkey进行统计</span></span><br><span class="line">$ count <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 表中添加数据信息。HBase只有覆盖没有修改,覆盖时对应表名、rowkey、列族、列名字段，输入新的值信息</span></span><br><span class="line">$ put <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span>, <span class="string">'值'</span></span><br><span class="line"><span class="comment"># 清空表</span></span><br><span class="line">$ truncate <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="comment"># 指定表不可用</span></span><br><span class="line">$ <span class="built_in">disable</span> <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">$ drop <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 退出终端</span></span><br><span class="line">$ <span class="built_in">exit</span></span><br><span class="line">$ quit</span><br></pre></td></tr></table></figure>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><ul>
+<li><a href="https://juejin.im/post/6844903797655863309#heading-21" target="_blank" rel="noopener">https://juejin.im/post/6844903797655863309#heading-21</a></li>
+</ul>
 
     </div>
 
@@ -371,7 +375,10 @@
     <a href="/blog/passages/Zookeeper-3-4-14-安装部署/" rel="prev" title="Zookeeper 3.4.14 安装部署">
       <i class="fa fa-chevron-left"></i> Zookeeper 3.4.14 安装部署
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/blog/passages/hive2-3-7安装/" rel="next" title="hive 2.3.7 安装">
+      hive 2.3.7 安装 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -430,7 +437,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#认识HBase"><span class="nav-number">1.</span> <span class="nav-text">认识HBase</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HBase介绍"><span class="nav-number">1.1.</span> <span class="nav-text">HBase介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HBase集群角色"><span class="nav-number">1.2.</span> <span class="nav-text">HBase集群角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hbase-架构"><span class="nav-number">1.3.</span> <span class="nav-text">hbase 架构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">2.1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器分配"><span class="nav-number">2.2.</span> <span class="nav-text">服务器分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解压安装文件到指定目录"><span class="nav-number">2.3.</span> <span class="nav-text">解压安装文件到指定目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改配置文件"><span class="nav-number">2.4.</span> <span class="nav-text">修改配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hbase-env-sh"><span class="nav-number">2.4.1.</span> <span class="nav-text">hbase-env.sh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hbase-site-xml"><span class="nav-number">2.4.2.</span> <span class="nav-text">hbase-site.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#regionservers"><span class="nav-number">2.4.3.</span> <span class="nav-text">regionservers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决依赖问题"><span class="nav-number">2.5.</span> <span class="nav-text">解决依赖问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软链接hadoop配置"><span class="nav-number">2.6.</span> <span class="nav-text">软链接hadoop配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制到其他节点"><span class="nav-number">2.7.</span> <span class="nav-text">复制到其他节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置环境变量"><span class="nav-number">2.8.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改防火墙"><span class="nav-number">2.9.</span> <span class="nav-text">修改防火墙</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动集群"><span class="nav-number">3.</span> <span class="nav-text">启动集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关闭集群"><span class="nav-number">4.</span> <span class="nav-text">关闭集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UI-展示"><span class="nav-number">5.</span> <span class="nav-text">UI 展示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hbase-shell的一些命令"><span class="nav-number">6.</span> <span class="nav-text">hbase shell的一些命令</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#认识HBase"><span class="nav-number">1.</span> <span class="nav-text">认识HBase</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HBase介绍"><span class="nav-number">1.1.</span> <span class="nav-text">HBase介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HBase集群角色"><span class="nav-number">1.2.</span> <span class="nav-text">HBase集群角色</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hbase-架构"><span class="nav-number">1.3.</span> <span class="nav-text">hbase 架构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前期准备"><span class="nav-number">2.1.</span> <span class="nav-text">前期准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器分配"><span class="nav-number">2.2.</span> <span class="nav-text">服务器分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解压安装文件到指定目录"><span class="nav-number">2.3.</span> <span class="nav-text">解压安装文件到指定目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改配置文件"><span class="nav-number">2.4.</span> <span class="nav-text">修改配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hbase-env-sh"><span class="nav-number">2.4.1.</span> <span class="nav-text">hbase-env.sh</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hbase-site-xml"><span class="nav-number">2.4.2.</span> <span class="nav-text">hbase-site.xml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#regionservers"><span class="nav-number">2.4.3.</span> <span class="nav-text">regionservers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决依赖问题"><span class="nav-number">2.5.</span> <span class="nav-text">解决依赖问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软链接hadoop配置"><span class="nav-number">2.6.</span> <span class="nav-text">软链接hadoop配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制到其他节点"><span class="nav-number">2.7.</span> <span class="nav-text">复制到其他节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置环境变量"><span class="nav-number">2.8.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改防火墙"><span class="nav-number">2.9.</span> <span class="nav-text">修改防火墙</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#启动集群"><span class="nav-number">3.</span> <span class="nav-text">启动集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关闭集群"><span class="nav-number">4.</span> <span class="nav-text">关闭集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UI-展示"><span class="nav-number">5.</span> <span class="nav-text">UI 展示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#hbase-shell的一些命令"><span class="nav-number">6.</span> <span class="nav-text">hbase shell的一些命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资源"><span class="nav-number">7.</span> <span class="nav-text">参考资源</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -444,7 +451,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -457,7 +464,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">70</span>
+        <span class="site-state-item-count">73</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
