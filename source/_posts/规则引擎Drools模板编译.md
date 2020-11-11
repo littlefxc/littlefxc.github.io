@@ -64,7 +64,7 @@ DataProvider data = new ArrayDataProvider(new String[][]{
 });
 DataProviderCompiler converter = new DataProviderCompiler();
 String drl = converter.compile(data, templateStream);
-```
+ ```
 
 ### 1.4 编译规则
 
