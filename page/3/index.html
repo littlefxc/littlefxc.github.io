@@ -162,6 +162,300 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/源码分析-SpringBoot启动流程分析原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/源码分析-SpringBoot启动流程分析原理/" class="post-title-link" itemprop="url">源码分析:SpringBoot启动流程分析原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-02-26 20:51:54 / 修改时间：20:52:34" itemprop="dateCreated datePublished" datetime="2020-02-26T20:51:54+08:00">2020-02-26</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。</p>
+</blockquote>
+<p>很多程序员都感慨<strong><code>SpringBoot</code></strong>的到来大大解放了生产力，但是也有聪明的程序猿会多思考一下下，<strong><code>SpringBoot</code></strong>是怎么做到的约定的配置？它配置在了哪里？又是怎么启动的作用等等一系列的问号在跟女朋友花前月下的时候，依然会时不时冒出来。这严重影响了程序猿们的”幸”福生活，为了能广大”程序猿”同胞过上幸福美满的生活，今天咱么就来一起跟随源码探究下<strong><code>SpringBoot</code></strong>到底是如何做到”<strong>约定优于配置</strong>“的。</p>
+<p>首先，我们先介绍下我们的演示的项目环境，我们先试用<strong><code>Spring Initializr</code></strong>来创建一个<strong><code>SpirngBoot</code></strong>工程。我们使用的版本是<strong><code>SpringBoot 2.1.5.RELEASE</code></strong>。</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png"></p>
+<p>接下来就只在<strong>pom.xml</strong>文件中添加一个web工程的依赖，是为了观察后面容器类型的源码。</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><p>这样我们的环境就准备好了。</p>
+<p>我们跟着<strong>SpringBoot</strong>的源码来探究它的启动流程，首先，先找到这个应用程序的入口主方法，在上面打一个断点</p>
+<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png"></p>
+<p>启动之后，<strong>F5</strong> 进入到 <code>run()</code> 方法</p>
+<pre><code>public static ConfigurableApplicationContext run(Class&lt;?&gt;[] primarySources,String[] args) {
+    return new SpringApplication(primarySources).run(args);
+}
+</code></pre><p>到这里会执行<code>new SpringApplication(primarySources)</code>创建spring应用对象，继续F5往下跟会执行<strong>SpringApplication构造器</strong></p>
+<pre><code>// SpringApplication构造器
+public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) {
+    // 资源加载器
+        this.resourceLoader = resourceLoader;
+        Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;);
+        this.primarySources = new LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));
+    // 1. 可能的web应用程序类型的类型。
+        this.webApplicationType = WebApplicationType.deduceFromClasspath();
+    // 2. 设置初始化应用context
+        setInitializers((Collection) getSpringFactoriesInstances(
+                ApplicationContextInitializer.class));
+    // 3.设置初始化监听    
+    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+    // 4. 推演主程序类    
+    this.mainApplicationClass = deduceMainApplicationClass();
+    }
+</code></pre><p>很多不为人知的事情都是发生在这个对象初始化的时候，这里我们都来一一解密</p>
+<pre><code>static WebApplicationType deduceFromClasspath() {
+        if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null)
+                &amp;&amp; !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
+                &amp;&amp; !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
+            return WebApplicationType.REACTIVE;
+        }
+        for (String className : SERVLET_INDICATOR_CLASSES) {
+            if (!ClassUtils.isPresent(className, null)) {
+                return WebApplicationType.NONE;
+            }
+        }
+    // 这里是我们测试web容器
+        return WebApplicationType.SERVLET;
+    }
+</code></pre><h1 id="一、推断-web-应用类型"><a href="#一、推断-web-应用类型" class="headerlink" title="一、推断 web 应用类型"></a>一、推断 web 应用类型</h1><p>这段代码是来推断我们的应用是哪种 web 应用程序</p>
+<pre><code>public enum WebApplicationType {
+
+    /**
+     * The application should not run as a web application and should not start an
+     * embedded web server.
+     */
+    NONE, // 不是web应用
+
+    /**
+     * The application should run as a servlet-based web application and should start an
+     * embedded servlet web server.
+     */
+    SERVLET, // servlet容器
+
+    /**
+     * The application should run as a reactive web application and should start an
+     * embedded reactive web server.
+     */
+    REACTIVE;  // 反应型web应用（webflux）
+</code></pre><p>当然一开始我们加入了web的依赖，所以我们是<code>servlet</code>容器，</p>
+<h1 id="二、初始化应用上下文"><a href="#二、初始化应用上下文" class="headerlink" title="二、初始化应用上下文"></a><strong>二、初始化应用上下文</strong></h1><p>在设置初始化应用context的时候 ，是先执行了getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，参数是ApplicationContextInitializer.class字节码对象</p>
+<pre><code>private &lt;T&gt; Collection&lt;T&gt; getSpringFactoriesInstances(Class&lt;T&gt; type,
+        Class&lt;?&gt;[] parameterTypes, Object... args) {
+        ClassLoader classLoader = getClassLoader();
+        // Use names and ensure unique to protect against duplicates
+        Set&lt;String&gt; names = new LinkedHashSet&lt;&gt;(
+      // 加载ApplicationContextInitializer.class类型的类
+       // 这里传入就是参数 ApplicationContextInitializer.clas
+         SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+    // 实例化加载到的类
+        List&lt;T&gt; instances = createSpringFactoriesInstances(type, parameterTypes,
+                classLoader, args, names);
+        AnnotationAwareOrderComparator.sort(instances);
+    // 返回
+    return instances;
+}
+
+public static List&lt;String&gt; loadFactoryNames(Class&lt;?&gt; factoryClass, @Nullable ClassLoader classLoader) {
+        String factoryClassName = factoryClass.getName();
+        return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
+}
+</code></pre><p>我们先来看看他是如何加载到这些类</p>
+<pre><code>private static Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(@Nullable ClassLoader classLoader) {
+    // 先从缓存中拿
+        MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);
+        if (result != null) {
+            return result;
+        }
+        try {
+// 去资源路径下加载
+public static final String ACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
+public static final String FACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
+    Enumeration&lt;URL&gt; urls = (classLoader != null ?    
+ classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :     ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION);            result = new LinkedMultiValueMap&lt;&gt;();
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                UrlResource resource = new UrlResource(url);
+                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+                for (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) {
+                    String factoryClassName = ((String) entry.getKey()).trim();
+                    for (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) {
+            result.add(factoryClassName, factoryName.trim());
+                    }
+                }
+            }
+            cache.put(classLoader, result);
+             // 返回所有的加载的类
+            return result;
+        }
+        catch (IOException ex) {
+            throw new IllegalArgumentException(&quot;Unable to load factories from location [&quot; +
+                    FACTORIES_RESOURCE_LOCATION + &quot;]&quot;, ex);
+        }
+    }
+</code></pre><p>这里有两个加载配置类的地方其实都指向了<strong><code>META-INF/spring.factories</code></strong>，通过断点我们可以看到应用程序是加载了以下几个jar下的<strong><code>spring.factores</code></strong>文件。</p>
+<p>双击Shift搜索spring.factories可以看到它存在于以下工程中</p>
+<p><img src="https://climg.mukewang.com/5e1556970953076610600255.png" alt="https://climg.mukewang.com/5e1556970953076610600255.png"></p>
+<p><strong><code>spring-boot-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong>（截图未完整截取）</p>
+<p><img src="https://climg.mukewang.com/5e1556ab096a12ca07130437.png" alt="https://climg.mukewang.com/5e1556ab096a12ca07130437.png"></p>
+<p><strong><code>spring-boot-autoconfigure-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
+<p><img src="https://climg.mukewang.com/5e1556ba09aace2108700359.png" alt="https://climg.mukewang.com/5e1556ba09aace2108700359.png"></p>
+<p><strong><code>spring-beans-5.1.7.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
+<p><img src="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png" alt="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png"></p>
+<p>从Map中根据<strong><code>org.springframework.context.ApplicationContextInitializer</code></strong>的类型拿到需要的类初始化类，断点进入<strong><code>getOrDefault(factoryClassName, Collections.emptyList());</code></strong>方法</p>
+<p><img src="https://climg.mukewang.com/5e1556de09173d5708440060.png" alt="https://climg.mukewang.com/5e1556de09173d5708440060.png"></p>
+<p>之后就是把加载到的需要初始化的类进行实例化添加到一个集合中等待备用</p>
+<pre><code>public void setInitializers(
+            Collection&lt;? extends ApplicationContextInitializer&lt;?&gt;&gt; initializers) {
+        this.initializers = new ArrayList&lt;&gt;();
+        this.initializers.addAll(initializers);
+    }
+</code></pre><h1 id="三、初始化监听器类"><a href="#三、初始化监听器类" class="headerlink" title="三、初始化监听器类"></a><strong>三、初始化监听器类</strong></h1><p>最关键的的还是这句</p>
+<p><img src="https://climg.mukewang.com/5e1556f20950b5a107350202.png" alt="https://climg.mukewang.com/5e1556f20950b5a107350202.png"></p>
+<p>当我们跟进去之后，会发现在初始化监听类的时候和上面初始化应用上下文是一样的代码。唯一不同的是<strong><code>getSpringFactoriesInstances(ApplicationListener.class))</code></strong>传进去的是<strong><code>ApplicationListener.class</code></strong>所以这里就不再赘述。</p>
+<h1 id="四、推演主程序类"><a href="#四、推演主程序类" class="headerlink" title="四、推演主程序类"></a><strong>四、推演主程序类</strong></h1><p>也就是这个最关键的代码了</p>
+<pre><code>**this.mainApplicationClass = deduceMainApplicationClass();**
+</code></pre><p><img src="https://climg.mukewang.com/5e15571509d2b15206910274.png" alt="https://climg.mukewang.com/5e15571509d2b15206910274.png"></p>
+<p><img src="https://climg.mukewang.com/5e15572409d4dbf109450379.png" alt="https://climg.mukewang.com/5e15572409d4dbf109450379.png"></p>
+<p>到这里就完成了<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的过程。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h1><p>这篇文章主要是给大家说了下<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的流程，大致可以分为四个步骤:</p>
+<ol>
+<li>推演web应用的类型（如果没有加web依赖类型NONE）</li>
+<li>初始化<strong><code>ApplicationContextInitializer</code></strong></li>
+<li>初始化<strong><code>ApplicationListener</code></strong></li>
+<li>推演出主程序类</li>
+</ol>
+<p>通过这样四个步骤就完成了第一步<strong><code>SpringApplication</code></strong>的初始化过程。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/文件上传与魔数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/文件上传与魔数/" class="post-title-link" itemprop="url">文件上传与魔数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-27 10:19:25 / 修改时间：10:49:12" itemprop="dateCreated datePublished" datetime="2019-11-27T10:19:25+08:00">2019-11-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="问题的出现"><a href="#问题的出现" class="headerlink" title="问题的出现"></a>问题的出现</h2><p>今天在测试图片上传的时候，工作电脑中没有现成的图片（其实是懒得找），又不想去网上下载就把word文档改了后缀名(.jpeg)上传，没想到上传失败。</p>
+<p>心里头非常纳闷，第一反应是代码有BUG，打开项目的过程中，不对。我把文件后缀名重新改回在上传文件，可以正常上传了。</p>
+<h2 id="定位问题"><a href="#定位问题" class="headerlink" title="定位问题"></a>定位问题</h2><p>由此，问题已经定位了，是我的这个不正常行为引起的。但为什么会出现这个问题，打开搜索引擎一通猛搜。</p>
+<p>原来是有一个叫做 <code>magic number</code> 的东西，文件的起始几个字节的内容是固定的，这几个字节的内容也被称为 <code>magic number</code>, 因此可以根据这几个字节的内容确定文件类型。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>常见的文件类型的魔数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> FileType &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * JPEG</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    JPEG(<span class="string">"JPEG"</span>, <span class="string">"FFD8FF"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * PNG</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PNG(<span class="string">"PNG"</span>, <span class="string">"89504E47"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * GIF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    GIF(<span class="string">"GIF"</span>, <span class="string">"47494638"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * TIFF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    TIFF(<span class="string">"TIFF"</span>, <span class="string">"49492A00"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Windows bitmap</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    BMP(<span class="string">"BMP"</span>, <span class="string">"424D"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * CAD</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    DWG(<span class="string">"DWG"</span>, <span class="string">"41433130"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adobe photoshop</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PSD(<span class="string">"PSD"</span>, <span class="string">"38425053"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Rich Text Format</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RTF(<span class="string">"RTF"</span>, <span class="string">"7B5C727466"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * XML</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    XML(<span class="string">"XML"</span>, <span class="string">"3C3F786D6C"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * HTML</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    HTML(<span class="string">"HTML"</span>, <span class="string">"68746D6C3E"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Outlook Express</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    DBX(<span class="string">"DBX"</span>, <span class="string">"CFAD12FEC5FD746F "</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Outlook</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PST(<span class="string">"PST"</span>, <span class="string">"2142444E"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * doc;xls;dot;ppt;xla;ppa;pps;pot;msi;sdw;db</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    OLE2(<span class="string">"OLE2"</span>, <span class="string">"0xD0CF11E0A1B11AE1"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Microsoft Word/Excel</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    XLS_DOC(<span class="string">"XLS_DOC"</span>, <span class="string">"D0CF11E0"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Microsoft Access</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MDB(<span class="string">"MDB"</span>, <span class="string">"5374616E64617264204A"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Word Perfect</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    WPB(<span class="string">"WPB"</span>, <span class="string">"FF575043"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Postscript</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    EPS_PS(<span class="string">"EPS_PS"</span>, <span class="string">"252150532D41646F6265"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adobe Acrobat</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PDF(<span class="string">"PDF"</span>, <span class="string">"255044462D312E"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Windows Password</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PWL(<span class="string">"PWL"</span>, <span class="string">"E3828596"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ZIP Archive</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    ZIP(<span class="string">"ZIP"</span>, <span class="string">"504B0304"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ARAR Archive</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RAR(<span class="string">"RAR"</span>, <span class="string">"52617221"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * WAVE</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    WAV(<span class="string">"WAV"</span>, <span class="string">"57415645"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * AVI</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    AVI(<span class="string">"AVI"</span>, <span class="string">"41564920"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Real Audio</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RAM(<span class="string">"RAM"</span>, <span class="string">"2E7261FD"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Real Media</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RM(<span class="string">"RM"</span>, <span class="string">"2E524D46"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Quicktime</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MOV(<span class="string">"MOV"</span>, <span class="string">"6D6F6F76"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Windows Media</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    ASF(<span class="string">"ASF"</span>, <span class="string">"3026B2758E66CF11"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * MIDI</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MID(<span class="string">"MID"</span>, <span class="string">"4D546864"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String key;</span><br><span class="line">    <span class="keyword">private</span> String value;</span><br><span class="line"></span><br><span class="line">    FileType(String key, String value) &#123;</span><br><span class="line">        <span class="keyword">this</span>.key = key;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体的实现就是根据文件的魔数判断文件的真实类型</p>
+<p>文件工具类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取文件投</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> filePath 文件路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 16 进制的文件投信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getFileHeader</span><span class="params">(String filePath)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">28</span>];</span><br><span class="line">        InputStream inputStream = <span class="keyword">new</span> FileInputStream(filePath);</span><br><span class="line">        inputStream.read(b, <span class="number">0</span>, <span class="number">28</span>);</span><br><span class="line">        inputStream.close();</span><br><span class="line">        <span class="keyword">return</span> bytes2hex(b);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将字节数组转换成16进制字符串</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">bytes2hex</span><span class="params">(<span class="keyword">byte</span>[] src)</span> </span>&#123;</span><br><span class="line">        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder(<span class="string">""</span>);</span><br><span class="line">        <span class="keyword">if</span> (src == <span class="keyword">null</span> || src.length &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">byte</span> b : src) &#123;</span><br><span class="line">            <span class="keyword">int</span> v = b &amp; <span class="number">0xFF</span>;</span><br><span class="line">            String hv = Integer.toHexString(v);</span><br><span class="line">            <span class="keyword">if</span> (hv.length() &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                stringBuilder.append(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            stringBuilder.append(hv);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stringBuilder.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据文件路径获取文件类型</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> filePath 文件路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 文件类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileType <span class="title">getFileType</span><span class="params">(String filePath)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String fileHead = getFileHeader(filePath);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == fileHead || fileHead.length() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        fileHead = fileHead.toUpperCase();</span><br><span class="line">        FileType[] fileTypes = FileType.values();</span><br><span class="line">        <span class="keyword">for</span> (FileType type : fileTypes) &#123;</span><br><span class="line">            <span class="keyword">if</span> (fileHead.startsWith(type.getValue())) &#123;</span><br><span class="line">                <span class="keyword">return</span> type;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>没想到这个被有意无意忽视的问题就这样出现在我的面前，真是意料之外，又在情理之中。</p>
+<p>考虑一个问题，还是得想的多一点。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-安全功能入门/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -957,158 +1251,6 @@ ribbon.MaxAutoRetriesNextServer=1
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/SpringEl-aop-jedis实现缓存管理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/SpringEl-aop-jedis实现缓存管理/" class="post-title-link" itemprop="url">SpringEl+aop+jedis实现缓存管理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-09-02 19:40:16 / 修改时间：19:54:22" itemprop="dateCreated datePublished" datetime="2019-09-02T19:40:16+08:00">2019-09-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="SpringEl-aop-jedis实现缓存管理"><a href="#SpringEl-aop-jedis实现缓存管理" class="headerlink" title="SpringEl + aop + jedis实现缓存管理"></a>SpringEl + aop + jedis实现缓存管理</h2><p>目的：使用 aop 配合 jedis 和 spring expression 实现缓存管理</p>
-<h3 id="切点"><a href="#切点" class="headerlink" title="切点"></a>切点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 配合&#123;<span class="doctag">@link</span> CacheAspect&#125;，该注解是切入点</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/8/26</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Target</span>(ElementType.METHOD)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Cacheable &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * redis key 的前缀</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">prefix</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * redis key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">String <span class="title">key</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="切面"><a href="#切面" class="headerlink" title="切面"></a>切面</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/9/2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CacheAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JedisCluster jedisCluster;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AthenaIotProperties properties;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模仿spring cache</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> pjp</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> Throwable</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Around</span>(<span class="string">"@annotation(Cacheable)"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">cacheable</span><span class="params">(ProceedingJoinPoint pjp)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">boolean</span> info = log.isInfoEnabled();</span><br><span class="line">        Method method = AopUtils.getMethod(pjp);</span><br><span class="line">        Cacheable cacheable = method.getAnnotation(Cacheable.class);</span><br><span class="line">        String key = getELString(cacheable, method, pjp.getArgs());</span><br><span class="line">        <span class="keyword">int</span> expireIn = properties.getTokenExpireIn();</span><br><span class="line">        Boolean existKey = jedisCluster.exists(key);</span><br><span class="line">        <span class="keyword">if</span> (!existKey) &#123;</span><br><span class="line">            <span class="keyword">if</span> (info) &#123;</span><br><span class="line">                log.info(<span class="string">"缓存中没有 key:&#123;&#125;"</span>, key);</span><br><span class="line">            &#125;</span><br><span class="line">            Object obj = pjp.proceed();</span><br><span class="line">            String value = JSON.toJSONString(obj);</span><br><span class="line">            jedisCluster.setex(key, expireIn, value);</span><br><span class="line">            <span class="keyword">if</span> (info) &#123;</span><br><span class="line">                log.info(<span class="string">"缓存token:key=&#123;&#125;, expireIn=&#123;&#125;, value=&#123;&#125;"</span>, key, expireIn, value);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> obj;</span><br><span class="line">        &#125;</span><br><span class="line">        String athenaIotTokenString = jedisCluster.get(key);</span><br><span class="line">        <span class="keyword">if</span> (info) &#123;</span><br><span class="line">            log.info(<span class="string">"缓存token:key=&#123;&#125;, expireIn=&#123;&#125;, value=&#123;&#125;"</span>, key, expireIn, athenaIotTokenString);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> JSON.parseObject(athenaIotTokenString, method.getReturnType());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getELString</span><span class="params">(Cacheable cacheable, Method method, Object[] args)</span> </span>&#123;</span><br><span class="line">        ExpressionParser parser = <span class="keyword">new</span> SpelExpressionParser();</span><br><span class="line">        EvaluationContext context = <span class="keyword">new</span> StandardEvaluationContext();</span><br><span class="line">        <span class="comment">//获取被拦截方法参数名列表(使用Spring支持类库)</span></span><br><span class="line">        LocalVariableTableParameterNameDiscoverer nameDiscoverer = <span class="keyword">new</span> LocalVariableTableParameterNameDiscoverer();</span><br><span class="line">        String[] paraNameArr = nameDiscoverer.getParameterNames(method);</span><br><span class="line">        <span class="comment">//把方法参数放入SPEL上下文中</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; paraNameArr.length; i++) &#123;</span><br><span class="line">            context.setVariable(paraNameArr[i], args[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        String keyPrefix = parser.parseExpression(cacheable.prefix()).getValue(context, String.class);</span><br><span class="line">        String key = parser.parseExpression(cacheable.key()).getValue(context, String.class);</span><br><span class="line">        <span class="keyword">return</span> MessageFormat.format(<span class="string">"&#123;0&#125;&#123;1&#125;"</span>, keyPrefix, key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable</span>(prefix = <span class="string">"'token:'"</span>, key = <span class="string">"#authRequest.appId+':'+#authRequest.secret"</span>)</span><br><span class="line"><span class="comment">//@Cacheable(value = "token", key = "#p0.appId+':'+#p0.secret")</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> AccessToken <span class="title">getAccessToken</span><span class="params">(AuthenticationRequest authRequest)</span> </span>&#123;</span><br><span class="line">    String tokenUrl = authRequest.getTokenUrl();</span><br><span class="line">    ParameterizedTypeReference typeReference = <span class="keyword">new</span> ParameterizedTypeReference&lt;ResultBean&lt;AccessToken&gt;&gt;()&#123;&#125;;</span><br><span class="line">    ResponseEntity&lt;ResultBean&lt;AccessToken&gt;&gt; entity = restTemplate.exchange(tokenUrl, HttpMethod.GET, <span class="keyword">null</span>, typeReference);</span><br><span class="line">    <span class="keyword">return</span> entity.getBody().getData();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/项目总结/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/项目总结/" class="post-title-link" itemprop="url">项目总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-08-29 14:42:15" itemprop="dateCreated datePublished" datetime="2019-08-29T14:42:15+08:00">2019-08-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-03 08:36:15" itemprop="dateModified" datetime="2020-06-03T08:36:15+08:00">2020-06-03</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/awifi/" itemprop="url" rel="index"><span itemprop="name">awifi</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          需要密码
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/blog/passages/项目总结/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1178,7 +1320,7 @@ ribbon.MaxAutoRetriesNextServer=1
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-count">89</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
