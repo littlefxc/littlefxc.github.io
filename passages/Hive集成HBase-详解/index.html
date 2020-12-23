@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png">
-<meta property="og:updated_time" content="2020-11-11T08:35:35.001Z">
+<meta property="og:updated_time" content="2020-11-20T10:16:15.072Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hive集成HBase 详解">
 <meta name="twitter:description" content="[TOC] 1 前言1.1 为什么要集成Hive和HBase?Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着调研和使用的深入，渐渐有用户发现它们均存在不足之处。 比如 Hive 不应该用来进行实时的查询，因为它需要很长时间才可以返回结果。同时想要将数据实时的插入hive中则完全没有可操作性。 至于 HBase虽然非常适用于">
@@ -192,10 +192,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-11-11 16:31:29 / 修改时间：16:35:35" itemprop="dateCreated datePublished" datetime="2020-11-11T16:31:29+08:00">2020-11-11</time>
+              <time title="创建时间：2020-11-11 16:31:29" itemprop="dateCreated datePublished" datetime="2020-11-11T16:31:29+08:00">2020-11-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-20 18:16:15" itemprop="dateModified" datetime="2020-11-20T18:16:15+08:00">2020-11-20</time>
+              </span>
 
           
 
@@ -228,6 +234,12 @@
 <p>在tblproperties 语句中还出现了2个t_employee表，”hbase.table.name”定义的是在hbase中的表名 ，这个属性是可选的，仅当你想在Hive和Hbase中使用不同名字的表名时才需要填写，如果使用相同的名字则可以省略；</p>
 <p>“hbase.mapred.output.outputtable”定义的第三个t_employee是存储数据表的名称，指定插入数据时写入的表，如果以后需要往该表插入数据就需要指定该值，这个可以不要，表数据就存储在第二个表中了 。</p>
 </li>
+<li><p>stored by ‘org.apache.hadoop.hive.hbase.HBaseStorageHandler’ ：是指定处理的存储器，就是hive-hbase-handler-*.jar包，要做hive和hbase的集成必须要加上这一句；</p>
+</li>
+<li><p>“hbase.columns.mapping” 是定义在hive表中的字段怎么与hbase的列族进行映射。</p>
+<p>   例如:st1就是列族，name就是列。它们之间通过“：”连接。</p>
+<p>   在hive中创建的t_employee表，包括两个字段（int型的id和string型的name），映射为hbase中的表t_employee，其中：key对应hbase的rowkey，value对应hbase的st1:name列。</p>
+</li>
 </ol>
 <h2 id="4-2-字段映射"><a href="#4-2-字段映射" class="headerlink" title="4.2 字段映射"></a>4.2 字段映射</h2><p>控制HBase字段和Hive之间的映射有两种<code>SERDEPROPERTIES</code>:</p>
 <ul>
@@ -254,7 +266,9 @@
 <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled%201.png"></p>
 <p>至此，hive 集成hbase 就到此告一段落。</p>
 <h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://zhuanlan.zhihu.com/p/74041611" target="_blank" rel="noopener">如何整合hive和hbase</a></p>
-<p>[Hive与HBase的集成实践](</p>
+<p><a href="https://ask.hellobi.com/blog/marsj/4002" target="_blank" rel="noopener">Hive与HBase的集成实践</a></p>
+<p>[[hbase-1-4-13-安装部署]]</p>
+<p>[[hive2-3-7安装]]</p>
 
     </div>
 
@@ -273,7 +287,10 @@
     <a href="/blog/passages/Hive注释中文乱码/" rel="prev" title="Hive注释中文乱码">
       <i class="fa fa-chevron-left"></i> Hive注释中文乱码
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/blog/passages/Obsidian使用/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -346,7 +363,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">90</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
