@@ -162,6 +162,105 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/filebeat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/filebeat/" class="post-title-link" itemprop="url">filebeat</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-07 17:13:33" itemprop="dateCreated datePublished" datetime="2019-08-07T17:13:33+08:00">2019-08-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-08-08 14:48:57" itemprop="dateModified" datetime="2019-08-08T14:48:57+08:00">2019-08-08</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="filebeat"><a href="#filebeat" class="headerlink" title="filebeat"></a>filebeat</h2><h2 id="filebeat合并多行日志示例"><a href="#filebeat合并多行日志示例" class="headerlink" title="filebeat合并多行日志示例"></a>filebeat合并多行日志示例</h2><p>本节中的示例包括以下内容：</p>
+<ul>
+<li>将Java堆栈跟踪日志组合成一个事件</li>
+<li>将C风格的日志组合成一个事件</li>
+<li>结合时间戳处理多行事件</li>
+</ul>
+<h3 id="Java堆栈跟踪"><a href="#Java堆栈跟踪" class="headerlink" title="Java堆栈跟踪"></a>Java堆栈跟踪</h3><h4 id="Java示例一"><a href="#Java示例一" class="headerlink" title="Java示例一"></a>Java示例一</h4><p>Java堆栈跟踪由多行组成，每一行在初始行之后以空格开头，如本例中所述:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.NullPointerException</span><br><span class="line">        at com.example.myproject.Book.getTitle(Book.java:16)</span><br><span class="line">        at com.example.myproject.Author.getBookTitles(Author.java:25)</span><br><span class="line">        at com.example.myproject.Bootstrap.main(Bootstrap.java:14)</span><br></pre></td></tr></table></figure>
+<p>要将这些行整合到Filebeat中的单个事件中，请使用以下多行配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">multiline.pattern:</span> <span class="string">'^[[:space:]]'</span></span><br><span class="line"><span class="string">multiline.negate:</span> <span class="literal">false</span></span><br><span class="line"><span class="string">multiline.match:</span> <span class="string">after</span></span><br></pre></td></tr></table></figure>
+<p>此配置将以空格开头的所有行合并到上一行。</p>
+<h4 id="Java示例二"><a href="#Java示例二" class="headerlink" title="Java示例二"></a>Java示例二</h4><p>下面是一个Java堆栈跟踪日志，稍微复杂的例子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.IllegalStateException: A book has a null property</span><br><span class="line">       at com.example.myproject.Author.getBookIds(Author.java:38)</span><br><span class="line">       at com.example.myproject.Bootstrap.main(Bootstrap.java:14)</span><br><span class="line">Caused by: java.lang.NullPointerException</span><br><span class="line">       at com.example.myproject.Book.getId(Book.java:22)</span><br><span class="line">       at com.example.myproject.Author.getBookIds(Author.java:35)</span><br><span class="line">       ... 1 more</span><br></pre></td></tr></table></figure>
+<p>要将这些行整合到Filebeat中的单个事件中，请使用以下多行配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">multiline.pattern:</span> <span class="string">'^[[:space:]]+(at|\.&#123;3&#125;)\b|^Caused by:'</span></span><br><span class="line"><span class="string">multiline.negate:</span> <span class="literal">false</span></span><br><span class="line"><span class="string">multiline.match:</span> <span class="string">after</span></span><br></pre></td></tr></table></figure>
+<p>此配置解释如下：</p>
+<ul>
+<li>将以空格开头的所有行合并到上一行</li>
+<li>并把以Caused by开头的也追加到上一行</li>
+</ul>
+<h3 id="C风格的日志"><a href="#C风格的日志" class="headerlink" title="C风格的日志"></a>C风格的日志</h3><p>一些编程语言在一行末尾使用反斜杠 <code>\</code> 字符，表示该行仍在继续，如本例中所示:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">printf</span> (<span class="string">"%10.10ld  \t %10.10ld \t %s\</span></span><br><span class="line"><span class="string">  %f"</span>, w, x, y, z );</span><br></pre></td></tr></table></figure>
+<p>要将这些行整合到Filebeat中的单个事件中，请使用以下多行配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">multiline.pattern:</span> <span class="string">'\\$'</span></span><br><span class="line"><span class="string">multiline.negate:</span> <span class="literal">false</span></span><br><span class="line"><span class="string">multiline.match:</span> <span class="string">before</span></span><br></pre></td></tr></table></figure>
+<p>此配置将以\字符结尾的任何行与后面的行合并。</p>
+<h3 id="时间戳"><a href="#时间戳" class="headerlink" title="时间戳"></a>时间戳</h3><p>来自Elasticsearch等服务的活动日志通常以时间戳开始，然后是关于特定活动的信息，如下例所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[2015-08-24 11:49:14,389][INFO ][env                      ] [Letha] using [1] data paths, mounts [[/</span><br><span class="line">(/dev/disk1)]], net usable_space [34.5gb], net total_space [118.9gb], types [hfs]</span><br></pre></td></tr></table></figure>
+<p>要将这些行整合到Filebeat中的单个事件中，请使用以下多行配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">multiline.pattern:</span> <span class="string">'^\[[0-9]&#123;4&#125;-[0-9]&#123;2&#125;-[0-9]&#123;2&#125;'</span></span><br><span class="line"><span class="string">multiline.negate:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">multiline.match:</span> <span class="string">after</span></span><br></pre></td></tr></table></figure>
+<p>此配置使用negate: true和match: after设置来指定任何不符合指定模式的行都属于上一行。</p>
+<h3 id="应用程序事件"><a href="#应用程序事件" class="headerlink" title="应用程序事件"></a>应用程序事件</h3><p>有时您的应用程序日志包含以自定义标记开始和结束的事件，如以下示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[2015-08-24 11:49:14,389] Start new event</span><br><span class="line">[2015-08-24 11:49:14,395] Content of processing something</span><br><span class="line">[2015-08-24 11:49:14,399] End event</span><br></pre></td></tr></table></figure>
+<p>要在Filebeat中将其整合为单个事件，请使用以下多行配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">multiline.pattern:</span> <span class="string">'Start new event'</span></span><br><span class="line"><span class="string">multiline.negate:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">multiline.match:</span> <span class="string">after</span></span><br><span class="line"><span class="string">multiline.flush_pattern:</span> <span class="string">'End event'</span></span><br></pre></td></tr></table></figure>
+<p>此配置把指定字符串开头，指定字符串结尾的多行合并为一个事件。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/logstash/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1192,251 +1291,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/MySQL数据类型/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/MySQL数据类型/" class="post-title-link" itemprop="url">MySQL数据类型</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-06-20 16:23:37 / 修改时间：17:14:26" itemprop="dateCreated datePublished" datetime="2019-06-20T16:23:37+08:00">2019-06-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/RDBMS/" itemprop="url" rel="index"><span itemprop="name">RDBMS</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="MySQL数据类型"><a href="#MySQL数据类型" class="headerlink" title="MySQL数据类型"></a>MySQL数据类型</h1><ul>
-<li>数字类型<ul>
-<li>整数: tinyint、smallint、mediumint、int、bigint</li>
-<li>浮点数: float、double、real、decimal</li>
-</ul>
-</li>
-<li>日期和时间: date、time、datetime、timestamp、year</li>
-<li>字符串类型<ul>
-<li>字符串: char、varchar</li>
-<li>文本: tinytext、text、mediumtext、longtext</li>
-</ul>
-</li>
-<li>二进制(可用来存储图片、音乐等): tinyblob、blob、mediumblob、longblob</li>
-</ul>
-<h2 id="数字类型"><a href="#数字类型" class="headerlink" title="数字类型"></a>数字类型</h2><h3 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h3><table>
-<thead>
-<tr>
-<th>type</th>
-<th>Storage(Bytes)</th>
-<th>Signed Range</th>
-<th>Unsigned Range</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>TINYINT</td>
-<td>1</td>
-<td>-128-127</td>
-<td>0-255</td>
-</tr>
-<tr>
-<td>SMALLINT</td>
-<td>2</td>
-<td>-32768-32767</td>
-<td>0-65535</td>
-</tr>
-<tr>
-<td>MEDIUMINT</td>
-<td>3</td>
-<td>-8388608-8388607</td>
-<td>0-16777215</td>
-</tr>
-<tr>
-<td>INT</td>
-<td>4</td>
-<td>-2147483648-2147483647</td>
-<td>0-4294967295</td>
-</tr>
-<tr>
-<td>BIGINT</td>
-<td>8</td>
-<td>-9223372036854775808-9223372036854775807</td>
-<td>0-18446744073709551615</td>
-</tr>
-</tbody>
-</table>
-<h3 id="浮点型"><a href="#浮点型" class="headerlink" title="浮点型"></a>浮点型</h3><table>
-<thead>
-<tr>
-<th>属性</th>
-<th>存储空间</th>
-<th>精度</th>
-<th>精确性</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>FLOAT(M, D)</td>
-<td>4 bytes</td>
-<td>单精度</td>
-<td>非精确</td>
-<td>单精度浮点型，m总个数，d小数位</td>
-</tr>
-<tr>
-<td>DOUBLE(M, D)</td>
-<td>8 bytes</td>
-<td>双精度</td>
-<td>比Float精度高</td>
-<td>双精度浮点型，m总个数，d小数位</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>FLOAT容易造成精度丢失</li>
-</ul>
-<h3 id="定点数DECIMAL"><a href="#定点数DECIMAL" class="headerlink" title="定点数DECIMAL"></a>定点数DECIMAL</h3><ul>
-<li>高精度的数据类型，常用来存储交易相关的数据</li>
-<li>DECIMAL(M,N).M代表总精度，N代表小数点右侧的位数（标度）</li>
-<li>1 &lt; M &lt; 254, 0 &lt; N &lt; 60;</li>
-<li>存储空间变长</li>
-</ul>
-<h2 id="时间类型"><a href="#时间类型" class="headerlink" title="时间类型"></a>时间类型</h2><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>字节</th>
-<th>例</th>
-<th>精确性</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>DATE</td>
-<td>三字节</td>
-<td>2015-05-01</td>
-<td>精确到年月日</td>
-</tr>
-<tr>
-<td>TIME</td>
-<td>三字节</td>
-<td>11:12:00</td>
-<td>精确到时分秒</td>
-</tr>
-<tr>
-<td>DATETIME</td>
-<td>八字节</td>
-<td>2015-05-01 11::12:00</td>
-<td>精确到年月日时分秒</td>
-</tr>
-<tr>
-<td>TIMESTAMP</td>
-<td></td>
-<td>2015-05-01 11::12:00</td>
-<td>精确到年月日时分秒</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>MySQL在<code>5.6.4</code>版本之后，<code>TIMESTAMP</code>和<code>DATETIME</code>支持到微秒。</li>
-<li><code>TIMESTAMP</code>会根据系统时区进行转换，<code>DATETIME</code>则不会</li>
-<li>存储范围的区别  <ul>
-<li><code>TIMESTAMP</code>存储范围：1970-01-01 00::00:01 to 2038-01-19 03:14:07</li>
-<li><code>DATETIME</code>的存储范围：1000-01-01 00:00:00 to 9999-12-31 23:59:59</li>
-</ul>
-</li>
-<li>一般使用<code>TIMESTAMP</code>国际化</li>
-<li>如存时间戳使用数字类型<code>BIGINT</code></li>
-</ul>
-<h2 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h2><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>单位</th>
-<th>最大</th>
-<th>特性</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>CHAR</td>
-<td>字符</td>
-<td>最大为255字符</td>
-<td>存储定长，容易造成空间的浪费</td>
-</tr>
-<tr>
-<td>VARCHAR</td>
-<td>字符</td>
-<td>可以超过255个字符</td>
-<td>存储变长，节省存储空间</td>
-</tr>
-<tr>
-<td>TEXT</td>
-<td>字节</td>
-<td>总大小为65535字节，约为64KB</td>
-<td>-</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>TEXT在MySQL内部大多存储格式为溢出页，效率不如CHAR</li>
-<li>Mysql默认为utf-8，那么在英文模式下1个字符=1个字节，在中文模式下1个字符=3个字节。</li>
-</ul>
-<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><code>SERIAL</code> 是 <code>BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE</code> 的别名。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/9/">9</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/10/">10</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1502,14 +1360,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">90</span>
+          <span class="site-state-item-count">91</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/blog/categories/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
