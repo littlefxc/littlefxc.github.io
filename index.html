@@ -162,6 +162,141 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Consul-单机集群搭建/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Consul-单机集群搭建/" class="post-title-link" itemprop="url">Consul 单机集群搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-11 16:41:37 / 修改时间：16:42:30" itemprop="dateCreated datePublished" datetime="2021-01-11T16:41:37+08:00">2021-01-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/注册中心/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Consul-单机集群搭建"><a href="#Consul-单机集群搭建" class="headerlink" title="Consul 单机集群搭建"></a>Consul 单机集群搭建</h1><h2 id="Consul-节点规划"><a href="#Consul-节点规划" class="headerlink" title="Consul 节点规划"></a>Consul 节点规划</h2><table>
+<thead>
+<tr>
+<th><strong>节点名称</strong></th>
+<th>节点类型</th>
+<th><strong>HTTP端口</strong></th>
+<th><strong>DNS端口</strong></th>
+<th><strong>serf_lan端口</strong></th>
+<th><strong>serf_wan端口</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>consul-server-1</td>
+<td>server</td>
+<td>8501</td>
+<td>8001</td>
+<td>8002</td>
+<td>8000</td>
+</tr>
+<tr>
+<td>consul-server-2</td>
+<td>server</td>
+<td>8502</td>
+<td>8101</td>
+<td>8102</td>
+<td>8100</td>
+</tr>
+<tr>
+<td>consul-server-3</td>
+<td>server</td>
+<td>8503</td>
+<td>8201</td>
+<td>8103</td>
+<td>8200</td>
+</tr>
+<tr>
+<td>consul-client-1</td>
+<td>client</td>
+<td>8504</td>
+<td>8301</td>
+<td>8104</td>
+<td>8300</td>
+</tr>
+<tr>
+<td>consul-client-2</td>
+<td>client</td>
+<td>8505</td>
+<td>8401</td>
+<td>8105</td>
+<td>8400</td>
+</tr>
+</tbody>
+</table>
+<h2 id="Consul-服务端节点配置文件模版"><a href="#Consul-服务端节点配置文件模版" class="headerlink" title="Consul 服务端节点配置文件模版"></a>Consul 服务端节点配置文件模版</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"bind_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"client_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"ports"</span>: &#123;</span><br><span class="line">        <span class="attr">"http"</span>: <span class="number">8501</span>,</span><br><span class="line">        <span class="attr">"dns"</span>: <span class="number">8601</span>,</span><br><span class="line">        <span class="attr">"serf_lan"</span>: <span class="number">8001</span>,</span><br><span class="line">        <span class="attr">"serf_wan"</span>: <span class="number">8002</span>,</span><br><span class="line">        <span class="attr">"server"</span>: <span class="number">8000</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">    <span class="attr">"data_dir"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-server-1/data"</span>,</span><br><span class="line">    <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"log_file"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-server-1/log/consul.log"</span>,</span><br><span class="line">    <span class="attr">"node_name"</span>: <span class="string">"consul-server-1"</span>,</span><br><span class="line">    <span class="attr">"disable_host_node_id"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"server"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"bootstrap_expect"</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="attr">"rejoin_after_leave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"retry_join"</span>: [</span><br><span class="line">        <span class="string">"127.0.0.1:8001"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8101"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8201"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<ul>
+<li><strong>disable_host_node_id</strong>：禁用主机信息生成节点ID。因为是单机，所以要禁用它。单机集群搭建成功与否就靠它。</li>
+</ul>
+<h2 id="Consul-客户端节点配置文件模版"><a href="#Consul-客户端节点配置文件模版" class="headerlink" title="Consul 客户端节点配置文件模版"></a>Consul 客户端节点配置文件模版</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"bind_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"client_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"ports"</span>: &#123;</span><br><span class="line">        <span class="attr">"http"</span>: <span class="number">8505</span>,</span><br><span class="line">        <span class="attr">"dns"</span>: <span class="number">8605</span>,</span><br><span class="line">        <span class="attr">"serf_lan"</span>: <span class="number">8401</span>,</span><br><span class="line">        <span class="attr">"serf_wan"</span>: <span class="number">8402</span>,</span><br><span class="line">        <span class="attr">"server"</span>: <span class="number">8400</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">    <span class="attr">"data_dir"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-client-2/data"</span>,</span><br><span class="line">    <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"log_file"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-client-2/log/consul.log"</span>,</span><br><span class="line">    <span class="attr">"node_name"</span>: <span class="string">"consul-client-2"</span>,</span><br><span class="line">    <span class="attr">"disable_host_node_id"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"server"</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"rejoin_after_leave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"retry_join"</span>: [</span><br><span class="line">        <span class="string">"127.0.0.1:8001"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8101"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8201"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="搭建集群"><a href="#搭建集群" class="headerlink" title="搭建集群"></a>搭建集群</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Consul 服务端节点目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;</span><br><span class="line"><span class="comment"># 创建 Consul 服务端节点可执行文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/bin</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点配置文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/config</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点数据文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/data</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点日志文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/<span class="built_in">log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># consul 客户端节点目录结构与服务端节点目录结构保持一致</span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment"># Consul 服务端节点搭建</span></span><br><span class="line">nohup consul-server-1/bin/consul agent -config-dir=consul-server-1/config &amp;</span><br><span class="line">nohup consul-server-2/bin/consul agent -config-dir=consul-server-2/config &amp;</span><br><span class="line">nohup consul-server-3/bin/consul agent -config-dir=consul-server-3/config &amp;</span><br><span class="line"><span class="comment"># Consul 客户端节点搭建</span></span><br><span class="line">nohup consul-client-1/bin/consul agent -config-dir=consul-client-1/config &amp;</span><br><span class="line">nohup consul-client-2/bin/consul agent -config-dir=consul-client-2/config &amp;</span><br></pre></td></tr></table></figure>
+<h1 id="Consul-的一些命令"><a href="#Consul-的一些命令" class="headerlink" title="Consul 的一些命令"></a>Consul 的一些命令</h1><h2 id="查看-consul-集群列表"><a href="#查看-consul-集群列表" class="headerlink" title="查看 consul 集群列表"></a>查看 consul 集群列表</h2><p>验证 Consul 集群是否搭建成功</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul operator raft list-peers -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
+<h2 id="查看-Consul-节点列表"><a href="#查看-Consul-节点列表" class="headerlink" title="查看 Consul 节点列表"></a>查看 Consul 节点列表</h2><p>查看 Consul 的所有节点列表</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul members -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
+<h2 id="移除一个-Server-节点"><a href="#移除一个-Server-节点" class="headerlink" title="移除一个 Server 节点"></a>移除一个 Server 节点</h2><p>验证 Consul 客户端节点不会丢失</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul leave -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://blog.csdn.net/u014635374/article/details/106313858" target="_blank" rel="noopener">https://blog.csdn.net/u014635374/article/details/106313858</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Redis缓存过期机制和内存淘汰管理机制/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1130,105 +1265,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Kylin入门/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Kylin入门/" class="post-title-link" itemprop="url">Kylin 入门</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-22 16:56:14" itemprop="dateCreated datePublished" datetime="2020-09-22T16:56:14+08:00">2020-09-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-24 15:16:24" itemprop="dateModified" datetime="2020-09-24T15:16:24+08:00">2020-09-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>随着移动互联网、物联网等技术的发展，近些年人类所积累的数据正在呈爆炸式的增长，大数据时代已经来临。但是海量数据的收集只是大数据技术的第一步，如何让数据产生价值才是大数据领域的终极目标。Hadoop的出现解决了数据存储问题，但如何对海量数据进行OLAP查询，却一直令人十分头疼。</p>
-<p>企业中的查询大致可分为即席查询和定制查询两种。之前出现的很多OLAP引擎，包括Hive、Presto、SparkSQL等，虽然在很大程度上降低了数据分析的难度，但它们都只适用于即席查询的场景。它们的优点是查询灵活，但是随着数据量和计算复杂度的增长，响应时间不能得到保证。而定制查询多数情况下是对用户的操作做出实时反应，Hive等查询引擎动辄数分钟甚至数十分钟的响应时间显然是不能满足需求的。在很长一段时间里，企业只能对数据仓库中的数据进行提前计算，再将算好后的结果存储在MySQL等关系型数据库中，再提供给用户进行查询。但是当业务复杂度和数据量逐渐升高后，使用这套方案的开发成本和维护成本都显著上升。因此，如何对已经固化下来的查询进行亚秒级返回一直是企业应用中的一个痛点。</p>
-<p>在这种情况下，Apache Kylin应运而生。不同于“大规模并行处理”（Massive Parallel Processing，MPP）架构的Hive、Presto等，Apache Kylin采用“预计算”的模式，用户只需要提前定义好查询维度，Kylin将帮助我们进行计算，并将结果存储到HBase中，为海量数据的查询和分析提供亚秒级返回，是一种典型的“空间换时间”的解决方案。Apache Kylin的出现不仅很好地解决了海量数据快速查询的问题，也避免了手动开发和维护提前计算程序带来的一系列麻烦。</p>
-<p>Apache Kylin™是一个开源的、分布式的分析型数据仓库，提供 Hadoop 之上的 SQL 查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc.开发并贡献至开源社区。</p>
-<h1 id="Kylin-架构"><a href="#Kylin-架构" class="headerlink" title="Kylin 架构"></a>Kylin 架构</h1><p>如果想要知道Kylin是如何实现超大数据集的秒级多维分析查询，那么就得了解Kylin的架构原理。<br>Kylin实现秒级查询的关键点是预计算，对于超大数据集的复杂查询，既然现场计算需要花费较长时间，那么根据空间换时间的原理，我们就可以提前将所有可能的计算结果计算并存储下来，把高复杂度的聚合运算、多表连接等操作转换成对预计算结果的查询，比如把本该进行的Join、Sum、CountDistinct等操作改写成Cube的查询操作。从而实现超大数据集的秒级多维分析查询。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200924112848747.png" alt="image-20200924112848747"></p>
-<ul>
-<li>REST Server:<br>REST Server是一套面向应用程序开发的入口点，旨在实现针对Kylin平台的应用开发工作。 此类应用程序可以提供查询、获取结果、触发cube构建任务、获取元数据以及获取用户权限等等。 另外可以通过Restful接口实现SQL查询。</li>
-<li>查询引擎（Query Engine）:<br>当cube准备就绪后，查询引擎就能够获取并解析用户查询。它随后会与系统中的其它组件进行交互，从而向用户返回对应的结果。<br>在Kylin当中，我们使用一套名为Apache Calcite的开源动态数据管理框架对代码内的SQL以及其它插入内容进行解析。（Calcite最初被命名为Optiq，由Julian Hyde所编写，但如今已经成为Apache孵化器项目之一。）</li>
-<li>Routing<br>负责将解析的SQL生成的执行计划转换成cube缓存的查询，cube是通过预计算缓存在hbase中，这部分查询可以在秒级设置毫秒级完成，而且还有一些操作使用过的查询原始数据（存储在Hadoop的hdfs中通过hive查询）。这部分查询延迟较高。</li>
-<li>元数据管理工具（Metadata Manager）<br>Kylin是一款元数据驱动型应用程序。元数据管理工具是一大关键性组件，用于对保存在Kylin当中的所有元数据进行管理，其中包括最为重要的cube元数据。其它全部组件的正常运作都需以元数据管理工具为基础。 Kylin的元数据存储在hbase中。</li>
-<li>任务引擎（Cube Build Engine）:<br>这套引擎的设计目的在于处理所有离线任务，其中包括shell脚本、Java API以及Map Reduce任务等等。任务引擎对Kylin当中的全部任务加以管理与协调，从而确保每一项任务都能得到切实执行并解决其间出现的故障。</li>
-<li>存储引擎（Storage Engine）<br>这套引擎负责管理底层存储——特别是cuboid，其以键-值对的形式进行保存。存储引擎使用的是HBase——这是目前Hadoop生态系统当中最理想的键-值系统使用方案。Kylin还能够通过扩展实现对其它键-值系统的支持，例如Redis。</li>
-</ul>
-<p><strong>预计算大概流程</strong>就是：将数据源中的数据按照指定的维度和指标，由计算引擎MapReduce离线计算出所有可能的查询结果(即Cube)存储到HBase中。HBase中每行记录的Rowkey由维度组成，度量会保存在 column family中。为了减小存储代价，这里会对维度和度量进行编码。查询阶段，利用HBase列存储的特性就可以保证Kylin有良好的快速响应和高并发。</p>
-<p>需要注意的是：Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着推广和使用的深入，渐渐有用户发现它们均存在不足之处。比如，实时分析可能会希望从Kafka导入数据而不是从Hive；而Spark的迅速崛起，又使我们不得不考虑将MapReduce替换为Spark，以期大幅提高Cube的构建速度；至于HBase，它的读性能可能还不如Cassandra或Kudu等。因此Kylin1.5版本的系统架构进行了重构，将数据源、构建引擎、存储引擎三大依赖抽象为接口，而Hive、MapReduce、HBase只是默认实现。深度用户可以根据自己的需要做二次开发，将其中的一个或多个替换为更适合的技术。</p>
-<h1 id="安装Kylin"><a href="#安装Kylin" class="headerlink" title="安装Kylin"></a>安装Kylin</h1><h2 id="单节点安装"><a href="#单节点安装" class="headerlink" title="单节点安装"></a>单节点安装</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /opt/apache-kylin-3.1.0-bin-hbase1x /usr/local/kylin</span><br></pre></td></tr></table></figure>
-<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">KYLIN_HOME=/usr/<span class="built_in">local</span>/kylin</span><br><span class="line"><span class="built_in">export</span> KYLIN_HOME</span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$KYLIN_HOME</span>/bin</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source /etc/proifle</span><br></pre></td></tr></table></figure>
-<h3 id="macOS遇到的问题"><a href="#macOS遇到的问题" class="headerlink" title="macOS遇到的问题"></a>macOS遇到的问题</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/check-env.sh</span><br></pre></td></tr></table></figure>
-<p>此处mac有坑，因为检查脚本使用的是gnu的一些命令，和mac上的命令不同。所以需要安装gnu命令:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install gnu-sed</span><br><span class="line">brew install findutils</span><br></pre></td></tr></table></figure>
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 检查环境</span></span><br><span class="line">/usr/local/kylin/bin/check-env.sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动</span></span><br><span class="line">/usr/local/kylin/bin/kylin.sh start</span><br><span class="line"><span class="meta">#</span><span class="bash"> 样例</span></span><br><span class="line">/usr/local/kylin/bin/sample.sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> 重启</span></span><br><span class="line">/usr/local/kylin/bin/kylin.sh restart</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200924103518462.png" alt="image-20200924103518462"></p>
-<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><h2 id="数据仓库"><a href="#数据仓库" class="headerlink" title="数据仓库"></a>数据仓库</h2><h2 id="OLAP"><a href="#OLAP" class="headerlink" title="OLAP"></a>OLAP</h2><h2 id="维度和度量"><a href="#维度和度量" class="headerlink" title="维度和度量"></a>维度和度量</h2><h2 id="Cube和Cuboid"><a href="#Cube和Cuboid" class="headerlink" title="Cube和Cuboid"></a>Cube和Cuboid</h2><h2 id="事实表和维度表"><a href="#事实表和维度表" class="headerlink" title="事实表和维度表"></a>事实表和维度表</h2><h2 id="星形模型"><a href="#星形模型" class="headerlink" title="星形模型"></a>星形模型</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1298,7 +1334,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">95</span>
+          <span class="site-state-item-count">96</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
