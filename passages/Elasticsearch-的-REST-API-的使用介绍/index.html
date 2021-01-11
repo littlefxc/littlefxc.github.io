@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="littlefxc&#39;s blog">
 <meta property="og:description" content="集群健康集群健康 | Elasticsearch: 权威指南 | Elastic 1GET /_cluster/health 索引相关创建索引123456789PUT /index_test&amp;#123;    &amp;quot;settings&amp;quot;: &amp;#123;        &amp;quot;index&amp;quot;: &amp;#123;            &amp;quot;number_of_shards">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-01-09T09:09:27.416Z">
+<meta property="og:updated_time" content="2021-01-09T10:48:30.410Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Elasticsearch 的 REST API 的使用介绍">
 <meta name="twitter:description" content="集群健康集群健康 | Elasticsearch: 权威指南 | Elastic 1GET /_cluster/health 索引相关创建索引123456789PUT /index_test&amp;#123;    &amp;quot;settings&amp;quot;: &amp;#123;        &amp;quot;index&amp;quot;: &amp;#123;            &amp;quot;number_of_shards">
@@ -192,7 +192,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-09 16:41:04 / 修改时间：17:09:27" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
+              <time title="创建时间：2021-01-09 16:41:04 / 修改时间：18:48:30" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -227,12 +227,14 @@
 <h1 id="mappings-相关"><a href="#mappings-相关" class="headerlink" title="mappings 相关"></a>mappings 相关</h1><h2 id="创建索引的同时创建mappings"><a href="#创建索引的同时创建mappings" class="headerlink" title="创建索引的同时创建mappings"></a>创建索引的同时创建mappings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">PUT /index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;3&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mappings&quot;: &#123;</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;realname&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">            	&quot;index&quot;: true</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;username&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">            	&quot;index&quot;: false</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;id&quot;: &#123;</span><br><span class="line">        	    &quot;type&quot;: &quot;long&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;age&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;integer&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;nickname&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money1&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;float&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money2&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;double&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;sex&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;byte&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;score&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;short&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;is_teenager&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;boolean&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;birthday&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;date&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;relationship&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;object&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>注意：</p>
 <ul>
-<li><strong>number_of_shards</strong> : 分片数</li>
+<li><p><strong>number_of_shards</strong> : 分片数</p>
+</li>
 <li><p><strong>number_of_replicas</strong> : 副本数</p>
 </li>
 <li><p><strong>index</strong>：默认true，设置为false的话，那么这个字段就不会被索引(例如密码等敏感信息)</p>
 </li>
-<li>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</li>
+<li><p>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</p>
+</li>
 <li><p>主要数据类型：</p>
 <ul>
 <li>text, keyword, <del>string</del></li>
@@ -246,9 +248,10 @@
 </li>
 <li><p><strong>text</strong>：文字类需要被分词被倒排索引的内容，比如<code>商品名称</code>，<code>商品详情</code>，<code>商品介绍</code>，使用text。</p>
 </li>
-<li><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</li>
+<li><p><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</p>
+</li>
 </ul>
-<h1 id="添加文档"><a href="#添加文档" class="headerlink" title="添加文档"></a>添加文档</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /&#123;索引名&#125;/_doc/&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-24&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="文档的基本操作"><a href="#文档的基本操作" class="headerlink" title="文档的基本操作"></a>文档的基本操作</h1><h2 id="添加文档"><a href="#添加文档" class="headerlink" title="添加文档"></a>添加文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /&#123;索引名&#125;/_doc/&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>查看索引</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /user</span><br></pre></td></tr></table></figure>
 <p><strong>结果如下</strong></p>
@@ -259,6 +262,11 @@
 <li>“fields”: {“type”: “keyword”}对一个字段设置多种索引模式，使用text类型做全文检索，也可使用keyword类型做聚合和排序</li>
 <li>“ignore_above” : 256设置字段索引和存储的长度最大值，超过则被忽略</li>
 </ul>
+<h2 id="修改文档"><a href="#修改文档" class="headerlink" title="修改文档"></a>修改文档</h2><h3 id="局部修改"><a href="#局部修改" class="headerlink" title="局部修改"></a>局部修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /user/_doc/1/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;update1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="全局修改"><a href="#全局修改" class="headerlink" title="全局修改"></a>全局修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PUT /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;update2&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时每次修改后，返回参数中的属性 <code>verison</code> 都会更改</p>
+<h2 id="删除文档"><a href="#删除文档" class="headerlink" title="删除文档"></a>删除文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /user/_doc/1</span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>：文档删除不是立即删除，文档还是保存在磁盘上，索引增长越来越多，才会把那些曾经标识过删除的，进行清理，从磁盘上移出去。</p>
 
     </div>
 
@@ -280,7 +288,10 @@
     <a href="/blog/passages/什么是倒排索引/" rel="prev" title="什么是倒排索引?">
       <i class="fa fa-chevron-left"></i> 什么是倒排索引?
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/blog/passages/Redis集群搭建/" rel="next" title="Redis集群搭建">
+      Redis集群搭建 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -339,7 +350,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#集群健康"><span class="nav-number">1.</span> <span class="nav-text">集群健康</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引相关"><span class="nav-number">2.</span> <span class="nav-text">索引相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建索引"><span class="nav-number">2.1.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看索引"><span class="nav-number">2.2.</span> <span class="nav-text">查看索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除索引"><span class="nav-number">2.3.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mappings-相关"><span class="nav-number">3.</span> <span class="nav-text">mappings 相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建索引的同时创建mappings"><span class="nav-number">3.1.</span> <span class="nav-text">创建索引的同时创建mappings</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加文档"><span class="nav-number">4.</span> <span class="nav-text">添加文档</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#集群健康"><span class="nav-number">1.</span> <span class="nav-text">集群健康</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#索引相关"><span class="nav-number">2.</span> <span class="nav-text">索引相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建索引"><span class="nav-number">2.1.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看索引"><span class="nav-number">2.2.</span> <span class="nav-text">查看索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除索引"><span class="nav-number">2.3.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mappings-相关"><span class="nav-number">3.</span> <span class="nav-text">mappings 相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建索引的同时创建mappings"><span class="nav-number">3.1.</span> <span class="nav-text">创建索引的同时创建mappings</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文档的基本操作"><span class="nav-number">4.</span> <span class="nav-text">文档的基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加文档"><span class="nav-number">4.1.</span> <span class="nav-text">添加文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改文档"><span class="nav-number">4.2.</span> <span class="nav-text">修改文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部修改"><span class="nav-number">4.2.1.</span> <span class="nav-text">局部修改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全局修改"><span class="nav-number">4.2.2.</span> <span class="nav-text">全局修改</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除文档"><span class="nav-number">4.3.</span> <span class="nav-text">删除文档</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -353,7 +364,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">93</span>
+          <span class="site-state-item-count">95</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

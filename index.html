@@ -162,6 +162,154 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Redis缓存过期机制和内存淘汰管理机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Redis缓存过期机制和内存淘汰管理机制/" class="post-title-link" itemprop="url">Redis缓存过期机制和内存淘汰管理机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-11 11:51:36 / 修改时间：11:51:49" itemprop="dateCreated datePublished" datetime="2021-01-11T11:51:36+08:00">2021-01-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>转载自 <a href="https://blog.csdn.net/qq_36986015/article/details/106802555" target="_blank" rel="noopener">https://blog.csdn.net/qq_36986015/article/details/106802555</a></p>
+<h1 id="1-缓存过期机制"><a href="#1-缓存过期机制" class="headerlink" title="1. 缓存过期机制"></a><strong>1. 缓存过期机制</strong></h1><p>Redis可以通过设置一个过期时间expire来处理缓存，其中处理方式有两种：</p>
+<ol>
+<li><p>（主动）定期删除，Redis会抽查随机的key，默认1秒十次，一旦抽查的key过期了，就会给删除，配置的属性在redis.conf中，hz等于10，表示1秒抽查10次</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hz 10</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>（被动）惰性删除，key到期后不去主动检测，而是请求访问到这个key之后，会检查下是否过期，这样就不会太消耗CPU资源，缺点是一直占用着内存</p>
+</li>
+</ol>
+<h1 id="2-内存淘汰管理机制"><a href="#2-内存淘汰管理机制" class="headerlink" title="2. 内存淘汰管理机制"></a><strong>2. 内存淘汰管理机制</strong></h1><p>因为计算机的内存是有限的，在部署Redis的同时，也可能部署其他的中间件如RabbitMQ、Kafka等等，为了给其他中间件预留内存空间，Redis服务启动可以设置一个最大内存<code>maxmemory</code>，到达阈值后，Redis会清理在内存里永久存在的没有过期时间的key，处理机制如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">maxmemory ：当内存已使用率到达，则开始清理缓存</span><br><span class="line">maxmemory-policy : 清理缓存的策略</span><br></pre></td></tr></table></figure>
+<p>清理缓存的策略如下所示：</p>
+<ul>
+<li>noeviction：旧缓存永不过期，新缓存设置不了，返回错误</li>
+<li>allkeys-lru：清除最少用的旧缓存，然后保存新的缓存（推荐使用）</li>
+<li>allkeys-random：在所有的缓存中随机删除（不推荐）</li>
+<li>volatile-lru：在那些设置了expire过期时间的缓存中，清除最少用的旧缓存，然后保存新的缓存</li>
+<li>volatile-random：在那些设置了expire过期时间的缓存中，随机删除缓存</li>
+<li>volatile-ttl：在那些设置了expire过期时间的缓存中，删除即将过期的</li>
+</ul>
+<p>注意：</p>
+<p>LRU 和 LFU 的含义：</p>
+<pre><code># LRU means Least Recently Used
+# LFU means Least Frequently Used
+</code></pre>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Redis集群搭建/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Redis集群搭建/" class="post-title-link" itemprop="url">Redis集群搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-11 11:50:38 / 修改时间：11:51:05" itemprop="dateCreated datePublished" datetime="2021-01-11T11:50:38+08:00">2021-01-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="redis-conf-配置"><a href="#redis-conf-配置" class="headerlink" title="redis.conf 配置"></a><strong><strong>redis.conf 配置</strong></strong></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 开启集群模式</span><br><span class="line">cluster-enabled yes</span><br><span class="line"># 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"># 超时时间，超时则认为master宕机，随后主备切换</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"># 开启AOF</span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+<h2 id="启动6个redis实例"><a href="#启动6个redis实例" class="headerlink" title="启动6个redis实例"></a><strong><strong>启动6个redis实例</strong></strong></h2><ol>
+<li>启动6台</li>
+<li>如果启动过程出错，把rdb等文件删除清空</li>
+</ol>
+<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a><strong><strong>创建集群</strong></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#####</span></span><br><span class="line"><span class="comment"># 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="comment"># 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="comment">#####</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli -a 密码 --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+<p><code>slots</code>：槽，用于装数据，主节点有，从节点没有</p>
+<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a><strong><strong>检查集群信息</strong></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check 192.168.25.64:6380</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-的-REST-API-的使用介绍/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -187,7 +335,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-09 16:41:04 / 修改时间：17:09:27" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
+              <time title="创建时间：2021-01-09 16:41:04 / 修改时间：18:48:30" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -222,12 +370,14 @@
 <h1 id="mappings-相关"><a href="#mappings-相关" class="headerlink" title="mappings 相关"></a>mappings 相关</h1><h2 id="创建索引的同时创建mappings"><a href="#创建索引的同时创建mappings" class="headerlink" title="创建索引的同时创建mappings"></a>创建索引的同时创建mappings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">PUT /index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;3&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mappings&quot;: &#123;</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;realname&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">            	&quot;index&quot;: true</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;username&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">            	&quot;index&quot;: false</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;id&quot;: &#123;</span><br><span class="line">        	    &quot;type&quot;: &quot;long&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;age&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;integer&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;nickname&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money1&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;float&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money2&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;double&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;sex&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;byte&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;score&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;short&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;is_teenager&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;boolean&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;birthday&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;date&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;relationship&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;object&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>注意：</p>
 <ul>
-<li><strong>number_of_shards</strong> : 分片数</li>
+<li><p><strong>number_of_shards</strong> : 分片数</p>
+</li>
 <li><p><strong>number_of_replicas</strong> : 副本数</p>
 </li>
 <li><p><strong>index</strong>：默认true，设置为false的话，那么这个字段就不会被索引(例如密码等敏感信息)</p>
 </li>
-<li>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</li>
+<li><p>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</p>
+</li>
 <li><p>主要数据类型：</p>
 <ul>
 <li>text, keyword, <del>string</del></li>
@@ -241,9 +391,10 @@
 </li>
 <li><p><strong>text</strong>：文字类需要被分词被倒排索引的内容，比如<code>商品名称</code>，<code>商品详情</code>，<code>商品介绍</code>，使用text。</p>
 </li>
-<li><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</li>
+<li><p><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</p>
+</li>
 </ul>
-<h1 id="添加文档"><a href="#添加文档" class="headerlink" title="添加文档"></a>添加文档</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /&#123;索引名&#125;/_doc/&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-24&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="文档的基本操作"><a href="#文档的基本操作" class="headerlink" title="文档的基本操作"></a>文档的基本操作</h1><h2 id="添加文档"><a href="#添加文档" class="headerlink" title="添加文档"></a>添加文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /&#123;索引名&#125;/_doc/&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>查看索引</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /user</span><br></pre></td></tr></table></figure>
 <p><strong>结果如下</strong></p>
@@ -254,6 +405,11 @@
 <li>“fields”: {“type”: “keyword”}对一个字段设置多种索引模式，使用text类型做全文检索，也可使用keyword类型做聚合和排序</li>
 <li>“ignore_above” : 256设置字段索引和存储的长度最大值，超过则被忽略</li>
 </ul>
+<h2 id="修改文档"><a href="#修改文档" class="headerlink" title="修改文档"></a>修改文档</h2><h3 id="局部修改"><a href="#局部修改" class="headerlink" title="局部修改"></a>局部修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /user/_doc/1/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;update1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="全局修改"><a href="#全局修改" class="headerlink" title="全局修改"></a>全局修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PUT /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;update2&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时每次修改后，返回参数中的属性 <code>verison</code> 都会更改</p>
+<h2 id="删除文档"><a href="#删除文档" class="headerlink" title="删除文档"></a>删除文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /user/_doc/1</span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>：文档删除不是立即删除，文档还是保存在磁盘上，索引增长越来越多，才会把那些曾经标识过删除的，进行清理，从磁盘上移出去。</p>
 
       
     </div>
@@ -1073,301 +1229,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/hive2-3-7安装/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/hive2-3-7安装/" class="post-title-link" itemprop="url">hive 2.3.7 安装</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-22 11:10:05" itemprop="dateCreated datePublished" datetime="2020-09-22T11:10:05+08:00">2020-09-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-20 18:14:02" itemprop="dateModified" datetime="2020-11-20T18:14:02+08:00">2020-11-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Hive介绍"><a href="#Hive介绍" class="headerlink" title="Hive介绍"></a>Hive介绍</h1><p>官网：<a href="http://hive.apache.org/" target="_blank" rel="noopener">hive.apache.org/</a></p>
-<p>Apache Hive™<strong>数据仓库</strong>软件有助于使用SQL读取，编写和管理驻留在<strong>分布式存储</strong>中的<strong>大型数据集</strong>。可以将结构投影到已存储的数据中。提供了<strong>命令行工具</strong>和<strong>JDBC驱动程序</strong>以将用户连接到Hive。</p>
-<p>hive提供了SQL查询功能 hdfs分布式存储。</p>
-<p>hive本质HQL转化为MapReduce程序。</p>
-<h1 id="Hive-安装前提"><a href="#Hive-安装前提" class="headerlink" title="Hive 安装前提"></a>Hive 安装前提</h1><ol>
-<li>启动 hdfs 集群</li>
-<li>启动 yarn 集群</li>
-<li>启动 mysql</li>
-</ol>
-<p>如果想用hive的话，需要提前安装部署好hadoop集群。</p>
-<h1 id="安装-Hive"><a href="#安装-Hive" class="headerlink" title="安装 Hive"></a>安装 Hive</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /opt/apache-hive-2.3.7-bin /usr/local/hive</span><br></pre></td></tr></table></figure>
-<h1 id="编辑环境变量"><a href="#编辑环境变量" class="headerlink" title="编辑环境变量"></a>编辑环境变量</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HIVE_HOME=/usr/<span class="built_in">local</span>/hive</span><br><span class="line"><span class="built_in">export</span> HIVE_HOME</span><br><span class="line">PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$HIVE_HOME</span>/bin</span><br></pre></td></tr></table></figure>
-<h1 id="配置-hive-site-xml"><a href="#配置-hive-site-xml" class="headerlink" title="配置 hive-site.xml"></a>配置 hive-site.xml</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/hive</span><br><span class="line">vi conf/hive-site.xml</span><br></pre></td></tr></table></figure>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionURL<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">value</span>&gt;</span>jdbc:mysql://master:3306/hive?createDatabaseIfNotExist=true&amp;amp;useSSL=true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">description</span>&gt;</span>JDBC connect string for a JDBC metastore<span class="tag">&lt;/<span class="name">description</span>&gt;</span>    </span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionDriverName<span class="tag">&lt;/<span class="name">name</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;<span class="name">value</span>&gt;</span>com.mysql.jdbc.Driver<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;<span class="name">description</span>&gt;</span>Driver class name for a JDBC metastore<span class="tag">&lt;/<span class="name">description</span>&gt;</span>     </span><br><span class="line">   <span class="tag">&lt;/<span class="name">property</span>&gt;</span>               </span><br><span class="line"></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span>&gt;</span> </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionUserName<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">value</span>&gt;</span>root<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">description</span>&gt;</span>username to use against metastore database<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span>&gt;</span>  </span><br><span class="line">      <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionPassword<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">value</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">description</span>&gt;</span>password to use against metastore database<span class="tag">&lt;/<span class="name">description</span>&gt;</span>  </span><br><span class="line">   <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>下面的部分如果不配置会产生错误</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.exec.local.scratchdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/hive<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>Local scratch space for Hive jobs<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.downloaded.resources.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/hive/hive-downloaded-addDir/<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>Temporary local directory for added resources in the remote file system. <span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.querylog.location<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/hive/querylog-location-addDir/<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>Location of Hive run time structured log file<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"> </span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.server2.logging.operation.log.location<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/hive/hive-logging-operation-log-addDir/<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">description</span>&gt;</span>Top level directory where operation logs are stored if logging functionality is enabled<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- hiveserver2 的配置 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.server2.thrift.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>10000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">name</span>&gt;</span>hive.server2.thrift.bind.host<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">value</span>&gt;</span>localhost<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="配置-hive-env-sh"><a href="#配置-hive-env-sh" class="headerlink" title="配置 hive-env.sh"></a>配置 hive-env.sh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java</span><br><span class="line"><span class="built_in">export</span> HIVE_HOME=/usr/<span class="built_in">local</span>/hive</span><br><span class="line"><span class="built_in">export</span> HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line"><span class="built_in">export</span> HIVE_CONF_DIR=/usr/<span class="built_in">local</span>/hive/conf</span><br></pre></td></tr></table></figure>
-<h1 id="修改hive-log4j-properties"><a href="#修改hive-log4j-properties" class="headerlink" title="修改hive-log4j.properties"></a>修改hive-log4j.properties</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi hive-log4j.properties</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hive.log.dir=自定义目录</span><br></pre></td></tr></table></figure>
-<h1 id="下载并配置-mysql-驱动包"><a href="#下载并配置-mysql-驱动包" class="headerlink" title="下载并配置 mysql 驱动包"></a>下载并配置 mysql 驱动包</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /mnt/share/mysql-connector-java-5.1.47.jar /usr/local/hive/lib/</span><br></pre></td></tr></table></figure>
-<h1 id="初始化元数据"><a href="#初始化元数据" class="headerlink" title="初始化元数据"></a>初始化元数据</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/hive/bin/schematool -dbType mysql -initSchema</span><br></pre></td></tr></table></figure>
-<h1 id="启动-Hive"><a href="#启动-Hive" class="headerlink" title="启动 Hive"></a>启动 Hive</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/hive/bin/hive</span><br></pre></td></tr></table></figure>
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">create table users(user_id int,username varchar(20),pwd varchar(20),email varchar(30),grade int);</span><br><span class="line">insert into users(user_id,username,pwd,email,grade)values(1,'admin','1234','admin@qq.com',2);</span><br><span class="line">insert into users(user_id,username,pwd,email,grade)values(2,'admin2','1234','admin2@qq.com',2);</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/hbase-1-4-13-安装部署/" class="post-title-link" itemprop="url">hbase 1.4.13 安装部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-16 17:19:13" itemprop="dateCreated datePublished" datetime="2020-09-16T17:19:13+08:00">2020-09-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-20 18:18:04" itemprop="dateModified" datetime="2020-11-20T18:18:04+08:00">2020-11-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h1 id="认识HBase"><a href="#认识HBase" class="headerlink" title="认识HBase"></a>认识HBase</h1><h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase = Hadoop database，Hadoop数据库<br>开源数据库<br>官网：<a href="http://hbase.apache.org/" target="_blank" rel="noopener">hbase.apache.org/</a><br>HBase源于Google的BigTable<br>Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。<br>当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。<br>HBase可执行基于Yarn平台的计算任务，但不擅长。</p>
-<p>&lt; !–more–&gt;</p>
-<h2 id="HBase集群角色"><a href="#HBase集群角色" class="headerlink" title="HBase集群角色"></a>HBase集群角色</h2><ul>
-<li>HDFS：<ul>
-<li>NameNode——主节点</li>
-<li>DataNode——数据存储节点</li>
-</ul>
-</li>
-<li>Yarn：<ul>
-<li>ResourceManager——全局的资源管理器</li>
-<li>NodeManager——分节点资源和任务管理器</li>
-</ul>
-</li>
-<li>HBase：<ul>
-<li>HMaster<ul>
-<li>负责Table表和RegionServer的监控管理工作</li>
-<li>处理元数据的变更</li>
-<li>对HRegionServer进行故障转移</li>
-<li>空闲时对数据进行负载均衡处理</li>
-<li>管理Region</li>
-<li>借助ZooKeeper发布位置到客户端</li>
-</ul>
-</li>
-<li>HRegionServer<ul>
-<li>负责Table数据的实际读写</li>
-<li>刷新缓存数据到HDFS</li>
-<li>处理Region</li>
-<li>可以进行数据压缩</li>
-<li>维护Hlog</li>
-<li>Region分片</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="hbase-架构"><a href="#hbase-架构" class="headerlink" title="hbase 架构"></a>hbase 架构</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png" alt="image-20200916184659443"></p>
-<p>HRegionServer结构：</p>
-<ul>
-<li>HLog：存储HBase的修改记录</li>
-<li>HRegion：根据rowkey（行键，类似id）分割的表的分片</li>
-<li>Store：对应HBase表中的一个列族，可存储多个字段</li>
-<li>HFile：真正的存储文件</li>
-<li>MemStore：保存当前的操作</li>
-<li>ZooKeeper：存放数据的元数据信息，负责维护RegionServer中保存的元数据信息</li>
-<li>DFS Client：存储数据信息到HDFS集群中</li>
-</ul>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
-<li>Hadoop集群环境</li>
-<li>ZooKeeper集群环境</li>
-</ul>
-<h2 id="服务器分配"><a href="#服务器分配" class="headerlink" title="服务器分配"></a>服务器分配</h2><table>
-<thead>
-<tr>
-<th>主机名</th>
-<th>IP</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>centos-node1</td>
-<td>192.168.99.101</td>
-</tr>
-<tr>
-<td>centos-node2</td>
-<td>192.168.99.102</td>
-</tr>
-<tr>
-<td>centos-node3</td>
-<td>192.168.99.103</td>
-</tr>
-</tbody>
-</table>
-<h2 id="解压安装文件到指定目录"><a href="#解压安装文件到指定目录" class="headerlink" title="解压安装文件到指定目录"></a>解压安装文件到指定目录</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zxvf hbase-1.4.13.tar.gz -C 目标目录</span><br></pre></td></tr></table></figure>
-<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><h3 id="hbase-env-sh"><a href="#hbase-env-sh" class="headerlink" title="hbase-env.sh"></a>hbase-env.sh</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-env.sh</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The java implementation to use.  Java 1.7+ required.</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=jdk安装路径</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注释掉以下语句（jdk1.8中不需要这个配置）</span></span><br><span class="line"><span class="comment"># export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"><span class="comment"># export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Tell HBase whether it should manage it's own instance of Zookeeper or not.</span></span><br><span class="line"><span class="comment"># 关闭HBase自带的ZooKeeper</span></span><br><span class="line"><span class="built_in">export</span> HBASE_MANAGES_ZK=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<h3 id="hbase-site-xml"><a href="#hbase-site-xml" class="headerlink" title="hbase-site.xml"></a>hbase-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-site.xml</span><br></pre></td></tr></table></figure>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 设置namenode所在位置（HDFS中存放的路径） --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://centos-node1:4000/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span>    </span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 是否开启集群 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">	<span class="comment">&lt;!-- HBase-0.9.8之前默认端口为60000 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>16000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16010<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16201<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16301<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- zookeeper集群的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="comment">&lt;!-- 注意不要有空格 --&gt;</span>  </span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node1,centos-node2,centos-node3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- hbase的元数据信息存储在zookeeper的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/zookeeper/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="regionservers"><a href="#regionservers" class="headerlink" title="regionservers"></a>regionservers</h3><p>加入节点主机名</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">centos-node1</span><br><span class="line">centos-node2</span><br><span class="line">centos-node3</span><br></pre></td></tr></table></figure>
-<h2 id="解决依赖问题"><a href="#解决依赖问题" class="headerlink" title="解决依赖问题"></a>解决依赖问题</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/hbase/lib</span><br><span class="line">$ rm -fr hadoop-*</span><br><span class="line">$ rm -fr zookeeper-*</span><br></pre></td></tr></table></figure>
-<p>把相关版本的zookeeper和hadoop的依赖包导入到hbase/lib</p>
-<h2 id="软链接hadoop配置"><a href="#软链接hadoop配置" class="headerlink" title="软链接hadoop配置"></a>软链接hadoop配置</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/core-site.xml /usr/<span class="built_in">local</span>/hbase/conf/core-site.xml</span><br><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/hdfs-site.xml /usr/<span class="built_in">local</span>/hbase/conf/hdfs-site.xml</span><br></pre></td></tr></table></figure>
-<h2 id="复制到其他节点"><a href="#复制到其他节点" class="headerlink" title="复制到其他节点"></a>复制到其他节点</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node2:/usr/<span class="built_in">local</span>/</span><br><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node3:/usr/<span class="built_in">local</span>/</span><br></pre></td></tr></table></figure>
-<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/profile</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br><span class="line">JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br><span class="line">HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line">CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar:<span class="variable">$JRE_HOME</span>/lib</span><br><span class="line">ZOOKEEPER_HOME=/usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line">HBASE_HOME=/usr/<span class="built_in">local</span>/hbase</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$ZOOKEEPER_HOME</span>/bin:<span class="variable">$HBASE_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME ZOOKEEPER_HOME HBASE_HOME</span><br></pre></td></tr></table></figure>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
-<h2 id="修改防火墙"><a href="#修改防火墙" class="headerlink" title="修改防火墙"></a>修改防火墙</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务(端口不全)</span></span><br><span class="line">$ firewall-cmd --new-service=hbase --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16000/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16010/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16201/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16301/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 2181/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=hbase</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop firewalld</span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure>
-<h1 id="启动集群"><a href="#启动集群" class="headerlink" title="启动集群"></a>启动集群</h1><ul>
-<li>启动主节点<ul>
-<li><code>hbase-daemon.sh start master</code></li>
-</ul>
-</li>
-<li>启动从节点<ul>
-<li><code>hbase-daemon.sh start regionserver</code></li>
-</ul>
-</li>
-</ul>
-<h1 id="关闭集群"><a href="#关闭集群" class="headerlink" title="关闭集群"></a>关闭集群</h1><ul>
-<li>关闭主节点<ul>
-<li><code>hbase-daemon.sh stop master</code></li>
-</ul>
-</li>
-<li>关闭从节点<ul>
-<li><code>hbase-daemon.sh stop regionserver</code></li>
-</ul>
-</li>
-</ul>
-<h1 id="UI-展示"><a href="#UI-展示" class="headerlink" title="UI 展示"></a>UI 展示</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png" alt="image-20200921184311647"></p>
-<h1 id="hbase-shell的一些命令"><a href="#hbase-shell的一些命令" class="headerlink" title="hbase shell的一些命令"></a>hbase shell的一些命令</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入终端</span></span><br><span class="line">$ hbase shell</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185108081.png" alt="image-20200921185108081"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询表</span></span><br><span class="line">$ list</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185132638.png" alt="image-20200921185132638"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示服务器状态</span></span><br><span class="line">$ status</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png" alt="image-20200921185249611"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示当前用户</span></span><br><span class="line">$ whoami</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png" alt="image-20200921185450703"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line">$ create <span class="string">'表名'</span>, <span class="string">'列族1'</span>, <span class="string">'列族2'</span></span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png" alt="image-20200921185551041"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 表的一些操作</span></span><br><span class="line"><span class="comment"># 全表扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 指定Rowkey扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span>, &#123;STARTROW =&gt; <span class="string">'Rowkey值'</span>, STOPROW =&gt; <span class="string">'Rowkey值'</span>&#125;</span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">$ describe <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 修改表结构信息</span></span><br><span class="line">$ alter <span class="string">'表名'</span>, &#123;NAME =&gt; <span class="string">'列族名'</span>, 变更字段名 =&gt; <span class="string">' '</span>&#125;</span><br><span class="line"><span class="comment"># 查询指定数据信息</span></span><br><span class="line"><span class="comment"># 指定具体的rowkey</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 指定具体的列</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span></span><br><span class="line"><span class="comment"># 统计表行数</span></span><br><span class="line">$ count <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 根据Rowkey进行统计</span></span><br><span class="line">$ count <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 表中添加数据信息。HBase只有覆盖没有修改,覆盖时对应表名、rowkey、列族、列名字段，输入新的值信息</span></span><br><span class="line">$ put <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span>, <span class="string">'值'</span></span><br><span class="line"><span class="comment"># 清空表</span></span><br><span class="line">$ truncate <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="comment"># 指定表不可用</span></span><br><span class="line">$ <span class="built_in">disable</span> <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">$ drop <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 退出终端</span></span><br><span class="line">$ <span class="built_in">exit</span></span><br><span class="line">$ quit</span><br></pre></td></tr></table></figure>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><ul>
-<li><a href="https://juejin.im/post/6844903797655863309#heading-21" target="_blank" rel="noopener">https://juejin.im/post/6844903797655863309#heading-21</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1437,7 +1298,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">93</span>
+          <span class="site-state-item-count">95</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

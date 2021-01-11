@@ -162,6 +162,152 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Spring-boot-中-Scheduled-不起作用的一个解决办法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Spring-boot-中-Scheduled-不起作用的一个解决办法/" class="post-title-link" itemprop="url">Spring boot 中 @Scheduled 不起作用的一个解决办法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-27 09:42:47 / 修改时间：09:44:37" itemprop="dateCreated datePublished" datetime="2019-11-27T09:42:47+08:00">2019-11-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Spring-boot-中-Scheduled-不起作用的一个解决办法"><a href="#Spring-boot-中-Scheduled-不起作用的一个解决办法" class="headerlink" title="Spring boot 中 @Scheduled 不起作用的一个解决办法"></a>Spring boot 中 @Scheduled 不起作用的一个解决办法</h1><p>在 spring boot 应用中添加定时任务，按照网上的资料却怎么都不能启动，都说是缺少了 <code>@EnableScheduling</code>,我在加上了后却任然启动不了。</p>
+<p>最后是这样解决的：主要是新增一个 <code>org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler</code>  的 bean</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="meta">@EnableScheduling</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Sched</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StatisticProperties statisticProperties;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JedisCluster jedisCluster;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TaskScheduler <span class="title">poolScheduler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        ThreadPoolTaskScheduler scheduler = <span class="keyword">new</span> ThreadPoolTaskScheduler();</span><br><span class="line">        scheduler.setThreadNamePrefix(<span class="string">"poolScheduler"</span>);</span><br><span class="line">        scheduler.setPoolSize(<span class="number">10</span>);</span><br><span class="line">        <span class="keyword">return</span> scheduler;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Async</span>(value = <span class="string">"asyncPoolTaskExecutor"</span>)</span><br><span class="line">    <span class="meta">@Scheduled</span>(cron = <span class="string">"*/5 * * * * ?"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearRealtimeCacheData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">"每5秒执行一次"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/cron表达式常用例子/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/cron表达式常用例子/" class="post-title-link" itemprop="url">cron表达式常用例子</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-11-27 09:38:13 / 修改时间：09:41:38" itemprop="dateCreated datePublished" datetime="2019-11-27T09:38:13+08:00">2019-11-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="cron表达式常用例子"><a href="#cron表达式常用例子" class="headerlink" title="cron表达式常用例子"></a>cron表达式常用例子</h1><p>cron 表达式的写法老是记不住，当然也是我根本不想记得原因所致。</p>
+<p>这里记录一下，有用到就来看一下</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/blog/passages/cron表达式常用例子/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Mysql中日期比较大小的方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -935,158 +1081,6 @@ ribbon.MaxAutoRetriesNextServer=1
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/spring-cloud-consul-应用的多实例名的解决/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/spring-cloud-consul-应用的多实例名的解决/" class="post-title-link" itemprop="url">spring cloud consul 应用的多实例名的解决</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-08-22 09:22:14 / 修改时间：09:23:41" itemprop="dateCreated datePublished" datetime="2019-08-22T09:22:14+08:00">2019-08-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/spring-cloud/" itemprop="url" rel="index"><span itemprop="name">spring-cloud</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>之前使用eureka时，注册服务的ID 是随机数，eureka上不会出现同一服务多实例的问题。但是，换上了 consul 作为注册中心后，却出现同一个服务拥有多个实例的问题，上次服务挂掉之后的实例还在注册中心上挂着，每次重启多一个实例。</p>
-<p>有什么办法去解决这个问题？答案就是自定义spring cloud consul 的注册方法，使其唯一化。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceIdRegister</span> <span class="keyword">extends</span> <span class="title">ConsulServiceRegistry</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ServiceIdRegister</span><span class="params">(ConsulClient client, ConsulDiscoveryProperties properties, TtlScheduler ttlScheduler, HeartbeatProperties heartbeatProperties)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(client, properties, ttlScheduler, heartbeatProperties);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">register</span><span class="params">(ConsulRegistration reg)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//重新设计id， 服务命-ip-port</span></span><br><span class="line">        reg.getService().setId(reg.getService().getName() + <span class="string">"-"</span> + reg.getService().getAddress() + <span class="string">"-"</span> + reg.getPort());</span><br><span class="line">        <span class="keyword">super</span>.register(reg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@ConditionalOnConsulEnabled</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsulConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span>(required = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> TtlScheduler ttlScheduler;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 重写register方法</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> consulClient</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> properties</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> heartbeatProperties</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServiceIdRegister <span class="title">consulServiceRegistry</span><span class="params">(ConsulClient consulClient, ConsulDiscoveryProperties properties,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                   HeartbeatProperties heartbeatProperties)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ServiceIdRegister(consulClient, properties, ttlScheduler, heartbeatProperties);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Spring-Cloud-Consul应用下线后，健康检查自动删除无效服务/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Spring-Cloud-Consul应用下线后，健康检查自动删除无效服务/" class="post-title-link" itemprop="url">Spring Cloud Consul应用下线后，健康检查自动删除无效服务</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-08-22 09:19:24 / 修改时间：09:21:16" itemprop="dateCreated datePublished" datetime="2019-08-22T09:19:24+08:00">2019-08-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/spring-cloud/" itemprop="url" rel="index"><span itemprop="name">spring-cloud</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  cloud:</span></span><br><span class="line"><span class="attr">    consul:</span></span><br><span class="line"><span class="attr">      discovery:</span></span><br><span class="line">        <span class="comment"># 健康检查失败多长时间后，取消注册</span></span><br><span class="line"><span class="attr">        health-check-critical-timeout:</span> <span class="number">30</span><span class="string">s</span></span><br></pre></td></tr></table></figure>
-<p>在配置文件中如上配置后可以使得服务下线后自动删除无效服务，而不必像很多的博客中写的那样专门写一个删除失效服务。</p>
-<p>其它的配置属性解析：</p>
-<ul>
-<li>spring.cloud.consul.host：配置consul地址</li>
-<li>spring.cloud.consul.port：配置consul端口</li>
-<li>spring.cloud.consul.discovery.enabled：启用服务发现</li>
-<li>spring.cloud.consul.discovery.register：启用服务注册</li>
-<li>spring.cloud.consul.discovery.deregister：服务停止时取消注册</li>
-<li>spring.cloud.consul.discovery.prefer-ip-address：表示注册时使用IP而不是hostname</li>
-<li>spring.cloud.consul.discovery.health-check-interval：健康检查频率</li>
-<li>spring.cloud.consul.discovery.health-check-path：健康检查路径</li>
-<li>spring.cloud.consul.discovery.health-check-critical-timeout：健康检查失败多长时间后，取消注册</li>
-<li>spring.cloud.consul.discovery.instance-id：服务注册标识</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1156,7 +1150,7 @@ ribbon.MaxAutoRetriesNextServer=1
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">93</span>
+          <span class="site-state-item-count">95</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
