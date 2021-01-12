@@ -162,6 +162,371 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hadoop-完全分布式安装与部署/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Hadoop-完全分布式安装与部署/" class="post-title-link" itemprop="url">Hadoop 完全分布式安装与部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-03 16:10:22" itemprop="dateCreated datePublished" datetime="2020-09-03T16:10:22+08:00">2020-09-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-16 20:19:48" itemprop="dateModified" datetime="2020-11-16T20:19:48+08:00">2020-11-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[Toc]</p>
+<h1 id="Hadoop-2-7-4-完全分布式安装与部署"><a href="#Hadoop-2-7-4-完全分布式安装与部署" class="headerlink" title="Hadoop 2.7.4 完全分布式安装与部署"></a>Hadoop 2.7.4 完全分布式安装与部署</h1><p>Hadoop官方指导传送门 <a href="http://hadoop.apache.org/docs/r2.7.4/hadoop-project-dist/hadoop-common/ClusterSetup.html" target="_blank" rel="noopener">传送门</a></p>
+<h1 id="服务器准备"><a href="#服务器准备" class="headerlink" title="服务器准备"></a>服务器准备</h1><p>服务器规划，提供 3 台服务器，OS 为<code>centos 7</code></p>
+<table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>IP</th>
+<th>预备分配服务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>centos-node1</td>
+<td>192.168.99.101</td>
+<td>DataNode,NodeManager,NameNode</td>
+</tr>
+<tr>
+<td>centos-node2</td>
+<td>192.168.99.102</td>
+<td>DataNode,NodeManager,SecondaryNameNode</td>
+</tr>
+<tr>
+<td>centos-node3</td>
+<td>192.168.99.103</td>
+<td>DataNode,NodeManager,ResourceManager,HistoryServer</td>
+</tr>
+</tbody>
+</table>
+<h1 id="修改主机名"><a href="#修改主机名" class="headerlink" title="修改主机名"></a>修改主机名</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hostnamectl <span class="built_in">set</span>-hostname centos-node1</span></span><br></pre></td></tr></table></figure>
+<h1 id="修改服务器静态IP"><a href="#修改服务器静态IP" class="headerlink" title="修改服务器静态IP"></a>修改服务器静态IP</h1><p>可以使用 <code>netstat -r</code> 来查询网关如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200911142643578.png" alt="image-20200911142643578"></p>
+<p>然后将 dhcp 改为 静态IP</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/sysconfig/network-scripts/ifcfg-enp0s8</span></span><br></pre></td></tr></table></figure>
+<p>完全配置如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">TYPE=&quot;Ethernet&quot;</span><br><span class="line">PROXY_METHOD=&quot;none&quot;</span><br><span class="line">BROWSER_ONLY=&quot;no&quot;</span><br><span class="line">#BOOTPROTO=&quot;dhcp&quot;</span><br><span class="line">BOOTPROTO=&quot;static&quot;</span><br><span class="line">DEFROUTE=&quot;yes&quot;</span><br><span class="line">IPV4_FAILURE_FATAL=&quot;no&quot;</span><br><span class="line">IPV6INIT=&quot;yes&quot;</span><br><span class="line">IPV6_AUTOCONF=&quot;yes&quot;</span><br><span class="line">IPV6_DEFROUTE=&quot;yes&quot;</span><br><span class="line">IPV6_FAILURE_FATAL=&quot;no&quot;</span><br><span class="line">IPV6_ADDR_GEN_MODE=&quot;stable-privacy&quot;</span><br><span class="line">NAME=&quot;enp0s8&quot;</span><br><span class="line">UUID=&quot;5b4ea2f4-a5af-4fac-8793-81692730dad9&quot;</span><br><span class="line">DEVICE=&quot;enp0s8&quot;</span><br><span class="line">ONBOOT=&quot;yes&quot;</span><br><span class="line"></span><br><span class="line"># 新增</span><br><span class="line">GATEWAY=192.168.99.0  # 修改网关，虚拟机需要注意修改nat</span><br><span class="line">IPADDR=192.168.99.101 # 分配IP地址</span><br><span class="line">NETMASK=255.255.255.0 # 子网掩码</span><br><span class="line">DNS1=223.5.5.5        # 使用阿里公共DNS1</span><br><span class="line">DNS2=223.6.6.6        # 使用阿里公共DNS2</span><br></pre></td></tr></table></figure>
+<h1 id="修改-hosts"><a href="#修改-hosts" class="headerlink" title="修改 hosts"></a>修改 hosts</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vi /etc/hosts</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加</span></span><br><span class="line">192.168.99.101 centos-node1</span><br><span class="line">192.168.99.102 centos-node2</span><br><span class="line">192.168.99.103 centos-node3</span><br></pre></td></tr></table></figure>
+<h1 id="安装-JDK8"><a href="#安装-JDK8" class="headerlink" title="安装 JDK8"></a>安装 JDK8</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vi /etc/profile</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加</span></span><br><span class="line">JAVA_HOME=/usr/local/java/</span><br><span class="line">JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin</span><br><span class="line">CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib</span><br><span class="line">export JAVA_HOME JRE_HOME PATH CLASSPATH</span><br></pre></td></tr></table></figure>
+<h1 id="增加-dhfs-用户"><a href="#增加-dhfs-用户" class="headerlink" title="增加 dhfs 用户"></a>增加 dhfs 用户</h1><p>通常，建议HDFS和YARN以单独的用户身份运行。</p>
+<p>在大多数安装中，HDFS进程以 “hdfs” 执行。YARN通常使用 “yarn” 帐户</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ adduser hdfs</span><br><span class="line">$ passwd hdfs <span class="comment"># 修改密码</span></span><br></pre></td></tr></table></figure>
+<p>为 <code>/etc/sudoers</code>添加如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200911170014063.png" alt="image-20200911170014063"></p>
+<h1 id="设置-SSH-无密码登录"><a href="#设置-SSH-无密码登录" class="headerlink" title="设置 SSH 无密码登录"></a>设置 SSH 无密码登录</h1><ol>
+<li><p>3 台服务器全部设置</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>各自分配 ssh key</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id centos-node1</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id centos-node2</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id centos-node3</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="安装部署-Hadoop"><a href="#安装部署-Hadoop" class="headerlink" title="安装部署 Hadoop"></a>安装部署 Hadoop</h1><h2 id="切换至-hdfs-用户"><a href="#切换至-hdfs-用户" class="headerlink" title="切换至 hdfs 用户"></a>切换至 hdfs 用户</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su - hdfs</span></span><br></pre></td></tr></table></figure>
+<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -O https://archive.apache.org/dist/hadoop/common/hadoop-2.7.4/hadoop-2.7.4.tar.gz</span></span><br></pre></td></tr></table></figure>
+<h3 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -zxf hadoop-2.7.4.tar.gz  -C /opt/hadoop-2.7.4</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ln -s /opt/hadoop-2.7.4 /usr/<span class="built_in">local</span>/hadoop</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> chown -R hdfs /opt/hadoop-2.7.4</span></span><br></pre></td></tr></table></figure>
+<h3 id="修改环境变量"><a href="#修改环境变量" class="headerlink" title="修改环境变量"></a>修改环境变量</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vi /etc/profile</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改为</span></span><br><span class="line">JAVA_HOME=/usr/local/java/</span><br><span class="line">JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">HADOOP_HOME=/usr/local/hadoop</span><br><span class="line">CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib</span><br><span class="line"></span><br><span class="line">PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin:$HADOOP_HOME/bin</span><br><span class="line"></span><br><span class="line">export JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME</span><br></pre></td></tr></table></figure>
+<h2 id="修改-Hadoop-配置"><a href="#修改-Hadoop-配置" class="headerlink" title="修改 Hadoop 配置"></a>修改 Hadoop 配置</h2><p>这里我们进入<code>$HADOOP_HOME</code>文件夹开始操作</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p <span class="variable">$HADOOP_HOME</span>/hdfs/data</span><br><span class="line">$ mkdir -p <span class="variable">$HADOOP_HOME</span>/tmp</span><br></pre></td></tr></table></figure>
+<h3 id="配置hadoop-env-sh"><a href="#配置hadoop-env-sh" class="headerlink" title="配置hadoop-env.sh"></a>配置hadoop-env.sh</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hadoop-env.sh</span><br></pre></td></tr></table></figure>
+<p>增加 或 修改</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br></pre></td></tr></table></figure>
+<h3 id="配置core-site-xml"><a href="#配置core-site-xml" class="headerlink" title="配置core-site.xml"></a>配置core-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/core-site.xml</span><br></pre></td></tr></table></figure>
+<p>configuration配置如下</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.defaultFS<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://centos-node1:9000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">description</span>&gt;</span>HDFS的URI，文件系统://namenode标识:端口号<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.tmp.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/hadoop/tmp<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">description</span>&gt;</span>namenode上本地的hadoop临时文件夹<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.root.hosts<span class="tag">&lt;/<span class="name">name</span>&gt;</span>     </span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.root.groups<span class="tag">&lt;/<span class="name">name</span>&gt;</span>    </span><br><span class="line">      <span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.zhaoshb.hosts<span class="tag">&lt;/<span class="name">name</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.zhaoshb.groups<span class="tag">&lt;/<span class="name">name</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>配置说明：</p>
+<p><code>fs.defaultFS</code>为<code>NameNode</code>的地址。 </p>
+<p><code>hadoop.tmp.dir</code>为<code>hadoop</code>临时目录的地址。默认情况下，<code>NameNode</code>和<code>DataNode</code>的数据文件都会存在这个目录下的对应子目录下。</p>
+<h3 id="配置hdfs-site-xml"><a href="#配置hdfs-site-xml" class="headerlink" title="配置hdfs-site.xml"></a>配置hdfs-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hdfs-site.xml</span><br></pre></td></tr></table></figure>
+<p>内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node2:50090<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.http.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node1:50070<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.name.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/usr/local/hadoop/hdfs/name<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.datanode.data.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/usr/local/hadoop/hdfs/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.replication<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>配置说明：</p>
+<p><code>dfs.namenode.secondary.http-address</code>是指定<code>secondaryNameNode</code>的http访问地址和端口号，因为在规划中，我们将<code>centos-node2</code>规划为<code>SecondaryNameNode</code>服务器。</p>
+<p><code>dfs.http.address</code>配置的是本机默认的<code>dfs</code>地址，有些服务器可以不用配置，我的试过了，必须加上，不然后续网页打不开。 </p>
+<p><code>dfs.namenode.name.dir</code> 指定name文件夹。</p>
+<p><code>dfs.datanode.data.dir</code> 指定data文件夹。</p>
+<p> <code>dfs.datanode.data.dir</code> 指定副本数，一般小于服务器数，我们设置为<code>3</code></p>
+<h3 id="配置-slaves"><a href="#配置-slaves" class="headerlink" title="配置 slaves"></a>配置 slaves</h3><p>在<code>hadoop2.x</code>中叫做<code>slaves</code>，在<code>3.x</code>版本中改名<code>workers</code>。 用来指定<code>HDFS</code>上有哪些<code>DataNode</code>节点，以及各个节点使用<code>ip地址</code>或者<code>主机名</code>，用换行分隔。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/slaves</span><br></pre></td></tr></table></figure>
+<p>这里我们就使用主机名</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">centos-node1</span><br><span class="line">centos-node2</span><br><span class="line">centos-node3</span><br></pre></td></tr></table></figure>
+<h3 id="配置yarn-site-xml"><a href="#配置yarn-site-xml" class="headerlink" title="配置yarn-site.xml"></a>配置yarn-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/yarn-site.xml</span><br></pre></td></tr></table></figure>
+<p>配置如下</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.vmem-check-enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.log-aggregation-enable<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.log-aggregation.retain-seconds<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>106800<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.application.classpath<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    		<span class="tag">&lt;<span class="name">value</span>&gt;</span></span><br><span class="line">            /opt/hadoop-2.7.4/etc/hadoop,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/common/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/common/lib/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/hdfs/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/hdfs/lib/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/mapreduce/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/mapreduce/lib/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/yarn/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/yarn/lib/*</span><br><span class="line">   		<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>配置说明：</p>
+<p>按照规划使用<code>centos-node3</code>做为 <code>resourcemanager</code> 使用<code>yarn.log-aggregation-enable</code>开启日志聚合，<code>yarn.log-aggregation.retain-seconds</code>配置聚集的日志在HDFS上最多保存多长时间。</p>
+<h3 id="配置mapred-site-xml"><a href="#配置mapred-site-xml" class="headerlink" title="配置mapred-site.xml"></a>配置mapred-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/mapred-site.xml</span><br></pre></td></tr></table></figure>
+<p>配置如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.framework.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>yarn<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.app.mapreduce.am.env<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>HADOOP_MAPRED_HOME=$&#123;HADOOP_HOME&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.map.env<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>HADOOP_MAPRED_HOME=$&#123;HADOOP_HOME&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.reduce.env<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>HADOOP_MAPRED_HOME=$&#123;HADOOP_HOME&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.jobhistory.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node3:10020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.jobhistory.webapp.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node3:19888<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>配置说明：</p>
+<p><code>mapreduce.framework.name</code>设置<code>mapreduce</code>任务运行在yarn上。</p>
+<p> <code>mapreduce.jobhistory.address</code>是设置<code>mapreduce</code>的历史服务器安装在<code>centos-node3</code>上。 </p>
+<p><code>mapreduce.jobhistory.webapp.address</code>是设置历史服务器的web页面地址和端口号。 </p>
+<p><code>yarn.app.mapreduce.am.env</code>,<code>mapreduce.map.env</code>,<code>mapreduce.reduce.env</code>需要设置为<code>HADOOP_MAPRED_HOME=${HADOOP_HOME}</code>，否则在运行yarn程序的时候会出现jar包未找到的错误。</p>
+<h3 id="修改防火墙"><a href="#修改防火墙" class="headerlink" title="修改防火墙"></a>修改防火墙</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务</span></span><br><span class="line">$ firewall-cmd --new-service=hadoop --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 4000/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 8088/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 50090/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 50070/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 10020/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 19888/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=hadoop</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
+<h2 id="启动-Hadoop-集群"><a href="#启动-Hadoop-集群" class="headerlink" title="启动 Hadoop 集群"></a>启动 Hadoop 集群</h2><p>完成上述所有必要的配置后，将文件分发到所有服务器的<code>HADOOP_CONF_DIR</code>目录下<code>/usr/local/hadoop/etc/hadoop</code>。在所有计算机上，该目录应该是相同的目录。</p>
+<p><strong>注意</strong>：启动和停止单个hdfs相关的进程使用的是”hadoop-daemon.sh”脚本，而启动和停止yarn使用的是”yarn-daemon.sh”脚本。</p>
+<h3 id="格式化"><a href="#格式化" class="headerlink" title="格式化"></a>格式化</h3><p>要启动Hadoop集群，需要同时启动<code>HDFS</code>和<code>YARN</code>集群。 首次启动<code>HDFS</code>时，<strong>必须</strong>对其进行格式化。将新的分布式文件系统格式化为<code>hdfs</code>.</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/bin/hdfs namenode -format &lt;群集名称&gt;</span><br></pre></td></tr></table></figure>
+<p>集群名称可以不填写，不出意外，执行完成后<code>$HADOOP_HOME/hdfs</code>中就有东西了。</p>
+<h3 id="启动-HDFS"><a href="#启动-HDFS" class="headerlink" title="启动 HDFS"></a>启动 HDFS</h3><p>如果配置了<code>slaves</code>和<code>ssh互信</code>我们可以</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/start-dfs.sh</span><br></pre></td></tr></table></figure>
+<h3 id="启动-YARN"><a href="#启动-YARN" class="headerlink" title="启动 YARN"></a>启动 YARN</h3><p>如果配置了workers和ssh互信我们可以</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
+<h3 id="启动-ResourceManager"><a href="#启动-ResourceManager" class="headerlink" title="启动 ResourceManager"></a>启动 <strong>ResourceManager</strong></h3><p>规划在<code>centos-node3</code>上，因此我们在<code>centos-node3</code>上执行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/yarn-daemon.sh start resourcemanager</span><br></pre></td></tr></table></figure>
+<h3 id="启动-HistoryServer"><a href="#启动-HistoryServer" class="headerlink" title="启动 HistoryServer"></a>启动 HistoryServer</h3><p>规划在<code>centos-node3</code>上，因此我们在<code>centos-node3</code>上执行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/mr-jobhistory-daemon.sh start historyserver</span><br></pre></td></tr></table></figure>
+<h3 id="查看HDFS-Web页面"><a href="#查看HDFS-Web页面" class="headerlink" title="查看HDFS Web页面"></a>查看HDFS Web页面</h3><p>位于<code>centos-node1</code>的<code>50070</code>端口:<a href="http://centos-node1:50070/" target="_blank" rel="noopener">http://centos-node1:50070/</a></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152341967.png" alt="image-20200913152341967"></p>
+<h3 id="查看YARN-Web-页面"><a href="#查看YARN-Web-页面" class="headerlink" title="查看YARN Web 页面"></a>查看YARN Web 页面</h3><p>位于<code>centos-node3</code>的<code>8088</code>端口:<a href="http://centos-node3:8088/" target="_blank" rel="noopener">http://centos-node3:8088/</a></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152504612.png" alt="image-20200913152504612"></p>
+<h3 id="查看历史WEB页面"><a href="#查看历史WEB页面" class="headerlink" title="查看历史WEB页面"></a>查看历史WEB页面</h3><p>位于<code>centos-node3</code>的<code>19888</code>端口:<a href="http://centos-node3:19888/" target="_blank" rel="noopener">http://centos-node3:19888/</a></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152549303.png" alt="image-20200913152549303"></p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>为了测试我们使用 <code>wordcount</code> 来测试</p>
+<ol>
+<li><p>新建文件</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi /opt/word.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>文本内容</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hadoop mapreduce hive</span><br><span class="line">hbase spark storm</span><br><span class="line">sqoop hadoop hive</span><br><span class="line">spark hadoop</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>新建<code>hadoop</code>里文件夹<code>demo</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hadoop fs -mkdir /demo</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>文件写入</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hdfs dfs -put /opt/word.txt /demo/word.txt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行输入到<code>hadoop</code>的<code>/output</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yarn jar <span class="variable">$HADOOP_HOME</span>/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar wordcount /demo/word.txt /output</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看文件列表</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hdfs dfs -ls /output</span><br></pre></td></tr></table></figure>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Found 2 items</span><br><span class="line">-rw-r--r--   3 root supergroup          0 2020-09-13 16:01 /output/_SUCCESS</span><br><span class="line">-rw-r--r--   3 root supergroup         60 2020-09-13 16:01 /output/part-r-00000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看文件中内容</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hdfs dfs -cat /output/part-r-00000</span><br></pre></td></tr></table></figure>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hadoop  3</span><br><span class="line">hbase   1</span><br><span class="line">hive    2</span><br><span class="line">mapreduce       1</span><br><span class="line">spark   2</span><br><span class="line">sqoop   1</span><br><span class="line">storm   1</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Python中-和is的区别/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Python中-和is的区别/" class="post-title-link" itemprop="url">Python中==和is的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-18 19:52:06 / 修改时间：20:09:44" itemprop="dateCreated datePublished" datetime="2020-06-18T19:52:06+08:00">2020-06-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文主要内容是 Python 中运算符 <code>==</code> 和 <code>is</code> 的区别。</p>
+<p>进入正文前，首先简单介绍一下 Python 中对象的 3 个基本要素，id(身份标识)、type(数据类型)和value(值)。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><code>==</code> 是python标准操作符中的比较操作符，用来比较判断两个对象的value(值)是否相等，例如下面两个字符串间的比较：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="string">'cheesezh'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="string">'cheesezh'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a == b</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<p><code>is</code> 也被叫做同一性运算符，这个运算符比较判断的是对象间的唯一身份标识，也就是id是否相同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = y = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>z = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x == y</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x == z</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x <span class="keyword">is</span> y</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x <span class="keyword">is</span> z</span><br><span class="line"><span class="literal">False</span></span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> id(x)</span><br><span class="line"><span class="number">3075326572</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> id(y)</span><br><span class="line"><span class="number">3075326572</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> id(z)</span><br><span class="line"><span class="number">3075328140</span></span><br></pre></td></tr></table></figure>
+<p>可以明显的看到前 3 个比较都是 True， 最后一个是 False。</p>
+<p>使用 <code>id()</code> 方法查看 x, y, z 的对象ID就明白了。</p>
+<p>我在这里使用的是数组，其实，当它们是 tuple, list, dict 或者 set 时也一样。</p>
+<p>不过，当类型是 int 或者 string 时，它们的对象ID都会一样,</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a <span class="keyword">is</span> b</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="string">"asd"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="string">"asd"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a <span class="keyword">is</span> b</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法/" class="post-title-link" itemprop="url">apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-28 15:39:46 / 修改时间：16:10:47" itemprop="dateCreated datePublished" datetime="2020-05-28T15:39:46+08:00">2020-05-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>首先，在Ubuntu的Docker官方镜像中是没有缓存Apt的软件包列表的。因此在做其他任何基础软件的安装前，都需要至少先做一次apt-get update。有时为了加快apt-get安装软件的速度，还需要修改Apt源的列表文件/etc/apt/sources.list。相应的操作用命令表示如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>在容器构建时，为了避免使用apt-get install安装基础软件的过程中需要进行交互操作，使用-y参数来避免安装非必须的文件，从而减小镜像的体积。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get -y --no-install-recommends install</span><br></pre></td></tr></table></figure>
+<p>使用<code>apt-get autoremove</code>命令移除为了满足包依赖而安装的、但不再需要的包；使用<code>apt-get clean</code>命令清除所获得包文件的本地仓库。</p>
+<p><code>DEBIAN_FRONTEND</code>这个环境变量，告知操作系统应该从哪儿获得用户输入。如果设置为<code>noninteractive</code>，你就可以直接运行命令，而无需向用户请求输入（所有操作都是非交互式的）。这在运行apt-get命令的时候格外有用，因为它会不停的提示用户进行到了哪步并且需要不断确认。非交互模式会选择默认的选项并以最快的速度完成构建。请确保只在Dockerfile中调用的RUN命令中设置了该选项，而不是使用ENV命令进行全局的设置。因为ENV命令在整个容器运行过程中都会生效，所以当你通过BASH和容器进行交互时，如果进行了全局设置那就会出问题。</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 正确的做法 - 只为这个命令设置ENV变量</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> DEBIAN_FRONTEND=noninteractive apt-get install -y python3</span></span><br><span class="line"><span class="comment"># 错误地做法 - 为接下来的任何命令都设置ENV变量，包括正在运行地容器</span></span><br><span class="line"><span class="keyword">ENV</span> DEBIAN_FRONTEND noninteractive</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y python3</span></span><br></pre></td></tr></table></figure>
+<p>示例:</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Ali apt-get source.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /etc/apt/sources.list.bak &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://archive.ubuntu.com/ubuntu xenial main restricted"</span> &gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial main restricted multiverse universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted multiverse universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://archive.canonical.com/ubuntu xenial partner"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://archive.canonical.com/ubuntu xenial partner"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted multiverse universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse"</span> &gt;&gt;/etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="bash">        ca-certificates \</span></span><br><span class="line"><span class="bash">        vim \</span></span><br><span class="line"><span class="bash">        python \</span></span><br><span class="line"><span class="bash">        libopencv-dev \</span></span><br><span class="line"><span class="bash">        python-pip \</span></span><br><span class="line"><span class="bash">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install --upgrade pip \</span></span><br><span class="line"><span class="bash">    numpy \</span></span><br><span class="line"><span class="bash">    pymongo \</span></span><br><span class="line"><span class="bash">    opencv-python</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="https://www.aiuai.cn/aifarm299.html" target="_blank" rel="noopener">Docker - 更换内部Ubuntu apt 为国内源</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/CentOS7下yum安装和配置NFS/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -593,7 +958,7 @@
 <p>使用token进行登录，执行下面命令获取token</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-t4hxz  | grep token | awk <span class="string">'NR==3&#123;print $2&#125;'</span></span><br></pre></td></tr></table></figure>
 <p>复制该Token到登录页, 点击登录即可, 效果如下:</p>
-<p><img src="/blog//littlefxc.gitee.io/blog/passages/Kubenete集群安装指南/Kubenete集群安装指南" alt="image"></p>
+<p><img src="Kubenete集群安装指南/" alt="image"></p>
 <h2 id="添加其它-Worker-节点"><a href="#添加其它-Worker-节点" class="headerlink" title="添加其它 Worker 节点"></a>添加其它 Worker 节点</h2><p>在使用 <code>kubeadm</code> 初始化 master 节点后会有 <code>kubeadm join ...</code> 这样的返回信息，详见前文。</p>
 <p>同时，默认你已经在其它的服务器中已经安装了 docker, kubernetes. </p>
 <p>请注意在其它的服务器只需安装kubernetes，等初始化 master 节点后，执行如下命令将 Worker 加入集群:</p>
@@ -766,357 +1131,6 @@ ls –lhS 查看当前目录下最大的文件
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/其他人的知识/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/其他人的知识/" class="post-title-link" itemprop="url">其他人的知识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-03 08:39:54" itemprop="dateCreated datePublished" datetime="2020-03-03T08:39:54+08:00">2020-03-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-04 12:31:22" itemprop="dateModified" datetime="2020-03-04T12:31:22+08:00">2020-03-04</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p><a href="https://www.jianshu.com/p/41d359a6aaee" target="_blank" rel="noopener">jmeter进行http压力测试（图文小教程）</a></p>
-<p><a href="https://www.cnblogs.com/imyalost/p/9808079.html" target="_blank" rel="noopener">jmeter（二十五）linux环境运行jmeter并生成报告</a></p>
-<p><a href="https://www.cnblogs.com/imyalost/p/10239317.html" target="_blank" rel="noopener">jmeter（二十六）生成HTML性能测试报告</a></p>
-<h2 id="RocketMQ"><a href="#RocketMQ" class="headerlink" title="RocketMQ"></a>RocketMQ</h2><p><a href="https://www.cnblogs.com/qdhxhz/p/11096682.html" target="_blank" rel="noopener">RocketMQ(2)—Docker部署RocketMQ集群</a></p>
-<p><a href="https://www.cnblogs.com/fx-blog/p/11738419.html" target="_blank" rel="noopener">Spring Cloud Alibaba学习笔记（11） - RocketMQ事务消息</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/RocketMQ/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/RocketMQ/" class="post-title-link" itemprop="url">RocketMQ</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-02-28 14:35:32" itemprop="dateCreated datePublished" datetime="2020-02-28T14:35:32+08:00">2020-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-04 12:30:59" itemprop="dateModified" datetime="2020-03-04T12:30:59+08:00">2020-03-04</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="https://www.cnblogs.com/qdhxhz/p/11096682.html" target="_blank" rel="noopener">RocketMQ(2)—Docker部署RocketMQ集群</a></p>
-<p><a href="https://www.cnblogs.com/fx-blog/p/11738419.html" target="_blank" rel="noopener">Spring Cloud Alibaba学习笔记（11） - RocketMQ事务消息</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/源码分析-SpringBoot启动流程分析原理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/源码分析-SpringBoot启动流程分析原理/" class="post-title-link" itemprop="url">源码分析:SpringBoot启动流程分析原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-02-26 20:51:54 / 修改时间：20:52:34" itemprop="dateCreated datePublished" datetime="2020-02-26T20:51:54+08:00">2020-02-26</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。</p>
-</blockquote>
-<p>很多程序员都感慨<strong><code>SpringBoot</code></strong>的到来大大解放了生产力，但是也有聪明的程序猿会多思考一下下，<strong><code>SpringBoot</code></strong>是怎么做到的约定的配置？它配置在了哪里？又是怎么启动的作用等等一系列的问号在跟女朋友花前月下的时候，依然会时不时冒出来。这严重影响了程序猿们的”幸”福生活，为了能广大”程序猿”同胞过上幸福美满的生活，今天咱么就来一起跟随源码探究下<strong><code>SpringBoot</code></strong>到底是如何做到”<strong>约定优于配置</strong>“的。</p>
-<p>首先，我们先介绍下我们的演示的项目环境，我们先试用<strong><code>Spring Initializr</code></strong>来创建一个<strong><code>SpirngBoot</code></strong>工程。我们使用的版本是<strong><code>SpringBoot 2.1.5.RELEASE</code></strong>。</p>
-<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png"></p>
-<p>接下来就只在<strong>pom.xml</strong>文件中添加一个web工程的依赖，是为了观察后面容器类型的源码。</p>
-<pre><code>&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-&lt;/dependency&gt;
-</code></pre><p>这样我们的环境就准备好了。</p>
-<p>我们跟着<strong>SpringBoot</strong>的源码来探究它的启动流程，首先，先找到这个应用程序的入口主方法，在上面打一个断点</p>
-<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png"></p>
-<p>启动之后，<strong>F5</strong> 进入到 <code>run()</code> 方法</p>
-<pre><code>public static ConfigurableApplicationContext run(Class&lt;?&gt;[] primarySources,String[] args) {
-    return new SpringApplication(primarySources).run(args);
-}
-</code></pre><p>到这里会执行<code>new SpringApplication(primarySources)</code>创建spring应用对象，继续F5往下跟会执行<strong>SpringApplication构造器</strong></p>
-<pre><code>// SpringApplication构造器
-public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) {
-    // 资源加载器
-        this.resourceLoader = resourceLoader;
-        Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;);
-        this.primarySources = new LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));
-    // 1. 可能的web应用程序类型的类型。
-        this.webApplicationType = WebApplicationType.deduceFromClasspath();
-    // 2. 设置初始化应用context
-        setInitializers((Collection) getSpringFactoriesInstances(
-                ApplicationContextInitializer.class));
-    // 3.设置初始化监听    
-    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
-    // 4. 推演主程序类    
-    this.mainApplicationClass = deduceMainApplicationClass();
-    }
-</code></pre><p>很多不为人知的事情都是发生在这个对象初始化的时候，这里我们都来一一解密</p>
-<pre><code>static WebApplicationType deduceFromClasspath() {
-        if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null)
-                &amp;&amp; !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
-                &amp;&amp; !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
-            return WebApplicationType.REACTIVE;
-        }
-        for (String className : SERVLET_INDICATOR_CLASSES) {
-            if (!ClassUtils.isPresent(className, null)) {
-                return WebApplicationType.NONE;
-            }
-        }
-    // 这里是我们测试web容器
-        return WebApplicationType.SERVLET;
-    }
-</code></pre><h1 id="一、推断-web-应用类型"><a href="#一、推断-web-应用类型" class="headerlink" title="一、推断 web 应用类型"></a>一、推断 web 应用类型</h1><p>这段代码是来推断我们的应用是哪种 web 应用程序</p>
-<pre><code>public enum WebApplicationType {
-
-    /**
-     * The application should not run as a web application and should not start an
-     * embedded web server.
-     */
-    NONE, // 不是web应用
-
-    /**
-     * The application should run as a servlet-based web application and should start an
-     * embedded servlet web server.
-     */
-    SERVLET, // servlet容器
-
-    /**
-     * The application should run as a reactive web application and should start an
-     * embedded reactive web server.
-     */
-    REACTIVE;  // 反应型web应用（webflux）
-</code></pre><p>当然一开始我们加入了web的依赖，所以我们是<code>servlet</code>容器，</p>
-<h1 id="二、初始化应用上下文"><a href="#二、初始化应用上下文" class="headerlink" title="二、初始化应用上下文"></a><strong>二、初始化应用上下文</strong></h1><p>在设置初始化应用context的时候 ，是先执行了getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，参数是ApplicationContextInitializer.class字节码对象</p>
-<pre><code>private &lt;T&gt; Collection&lt;T&gt; getSpringFactoriesInstances(Class&lt;T&gt; type,
-        Class&lt;?&gt;[] parameterTypes, Object... args) {
-        ClassLoader classLoader = getClassLoader();
-        // Use names and ensure unique to protect against duplicates
-        Set&lt;String&gt; names = new LinkedHashSet&lt;&gt;(
-      // 加载ApplicationContextInitializer.class类型的类
-       // 这里传入就是参数 ApplicationContextInitializer.clas
-         SpringFactoriesLoader.loadFactoryNames(type, classLoader));
-    // 实例化加载到的类
-        List&lt;T&gt; instances = createSpringFactoriesInstances(type, parameterTypes,
-                classLoader, args, names);
-        AnnotationAwareOrderComparator.sort(instances);
-    // 返回
-    return instances;
-}
-
-public static List&lt;String&gt; loadFactoryNames(Class&lt;?&gt; factoryClass, @Nullable ClassLoader classLoader) {
-        String factoryClassName = factoryClass.getName();
-        return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
-}
-</code></pre><p>我们先来看看他是如何加载到这些类</p>
-<pre><code>private static Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(@Nullable ClassLoader classLoader) {
-    // 先从缓存中拿
-        MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);
-        if (result != null) {
-            return result;
-        }
-        try {
-// 去资源路径下加载
-public static final String ACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
-public static final String FACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
-    Enumeration&lt;URL&gt; urls = (classLoader != null ?    
- classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :     ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION);            result = new LinkedMultiValueMap&lt;&gt;();
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                UrlResource resource = new UrlResource(url);
-                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-                for (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) {
-                    String factoryClassName = ((String) entry.getKey()).trim();
-                    for (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) {
-            result.add(factoryClassName, factoryName.trim());
-                    }
-                }
-            }
-            cache.put(classLoader, result);
-             // 返回所有的加载的类
-            return result;
-        }
-        catch (IOException ex) {
-            throw new IllegalArgumentException(&quot;Unable to load factories from location [&quot; +
-                    FACTORIES_RESOURCE_LOCATION + &quot;]&quot;, ex);
-        }
-    }
-</code></pre><p>这里有两个加载配置类的地方其实都指向了<strong><code>META-INF/spring.factories</code></strong>，通过断点我们可以看到应用程序是加载了以下几个jar下的<strong><code>spring.factores</code></strong>文件。</p>
-<p>双击Shift搜索spring.factories可以看到它存在于以下工程中</p>
-<p><img src="https://climg.mukewang.com/5e1556970953076610600255.png" alt="https://climg.mukewang.com/5e1556970953076610600255.png"></p>
-<p><strong><code>spring-boot-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong>（截图未完整截取）</p>
-<p><img src="https://climg.mukewang.com/5e1556ab096a12ca07130437.png" alt="https://climg.mukewang.com/5e1556ab096a12ca07130437.png"></p>
-<p><strong><code>spring-boot-autoconfigure-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
-<p><img src="https://climg.mukewang.com/5e1556ba09aace2108700359.png" alt="https://climg.mukewang.com/5e1556ba09aace2108700359.png"></p>
-<p><strong><code>spring-beans-5.1.7.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
-<p><img src="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png" alt="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png"></p>
-<p>从Map中根据<strong><code>org.springframework.context.ApplicationContextInitializer</code></strong>的类型拿到需要的类初始化类，断点进入<strong><code>getOrDefault(factoryClassName, Collections.emptyList());</code></strong>方法</p>
-<p><img src="https://climg.mukewang.com/5e1556de09173d5708440060.png" alt="https://climg.mukewang.com/5e1556de09173d5708440060.png"></p>
-<p>之后就是把加载到的需要初始化的类进行实例化添加到一个集合中等待备用</p>
-<pre><code>public void setInitializers(
-            Collection&lt;? extends ApplicationContextInitializer&lt;?&gt;&gt; initializers) {
-        this.initializers = new ArrayList&lt;&gt;();
-        this.initializers.addAll(initializers);
-    }
-</code></pre><h1 id="三、初始化监听器类"><a href="#三、初始化监听器类" class="headerlink" title="三、初始化监听器类"></a><strong>三、初始化监听器类</strong></h1><p>最关键的的还是这句</p>
-<p><img src="https://climg.mukewang.com/5e1556f20950b5a107350202.png" alt="https://climg.mukewang.com/5e1556f20950b5a107350202.png"></p>
-<p>当我们跟进去之后，会发现在初始化监听类的时候和上面初始化应用上下文是一样的代码。唯一不同的是<strong><code>getSpringFactoriesInstances(ApplicationListener.class))</code></strong>传进去的是<strong><code>ApplicationListener.class</code></strong>所以这里就不再赘述。</p>
-<h1 id="四、推演主程序类"><a href="#四、推演主程序类" class="headerlink" title="四、推演主程序类"></a><strong>四、推演主程序类</strong></h1><p>也就是这个最关键的代码了</p>
-<pre><code>**this.mainApplicationClass = deduceMainApplicationClass();**
-</code></pre><p><img src="https://climg.mukewang.com/5e15571509d2b15206910274.png" alt="https://climg.mukewang.com/5e15571509d2b15206910274.png"></p>
-<p><img src="https://climg.mukewang.com/5e15572409d4dbf109450379.png" alt="https://climg.mukewang.com/5e15572409d4dbf109450379.png"></p>
-<p>到这里就完成了<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的过程。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h1><p>这篇文章主要是给大家说了下<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的流程，大致可以分为四个步骤:</p>
-<ol>
-<li>推演web应用的类型（如果没有加web依赖类型NONE）</li>
-<li>初始化<strong><code>ApplicationContextInitializer</code></strong></li>
-<li>初始化<strong><code>ApplicationListener</code></strong></li>
-<li>推演出主程序类</li>
-</ol>
-<p>通过这样四个步骤就完成了第一步<strong><code>SpringApplication</code></strong>的初始化过程。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1186,7 +1200,7 @@ public static final String FACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.f
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">97</span>
+          <span class="site-state-item-count">100</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
