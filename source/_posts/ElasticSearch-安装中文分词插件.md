@@ -5,6 +5,7 @@ categories: elasticsearch
 tags:
 - 插件
 - 中文分词
+- es
 ---
 
 # 1. 安装 Elasticsearch
@@ -33,3 +34,27 @@ tags:
 # 4. 移除插件
 
     ./bin/elasticsearch-plugin remove analysis-ik
+
+# 5. 自定义中文词库
+
+## 5.1. 在{es}/plugins/ik/config下，创建：
+
+```bash
+vim custom.dic
+```
+
+## 5.2. 并且添加内容：
+
+```bash
+雨女无瓜
+骚年
+```
+
+## 5.3.配置自定义扩展词典
+
+```bash
+<entry key="ext_dict">custom.dic</entry>
+```
+
+## 5.4. 重启
+

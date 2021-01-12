@@ -71,6 +71,14 @@ COLUMN FAMILIES DESCRIPTION
 
    "hbase.mapred.output.outputtable"定义的第三个t_employee是存储数据表的名称，指定插入数据时写入的表，如果以后需要往该表插入数据就需要指定该值，这个可以不要，表数据就存储在第二个表中了 。
 
+2. stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' ：是指定处理的存储器，就是hive-hbase-handler-*.jar包，要做hive和hbase的集成必须要加上这一句；
+
+3. “hbase.columns.mapping” 是定义在hive表中的字段怎么与hbase的列族进行映射。
+
+      例如:st1就是列族，name就是列。它们之间通过“：”连接。
+
+      在hive中创建的t_employee表，包括两个字段（int型的id和string型的name），映射为hbase中的表t_employee，其中：key对应hbase的rowkey，value对应hbase的st1:name列。
+
 ## 4.2 字段映射
 
 控制HBase字段和Hive之间的映射有两种`SERDEPROPERTIES`:
@@ -112,4 +120,8 @@ scan 't_employee'
 
 [如何整合hive和hbase](https://zhuanlan.zhihu.com/p/74041611)
 
-[Hive与HBase的集成实践](
+[Hive与HBase的集成实践](https://ask.hellobi.com/blog/marsj/4002)
+
+[[hbase-1-4-13-安装部署]]
+
+[[hive2-3-7安装]]

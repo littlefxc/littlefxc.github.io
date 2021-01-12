@@ -16,7 +16,7 @@ tags:
 这通常通过在自然封装列表的对象上进行同步来实现。 如果没有这样的对象存在，列表应该使用 Collections.synchronizedList 方法“包装”。 这最好在创建时完成，以防止意外的不同步访问列表：
 
     List list = Collections.synchronizedList(new LinkedList(...)); 
-  
+
 这个类的 iterator 和 listIterator 方法返回的迭代器是故障快速的 ：如果列表在迭代器创建之后的任何时间被结构化地修改，除了通过迭代器自己的remove或add方法之外，
 迭代器将会抛出一个ConcurrentModificationException 。 因此，面对并发修改，迭代器将快速而干净地失败，而不是在未来未确定的时间冒着任意的非确定性行为。
 

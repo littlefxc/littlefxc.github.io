@@ -1,7 +1,8 @@
 ---
 title: elasticsearch
 date: 2019-08-07 19:41:34
-tags:
+categories: elasticsearch
+tags: es
 ---
 
 ## 解决Elasticsearch-head插件链接不上服务

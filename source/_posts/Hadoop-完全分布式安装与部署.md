@@ -196,7 +196,7 @@ configuration配置如下
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://centos-node1:4000</value>
+        <value>hdfs://centos-node1:9000</value>
         <description>HDFS的URI，文件系统://namenode标识:端口号</description>
     </property>
     <property>
@@ -506,7 +506,7 @@ $ $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
     $ hdfs dfs -put /opt/word.txt /demo/word.txt
     ```
 
-5. 执行输入到`hadoo`p的`/output`
+5. 执行输入到`hadoop`的`/output`
 
     ```sh
     $ yarn jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar wordcount /demo/word.txt /output
@@ -539,4 +539,3 @@ $ $HADOOP_HOME/sbin/mr-jobhistory-daemon.sh start historyserver
     sqoop   1
     storm   1
     ```
-

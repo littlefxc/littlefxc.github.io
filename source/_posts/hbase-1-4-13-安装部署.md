@@ -13,7 +13,7 @@ tags: hbase,大数据
 
 HBase = Hadoop database，Hadoop数据库
 开源数据库
-官网：[hbase.apache.org/](hbase.apache.org/)
+官网：[hbase.apache.org/](http://hbase.apache.org/)
 HBase源于Google的BigTable
 Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。
 当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。
