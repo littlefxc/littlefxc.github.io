@@ -162,6 +162,228 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/ES集群配置/" class="post-title-link" itemprop="url">ES集群配置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-13 19:39:32 / 修改时间：19:40:14" itemprop="dateCreated datePublished" datetime="2021-01-13T19:39:32+08:00">2021-01-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前置操作"><a href="#前置操作" class="headerlink" title="前置操作"></a>前置操作</h1><p>需要确认其它es节点中的data目录，一定要清空，不能有数据。</p>
+<h1 id="配置集群"><a href="#配置集群" class="headerlink" title="配置集群"></a>配置集群</h1><p>修改<code>elasticsearch.yml</code>这个配置文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置集群名称，保证每个节点的名称相同，如此就能都处于一个集群之内了</span></span><br><span class="line">cluster.name: es-cluster</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一个节点的名称，必须不一样</span></span><br><span class="line">node.name: es-node1</span><br><span class="line"></span><br><span class="line"><span class="comment"># http端口（使用默认即可）</span></span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主节点，作用主要是用于来管理整个集群，负责创建或删除索引，管理其他非master节点（相当于企业老总）</span></span><br><span class="line">node.master: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据节点，用于对文档数据的增删改查</span></span><br><span class="line">node.data: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 集群列表</span></span><br><span class="line">discovery.seed_hosts: [<span class="string">"192.168.1.184"</span>, <span class="string">"192.168.1.185"</span>, <span class="string">"192.168.1.186"</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动的时候使用一个master节点</span></span><br><span class="line">cluster.initial_master_nodes: [<span class="string">"es-node1"</span>]</span><br></pre></td></tr></table></figure>
+<p>最后可以通过如下命令查看配置文件的内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more elasticsearch.yml | grep ^[^<span class="comment">#]</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Consul-Watches监控主动通知/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Consul-Watches监控主动通知/" class="post-title-link" itemprop="url">Consul - Watches监控主动通知</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-13 10:04:09 / 修改时间：10:07:30" itemprop="dateCreated datePublished" datetime="2021-01-13T10:04:09+08:00">2021-01-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/注册中心/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1 概念"></a>1 概念</h1><p>当Consul中注册的服务信息发生变化的时候，我们除了定时通过接口去查询最新的服务信息之外，consul还提供了watch机制，通过监控consul数据的变化，主动通知。</p>
+<p>目前conusl watch支持两种通知方式：<strong>可执行程序</strong>和<strong>Http接口</strong>。</p>
+<p>consul watch支持监控的数据类型：</p>
+<ul>
+<li>services - 监控指定列表服务的可用性</li>
+<li>service - 监控指定服务的实例</li>
+<li>nodes - 监控节点</li>
+<li>key - 监控特定的键值对</li>
+<li>keyprefix - 监控consul配置中心的前缀</li>
+<li>checks - 监控健康检查的值</li>
+<li>event - 监控自定义用户事件</li>
+</ul>
+<p>也就是说，consul支持监控服务、键值数据、节点信息，只要发生变化，就通知我们。</p>
+<h1 id="2-基本用法"><a href="#2-基本用法" class="headerlink" title="2 基本用法"></a>2 基本用法</h1><p>我们以监控键值数据的变化为例子，介绍watch机制的用法。</p>
+<p>watch监控的配置信息是跟consul的配置文件放在一起的，通过配置文件中的watches字段，设置监控信息。</p>
+<p>说明：watches的配置，大致用法就是通过type，配置监控数据的类型，然后根据不同数据类型配置不同的参数，最后选择一种通知方式进行配置。</p>
+<h2 id="2-1-通过可执行程序通知"><a href="#2-1-通过可执行程序通知" class="headerlink" title="2.1 通过可执行程序通知"></a>2.1 通过可执行程序通知</h2><p>当我们监控的数据发生变化，consul agent会调用我们配置的可执行程序（命令、脚本等等），并且通过标准输入，以Json格式传入通知的参数， 我们只要在程序中根据参数处理业务即可。</p>
+<p>例子：</p>
+<p>下面是我们consul agent的配置，文件名是 <code>/etc/consul/watches.json</code> 。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>, </span><br><span class="line">	<span class="attr">"data_dir"</span>: <span class="string">"/var/consul"</span>, </span><br><span class="line">	<span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">"watches"</span>: [&#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"key"</span>,</span><br><span class="line">		<span class="attr">"key"</span>: <span class="string">"foo/bar/baz"</span>,</span><br><span class="line">		<span class="attr">"handler_type"</span>: <span class="string">"script"</span>,</span><br><span class="line">		<span class="attr">"args"</span>: [<span class="string">"/usr/bin/my-service-handler.sh"</span>, <span class="string">"-redis"</span>]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个例子的意思，监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令。</p>
+<p>参数说明：</p>
+<ul>
+<li><p>datacenter - 数据中心的名字</p>
+</li>
+<li><p>data_dir - consul数据存放目录</p>
+</li>
+<li><p>ui - 开启consul ui</p>
+</li>
+<li><p>watches - 配置监控信息，如果监控的数据发生变化，则根据配置执行通知。</p>
+<p>watches参数说明：</p>
+<ul>
+<li>type - 监控的数据类型</li>
+<li>key - 监控的键值数据的Key</li>
+<li>handler_type - 通知类型，支持script和http</li>
+<li>args - 配置通知类型为script的，执行命令，是一个数组，第一个元素是命令，后面第2个到第N个元素是命令的参数。</li>
+</ul>
+</li>
+</ul>
+<p>例子的<code>watches</code>配置的意思就是：</p>
+<p>监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令， 这个命令可以通过标准输入，接收变化的数据。</p>
+<p>启动consul，就会加载watches配置。</p>
+<h2 id="2-2-通过Http接口通知"><a href="#2-2-通过Http接口通知" class="headerlink" title="2.2 通过Http接口通知"></a>2.2 通过Http接口通知</h2><p>通过http接口通知数据变化，大体上配置跟上面一样，区别是多了一些http接口的配置参数。</p>
+<p>例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">	<span class="attr">"data_dir"</span>: <span class="string">"/Users/jogin/Documents/work/local/consul/data"</span>,</span><br><span class="line">	<span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">"watches"</span>: [&#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"key"</span>,</span><br><span class="line">		<span class="attr">"key"</span>: <span class="string">"foo/bar/baz"</span>,</span><br><span class="line">		<span class="attr">"handler_type"</span>: <span class="string">"http"</span>,</span><br><span class="line">		<span class="attr">"http_handler_config"</span>: &#123;</span><br><span class="line">			<span class="attr">"path"</span>: <span class="string">"&lt;https://localhost:8000/watch&gt;"</span>,</span><br><span class="line">			<span class="attr">"method"</span>: <span class="string">"POST"</span>,</span><br><span class="line">			<span class="attr">"header"</span>: &#123;</span><br><span class="line">				<span class="attr">"x-foo"</span>: [<span class="string">"bar"</span>, <span class="string">"baz"</span>]</span><br><span class="line">			&#125;,</span><br><span class="line">			<span class="attr">"timeout"</span>: <span class="string">"10s"</span>,</span><br><span class="line">			<span class="attr">"tls_skip_verify"</span>: <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个例子的意思，就是当<code>key=foo/bar/baz</code>的键值数据发生变化，就通过<code>https://localhost:8000/watch</code>通知我们。</p>
+<p>我们关注<code>watches</code>字段的配置信息，下面是参数说明：</p>
+<ul>
+<li><p>type - watch监控类型是key</p>
+</li>
+<li><p>key - 监控foo/bar/baz这个key</p>
+</li>
+<li><p>handler_type - 通知类型, http</p>
+</li>
+<li><p>http_handler_config - 配置http通知信息。</p>
+<p>http_handler_config参数说明：</p>
+<ul>
+<li>path - 通知Url</li>
+<li>method - http请求方法</li>
+<li>header - 自定义Http请求头，没有可以忽略</li>
+<li>timeout - 超时时间，10秒</li>
+<li>tls_skip_verify - 是否跳过tls验证</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-监控服务"><a href="#3-监控服务" class="headerlink" title="3 监控服务"></a>3 监控服务</h1><p>上面介绍了watch的基本用法，我们也可以监控服务信息的变化，例如当有人注册新的服务或者服务不可用的时候，通知我们。</p>
+<p>我们忽略掉，consul agent的配置，单独看watches的配置。</p>
+<p>监控所有的服务的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;services&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>监控单个服务的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;service&quot;,</span><br><span class="line">                &quot;service&quot;: &quot;要监控的服务名&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="4-监控键值数据"><a href="#4-监控键值数据" class="headerlink" title="4 监控键值数据"></a>4 监控键值数据</h1><p>前面介绍过基本Key的监控，其实我们还可以通过key的前缀，批量监控一批key，只要key的前缀相同，这些Key下面的数据发生变化，都会发送通知。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;keyprefix&quot;,</span><br><span class="line">		&quot;prefix&quot;: &quot;foo/&quot;,</span><br><span class="line">		&quot;args&quot;: [&quot;/usr/bin/my-service-handler.sh&quot;, &quot;-redis&quot;]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>监控类型为：keyprefix</p>
+<p>通过prefix字段，配置key的前缀。</p>
+<p>这个配置的意思就是：以foo/开头的Key, 数据发生变化，都会执行args参数，配置的命令。</p>
+<h1 id="5-监控节点"><a href="#5-监控节点" class="headerlink" title="5 监控节点"></a>5 监控节点</h1><p>我们也可以监控consul集群节点的变化信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;nodes&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>没有其他额外的参数，type=nodes即可，当节点信息发生变化，会根据配置的方式通知。</p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.consul.io/docs/dynamic-app-config/watches" target="_blank" rel="noopener">Consul by HashiCorp</a></p>
+<p><a href="https://www.cnblogs.com/ExMan/p/11907491.html" target="_blank" rel="noopener">ExplorerMan</a></p>
+<p><a href="https://www.tizi365.com/archives/535.html" target="_blank" rel="noopener">Consul Watches监控服务变化</a></p>
+<p><a href="https://toutiao.io/posts/zeu435/preview" target="_blank" rel="noopener">开发者头条</a></p>
+<p><a href="https://www.notion.so/Consul-6982c01eb1594549ab0a6dd463f16cfd" target="_blank" rel="noopener">Consul 单机集群搭建</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES-批量操作-bulk/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -763,7 +985,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-12 16:26:34" itemprop="dateModified" datetime="2021-01-12T16:26:34+08:00">2021-01-12</time>
+                <time title="修改时间：2021-01-13 11:02:22" itemprop="dateModified" datetime="2021-01-13T11:02:22+08:00">2021-01-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1034,319 +1256,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-的-REST-API-的使用介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Elasticsearch-的-REST-API-的使用介绍/" class="post-title-link" itemprop="url">Elasticsearch 的 REST API 的使用介绍</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-09 16:41:04" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 19:49:13" itemprop="dateModified" datetime="2021-01-11T19:49:13+08:00">2021-01-11</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h1 id="1-集群健康"><a href="#1-集群健康" class="headerlink" title="1 集群健康"></a>1 集群健康</h1><p><a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/_cluster_health.html" target="_blank" rel="noopener">集群健康 | Elasticsearch: 权威指南 | Elastic</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_cluster/health</span><br></pre></td></tr></table></figure>
-<h1 id="2-索引相关"><a href="#2-索引相关" class="headerlink" title="2 索引相关"></a>2 索引相关</h1><h2 id="2-1-创建索引"><a href="#2-1-创建索引" class="headerlink" title="2.1 创建索引"></a>2.1 创建索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PUT /index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;2&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>number_of_shards : 分片数</li>
-<li>number_of_replicas : 副本数</li>
-</ul>
-<h2 id="2-2-查看索引"><a href="#2-2-查看索引" class="headerlink" title="2.2 查看索引"></a>2.2 查看索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET _cat/indices?v</span><br></pre></td></tr></table></figure>
-<h2 id="2-3-删除索引"><a href="#2-3-删除索引" class="headerlink" title="2.3 删除索引"></a>2.3 删除索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /index_test</span><br></pre></td></tr></table></figure>
-<h1 id="3-mappings-相关"><a href="#3-mappings-相关" class="headerlink" title="3 mappings 相关"></a>3 mappings 相关</h1><h2 id="3-1-创建索引的同时创建mappings"><a href="#3-1-创建索引的同时创建mappings" class="headerlink" title="3.1 创建索引的同时创建mappings"></a>3.1 创建索引的同时创建mappings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">PUT /index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;3&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mappings&quot;: &#123;</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;realname&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">            	&quot;index&quot;: true</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;username&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">            	&quot;index&quot;: false</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;id&quot;: &#123;</span><br><span class="line">        	    &quot;type&quot;: &quot;long&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;age&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;integer&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;nickname&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money1&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;float&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money2&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;double&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;sex&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;byte&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;score&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;short&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;is_teenager&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;boolean&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;birthday&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;date&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;relationship&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;object&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<ul>
-<li><p><strong>number_of_shards</strong> : 分片数</p>
-</li>
-<li><p><strong>number_of_replicas</strong> : 副本数</p>
-</li>
-<li><p><strong>index</strong>：默认true，设置为false的话，那么这个字段就不会被索引(例如密码等敏感信息)</p>
-</li>
-<li><p>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</p>
-</li>
-<li><p>主要数据类型：</p>
-<ul>
-<li>text, keyword, <del>string</del></li>
-<li>long, integer, short, byte</li>
-<li>double, float</li>
-<li>boolean</li>
-<li>date</li>
-<li>object</li>
-<li>数组不能混，类型一致</li>
-</ul>
-</li>
-<li><p><strong>text</strong>：文字类需要被分词被倒排索引的内容，比如<code>商品名称</code>，<code>商品详情</code>，<code>商品介绍</code>，使用text。</p>
-</li>
-<li><p><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</p>
-</li>
-</ul>
-<h1 id="4-文档的基本操作"><a href="#4-文档的基本操作" class="headerlink" title="4 文档的基本操作"></a>4 文档的基本操作</h1><h2 id="4-1-添加文档"><a href="#4-1-添加文档" class="headerlink" title="4.1 添加文档"></a>4.1 添加文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /&#123;索引名&#125;/_doc/&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>查看索引</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /user</span><br></pre></td></tr></table></figure>
-<p><strong>结果如下</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;user&quot; : &#123;</span><br><span class="line">    &quot;aliases&quot; : &#123; &#125;,</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">      &quot;properties&quot; : &#123;</span><br><span class="line">        &quot;create_date&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;date&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;id&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;long&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;password&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;username&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;settings&quot; : &#123;</span><br><span class="line">      &quot;index&quot; : &#123;</span><br><span class="line">        &quot;creation_date&quot; : &quot;1610183188727&quot;,</span><br><span class="line">        &quot;number_of_shards&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;number_of_replicas&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;uuid&quot; : &quot;55w3gLZNTVyJnmdi6hTo5g&quot;,</span><br><span class="line">        &quot;version&quot; : &#123;</span><br><span class="line">          &quot;created&quot; : &quot;7100099&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;provided_name&quot; : &quot;user&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>注意</strong>：</p>
-<ul>
-<li>如果索引没有手动建立mappings，那么当插入文档数据的时候，会根据文档类型自动设置属性类型。这个就是es的动态映射，帮我们在index索引库中去建立数据结构的相关配置信息。</li>
-<li>“fields”: {“type”: “keyword”}对一个字段设置多种索引模式，使用text类型做全文检索，也可使用keyword类型做聚合和排序</li>
-<li>“ignore_above” : 256设置字段索引和存储的长度最大值，超过则被忽略</li>
-</ul>
-<h2 id="4-2-修改文档"><a href="#4-2-修改文档" class="headerlink" title="4.2 修改文档"></a>4.2 修改文档</h2><h3 id="4-2-1-局部修改"><a href="#4-2-1-局部修改" class="headerlink" title="4.2.1 局部修改"></a>4.2.1 局部修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /user/_doc/1/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;update1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-2-2-全局修改"><a href="#4-2-2-全局修改" class="headerlink" title="4.2.2 全局修改"></a>4.2.2 全局修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PUT /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;update2&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>同时每次修改后，返回参数中的属性 <code>verison</code> 都会更改</p>
-<h2 id="4-3-删除文档"><a href="#4-3-删除文档" class="headerlink" title="4.3 删除文档"></a>4.3 删除文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /user/_doc/1</span><br></pre></td></tr></table></figure>
-<p><strong>注</strong>：文档删除不是立即删除，文档还是保存在磁盘上，索引增长越来越多，才会把那些曾经标识过删除的，进行清理，从磁盘上移出去。</p>
-<h2 id="4-4-查询文档"><a href="#4-4-查询文档" class="headerlink" title="4.4 查询文档"></a>4.4 查询文档</h2><p>常规查询</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1</span><br><span class="line">GET /index_demo/_doc/_search</span><br></pre></td></tr></table></figure>
-<h3 id="4-4-1-查询结果"><a href="#4-4-1-查询结果" class="headerlink" title="4.4.1 查询结果"></a>4.4.1 查询结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"_index"</span>: <span class="string">"my_doc"</span>,</span><br><span class="line">    <span class="string">"_type"</span>: <span class="string">"_doc"</span>,</span><br><span class="line">    <span class="string">"_id"</span>: <span class="string">"2"</span>,</span><br><span class="line">    <span class="string">"_score"</span>: 1.0,</span><br><span class="line">    <span class="string">"_version"</span>: 9,</span><br><span class="line">    <span class="string">"_source"</span>: &#123;</span><br><span class="line">        <span class="string">"id"</span>: 1002,</span><br><span class="line">        <span class="string">"name"</span>: <span class="string">"imooc-2"</span>,</span><br><span class="line">        <span class="string">"desc"</span>: <span class="string">"imooc is fashion"</span>,</span><br><span class="line">        <span class="string">"create_date"</span>: <span class="string">"2019-12-25"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-4-2-元数据"><a href="#4-4-2-元数据" class="headerlink" title="4.4.2 元数据"></a>4.4.2 元数据</h3><ul>
-<li>_index：文档数据所属那个索引，理解为数据库的某张表即可。</li>
-<li>_type：文档数据属于哪个类型，新版本使用<code>_doc</code> 。</li>
-<li>_id：文档数据的唯一标识，类似数据库中某张表的主键。可以自动生成或者手动指定。</li>
-<li>_score：查询相关度，是否契合用户匹配，分数越高用户的搜索体验越高。</li>
-<li>_version：版本号。</li>
-<li>_source：文档数据，json格式。</li>
-</ul>
-<h3 id="4-4-3-定制结果集"><a href="#4-4-3-定制结果集" class="headerlink" title="4.4.3 定制结果集"></a>4.4.3 定制结果集</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1?_source=id,name</span><br><span class="line">GET /index_demo/_doc/_search?_source=id,name</span><br></pre></td></tr></table></figure>
-<h3 id="4-4-4-判断文档是否存在"><a href="#4-4-4-判断文档是否存在" class="headerlink" title="4.4.4 判断文档是否存在"></a>4.4.4 判断文档是否存在</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD /index_demo/_doc/1</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/什么是倒排索引/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/什么是倒排索引/" class="post-title-link" itemprop="url">什么是倒排索引?</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-09 15:41:57 / 修改时间：16:42:03" itemprop="dateCreated datePublished" datetime="2021-01-09T15:41:57+08:00">2021-01-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在学习 ES 的过程中，简单的介绍下倒排索引是怎么回事，对倒排索引有一个宏观的感受。</p>
-<h1 id="正排索引"><a href="#正排索引" class="headerlink" title="正排索引"></a>正排索引</h1><p>在讲述倒排索引之前先介绍下正排索引。正排索引就是如下表形式：</p>
-<table>
-<thead>
-<tr>
-<th>文档id</th>
-<th style="text-align:left">文档内容</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td style="text-align:left">什么是正排索引</td>
-</tr>
-<tr>
-<td>2</td>
-<td style="text-align:left">什么是倒排索引</td>
-</tr>
-<tr>
-<td>3</td>
-<td style="text-align:left">正排索引和倒排索引</td>
-</tr>
-</tbody>
-</table>
-<h1 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h1><p>倒排索引就是对上表进行转换，最简单的倒排索引如下表所示：</p>
-<table>
-<thead>
-<tr>
-<th>单词</th>
-<th>文档ids</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>什么</td>
-<td>1,2</td>
-</tr>
-<tr>
-<td>是</td>
-<td>1,2</td>
-</tr>
-<tr>
-<td>正排</td>
-<td>1,3</td>
-</tr>
-<tr>
-<td>倒排</td>
-<td>2,3</td>
-</tr>
-<tr>
-<td>索引</td>
-<td>1,2,3</td>
-</tr>
-<tr>
-<td>和</td>
-<td>3</td>
-</tr>
-</tbody>
-</table>
-<h2 id="词频（TF）和位置（POS）"><a href="#词频（TF）和位置（POS）" class="headerlink" title="词频（TF）和位置（POS）"></a>词频（TF）和位置（POS）</h2><p>上表所示的倒排索引之所以是最简单的，是因为这个索引系统只记载了哪些文档包含某个单词。实用的倒排索引还可以记载更多的信息，如下表第3列的<strong>词频</strong>和<strong>位置</strong>。</p>
-<p><strong>TF</strong>：单词在某个文档中出现的次数<br><strong>POS</strong>：单词在文档中出现的位置</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">单词</th>
-<th>文档ids</th>
-<th>文档id:词频TF:&lt;位置POS&gt;</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">什么</td>
-<td>1,2</td>
-<td>1:1:<1>,2:1:<1></1></1></td>
-</tr>
-<tr>
-<td style="text-align:left">是</td>
-<td>1,2</td>
-<td>1:1:<2>,2:1:<2></2></2></td>
-</tr>
-<tr>
-<td style="text-align:left">正排</td>
-<td>1,3</td>
-<td>1:1:<3>,3:1:<0></0></3></td>
-</tr>
-<tr>
-<td style="text-align:left">倒排</td>
-<td>2,3</td>
-<td>2:1:<3>,3:1:<5></5></3></td>
-</tr>
-<tr>
-<td style="text-align:left">索引</td>
-<td>1,2,3</td>
-<td>1:1:<5>,2:1:<5>,3:2:&lt;2,7&gt;</5></5></td>
-</tr>
-<tr>
-<td style="text-align:left">和</td>
-<td>3</td>
-<td>3:1:<4></4></td>
-</tr>
-</tbody>
-</table>
-<p>以“索引”这个单词为例，“3:2:&lt;2,7&gt;”：表示在文档id是3的文档中出现2次，在文档中的位置分别是2和7。</p>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.cnblogs.com/ottll/p/9470732.html" target="_blank" rel="noopener">https://www.cnblogs.com/ottll/p/9470732.html</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/10/">10</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/11/">11</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1412,7 +1325,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-count">102</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
