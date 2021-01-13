@@ -320,10 +320,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-02-26 20:51:54 / 修改时间：20:52:34" itemprop="dateCreated datePublished" datetime="2020-02-26T20:51:54+08:00">2020-02-26</time>
+              <time title="创建时间：2020-02-26 20:51:54" itemprop="dateCreated datePublished" datetime="2020-02-26T20:51:54+08:00">2020-02-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-13 09:32:54" itemprop="dateModified" datetime="2021-01-13T09:32:54+08:00">2021-01-13</time>
+              </span>
 
           
 
@@ -341,150 +347,46 @@
 </blockquote>
 <p>很多程序员都感慨<strong><code>SpringBoot</code></strong>的到来大大解放了生产力，但是也有聪明的程序猿会多思考一下下，<strong><code>SpringBoot</code></strong>是怎么做到的约定的配置？它配置在了哪里？又是怎么启动的作用等等一系列的问号在跟女朋友花前月下的时候，依然会时不时冒出来。这严重影响了程序猿们的”幸”福生活，为了能广大”程序猿”同胞过上幸福美满的生活，今天咱么就来一起跟随源码探究下<strong><code>SpringBoot</code></strong>到底是如何做到”<strong>约定优于配置</strong>“的。</p>
 <p>首先，我们先介绍下我们的演示的项目环境，我们先试用<strong><code>Spring Initializr</code></strong>来创建一个<strong><code>SpirngBoot</code></strong>工程。我们使用的版本是<strong><code>SpringBoot 2.1.5.RELEASE</code></strong>。</p>
-<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a01e332d-2c77-44db-b458-6dee64889df7/Untitled.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png"></p>
 <p>接下来就只在<strong>pom.xml</strong>文件中添加一个web工程的依赖，是为了观察后面容器类型的源码。</p>
-<pre><code>&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
-&lt;/dependency&gt;
-</code></pre><p>这样我们的环境就准备好了。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样我们的环境就准备好了。</p>
 <p>我们跟着<strong>SpringBoot</strong>的源码来探究它的启动流程，首先，先找到这个应用程序的入口主方法，在上面打一个断点</p>
-<p><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png" alt="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89a124e5-d047-48ab-afea-fca7984a7e84/Untitled.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png"></p>
 <p>启动之后，<strong>F5</strong> 进入到 <code>run()</code> 方法</p>
-<pre><code>public static ConfigurableApplicationContext run(Class&lt;?&gt;[] primarySources,String[] args) {
-    return new SpringApplication(primarySources).run(args);
-}
-</code></pre><p>到这里会执行<code>new SpringApplication(primarySources)</code>创建spring应用对象，继续F5往下跟会执行<strong>SpringApplication构造器</strong></p>
-<pre><code>// SpringApplication构造器
-public SpringApplication(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources) {
-    // 资源加载器
-        this.resourceLoader = resourceLoader;
-        Assert.notNull(primarySources, &quot;PrimarySources must not be null&quot;);
-        this.primarySources = new LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));
-    // 1. 可能的web应用程序类型的类型。
-        this.webApplicationType = WebApplicationType.deduceFromClasspath();
-    // 2. 设置初始化应用context
-        setInitializers((Collection) getSpringFactoriesInstances(
-                ApplicationContextInitializer.class));
-    // 3.设置初始化监听    
-    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
-    // 4. 推演主程序类    
-    this.mainApplicationClass = deduceMainApplicationClass();
-    }
-</code></pre><p>很多不为人知的事情都是发生在这个对象初始化的时候，这里我们都来一一解密</p>
-<pre><code>static WebApplicationType deduceFromClasspath() {
-        if (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, null)
-                &amp;&amp; !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, null)
-                &amp;&amp; !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, null)) {
-            return WebApplicationType.REACTIVE;
-        }
-        for (String className : SERVLET_INDICATOR_CLASSES) {
-            if (!ClassUtils.isPresent(className, null)) {
-                return WebApplicationType.NONE;
-            }
-        }
-    // 这里是我们测试web容器
-        return WebApplicationType.SERVLET;
-    }
-</code></pre><h1 id="一、推断-web-应用类型"><a href="#一、推断-web-应用类型" class="headerlink" title="一、推断 web 应用类型"></a>一、推断 web 应用类型</h1><p>这段代码是来推断我们的应用是哪种 web 应用程序</p>
-<pre><code>public enum WebApplicationType {
-
-    /**
-     * The application should not run as a web application and should not start an
-     * embedded web server.
-     */
-    NONE, // 不是web应用
-
-    /**
-     * The application should run as a servlet-based web application and should start an
-     * embedded servlet web server.
-     */
-    SERVLET, // servlet容器
-
-    /**
-     * The application should run as a reactive web application and should start an
-     * embedded reactive web server.
-     */
-    REACTIVE;  // 反应型web应用（webflux）
-</code></pre><p>当然一开始我们加入了web的依赖，所以我们是<code>servlet</code>容器，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ConfigurableApplicationContext <span class="title">run</span><span class="params">(Class&lt;?&gt;[] primarySources,String[] args)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> SpringApplication(primarySources).run(args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里会执行<code>new SpringApplication(primarySources)</code>创建spring应用对象，继续F5往下跟会执行<strong>SpringApplication构造器</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SpringApplication构造器</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">SpringApplication</span><span class="params">(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 资源加载器</span></span><br><span class="line">		<span class="keyword">this</span>.resourceLoader = resourceLoader;</span><br><span class="line">		Assert.notNull(primarySources, <span class="string">"PrimarySources must not be null"</span>);</span><br><span class="line">		<span class="keyword">this</span>.primarySources = <span class="keyword">new</span> LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));</span><br><span class="line">    <span class="comment">// 1. 可能的web应用程序类型的类型。</span></span><br><span class="line">		<span class="keyword">this</span>.webApplicationType = WebApplicationType.deduceFromClasspath();</span><br><span class="line">    <span class="comment">// 2. 设置初始化应用context</span></span><br><span class="line">		setInitializers((Collection) getSpringFactoriesInstances(</span><br><span class="line">				ApplicationContextInitializer.class));</span><br><span class="line">	<span class="comment">// 3.设置初始化监听	</span></span><br><span class="line">    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));</span><br><span class="line">	<span class="comment">// 4. 推演主程序类	</span></span><br><span class="line">    <span class="keyword">this</span>.mainApplicationClass = deduceMainApplicationClass();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>很多不为人知的事情都是发生在这个对象初始化的时候，这里我们都来一一解密</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> WebApplicationType <span class="title">deduceFromClasspath</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, <span class="keyword">null</span>)</span><br><span class="line">				&amp;&amp; !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, <span class="keyword">null</span>)</span><br><span class="line">				&amp;&amp; !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, <span class="keyword">null</span>)) &#123;</span><br><span class="line">			<span class="keyword">return</span> WebApplicationType.REACTIVE;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (String className : SERVLET_INDICATOR_CLASSES) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!ClassUtils.isPresent(className, <span class="keyword">null</span>)) &#123;</span><br><span class="line">				<span class="keyword">return</span> WebApplicationType.NONE;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">    <span class="comment">// 这里是我们测试web容器</span></span><br><span class="line">		<span class="keyword">return</span> WebApplicationType.SERVLET;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="一、推断-web-应用类型"><a href="#一、推断-web-应用类型" class="headerlink" title="一、推断 web 应用类型"></a>一、推断 web 应用类型</h1><p>这段代码是来推断我们的应用是哪种 web 应用程序</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> WebApplicationType &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * The application should not run as a web application and should not start an</span></span><br><span class="line"><span class="comment">	 * embedded web server.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	NONE, <span class="comment">// 不是web应用</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * The application should run as a servlet-based web application and should start an</span></span><br><span class="line"><span class="comment">	 * embedded servlet web server.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	SERVLET, <span class="comment">// servlet容器</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * The application should run as a reactive web application and should start an</span></span><br><span class="line"><span class="comment">	 * embedded reactive web server.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	REACTIVE;  <span class="comment">// 反应型web应用（webflux）</span></span><br></pre></td></tr></table></figure>
+<p>当然一开始我们加入了web的依赖，所以我们是<code>servlet</code>容器，</p>
 <h1 id="二、初始化应用上下文"><a href="#二、初始化应用上下文" class="headerlink" title="二、初始化应用上下文"></a><strong>二、初始化应用上下文</strong></h1><p>在设置初始化应用context的时候 ，是先执行了getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，参数是ApplicationContextInitializer.class字节码对象</p>
-<pre><code>private &lt;T&gt; Collection&lt;T&gt; getSpringFactoriesInstances(Class&lt;T&gt; type,
-        Class&lt;?&gt;[] parameterTypes, Object... args) {
-        ClassLoader classLoader = getClassLoader();
-        // Use names and ensure unique to protect against duplicates
-        Set&lt;String&gt; names = new LinkedHashSet&lt;&gt;(
-      // 加载ApplicationContextInitializer.class类型的类
-       // 这里传入就是参数 ApplicationContextInitializer.clas
-         SpringFactoriesLoader.loadFactoryNames(type, classLoader));
-    // 实例化加载到的类
-        List&lt;T&gt; instances = createSpringFactoriesInstances(type, parameterTypes,
-                classLoader, args, names);
-        AnnotationAwareOrderComparator.sort(instances);
-    // 返回
-    return instances;
-}
-
-public static List&lt;String&gt; loadFactoryNames(Class&lt;?&gt; factoryClass, @Nullable ClassLoader classLoader) {
-        String factoryClassName = factoryClass.getName();
-        return loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());
-}
-</code></pre><p>我们先来看看他是如何加载到这些类</p>
-<pre><code>private static Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(@Nullable ClassLoader classLoader) {
-    // 先从缓存中拿
-        MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);
-        if (result != null) {
-            return result;
-        }
-        try {
-// 去资源路径下加载
-public static final String ACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
-public static final String FACTORIES_RESOURCE_LOCATION = &quot;META-INF/spring.factories&quot;; 
-    Enumeration&lt;URL&gt; urls = (classLoader != null ?    
- classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :     ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION);            result = new LinkedMultiValueMap&lt;&gt;();
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                UrlResource resource = new UrlResource(url);
-                Properties properties = PropertiesLoaderUtils.loadProperties(resource);
-                for (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) {
-                    String factoryClassName = ((String) entry.getKey()).trim();
-                    for (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) {
-            result.add(factoryClassName, factoryName.trim());
-                    }
-                }
-            }
-            cache.put(classLoader, result);
-             // 返回所有的加载的类
-            return result;
-        }
-        catch (IOException ex) {
-            throw new IllegalArgumentException(&quot;Unable to load factories from location [&quot; +
-                    FACTORIES_RESOURCE_LOCATION + &quot;]&quot;, ex);
-        }
-    }
-</code></pre><p>这里有两个加载配置类的地方其实都指向了<strong><code>META-INF/spring.factories</code></strong>，通过断点我们可以看到应用程序是加载了以下几个jar下的<strong><code>spring.factores</code></strong>文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;T&gt; <span class="function">Collection&lt;T&gt; <span class="title">getSpringFactoriesInstances</span><span class="params">(Class&lt;T&gt; type,</span></span></span><br><span class="line"><span class="function"><span class="params">		Class&lt;?&gt;[] parameterTypes, Object... args)</span> </span>&#123;</span><br><span class="line">		ClassLoader classLoader = getClassLoader();</span><br><span class="line">		<span class="comment">// Use names and ensure unique to protect against duplicates</span></span><br><span class="line">		Set&lt;String&gt; names = <span class="keyword">new</span> LinkedHashSet&lt;&gt;(</span><br><span class="line">      <span class="comment">// 加载ApplicationContextInitializer.class类型的类</span></span><br><span class="line">       <span class="comment">// 这里传入就是参数 ApplicationContextInitializer.clas</span></span><br><span class="line">	 	SpringFactoriesLoader.loadFactoryNames(type, classLoader));</span><br><span class="line">    <span class="comment">// 实例化加载到的类</span></span><br><span class="line">		List&lt;T&gt; instances = createSpringFactoriesInstances(type, parameterTypes,</span><br><span class="line">				classLoader, args, names);</span><br><span class="line">		AnnotationAwareOrderComparator.sort(instances);</span><br><span class="line">	<span class="comment">// 返回</span></span><br><span class="line">    <span class="keyword">return</span> instances;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">loadFactoryNames</span><span class="params">(Class&lt;?&gt; factoryClass, @Nullable ClassLoader classLoader)</span> </span>&#123;</span><br><span class="line">		String factoryClassName = factoryClass.getName();</span><br><span class="line">		<span class="keyword">return</span> loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先来看看他是如何加载到这些类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(<span class="meta">@Nullable</span> ClassLoader classLoader) &#123;</span><br><span class="line">    <span class="comment">// 先从缓存中拿</span></span><br><span class="line">		MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);</span><br><span class="line">		<span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> result;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line"><span class="comment">// 去资源路径下加载</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACTORIES_RESOURCE_LOCATION = <span class="string">"META-INF/spring.factories"</span>; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FACTORIES_RESOURCE_LOCATION = <span class="string">"META-INF/spring.factories"</span>; </span><br><span class="line">	Enumeration&lt;URL&gt; urls = (classLoader != <span class="keyword">null</span> ?	</span><br><span class="line"> classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :     ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION);			result = <span class="keyword">new</span> LinkedMultiValueMap&lt;&gt;();</span><br><span class="line">			<span class="keyword">while</span> (urls.hasMoreElements()) &#123;</span><br><span class="line">				URL url = urls.nextElement();</span><br><span class="line">				UrlResource resource = <span class="keyword">new</span> UrlResource(url);</span><br><span class="line">				Properties properties = PropertiesLoaderUtils.loadProperties(resource);</span><br><span class="line">				<span class="keyword">for</span> (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) &#123;</span><br><span class="line">					String factoryClassName = ((String) entry.getKey()).trim();</span><br><span class="line">					<span class="keyword">for</span> (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) &#123;</span><br><span class="line">			result.add(factoryClassName, factoryName.trim());</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			cache.put(classLoader, result);</span><br><span class="line">             <span class="comment">// 返回所有的加载的类</span></span><br><span class="line">			<span class="keyword">return</span> result;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Unable to load factories from location ["</span> +</span><br><span class="line">					FACTORIES_RESOURCE_LOCATION + <span class="string">"]"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有两个加载配置类的地方其实都指向了<strong><code>META-INF/spring.factories</code></strong>，通过断点我们可以看到应用程序是加载了以下几个jar下的<strong><code>spring.factores</code></strong>文件。</p>
 <p>双击Shift搜索spring.factories可以看到它存在于以下工程中</p>
-<p><img src="https://climg.mukewang.com/5e1556970953076610600255.png" alt="https://climg.mukewang.com/5e1556970953076610600255.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_3.png"></p>
 <p><strong><code>spring-boot-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong>（截图未完整截取）</p>
-<p><img src="https://climg.mukewang.com/5e1556ab096a12ca07130437.png" alt="https://climg.mukewang.com/5e1556ab096a12ca07130437.png"></p>
-<p><strong><code>spring-boot-autoconfigure-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
-<p><img src="https://climg.mukewang.com/5e1556ba09aace2108700359.png" alt="https://climg.mukewang.com/5e1556ba09aace2108700359.png"></p>
-<p><strong><code>spring-beans-5.1.7.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong></p>
-<p><img src="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png" alt="https://climg.mukewang.com/5e1556ce09a8c80b07400029.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_4.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_4.png"></p>
+<p><strong><code>spring-boot-autoconfigure-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong> </p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_5.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_5.png"></p>
+<p><strong><code>spring-beans-5.1.7.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong> </p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_6.png"></p>
 <p>从Map中根据<strong><code>org.springframework.context.ApplicationContextInitializer</code></strong>的类型拿到需要的类初始化类，断点进入<strong><code>getOrDefault(factoryClassName, Collections.emptyList());</code></strong>方法</p>
-<p><img src="https://climg.mukewang.com/5e1556de09173d5708440060.png" alt="https://climg.mukewang.com/5e1556de09173d5708440060.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_7.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_7.png"></p>
 <p>之后就是把加载到的需要初始化的类进行实例化添加到一个集合中等待备用</p>
-<pre><code>public void setInitializers(
-            Collection&lt;? extends ApplicationContextInitializer&lt;?&gt;&gt; initializers) {
-        this.initializers = new ArrayList&lt;&gt;();
-        this.initializers.addAll(initializers);
-    }
-</code></pre><h1 id="三、初始化监听器类"><a href="#三、初始化监听器类" class="headerlink" title="三、初始化监听器类"></a><strong>三、初始化监听器类</strong></h1><p>最关键的的还是这句</p>
-<p><img src="https://climg.mukewang.com/5e1556f20950b5a107350202.png" alt="https://climg.mukewang.com/5e1556f20950b5a107350202.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setInitializers</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			Collection&lt;? extends ApplicationContextInitializer&lt;?&gt;&gt; initializers)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.initializers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">		<span class="keyword">this</span>.initializers.addAll(initializers);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="三、初始化监听器类"><a href="#三、初始化监听器类" class="headerlink" title="三、初始化监听器类"></a><strong>三、初始化监听器类</strong></h1><p>最关键的的还是这句</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png"></p>
 <p>当我们跟进去之后，会发现在初始化监听类的时候和上面初始化应用上下文是一样的代码。唯一不同的是<strong><code>getSpringFactoriesInstances(ApplicationListener.class))</code></strong>传进去的是<strong><code>ApplicationListener.class</code></strong>所以这里就不再赘述。</p>
 <h1 id="四、推演主程序类"><a href="#四、推演主程序类" class="headerlink" title="四、推演主程序类"></a><strong>四、推演主程序类</strong></h1><p>也就是这个最关键的代码了</p>
-<pre><code>**this.mainApplicationClass = deduceMainApplicationClass();**
-</code></pre><p><img src="https://climg.mukewang.com/5e15571509d2b15206910274.png" alt="https://climg.mukewang.com/5e15571509d2b15206910274.png"></p>
-<p><img src="https://climg.mukewang.com/5e15572409d4dbf109450379.png" alt="https://climg.mukewang.com/5e15572409d4dbf109450379.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">**<span class="keyword">this</span>.mainApplicationClass = deduceMainApplicationClass();**</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png"></p>
 <p>到这里就完成了<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的过程。</p>
 <h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h1><p>这篇文章主要是给大家说了下<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的流程，大致可以分为四个步骤:</p>
 <ol>
