@@ -162,6 +162,83 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群脑裂现象探讨/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/ES集群脑裂现象探讨/" class="post-title-link" itemprop="url">ES集群脑裂现象探讨</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-13 20:07:06 / 修改时间：20:07:22" itemprop="dateCreated datePublished" datetime="2021-01-13T20:07:06+08:00">2021-01-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="什么是脑裂"><a href="#什么是脑裂" class="headerlink" title="什么是脑裂"></a>什么是脑裂</h1><p>如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。</p>
+<h1 id="脑裂解决方案"><a href="#脑裂解决方案" class="headerlink" title="脑裂解决方案"></a>脑裂解决方案</h1><p>master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。</p>
+<p>解决实现原理：半数以上的节点同意选举，节点方可成为新的master。</p>
+<ul>
+<li>discovery.zen.minimum_master_nodes=(N/2)+1<ul>
+<li>N为集群的中master节点的数量，也就是那些 <code>node.master=true</code> 设置的那些服务器节点总数。</li>
+</ul>
+</li>
+</ul>
+<h1 id="ES-7-X"><a href="#ES-7-X" class="headerlink" title="ES 7.X"></a>ES 7.X</h1><p>在最新版7.x中，<code>minimum_master_node</code>这个参数已经被移除了，这一块内容完全由es自身去管理，这样就避免了脑裂的问题，选举也会非常快。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群配置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1190,72 +1267,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Redis集群搭建/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Redis集群搭建/" class="post-title-link" itemprop="url">Redis集群搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-11 11:50:38 / 修改时间：11:51:05" itemprop="dateCreated datePublished" datetime="2021-01-11T11:50:38+08:00">2021-01-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="redis-conf-配置"><a href="#redis-conf-配置" class="headerlink" title="redis.conf 配置"></a><strong><strong>redis.conf 配置</strong></strong></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 开启集群模式</span><br><span class="line">cluster-enabled yes</span><br><span class="line"># 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"># 超时时间，超时则认为master宕机，随后主备切换</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"># 开启AOF</span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
-<h2 id="启动6个redis实例"><a href="#启动6个redis实例" class="headerlink" title="启动6个redis实例"></a><strong><strong>启动6个redis实例</strong></strong></h2><ol>
-<li>启动6台</li>
-<li>如果启动过程出错，把rdb等文件删除清空</li>
-</ol>
-<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a><strong><strong>创建集群</strong></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#####</span></span><br><span class="line"><span class="comment"># 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="comment"># 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="comment">#####</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli -a 密码 --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
-<p><code>slots</code>：槽，用于装数据，主节点有，从节点没有</p>
-<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a><strong><strong>检查集群信息</strong></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check 192.168.25.64:6380</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1325,7 +1336,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">102</span>
+          <span class="site-state-item-count">103</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

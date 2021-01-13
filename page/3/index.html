@@ -162,6 +162,204 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/hbase-1-4-13-安装部署/" class="post-title-link" itemprop="url">hbase 1.4.13 安装部署</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-16 17:19:13" itemprop="dateCreated datePublished" datetime="2020-09-16T17:19:13+08:00">2020-09-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-20 18:18:04" itemprop="dateModified" datetime="2020-11-20T18:18:04+08:00">2020-11-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[TOC]</p>
+<h1 id="认识HBase"><a href="#认识HBase" class="headerlink" title="认识HBase"></a>认识HBase</h1><h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase = Hadoop database，Hadoop数据库<br>开源数据库<br>官网：<a href="http://hbase.apache.org/" target="_blank" rel="noopener">hbase.apache.org/</a><br>HBase源于Google的BigTable<br>Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。<br>当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。<br>HBase可执行基于Yarn平台的计算任务，但不擅长。</p>
+<p>&lt; !–more–&gt;</p>
+<h2 id="HBase集群角色"><a href="#HBase集群角色" class="headerlink" title="HBase集群角色"></a>HBase集群角色</h2><ul>
+<li>HDFS：<ul>
+<li>NameNode——主节点</li>
+<li>DataNode——数据存储节点</li>
+</ul>
+</li>
+<li>Yarn：<ul>
+<li>ResourceManager——全局的资源管理器</li>
+<li>NodeManager——分节点资源和任务管理器</li>
+</ul>
+</li>
+<li>HBase：<ul>
+<li>HMaster<ul>
+<li>负责Table表和RegionServer的监控管理工作</li>
+<li>处理元数据的变更</li>
+<li>对HRegionServer进行故障转移</li>
+<li>空闲时对数据进行负载均衡处理</li>
+<li>管理Region</li>
+<li>借助ZooKeeper发布位置到客户端</li>
+</ul>
+</li>
+<li>HRegionServer<ul>
+<li>负责Table数据的实际读写</li>
+<li>刷新缓存数据到HDFS</li>
+<li>处理Region</li>
+<li>可以进行数据压缩</li>
+<li>维护Hlog</li>
+<li>Region分片</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="hbase-架构"><a href="#hbase-架构" class="headerlink" title="hbase 架构"></a>hbase 架构</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png" alt="image-20200916184659443"></p>
+<p>HRegionServer结构：</p>
+<ul>
+<li>HLog：存储HBase的修改记录</li>
+<li>HRegion：根据rowkey（行键，类似id）分割的表的分片</li>
+<li>Store：对应HBase表中的一个列族，可存储多个字段</li>
+<li>HFile：真正的存储文件</li>
+<li>MemStore：保存当前的操作</li>
+<li>ZooKeeper：存放数据的元数据信息，负责维护RegionServer中保存的元数据信息</li>
+<li>DFS Client：存储数据信息到HDFS集群中</li>
+</ul>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
+<li>Hadoop集群环境</li>
+<li>ZooKeeper集群环境</li>
+</ul>
+<h2 id="服务器分配"><a href="#服务器分配" class="headerlink" title="服务器分配"></a>服务器分配</h2><table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>centos-node1</td>
+<td>192.168.99.101</td>
+</tr>
+<tr>
+<td>centos-node2</td>
+<td>192.168.99.102</td>
+</tr>
+<tr>
+<td>centos-node3</td>
+<td>192.168.99.103</td>
+</tr>
+</tbody>
+</table>
+<h2 id="解压安装文件到指定目录"><a href="#解压安装文件到指定目录" class="headerlink" title="解压安装文件到指定目录"></a>解压安装文件到指定目录</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zxvf hbase-1.4.13.tar.gz -C 目标目录</span><br></pre></td></tr></table></figure>
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><h3 id="hbase-env-sh"><a href="#hbase-env-sh" class="headerlink" title="hbase-env.sh"></a>hbase-env.sh</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-env.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The java implementation to use.  Java 1.7+ required.</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=jdk安装路径</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注释掉以下语句（jdk1.8中不需要这个配置）</span></span><br><span class="line"><span class="comment"># export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"><span class="comment"># export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Tell HBase whether it should manage it's own instance of Zookeeper or not.</span></span><br><span class="line"><span class="comment"># 关闭HBase自带的ZooKeeper</span></span><br><span class="line"><span class="built_in">export</span> HBASE_MANAGES_ZK=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h3 id="hbase-site-xml"><a href="#hbase-site-xml" class="headerlink" title="hbase-site.xml"></a>hbase-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-site.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 设置namenode所在位置（HDFS中存放的路径） --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://centos-node1:4000/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span>    </span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 是否开启集群 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">	<span class="comment">&lt;!-- HBase-0.9.8之前默认端口为60000 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>16000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16010<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16201<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16301<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- zookeeper集群的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="comment">&lt;!-- 注意不要有空格 --&gt;</span>  </span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node1,centos-node2,centos-node3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- hbase的元数据信息存储在zookeeper的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/zookeeper/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="regionservers"><a href="#regionservers" class="headerlink" title="regionservers"></a>regionservers</h3><p>加入节点主机名</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">centos-node1</span><br><span class="line">centos-node2</span><br><span class="line">centos-node3</span><br></pre></td></tr></table></figure>
+<h2 id="解决依赖问题"><a href="#解决依赖问题" class="headerlink" title="解决依赖问题"></a>解决依赖问题</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/hbase/lib</span><br><span class="line">$ rm -fr hadoop-*</span><br><span class="line">$ rm -fr zookeeper-*</span><br></pre></td></tr></table></figure>
+<p>把相关版本的zookeeper和hadoop的依赖包导入到hbase/lib</p>
+<h2 id="软链接hadoop配置"><a href="#软链接hadoop配置" class="headerlink" title="软链接hadoop配置"></a>软链接hadoop配置</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/core-site.xml /usr/<span class="built_in">local</span>/hbase/conf/core-site.xml</span><br><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/hdfs-site.xml /usr/<span class="built_in">local</span>/hbase/conf/hdfs-site.xml</span><br></pre></td></tr></table></figure>
+<h2 id="复制到其他节点"><a href="#复制到其他节点" class="headerlink" title="复制到其他节点"></a>复制到其他节点</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node2:/usr/<span class="built_in">local</span>/</span><br><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node3:/usr/<span class="built_in">local</span>/</span><br></pre></td></tr></table></figure>
+<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/profile</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br><span class="line">JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br><span class="line">HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line">CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar:<span class="variable">$JRE_HOME</span>/lib</span><br><span class="line">ZOOKEEPER_HOME=/usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line">HBASE_HOME=/usr/<span class="built_in">local</span>/hbase</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$ZOOKEEPER_HOME</span>/bin:<span class="variable">$HBASE_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME ZOOKEEPER_HOME HBASE_HOME</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+<h2 id="修改防火墙"><a href="#修改防火墙" class="headerlink" title="修改防火墙"></a>修改防火墙</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务(端口不全)</span></span><br><span class="line">$ firewall-cmd --new-service=hbase --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16000/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16010/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16201/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16301/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 2181/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=hbase</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop firewalld</span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure>
+<h1 id="启动集群"><a href="#启动集群" class="headerlink" title="启动集群"></a>启动集群</h1><ul>
+<li>启动主节点<ul>
+<li><code>hbase-daemon.sh start master</code></li>
+</ul>
+</li>
+<li>启动从节点<ul>
+<li><code>hbase-daemon.sh start regionserver</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="关闭集群"><a href="#关闭集群" class="headerlink" title="关闭集群"></a>关闭集群</h1><ul>
+<li>关闭主节点<ul>
+<li><code>hbase-daemon.sh stop master</code></li>
+</ul>
+</li>
+<li>关闭从节点<ul>
+<li><code>hbase-daemon.sh stop regionserver</code></li>
+</ul>
+</li>
+</ul>
+<h1 id="UI-展示"><a href="#UI-展示" class="headerlink" title="UI 展示"></a>UI 展示</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png" alt="image-20200921184311647"></p>
+<h1 id="hbase-shell的一些命令"><a href="#hbase-shell的一些命令" class="headerlink" title="hbase shell的一些命令"></a>hbase shell的一些命令</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入终端</span></span><br><span class="line">$ hbase shell</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185108081.png" alt="image-20200921185108081"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询表</span></span><br><span class="line">$ list</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185132638.png" alt="image-20200921185132638"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示服务器状态</span></span><br><span class="line">$ status</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png" alt="image-20200921185249611"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示当前用户</span></span><br><span class="line">$ whoami</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png" alt="image-20200921185450703"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line">$ create <span class="string">'表名'</span>, <span class="string">'列族1'</span>, <span class="string">'列族2'</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png" alt="image-20200921185551041"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 表的一些操作</span></span><br><span class="line"><span class="comment"># 全表扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 指定Rowkey扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span>, &#123;STARTROW =&gt; <span class="string">'Rowkey值'</span>, STOPROW =&gt; <span class="string">'Rowkey值'</span>&#125;</span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">$ describe <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 修改表结构信息</span></span><br><span class="line">$ alter <span class="string">'表名'</span>, &#123;NAME =&gt; <span class="string">'列族名'</span>, 变更字段名 =&gt; <span class="string">' '</span>&#125;</span><br><span class="line"><span class="comment"># 查询指定数据信息</span></span><br><span class="line"><span class="comment"># 指定具体的rowkey</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 指定具体的列</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span></span><br><span class="line"><span class="comment"># 统计表行数</span></span><br><span class="line">$ count <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 根据Rowkey进行统计</span></span><br><span class="line">$ count <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 表中添加数据信息。HBase只有覆盖没有修改,覆盖时对应表名、rowkey、列族、列名字段，输入新的值信息</span></span><br><span class="line">$ put <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span>, <span class="string">'值'</span></span><br><span class="line"><span class="comment"># 清空表</span></span><br><span class="line">$ truncate <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="comment"># 指定表不可用</span></span><br><span class="line">$ <span class="built_in">disable</span> <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">$ drop <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 退出终端</span></span><br><span class="line">$ <span class="built_in">exit</span></span><br><span class="line">$ quit</span><br></pre></td></tr></table></figure>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><ul>
+<li><a href="https://juejin.im/post/6844903797655863309#heading-21" target="_blank" rel="noopener">https://juejin.im/post/6844903797655863309#heading-21</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Zookeeper-3-4-14-安装部署/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1069,147 +1267,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Kubenete集群安装指南/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Kubenete集群安装指南/" class="post-title-link" itemprop="url">Kubernetes集群安装指南</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-04-27 15:00:31" itemprop="dateCreated datePublished" datetime="2020-04-27T15:00:31+08:00">2020-04-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-28 11:02:39" itemprop="dateModified" datetime="2020-05-28T11:02:39+08:00">2020-05-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="查看系统版本"><a href="#查看系统版本" class="headerlink" title="查看系统版本"></a>查看系统版本</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/centos-release</span></span><br><span class="line">CentOS Linux release 7.6.1810 (Core)</span><br></pre></td></tr></table></figure>
-<p><strong>overlay2介绍</strong></p>
-<p>overlay的改进版，只支持4.0以上内核添加了Multiple lower layers in overlayfs的特性，所以overlay2可以直接造成muitiple lower layers不用像overlay一样要通过硬链接的方式(最大128层) centos的话支持3.10.0-514及以上内核版本也有此特性，所以消耗更少的inode</p>
-<p>docker官方overlay2的PR:<br><a href="https://github.com/moby/moby/pull/22126" target="_blank" rel="noopener">https://github.com/moby/moby/pull/22126</a></p>
-<p>LINUX KERNERL 4.0 release说明：<br><a href="https://kernelnewbies.org/Linux_4.0" target="_blank" rel="noopener">https://kernelnewbies.org/Linux_4.0</a></p>
-<h3 id="配置主机名"><a href="#配置主机名" class="headerlink" title="配置主机名"></a>配置主机名</h3><p>为将来要作为主节点的服务器设置主机名。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl <span class="built_in">set</span>-hostname k8s-master-1 --static</span><br></pre></td></tr></table></figure>
-<h3 id="配置服务器hosts"><a href="#配置服务器hosts" class="headerlink" title="配置服务器hosts"></a>配置服务器hosts</h3><p>各个服务器上都要配置</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/hosts</span></span><br><span class="line">127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 k8s-master-1</span><br><span class="line">::1         localhost localhost.localdomain localhost6 localhost6.localdomain6</span><br><span class="line">192.168.212.155 salt</span><br><span class="line"></span><br><span class="line">0.0.0.0 aliyun.one</span><br><span class="line">0.0.0.0 lsd.systemten.org</span><br><span class="line">0.0.0.0 pastebin.com</span><br><span class="line">0.0.0.0 pm.cpuminerpool.com</span><br><span class="line">0.0.0.0 systemten.org</span><br><span class="line"></span><br><span class="line">192.168.200.19 k8s-master-1</span><br><span class="line">192.168.154.14 ip-192-168-154-14</span><br><span class="line">192.168.154.15 ip-192-168-154-15</span><br><span class="line">192.168.154.16 ip-192-168-154-16</span><br></pre></td></tr></table></figure>
-<h3 id="关闭swap，注释swap分区"><a href="#关闭swap，注释swap分区" class="headerlink" title="关闭swap，注释swap分区"></a>关闭swap，注释swap分区</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># swapoff -a</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/fstab</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># /etc/fstab</span></span><br><span class="line"><span class="comment"># Created by anaconda on Mon Mar 26 20:43:49 2018</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Accessible filesystems, by reference, are maintained under '/dev/disk'</span></span><br><span class="line"><span class="comment"># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">/dev/mapper/centos-root /                       xfs     defaults        0 0</span><br><span class="line">UUID=848d5a8b-0ee9-481f-b1ff-833fb35cfd03 /boot                   xfs     defaults        0 0</span><br><span class="line">/dev/mapper/centos-home /home                   xfs     defaults        0 0</span><br><span class="line"><span class="comment">#/dev/mapper/centos-swap swap                    swap    defaults        0 0</span></span><br></pre></td></tr></table></figure>
-<h3 id="添加网易-yum-镜像"><a href="#添加网易-yum-镜像" class="headerlink" title="添加网易 yum 镜像"></a>添加网易 yum 镜像</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/yum.repos.d/CentOS-Base.repo</span></span><br><span class="line"><span class="comment"># CentOS-Base.repo</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The mirror system uses the connecting IP address of the client and the</span></span><br><span class="line"><span class="comment"># update status of each mirror to pick mirrors that are updated to and</span></span><br><span class="line"><span class="comment"># geographically close to the client.  You should use this for CentOS updates</span></span><br><span class="line"><span class="comment"># unless you are manually picking other mirrors.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If the mirrorlist= does not work for you, as a fall back you can try the</span></span><br><span class="line"><span class="comment"># remarked out baseurl= line instead.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">[base]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Base - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/os/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#released updates</span></span><br><span class="line">[updates]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Updates - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/updates/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#additional packages that may be useful</span></span><br><span class="line">[extras]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Extras - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/extras/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#additional packages that extend functionality of existing packages</span></span><br><span class="line">[centosplus]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Plus - 163.com</span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/centosplus/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br></pre></td></tr></table></figure>
-<h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><p>在各个服务器上关闭防火墙</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl stop firewalld.service            #停止firewall</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl disable firewalld.service         #禁止firewall开机启动</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl stop iptables.service             #停止iptables</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl disable iptables.service          #禁止iptables开机启动l</span></span><br></pre></td></tr></table></figure>
-<h3 id="配置内核参数，将桥接的IPv4流量传递到iptables的链"><a href="#配置内核参数，将桥接的IPv4流量传递到iptables的链" class="headerlink" title="配置内核参数，将桥接的IPv4流量传递到iptables的链"></a>配置内核参数，将桥接的IPv4流量传递到iptables的链</h3><p>各个服务器都要配置</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl --system</span><br></pre></td></tr></table></figure>
-<h3 id="禁用SELinux"><a href="#禁用SELinux" class="headerlink" title="禁用SELinux"></a>禁用SELinux</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># sestatus</span></span><br><span class="line">SELinux status: disabled</span><br></pre></td></tr></table></figure>
-<h2 id="安装配置-docker"><a href="#安装配置-docker" class="headerlink" title="安装配置 docker"></a>安装配置 docker</h2><p>官方文档地址：<a href="https://docs.docker.com/engine/install/centos/" target="_blank" rel="noopener">Install Docker Engine on CentOS</a></p>
-<p>Docker官方文档对安装步骤描述已经足够详细, 过程并不复杂, 本文便不再赘述.</p>
-<h3 id="安装-docker"><a href="#安装-docker" class="headerlink" title="安装 docker"></a>安装 docker</h3><p>本文安装docker的版本是<code>18.09</code>, 安装时请按照文档描述的方式明确指定版本号<code>yum install docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7 containerd.io</code>.</p>
-<h3 id="配置-docker"><a href="#配置-docker" class="headerlink" title="配置 docker"></a>配置 docker</h3><p>官方文档地址：<a href="https://kubernetes.io/zh/docs/setup/production-environment/container-runtimes/" target="_blank" rel="noopener">容器运行时</a></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"registry-mirrors"</span>: [<span class="string">"https://registry.docker-cn.com"</span>, <span class="string">"https://docker.mirrors.ustc.edu.cn"</span>, <span class="string">"https://fzhifedh.mirror.aliyuncs.com"</span>],</span><br><span class="line">  <span class="string">"insecure-registries"</span>: [<span class="string">"hub.51iwifi.com"</span>,<span class="string">"alpha-harbor.51iwifi.com"</span>,<span class="string">"192.168.195.2"</span>,<span class="string">"134.108.20.13"</span>],</span><br><span class="line">  <span class="string">"max-concurrent-downloads"</span>: 10,</span><br><span class="line">  <span class="string">"log-driver"</span>: <span class="string">"json-file"</span>,</span><br><span class="line">  <span class="string">"log-level"</span>: <span class="string">"warn"</span>,</span><br><span class="line">  <span class="string">"log-opts"</span>: &#123;</span><br><span class="line">    <span class="string">"max-size"</span>: <span class="string">"10m"</span>,</span><br><span class="line">    <span class="string">"max-file"</span>: <span class="string">"3"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="安装完后重启"><a href="#安装完后重启" class="headerlink" title="安装完后重启"></a>安装完后重启</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl enable docker</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl start docker</span></span><br></pre></td></tr></table></figure>
-<p>同样在各个服务器上都要保持一致</p>
-<h2 id="安装-Kubernetes-kubectl-kubelet-kubeadm"><a href="#安装-Kubernetes-kubectl-kubelet-kubeadm" class="headerlink" title="安装 Kubernetes(kubectl, kubelet, kubeadm)"></a>安装 Kubernetes(kubectl, kubelet, kubeadm)</h2><h3 id="添加阿里kubernetes源"><a href="#添加阿里kubernetes源" class="headerlink" title="添加阿里kubernetes源"></a>添加阿里kubernetes源</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span></span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">exclude=kube*</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl enable kubelet</span></span><br></pre></td></tr></table></figure>
-<h3 id="初始化-master-节点"><a href="#初始化-master-节点" class="headerlink" title="初始化 master 节点"></a>初始化 master 节点</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config print init-defaults &gt; kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
-<p>该文件有两处需要修改:</p>
-<p>将<code>advertiseAddress: 1.2.3.4</code>修改为本机地址<br>将<code>imageRepository: k8s.gcr.io</code>修改为<code>imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers</code></p>
-<p>修改完毕后文件如下:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeadm.k8s.io/v1beta2</span></span><br><span class="line"><span class="attr">bootstrapTokens:</span></span><br><span class="line"><span class="attr">- groups:</span></span><br><span class="line"><span class="attr">  - system:</span><span class="attr">bootstrappers:kubeadm:default-node-token</span></span><br><span class="line"><span class="attr">  token:</span> <span class="string">abcdef.0123456789abcdef</span></span><br><span class="line"><span class="attr">  ttl:</span> <span class="number">0</span><span class="string">s</span></span><br><span class="line"><span class="attr">  usages:</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">signing</span></span><br><span class="line"><span class="bullet">  -</span> <span class="string">authentication</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">InitConfiguration</span></span><br><span class="line"><span class="attr">localAPIEndpoint:</span></span><br><span class="line"><span class="attr">  advertiseAddress:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="attr">  bindPort:</span> <span class="number">6443</span></span><br><span class="line"><span class="attr">nodeRegistration:</span></span><br><span class="line"><span class="attr">  criSocket:</span> <span class="string">/var/run/dockershim.sock</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">k8s-master-1</span></span><br><span class="line"><span class="attr">  taints:</span></span><br><span class="line"><span class="attr">  - effect:</span> <span class="string">NoSchedule</span></span><br><span class="line"><span class="attr">    key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiServer:</span></span><br><span class="line"><span class="attr">  timeoutForControlPlane:</span> <span class="number">4</span><span class="string">m0s</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeadm.k8s.io/v1beta2</span></span><br><span class="line"><span class="attr">certificatesDir:</span> <span class="string">/etc/kubernetes/pki</span></span><br><span class="line"><span class="attr">clusterName:</span> <span class="string">kubernetes</span></span><br><span class="line"><span class="attr">controllerManager:</span> <span class="string">&#123;&#125;</span></span><br><span class="line"><span class="attr">dns:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">CoreDNS</span></span><br><span class="line"><span class="attr">etcd:</span></span><br><span class="line"><span class="attr">  local:</span></span><br><span class="line"><span class="attr">    dataDir:</span> <span class="string">/var/lib/etcd</span></span><br><span class="line"><span class="attr">imageRepository:</span> <span class="string">registry.cn-hangzhou.aliyuncs.com/google_containers</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterConfiguration</span></span><br><span class="line"><span class="attr">kubernetesVersion:</span> <span class="string">v1.18.0</span></span><br><span class="line"><span class="attr">networking:</span></span><br><span class="line"><span class="attr">  dnsDomain:</span> <span class="string">cluster.local</span></span><br><span class="line"><span class="attr">  serviceSubnet:</span> <span class="number">10.96</span><span class="number">.0</span><span class="number">.0</span><span class="string">/12</span></span><br><span class="line"><span class="attr">scheduler:</span> <span class="string">&#123;&#125;</span></span><br></pre></td></tr></table></figure>
-<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config images pull --config kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
-<h3 id="执行初始化"><a href="#执行初始化" class="headerlink" title="执行初始化"></a>执行初始化</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config images pull --config kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
-<p>等待执行完毕后, 会输出如下内容:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line">...</span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 192.168.200.19:6443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:a67698bdd29af4af0d70a563c4a17d1c751faabe65d7d3661eb90783568ecda6</span><br></pre></td></tr></table></figure>
-<p>最后两行需要保存下来, <code>kubeadm join ...</code>是其它worker节点加入所需要执行的命令.</p>
-<p>接下来配置环境, 让当前用户可以执行kubectl命令:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
-<p>查看节点，<code>kubectl get node</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS     ROLES    AGE     VERSION</span><br><span class="line">k8s-master-1   NotReady   master   3m25s   v1.18.0</span><br></pre></td></tr></table></figure>
-<p>node节点为<code>NotReady</code>，因为 pod <code>coredns</code> 没有启动，缺少网络pod.</p>
-<h2 id="安装-calico-网络"><a href="#安装-calico-网络" class="headerlink" title="安装 calico 网络"></a>安装 calico 网络</h2><p>官方文档地址：<a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#instructions" target="_blank" rel="noopener">Instructions</a></p>
-<h3 id="下载-calico-的-k8s-文件"><a href="#下载-calico-的-k8s-文件" class="headerlink" title="下载 calico 的 k8s 文件"></a>下载 calico 的 k8s 文件</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat kubeadm-init.yaml | grep serviceSubnet:</span></span><br><span class="line">  serviceSubnet: 10.96.0.0/12</span><br></pre></td></tr></table></figure>
-<p>打开 <code>calico.yaml</code>, 将<code>192.168.0.0/16</code>修改为<code>10.96.0.0/12</code></p>
-<blockquote>
-<p>需要注意的是, calico.yaml中的IP和kubeadm-init.yaml需要保持一致, 要么初始化前修改kubeadm-init.yaml, 要么初始化后修改calico.yaml.</p>
-</blockquote>
-<p>执行<code>kubectl apply -f calico.yaml</code>初始化网络.</p>
-<p>此时查看node信息, master的状态已经是<code>Ready</code>了.</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS   ROLES    AGE   VERSION</span><br><span class="line">k8s-master-1   Ready    master   15m   v1.18.0</span><br></pre></td></tr></table></figure>
-<h2 id="安装-dashboard"><a href="#安装-dashboard" class="headerlink" title="安装 dashboard"></a>安装 dashboard</h2><h3 id="部署-dashboard"><a href="#部署-dashboard" class="headerlink" title="部署 dashboard"></a>部署 dashboard</h3><p>官方文档：<a href="https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/" target="_blank" rel="noopener">网页界面 (Dashboard)</a></p>
-<p>官方部署dashboard的服务没使用nodeport，将yaml文件下载到本地，在service里添加<code>NodePort</code></p>
-<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>官方文档地址: <a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user" target="_blank" rel="noopener">Creating sample user</a></p>
-<p>创建一个用于登录Dashboard的用户. 创建文件<code>dashboard-adminuser.yaml</code>内容如下:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">- kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure>
-<p>执行命令<code>kubectl apply -f dashboard-adminuser.yaml</code>.</p>
-<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>官方文档地址：<a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user#bearer-token" target="_blank" rel="noopener">Bearer Token</a></p>
-<p>使用token进行登录，执行下面命令获取token</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-t4hxz  | grep token | awk <span class="string">'NR==3&#123;print $2&#125;'</span></span><br></pre></td></tr></table></figure>
-<p>复制该Token到登录页, 点击登录即可, 效果如下:</p>
-<p><img src="Kubenete集群安装指南/" alt="image"></p>
-<h2 id="添加其它-Worker-节点"><a href="#添加其它-Worker-节点" class="headerlink" title="添加其它 Worker 节点"></a>添加其它 Worker 节点</h2><p>在使用 <code>kubeadm</code> 初始化 master 节点后会有 <code>kubeadm join ...</code> 这样的返回信息，详见前文。</p>
-<p>同时，默认你已经在其它的服务器中已经安装了 docker, kubernetes. </p>
-<p>请注意在其它的服务器只需安装kubernetes，等初始化 master 节点后，执行如下命令将 Worker 加入集群:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubeadm join 192.168.200.19:6443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:a67698bdd29af4af0d70a563c4a17d1c751faabe65d7d3661eb90783568ecda6</span><br></pre></td></tr></table></figure>
-<p>添加完毕后, 在Master上查看节点状态:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 k8s-master]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME                STATUS   ROLES    AGE   VERSION</span><br><span class="line">ip-192-168-154-14   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">ip-192-168-154-15   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">ip-192-168-154-16   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">k8s-master-1        Ready    master   19d   v1.18.0</span><br></pre></td></tr></table></figure>
-<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="https://www.kubernetes.org.cn/7189.html" target="_blank" rel="noopener">使用kubeadm在Centos8上部署kubernetes1.18</a></p>
-<p><a href="https://blog.piaoruiqing.com/2019/09/17/kubernetes-1-installation/" target="_blank" rel="noopener">Kubernetes(一) 跟着官方文档从零搭建K8S</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1279,7 +1336,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">102</span>
+          <span class="site-state-item-count">103</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
