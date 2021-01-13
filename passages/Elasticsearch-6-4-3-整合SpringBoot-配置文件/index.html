@@ -20,20 +20,23 @@
     var CONFIG = {"hostname":"littlefxc.gitee.io","root":"/blog/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="什么是脑裂如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。 脑裂解决方案master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。 解决实现原理：半数以上的节点同意选举，节点方可成为新的master。  discovery.zen.minimum">
+  <meta name="description" content="创建工程，引入依赖123456789101112&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;spring-boot-starter-data-elasticsearch&amp;lt;/artifactId&amp;gt;	&amp;lt;!--&amp;lt;version&amp;gt;2.1">
 <meta name="keywords" content="es">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ES集群脑裂现象探讨">
-<meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/ES集群脑裂现象探讨/index.html">
+<meta property="og:title" content="Elasticsearch 6.4.3 整合SpringBoot - 配置文件">
+<meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/index.html">
 <meta property="og:site_name" content="littlefxc&#39;s blog">
-<meta property="og:description" content="什么是脑裂如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。 脑裂解决方案master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。 解决实现原理：半数以上的节点同意选举，节点方可成为新的master。  discovery.zen.minimum">
+<meta property="og:description" content="创建工程，引入依赖123456789101112&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;spring-boot-starter-data-elasticsearch&amp;lt;/artifactId&amp;gt;	&amp;lt;!--&amp;lt;version&amp;gt;2.1">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-01-13T12:07:22.301Z">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg">
+<meta property="og:updated_time" content="2021-01-13T13:29:28.590Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ES集群脑裂现象探讨">
-<meta name="twitter:description" content="什么是脑裂如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。 脑裂解决方案master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。 解决实现原理：半数以上的节点同意选举，节点方可成为新的master。  discovery.zen.minimum">
+<meta name="twitter:title" content="Elasticsearch 6.4.3 整合SpringBoot - 配置文件">
+<meta name="twitter:description" content="创建工程，引入依赖123456789101112&amp;lt;dependency&amp;gt;	&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;	&amp;lt;artifactId&amp;gt;spring-boot-starter-data-elasticsearch&amp;lt;/artifactId&amp;gt;	&amp;lt;!--&amp;lt;version&amp;gt;2.1">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg">
 
-<link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/ES集群脑裂现象探讨/">
+<link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/">
 
 
 <script id="page-configurations">
@@ -46,7 +49,7 @@
   };
 </script>
 
-  <title>ES集群脑裂现象探讨 | littlefxc's blog</title>
+  <title>Elasticsearch 6.4.3 整合SpringBoot - 配置文件 | littlefxc's blog</title>
   
 
 
@@ -168,7 +171,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群脑裂现象探讨/">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/blog/images/avatar.gif">
@@ -181,7 +184,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          ES集群脑裂现象探讨
+          Elasticsearch 6.4.3 整合SpringBoot - 配置文件
         </h1>
 
         <div class="post-meta">
@@ -192,7 +195,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-13 20:07:06 / 修改时间：20:07:22" itemprop="dateCreated datePublished" datetime="2021-01-13T20:07:06+08:00">2021-01-13</time>
+              <time title="创建时间：2021-01-13 21:28:55 / 修改时间：21:29:28" itemprop="dateCreated datePublished" datetime="2021-01-13T21:28:55+08:00">2021-01-13</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -215,16 +218,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="什么是脑裂"><a href="#什么是脑裂" class="headerlink" title="什么是脑裂"></a>什么是脑裂</h1><p>如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。</p>
-<h1 id="脑裂解决方案"><a href="#脑裂解决方案" class="headerlink" title="脑裂解决方案"></a>脑裂解决方案</h1><p>master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。</p>
-<p>解决实现原理：半数以上的节点同意选举，节点方可成为新的master。</p>
-<ul>
-<li>discovery.zen.minimum_master_nodes=(N/2)+1<ul>
-<li>N为集群的中master节点的数量，也就是那些 <code>node.master=true</code> 设置的那些服务器节点总数。</li>
-</ul>
-</li>
-</ul>
-<h1 id="ES-7-X"><a href="#ES-7-X" class="headerlink" title="ES 7.X"></a>ES 7.X</h1><p>在最新版7.x中，<code>minimum_master_node</code>这个参数已经被移除了，这一块内容完全由es自身去管理，这样就避免了脑裂的问题，选举也会非常快。</p>
+        <h1 id="创建工程，引入依赖"><a href="#创建工程，引入依赖" class="headerlink" title="创建工程，引入依赖"></a>创建工程，引入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;version&gt;2.1.5.RELEASE&lt;/version&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="配置yml"><a href="#配置yml" class="headerlink" title="配置yml"></a>配置yml</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  data:</span></span><br><span class="line"><span class="attr">    elasticsearch:</span></span><br><span class="line"><span class="attr">      cluster-name:</span> <span class="string">es6</span></span><br><span class="line"><span class="attr">      cluster-nodes:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.187</span><span class="string">:9300</span></span><br></pre></td></tr></table></figure>
+<h1 id="版本协调"><a href="#版本协调" class="headerlink" title="版本协调"></a>版本协调</h1><p>目前springboot-data-elasticsearch中的es版本贴合为es-6.4.3，如此一来版本需要统一，把es进行降级。等springboot升级es版本后可以在对接最新版的7.4。</p>
+<h1 id="Netty-issue-fix"><a href="#Netty-issue-fix" class="headerlink" title="Netty issue fix"></a>Netty issue fix</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解决netty引起的issue</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.setProperty(<span class="string">"es.set.netty.runtime.available.processors"</span>, <span class="string">"false"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="附-elasticsearch6-4-3配置文件"><a href="#附-elasticsearch6-4-3配置文件" class="headerlink" title="附 elasticsearch6.4.3配置文件"></a>附 elasticsearch6.4.3配置文件</h1><p>elasticsearch.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">cluster.name:</span> <span class="string">es6</span></span><br><span class="line"><span class="string">node.name:</span> <span class="string">node0</span></span><br><span class="line"><span class="string">path.data:</span> <span class="string">/usr/local/elasticsearch-6.4.3/data</span></span><br><span class="line"><span class="string">path.logs:</span> <span class="string">/usr/local/elasticsearch-6.4.3/logs</span></span><br><span class="line"><span class="string">network.host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="string">./elasticsearch</span></span><br></pre></td></tr></table></figure>
+<p>如果出现如下错误：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg"></p>
+<p>那么需要切换到root用户下去修改配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg"></p>
+<p>别忘记 <code>sysctl -p</code> 刷新一下</p>
+<p>最后再次启动OK</p>
+<h1 id="Don’t-forget"><a href="#Don’t-forget" class="headerlink" title="Don’t forget!"></a>Don’t forget!</h1><p>中文分词器也需要去配置一下噢别忘记！：）中文分词器的版本要记得使用6，而不是之前的7，版本一定要贴合噢~比如目前的所有版本都是统一为es-6.4.3，那么下载地址为：<a href="https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3" target="_blank" rel="noopener">https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3</a></p>
 
     </div>
 
@@ -243,13 +250,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/blog/passages/ES集群配置/" rel="prev" title="ES集群配置">
-      <i class="fa fa-chevron-left"></i> ES集群配置
+    <a href="/blog/passages/ES集群脑裂现象探讨/" rel="prev" title="ES集群脑裂现象探讨">
+      <i class="fa fa-chevron-left"></i> ES集群脑裂现象探讨
     </a></div>
-      <div class="post-nav-item">
-    <a href="/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/" rel="next" title="Elasticsearch 6.4.3 整合SpringBoot - 配置文件">
-      Elasticsearch 6.4.3 整合SpringBoot - 配置文件 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -308,7 +312,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是脑裂"><span class="nav-number">1.</span> <span class="nav-text">什么是脑裂</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#脑裂解决方案"><span class="nav-number">2.</span> <span class="nav-text">脑裂解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ES-7-X"><span class="nav-number">3.</span> <span class="nav-text">ES 7.X</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#创建工程，引入依赖"><span class="nav-number">1.</span> <span class="nav-text">创建工程，引入依赖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#配置yml"><span class="nav-number">2.</span> <span class="nav-text">配置yml</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#版本协调"><span class="nav-number">3.</span> <span class="nav-text">版本协调</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-issue-fix"><span class="nav-number">4.</span> <span class="nav-text">Netty issue fix</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#附-elasticsearch6-4-3配置文件"><span class="nav-number">5.</span> <span class="nav-text">附 elasticsearch6.4.3配置文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Don’t-forget"><span class="nav-number">6.</span> <span class="nav-text">Don’t forget!</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
