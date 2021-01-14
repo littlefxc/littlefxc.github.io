@@ -233,87 +233,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-介绍/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:18:19 / 修改时间：22:18:54" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
-<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
-<ul>
-<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
-<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
-</ul>
-<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
-<ul>
-<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
-</ul>
-<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
-<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://climg.mukewang.com/5e01cbe1086da30502810316.jpg"></p>
-<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-配置/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -339,7 +258,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-01-14 22:15:07 / 修改时间：22:17:59" itemprop="dateCreated datePublished" datetime="2021-01-14T22:15:07+08:00">2021-01-14</time>
+              <time title="创建时间：2021-01-14 22:20:07 / 修改时间：22:42:20" itemprop="dateCreated datePublished" datetime="2021-01-14T22:20:07+08:00">2021-01-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -381,6 +300,87 @@
 </ul>
 <h1 id="启动logstatsh"><a href="#启动logstatsh" class="headerlink" title="启动logstatsh"></a>启动logstatsh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/<span class="built_in">local</span>/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
 <h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.cnblogs.com/huhangfei/p/7605511.html" target="_blank" rel="noopener">Logstash使用介绍</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Logstash数据同步-介绍/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-14 22:18:19 / 修改时间：22:42:10" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
+<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
+<ul>
+<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
+<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
+</ul>
+<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
+<ul>
+<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
+</ul>
+<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
+<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://climg.mukewang.com/5e01cbe1086da30502810316.jpg"></p>
+<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
 
       
     </div>
