@@ -162,6 +162,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/spring-boot-2-3-7-es7-集成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/spring-boot-2-3-7-es7-集成/" class="post-title-link" itemprop="url">spring boot 2.3.7 + es7 集成</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-14 21:04:41 / 修改时间：21:05:49" itemprop="dateCreated datePublished" datetime="2021-01-14T21:04:41+08:00">2021-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="https://blog.csdn.net/qq_20280007/article/details/108388459?utm_medium=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control" target="_blank" rel="noopener">springboot2.3.3中关于spring-data-elasticsearch-4.0.3的使用_阿良~的博客-CSDN博客</a></p>
+<h1 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- spring boot 2.3.7 以上 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 2.3.7.RELEASE 支持 ES 7.X --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-webflux<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  elasticsearch:</span></span><br><span class="line"><span class="attr">    rest:</span></span><br><span class="line"><span class="attr">      uris:</span> <span class="string">&lt;http://localhost:9200&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="对象映射"><a href="#对象映射" class="headerlink" title="对象映射"></a><strong>对象映射</strong></h1><ul>
+<li><p>首先要清楚注解的使用。</p>
+<ul>
+<li>@Document：类注解，以指示该类是映射到数据库的候选对象。最重要的属性是：<ul>
+<li>indexName：用于存储此实体的索引的名称</li>
+<li>type：映射类型。如果未设置，则使用小写的类的简单名称。（当前版本开始不推荐使用）</li>
+<li>shards：索引的分片数。（经测试，分片数无法设置，应该是个BUG，推荐先创建索引设置好分片数和副本数）</li>
+<li>replicas：索引的副本数。（经测试，分片数无法设置，应该是个BUG）</li>
+<li>refreshIntervall：索引的刷新间隔。用于索引创建。默认值为“ 1s”。</li>
+<li>indexStoreType：索引的索引存储类型。用于索引创建。默认值为“ fs”。</li>
+<li>createIndex：配置是否在存储库引导中创建索引。默认值为true。</li>
+<li>versionType：版本管理的配置。默认值为EXTERNAL。</li>
+</ul>
+</li>
+<li>@Id：字段注解，以标记用于标识目的的字段。</li>
+<li>@Field：在字段级别应用并定义字段的属性，大多数属性映射到各自的Elasticsearch映射定义（以下列表不完整，请查看注释Javadoc以获取完整的参考）：<ul>
+<li>name：字段名称，它将在Elasticsearch文档中表示，如果未设置，则使用Java字段名称。</li>
+<li>type：字段类型，可以是文本，关键字，长整数，短整数，字节，双精度，浮点型，半浮点数，标度浮点数，日期，布尔值，二进制，整数等。（属性（FieldType）类型不灵活）</li>
+<li>format和日期类型的pattern定义。必须为日期类型定义。</li>
+<li>store：标记是否将原始字段值存储在Elasticsearch中，默认值为false。</li>
+<li>analyzer，searchAnalyzer，normalizer用于指定自定义分析和正规化。</li>
+</ul>
+</li>
+<li>@GeoPoint：将字段标记为geo_point数据类型。如果字段是GeoPoint类的实例，则可以省略。</li>
+</ul>
+</li>
+<li><p>示例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.data.annotation.Id;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Field;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.FieldType;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 经测试，更改 shards，replicas的值无法更改</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Document</span>(indexName = <span class="string">"stu"</span>, shards = <span class="number">3</span>, replicas = <span class="number">2</span>, createIndex = <span class="keyword">false</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stu</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long stuId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Float money;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>, type = FieldType.Keyword)</span><br><span class="line">    <span class="keyword">private</span> String sign;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String description;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 getter、setter</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Stu&#123;"</span> +</span><br><span class="line">                <span class="string">"stuId="</span> + stuId +</span><br><span class="line">                <span class="string">", name='"</span> + name + <span class="string">'\\'</span><span class="string">' +</span></span><br><span class="line"><span class="string">                ", age=" + age +</span></span><br><span class="line"><span class="string">                ", money=" + money +</span></span><br><span class="line"><span class="string">                ", sign='</span><span class="string">" + sign + '\\'' +</span></span><br><span class="line"><span class="string">                "</span>, description=<span class="string">'" + description + '</span>\\<span class="string">''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="ElasticsearchRestTemplate-用法"><a href="#ElasticsearchRestTemplate-用法" class="headerlink" title="ElasticsearchRestTemplate 用法"></a>ElasticsearchRestTemplate 用法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fengxuechao.FoodieSearchApp;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.es.pojo.Stu;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.index.query.QueryBuilders;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.FieldSortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortOrder;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.PageRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.Pageable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHit;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHits;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.query.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span>(classes = FoodieSearchApp.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ElasticsearchRestTemplate esTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 不建议使用 ElasticsearchRestTemplate 对索引进行管理（创建索引，更新映射，删除索引）</span></span><br><span class="line"><span class="comment">     * 索引就像是数据库或者数据库中的表，我们平时是不会是通过java代码频繁的去创建修改删除数据库或者表的</span></span><br><span class="line"><span class="comment">     * 我们只会针对数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 在es中也是同理，我们尽量使用 ElasticsearchRestTemplate 对文档数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 1. 属性（FieldType）类型不灵活</span></span><br><span class="line"><span class="comment">     * 2. 主分片与副本分片数无法设置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Stu stu = <span class="keyword">new</span> Stu();</span><br><span class="line">        stu.setStuId(<span class="number">1007L</span>);</span><br><span class="line">        stu.setName(<span class="string">"iron man"</span>);</span><br><span class="line">        stu.setAge(<span class="number">22</span>);</span><br><span class="line">        stu.setMoney(<span class="number">1000.8f</span>);</span><br><span class="line">        stu.setSign(<span class="string">"I am iron man"</span>);</span><br><span class="line">        stu.setDescription(<span class="string">"I have a spider man"</span>);</span><br><span class="line"></span><br><span class="line">        IndexQuery indexQuery = <span class="keyword">new</span> IndexQueryBuilder().withObject(stu).build();</span><br><span class="line">        esTemplate.index(indexQuery, esTemplate.getIndexCoordinatesFor(stu.getClass()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.indexOps(Stu.class).delete();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; sourceMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        sourceMap.put(<span class="string">"name"</span>, <span class="string">"spider man"</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"money"</span>, <span class="number">99.8f</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"age"</span>, <span class="number">33</span>);</span><br><span class="line"></span><br><span class="line">        IndexRequest indexRequest = <span class="keyword">new</span> IndexRequest();</span><br><span class="line">        indexRequest.source(sourceMap);</span><br><span class="line"></span><br><span class="line">        UpdateQuery updateQuery = UpdateQuery.builder(<span class="string">"1004"</span>)</span><br><span class="line">                .withDocument(Document.from(sourceMap))</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">//        update stu set sign='abc',age=33,money=88.6 where docId='1002'</span></span><br><span class="line"></span><br><span class="line">        esTemplate.update(updateQuery, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Stu stu = esTemplate.get(<span class="string">"1004"</span>, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(stu);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.delete(<span class="string">"1002"</span>, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">searchStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class, esTemplate.getIndexCoordinatesFor(Stu.class));</span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : hits) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">highlightStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String preTag = <span class="string">"&lt;font color='red'&gt;"</span>;</span><br><span class="line">        String postTag = <span class="string">"&lt;/font&gt;"</span>;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        SortBuilder sortBuilder = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"money"</span>)</span><br><span class="line">                .order(SortOrder.DESC);</span><br><span class="line">        SortBuilder sortBuilderAge = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"age"</span>)</span><br><span class="line">                .order(SortOrder.ASC);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withHighlightFields(<span class="keyword">new</span> HighlightBuilder.Field(<span class="string">"description"</span>)</span><br><span class="line">                        .preTags(preTag)</span><br><span class="line">                        .postTags(postTag))</span><br><span class="line">                .withSort(sortBuilder)</span><br><span class="line">                .withSort(sortBuilderAge)</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="comment">// 将</span></span><br><span class="line">        List&lt;SearchHit&lt;Stu&gt;&gt; list = hits.get()</span><br><span class="line">                .peek(stuSearchHit -&gt; stuSearchHit.getContent().setDescription(stuSearchHit.getHighlightField(<span class="string">"description"</span>).get(<span class="number">0</span>))).collect(Collectors.toList());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : list) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1108,164 +1208,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Consul-单机集群搭建/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Consul-单机集群搭建/" class="post-title-link" itemprop="url">Consul 单机集群搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-11 16:41:37" itemprop="dateCreated datePublished" datetime="2021-01-11T16:41:37+08:00">2021-01-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-13 11:02:22" itemprop="dateModified" datetime="2021-01-13T11:02:22+08:00">2021-01-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/注册中心/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-Consul-单机集群搭建"><a href="#1-Consul-单机集群搭建" class="headerlink" title="1 Consul 单机集群搭建"></a>1 Consul 单机集群搭建</h1><p>本文是在生产环境中Consul服务端节点不稳定后，导致注册到Consul集群上的部分服务不可用，从而造成开放能力平台无法使用的背景下产生的。</p>
-<p>目的是探讨一个高可用Consul集群方案。</p>
-<h2 id="1-1-consul-架构"><a href="#1-1-consul-架构" class="headerlink" title="1.1 consul 架构"></a>1.1 consul 架构</h2><p>Server负责组成 cluster 的复杂工作（选举、状态维护、转发请求到 lead），以及 consul 提供的服务（响应 RCP 请求）。考虑到容错和收敛，一般部署 3 ~ 5 个比较合适，而client数量不做限制，架构如下:</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/consul架构1.png" alt="consul 架构"></p>
-<h2 id="1-2-Consul-节点规划"><a href="#1-2-Consul-节点规划" class="headerlink" title="1.2 Consul 节点规划"></a>1.2 Consul 节点规划</h2><table>
-<thead>
-<tr>
-<th><strong>节点名称</strong></th>
-<th>节点类型</th>
-<th><strong>HTTP端口</strong></th>
-<th><strong>DNS端口</strong></th>
-<th><strong>serf_lan端口</strong></th>
-<th><strong>serf_wan端口</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>consul-server-1</td>
-<td>server</td>
-<td>8501</td>
-<td>8601</td>
-<td>8001</td>
-<td>8002</td>
-</tr>
-<tr>
-<td>consul-server-2</td>
-<td>server</td>
-<td>8502</td>
-<td>8602</td>
-<td>8101</td>
-<td>8102</td>
-</tr>
-<tr>
-<td>consul-server-3</td>
-<td>server</td>
-<td>8503</td>
-<td>8603</td>
-<td>8201</td>
-<td>8202</td>
-</tr>
-<tr>
-<td>consul-client-1</td>
-<td>client</td>
-<td>8504</td>
-<td>8604</td>
-<td>8301</td>
-<td>8302</td>
-</tr>
-<tr>
-<td>consul-client-2</td>
-<td>client</td>
-<td>8505</td>
-<td>8605</td>
-<td>8401</td>
-<td>8402</td>
-</tr>
-</tbody>
-</table>
-<h2 id="1-3-Consul-服务端节点配置文件模版"><a href="#1-3-Consul-服务端节点配置文件模版" class="headerlink" title="1.3 Consul 服务端节点配置文件模版"></a>1.3 Consul 服务端节点配置文件模版</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"bind_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"client_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"ports"</span>: &#123;</span><br><span class="line">        <span class="attr">"http"</span>: <span class="number">8501</span>,</span><br><span class="line">        <span class="attr">"dns"</span>: <span class="number">8601</span>,</span><br><span class="line">        <span class="attr">"serf_lan"</span>: <span class="number">8001</span>,</span><br><span class="line">        <span class="attr">"serf_wan"</span>: <span class="number">8002</span>,</span><br><span class="line">        <span class="attr">"server"</span>: <span class="number">8000</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">    <span class="attr">"data_dir"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-server-1/data"</span>,</span><br><span class="line">    <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"log_file"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-server-1/log/consul.log"</span>,</span><br><span class="line">    <span class="attr">"node_name"</span>: <span class="string">"consul-server-1"</span>,</span><br><span class="line">    <span class="attr">"disable_host_node_id"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"server"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"bootstrap_expect"</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="attr">"rejoin_after_leave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"retry_join"</span>: [</span><br><span class="line">        <span class="string">"127.0.0.1:8001"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8101"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8201"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<ul>
-<li><strong>disable_host_node_id</strong>：不使用host信息生成node ID，适用于同一台服务器部署多个实例用于测试的情况。随机生成nodeID。</li>
-</ul>
-<h2 id="1-4-Consul-客户端节点配置文件模版"><a href="#1-4-Consul-客户端节点配置文件模版" class="headerlink" title="1.4 Consul 客户端节点配置文件模版"></a>1.4 Consul 客户端节点配置文件模版</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"bind_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"client_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"ports"</span>: &#123;</span><br><span class="line">        <span class="attr">"http"</span>: <span class="number">8505</span>,</span><br><span class="line">        <span class="attr">"dns"</span>: <span class="number">8605</span>,</span><br><span class="line">        <span class="attr">"serf_lan"</span>: <span class="number">8401</span>,</span><br><span class="line">        <span class="attr">"serf_wan"</span>: <span class="number">8402</span>,</span><br><span class="line">        <span class="attr">"server"</span>: <span class="number">8400</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">    <span class="attr">"data_dir"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-client-2/data"</span>,</span><br><span class="line">    <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"log_file"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-client-2/log/consul.log"</span>,</span><br><span class="line">    <span class="attr">"node_name"</span>: <span class="string">"consul-client-2"</span>,</span><br><span class="line">    <span class="attr">"disable_host_node_id"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"server"</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"rejoin_after_leave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"retry_join"</span>: [</span><br><span class="line">        <span class="string">"127.0.0.1:8001"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8101"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8201"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="1-5-搭建集群"><a href="#1-5-搭建集群" class="headerlink" title="1.5 搭建集群"></a>1.5 搭建集群</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Consul 服务端节点目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;</span><br><span class="line"><span class="comment"># 创建 Consul 服务端节点可执行文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/bin</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点配置文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/config</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点数据文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/data</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点日志文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/<span class="built_in">log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># consul 客户端节点目录结构与服务端节点目录结构保持一致</span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment"># Consul 服务端节点搭建</span></span><br><span class="line">nohup consul-server-1/bin/consul agent -config-dir=consul-server-1/config &amp;</span><br><span class="line">nohup consul-server-2/bin/consul agent -config-dir=consul-server-2/config &amp;</span><br><span class="line">nohup consul-server-3/bin/consul agent -config-dir=consul-server-3/config &amp;</span><br><span class="line"><span class="comment"># Consul 客户端节点搭建</span></span><br><span class="line">nohup consul-client-1/bin/consul agent -config-dir=consul-client-1/config &amp;</span><br><span class="line">nohup consul-client-2/bin/consul agent -config-dir=consul-client-2/config &amp;</span><br></pre></td></tr></table></figure>
-<h1 id="2-Consul-的一些命令"><a href="#2-Consul-的一些命令" class="headerlink" title="2 Consul 的一些命令"></a>2 Consul 的一些命令</h1><h2 id="2-1-查看-consul-集群列表"><a href="#2-1-查看-consul-集群列表" class="headerlink" title="2.1 查看 consul 集群列表"></a>2.1 查看 consul 集群列表</h2><p>验证 Consul 集群是否搭建成功</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul operator raft list-peers -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
-<h2 id="2-2-查看-Consul-节点列表"><a href="#2-2-查看-Consul-节点列表" class="headerlink" title="2.2 查看 Consul 节点列表"></a>2.2 查看 Consul 节点列表</h2><p>查看 Consul 的所有节点列表</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul members -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
-<h2 id="2-3-移除一个-Server-节点"><a href="#2-3-移除一个-Server-节点" class="headerlink" title="2.3 移除一个 Server 节点"></a>2.3 移除一个 Server 节点</h2><p>验证 Consul 客户端节点不会丢失</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul leave -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
-<h1 id="3-验证"><a href="#3-验证" class="headerlink" title="3 验证"></a>3 验证</h1><h2 id="3-1-模拟一个-Consul-服务端宕机"><a href="#3-1-模拟一个-Consul-服务端宕机" class="headerlink" title="3.1 模拟一个 Consul 服务端宕机"></a>3.1 模拟一个 Consul 服务端宕机</h2><ol>
-<li>移除 Consul 服务端节点前：</li>
-</ol>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210112101929745.png" alt="image-20210112101929745"></p>
-<ol start="2">
-<li><p>移除 Consul 服务端节点。命令参考章节2.3。</p>
-<p>结果如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102147403.png" alt="image-20210112102147403"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102223434.png" alt="image-20210112102223434"></p>
-</li>
-</ol>
-<h1 id="4-结论"><a href="#4-结论" class="headerlink" title="4 结论"></a>4 结论</h1><p>说明当一个consul服务端节点宕机，并不会影响 Consul 客户端节点的可用性。</p>
-<p>在每个数据中心，client和server是混合的。一般建议有3-5台server。这是基于有故障情况下的可用性和性能之间的权衡结果，因为越多的机器加入达成共识越慢。虽然每个节点的服务注册数量是有上限的，但是并不限制client的数量，它们可以很容易的扩展到数千或者数万台。</p>
-<h1 id="5-参考资源"><a href="#5-参考资源" class="headerlink" title="5 参考资源"></a>5 参考资源</h1><p><a href="https://blog.csdn.net/u014635374/article/details/106313858" target="_blank" rel="noopener">https://blog.csdn.net/u014635374/article/details/106313858</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1335,7 +1277,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">105</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1348,7 +1290,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-count">74</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
