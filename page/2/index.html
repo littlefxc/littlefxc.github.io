@@ -162,6 +162,186 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES-之分词与内置分词器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/ES-之分词与内置分词器/" class="post-title-link" itemprop="url">ES 之分词与内置分词器</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-11 20:32:21" itemprop="dateCreated datePublished" datetime="2021-01-11T20:32:21+08:00">2021-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 22:20:11" itemprop="dateModified" datetime="2021-01-14T22:20:11+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="什么是分词？"><a href="#什么是分词？" class="headerlink" title="什么是分词？"></a>什么是分词？</h1><p>把文本转换为一个个的单词，分词称之为analysis。es默认只对英文语句做分词，中文不支持，每个中文字都会被拆分为独立的个体。</p>
+<ul>
+<li>英文分词：I study in <a href="http://imooc.com/" target="_blank" rel="noopener">imooc.com</a></li>
+<li>中文分词：我在慕课网学习</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /_analyze</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"analyzer"</span>: <span class="string">"standard"</span>,</span><br><span class="line">    <span class="string">"text"</span>: <span class="string">"text文本"</span></span><br><span class="line">&#125;</span><br><span class="line">POST /my_doc/_analyze</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"analyzer"</span>: <span class="string">"standard"</span>,</span><br><span class="line">    <span class="string">"field"</span>: <span class="string">"name"</span>,</span><br><span class="line">    <span class="string">"text"</span>: <span class="string">"text文本"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="es内置分词器"><a href="#es内置分词器" class="headerlink" title="es内置分词器"></a>es内置分词器</h1><ul>
+<li><p>standard：默认分词，单词会被拆分，大小会转换为小写。</p>
+</li>
+<li><p>simple：按照非字母分词。大写转为小写。</p>
+</li>
+<li><p>whitespace：按照空格分词。忽略大小写。</p>
+</li>
+<li><p>stop：去除无意义单词，比如<code>the</code>/<code>a</code>/<code>an</code>/<code>is</code>…</p>
+</li>
+<li><p>keyword：不做分词。把整个文本作为一个单独的关键词。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;analyzer&quot;: &quot;standard&quot;,</span><br><span class="line">    &quot;text&quot;: &quot;My name is Peter Parker,I am a Super Hero. I don&apos;t like the Criminals.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES之文档乐观锁控制-if-seq-no与if-primary-term/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/ES之文档乐观锁控制-if-seq-no与if-primary-term/" class="post-title-link" itemprop="url">ES之文档乐观锁控制 if_seq_no与if_primary_term</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-11 20:11:28" itemprop="dateCreated datePublished" datetime="2021-01-11T20:11:28+08:00">2021-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 22:19:48" itemprop="dateModified" datetime="2021-01-14T22:19:48+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="观察操作"><a href="#观察操作" class="headerlink" title="观察操作"></a>观察操作</h1><ul>
+<li><p>插入新数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /my_doc/_doc</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1010,</span><br><span class="line">    &quot;name&quot;: &quot;imooc-1010&quot;,</span><br><span class="line">    &quot;desc&quot;: &quot;imoocimooc！&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-24&quot;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 1</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 2</span><br><span class="line">1234567</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>模拟两个客户端操作同一个文档数据，_version都携带为一样的数值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 操作1</span><br><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update?if_seq_no=&#123;数值&#125;&amp;if_primary_term=&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 操作2</span><br><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update?if_seq_no=&#123;数值&#125;&amp;if_primary_term=&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课2&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="版本元数据"><a href="#版本元数据" class="headerlink" title="版本元数据"></a>版本元数据</h1><ul>
+<li>_seq_no：文档版本号，作用同_version（相当于学生编号，每个班级的班主任为学生分配编号，效率要比学校教务处分配来的更加高效，管理起来更方便）</li>
+<li>_primary_term：文档所在位置（相当于班级）</li>
+<li>官文地址：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html</a></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Consul-单机集群搭建/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -499,7 +679,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-11 19:49:13" itemprop="dateModified" datetime="2021-01-11T19:49:13+08:00">2021-01-11</time>
+                <time title="修改时间：2021-01-14 22:20:31" itemprop="dateModified" datetime="2021-01-14T22:20:31+08:00">2021-01-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -507,7 +687,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
                 </span>
             </span>
 
@@ -940,63 +1120,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Obsidian使用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Obsidian使用/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-11-20 18:01:20" itemprop="dateCreated datePublished" datetime="2020-11-20T18:01:20+08:00">2020-11-20</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hive集成HBase-详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1196,117 +1319,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hive-数据类型和存储格式/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Hive-数据类型和存储格式/" class="post-title-link" itemprop="url">Hive 数据类型和存储格式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-24 19:02:20" itemprop="dateCreated datePublished" datetime="2020-09-24T19:02:20+08:00">2020-09-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-28 15:45:19" itemprop="dateModified" datetime="2020-09-28T15:45:19+08:00">2020-09-28</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="http://bigdata-star.com/archives/1013" target="_blank" rel="noopener">【Hive教程】（二）Hive数据类型和存储格式</a></p>
-<p><a href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types" target="_blank" rel="noopener">Apache Software Foundation</a></p>
-<p><a href="https://blog.csdn.net/sl1992/article/details/53894481?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.channel_param&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.channel_param" target="_blank" rel="noopener">Hive复合数据类型array,map,struct的使用_Life is for sharing的博客-CSDN博客</a></p>
-<h1 id="HIVE数据类型"><a href="#HIVE数据类型" class="headerlink" title="HIVE数据类型"></a><strong>HIVE数据类型</strong></h1><p>毕竟HIVE穿着SQL的外壳，肯定支持诸如Mysql这种RDBMS的数据类型，如<code>int</code>,<code>varchar</code>,但是它还具有非常多自有的数据类型，包括复杂的数据类型（数组，Map等）也是支持的！</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled.png" alt="Hive 支持的数据类型 - 摘自官网wiki"></p>
-<p>数字类型，日期类型，String类型，Boolean类型我们都是比较熟悉的，也比较简单，就不讲解了。演示一下复杂数据类型：</p>
-<h2 id="arrays"><a href="#arrays" class="headerlink" title="arrays"></a>arrays</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive (hive)&gt; create table arraytest (id int,course array&lt;string&gt;)</span><br><span class="line">           &gt; row format delimited fields terminated by','</span><br><span class="line">           &gt; collection items terminated by':';</span><br></pre></td></tr></table></figure>
-<p>说明：</p>
-<ul>
-<li><code>row format delimited fields terminated by&#39;,&#39;</code> 是指定列与列之间的分隔符,此处为”,”</li>
-<li><code>collection items terminated by&#39;:&#39;</code> 是指定集合内元素之间的分隔符,此处为”：”</li>
-</ul>
-<p>因此我们要导入到hive中的数据应该是形如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1,math:chinese</span><br><span class="line">2,english:history</span><br></pre></td></tr></table></figure>
-<p>数据加载到数据库</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; load data local inpath '/Users/fengxuechao/WorkSpace/software/hive_data/arraytest.txt' into table arraytest;</span><br><span class="line">Loading data to table default.arraytest</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.963 seconds</span><br></pre></td></tr></table></figure>
-<p>查询所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select * from arraytest;</span><br><span class="line">OK</span><br><span class="line">1	["math","chinese"]</span><br><span class="line">2	["english","history"]</span><br><span class="line">Time taken: 1.297 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
-<p>查询数组指定索引的所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select course[1] from arraytest;</span><br><span class="line">OK</span><br><span class="line">chinese</span><br><span class="line">history</span><br><span class="line">Time taken: 0.364 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
-<h2 id="maps"><a href="#maps" class="headerlink" title="maps"></a>maps</h2><p>创建表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; create table maptest(name string,score map&lt;string,float&gt;)</span><br><span class="line">    &gt; row format delimited fields terminated by','</span><br><span class="line">    &gt; collection items terminated by '|'</span><br><span class="line">    &gt; map keys terminated by':';</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.046 seconds</span><br></pre></td></tr></table></figure>
-<p>数据</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">'小明',math:96|chinese:95</span><br><span class="line">'小红',math:80|chinese:99</span><br></pre></td></tr></table></figure>
-<p>数据加载到数据库</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; load data local inpath '/Users/fengxuechao/WorkSpace/software/hive_data/maptest.txt' into table maptest;</span><br><span class="line">Loading data to table default.maptest</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.293 seconds</span><br></pre></td></tr></table></figure>
-<p>查询所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select * from maptest;</span><br><span class="line">OK</span><br><span class="line">'小明'	&#123;"math":96.0,"chinese":95.5&#125;</span><br><span class="line">'小红'	&#123;"math":80.0,"chinese":99.0&#125;</span><br><span class="line">Time taken: 0.1 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
-<p>查询数组指定key的所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select name,score['math'] from maptest;</span><br><span class="line">OK</span><br><span class="line">'小明'	96.0</span><br><span class="line">'小红'	80.0</span><br><span class="line">Time taken: 0.112 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
-<h2 id="structs"><a href="#structs" class="headerlink" title="structs"></a>structs</h2><p>创建表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; create table struct_test(name string,course struct&lt;course:string,score:int&gt;)</span><br><span class="line">    &gt; row format delimited fields terminated by ','</span><br><span class="line">    &gt; collection items terminated by ':';</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.047 seconds</span><br></pre></td></tr></table></figure>
-<p>数据</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">小明,math:79</span><br><span class="line">小红,math:80</span><br></pre></td></tr></table></figure>
-<p>数据加载到数据库</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; load data local inpath '/Users/fengxuechao/WorkSpace/software/hive_data/struct_test.txt' into table struct_test;</span><br><span class="line">Loading data to table default.struct_test</span><br><span class="line">OK</span><br><span class="line">Time taken: 0.293 seconds</span><br></pre></td></tr></table></figure>
-<p>查询所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hive&gt; select * from struct_test;</span><br><span class="line">OK</span><br><span class="line">小明	&#123;"course":"math","score":79&#125;</span><br><span class="line">小红	&#123;"course":"math","score":80&#125;</span><br><span class="line">Time taken: 0.097 seconds, Fetched: 2 row(s)</span><br><span class="line">hive&gt; select name,course.course,course.score from struct_test;</span><br><span class="line">OK</span><br><span class="line">小明	math	79</span><br><span class="line">小红	math	80</span><br><span class="line">Time taken: 0.213 seconds, Fetched: 2 row(s)</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1376,20 +1388,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-count">103</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/blog/categories/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">74</span>
+        <span class="site-state-item-count">75</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
