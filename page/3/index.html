@@ -162,6 +162,745 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Redis缓存过期机制和内存淘汰管理机制/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Redis缓存过期机制和内存淘汰管理机制/" class="post-title-link" itemprop="url">Redis缓存过期机制和内存淘汰管理机制</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-11 11:51:36 / 修改时间：11:51:49" itemprop="dateCreated datePublished" datetime="2021-01-11T11:51:36+08:00">2021-01-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>转载自 <a href="https://blog.csdn.net/qq_36986015/article/details/106802555" target="_blank" rel="noopener">https://blog.csdn.net/qq_36986015/article/details/106802555</a></p>
+<h1 id="1-缓存过期机制"><a href="#1-缓存过期机制" class="headerlink" title="1. 缓存过期机制"></a><strong>1. 缓存过期机制</strong></h1><p>Redis可以通过设置一个过期时间expire来处理缓存，其中处理方式有两种：</p>
+<ol>
+<li><p>（主动）定期删除，Redis会抽查随机的key，默认1秒十次，一旦抽查的key过期了，就会给删除，配置的属性在redis.conf中，hz等于10，表示1秒抽查10次</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hz 10</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>（被动）惰性删除，key到期后不去主动检测，而是请求访问到这个key之后，会检查下是否过期，这样就不会太消耗CPU资源，缺点是一直占用着内存</p>
+</li>
+</ol>
+<h1 id="2-内存淘汰管理机制"><a href="#2-内存淘汰管理机制" class="headerlink" title="2. 内存淘汰管理机制"></a><strong>2. 内存淘汰管理机制</strong></h1><p>因为计算机的内存是有限的，在部署Redis的同时，也可能部署其他的中间件如RabbitMQ、Kafka等等，为了给其他中间件预留内存空间，Redis服务启动可以设置一个最大内存<code>maxmemory</code>，到达阈值后，Redis会清理在内存里永久存在的没有过期时间的key，处理机制如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">maxmemory ：当内存已使用率到达，则开始清理缓存</span><br><span class="line">maxmemory-policy : 清理缓存的策略</span><br></pre></td></tr></table></figure>
+<p>清理缓存的策略如下所示：</p>
+<ul>
+<li>noeviction：旧缓存永不过期，新缓存设置不了，返回错误</li>
+<li>allkeys-lru：清除最少用的旧缓存，然后保存新的缓存（推荐使用）</li>
+<li>allkeys-random：在所有的缓存中随机删除（不推荐）</li>
+<li>volatile-lru：在那些设置了expire过期时间的缓存中，清除最少用的旧缓存，然后保存新的缓存</li>
+<li>volatile-random：在那些设置了expire过期时间的缓存中，随机删除缓存</li>
+<li>volatile-ttl：在那些设置了expire过期时间的缓存中，删除即将过期的</li>
+</ul>
+<p>注意：</p>
+<p>LRU 和 LFU 的含义：</p>
+<pre><code># LRU means Least Recently Used
+# LFU means Least Frequently Used
+</code></pre>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Redis集群搭建/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Redis集群搭建/" class="post-title-link" itemprop="url">Redis集群搭建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-11 11:50:38 / 修改时间：11:51:05" itemprop="dateCreated datePublished" datetime="2021-01-11T11:50:38+08:00">2021-01-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="redis-conf-配置"><a href="#redis-conf-配置" class="headerlink" title="redis.conf 配置"></a><strong><strong>redis.conf 配置</strong></strong></h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 开启集群模式</span><br><span class="line">cluster-enabled yes</span><br><span class="line"># 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"># 超时时间，超时则认为master宕机，随后主备切换</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"># 开启AOF</span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+<h2 id="启动6个redis实例"><a href="#启动6个redis实例" class="headerlink" title="启动6个redis实例"></a><strong><strong>启动6个redis实例</strong></strong></h2><ol>
+<li>启动6台</li>
+<li>如果启动过程出错，把rdb等文件删除清空</li>
+</ol>
+<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a><strong><strong>创建集群</strong></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#####</span></span><br><span class="line"><span class="comment"># 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="comment"># 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="comment">#####</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli -a 密码 --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+<p><code>slots</code>：槽，用于装数据，主节点有，从节点没有</p>
+<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a><strong><strong>检查集群信息</strong></strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check 192.168.25.64:6380</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-的-REST-API-的使用介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Elasticsearch-的-REST-API-的使用介绍/" class="post-title-link" itemprop="url">Elasticsearch 的 REST API 的使用介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-09 16:41:04" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-14 22:20:31" itemprop="dateModified" datetime="2021-01-14T22:20:31+08:00">2021-01-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[TOC]</p>
+<h1 id="1-集群健康"><a href="#1-集群健康" class="headerlink" title="1 集群健康"></a>1 集群健康</h1><p><a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/_cluster_health.html" target="_blank" rel="noopener">集群健康 | Elasticsearch: 权威指南 | Elastic</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_cluster/health</span><br></pre></td></tr></table></figure>
+<h1 id="2-索引相关"><a href="#2-索引相关" class="headerlink" title="2 索引相关"></a>2 索引相关</h1><h2 id="2-1-创建索引"><a href="#2-1-创建索引" class="headerlink" title="2.1 创建索引"></a>2.1 创建索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PUT /index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;2&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>number_of_shards : 分片数</li>
+<li>number_of_replicas : 副本数</li>
+</ul>
+<h2 id="2-2-查看索引"><a href="#2-2-查看索引" class="headerlink" title="2.2 查看索引"></a>2.2 查看索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET _cat/indices?v</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-删除索引"><a href="#2-3-删除索引" class="headerlink" title="2.3 删除索引"></a>2.3 删除索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /index_test</span><br></pre></td></tr></table></figure>
+<h1 id="3-mappings-相关"><a href="#3-mappings-相关" class="headerlink" title="3 mappings 相关"></a>3 mappings 相关</h1><h2 id="3-1-创建索引的同时创建mappings"><a href="#3-1-创建索引的同时创建mappings" class="headerlink" title="3.1 创建索引的同时创建mappings"></a>3.1 创建索引的同时创建mappings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">PUT /index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;3&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mappings&quot;: &#123;</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;realname&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">            	&quot;index&quot;: true</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;username&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">            	&quot;index&quot;: false</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;id&quot;: &#123;</span><br><span class="line">        	    &quot;type&quot;: &quot;long&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;age&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;integer&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;nickname&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money1&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;float&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money2&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;double&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;sex&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;byte&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;score&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;short&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;is_teenager&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;boolean&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;birthday&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;date&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;relationship&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;object&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<ul>
+<li><p><strong>number_of_shards</strong> : 分片数</p>
+</li>
+<li><p><strong>number_of_replicas</strong> : 副本数</p>
+</li>
+<li><p><strong>index</strong>：默认true，设置为false的话，那么这个字段就不会被索引(例如密码等敏感信息)</p>
+</li>
+<li><p>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</p>
+</li>
+<li><p>主要数据类型：</p>
+<ul>
+<li>text, keyword, <del>string</del></li>
+<li>long, integer, short, byte</li>
+<li>double, float</li>
+<li>boolean</li>
+<li>date</li>
+<li>object</li>
+<li>数组不能混，类型一致</li>
+</ul>
+</li>
+<li><p><strong>text</strong>：文字类需要被分词被倒排索引的内容，比如<code>商品名称</code>，<code>商品详情</code>，<code>商品介绍</code>，使用text。</p>
+</li>
+<li><p><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</p>
+</li>
+</ul>
+<h1 id="4-文档的基本操作"><a href="#4-文档的基本操作" class="headerlink" title="4 文档的基本操作"></a>4 文档的基本操作</h1><h2 id="4-1-添加文档"><a href="#4-1-添加文档" class="headerlink" title="4.1 添加文档"></a>4.1 添加文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /&#123;索引名&#125;/_doc/&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>查看索引</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /user</span><br></pre></td></tr></table></figure>
+<p><strong>结果如下</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;user&quot; : &#123;</span><br><span class="line">    &quot;aliases&quot; : &#123; &#125;,</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">      &quot;properties&quot; : &#123;</span><br><span class="line">        &quot;create_date&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;date&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;id&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;long&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;password&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;username&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;settings&quot; : &#123;</span><br><span class="line">      &quot;index&quot; : &#123;</span><br><span class="line">        &quot;creation_date&quot; : &quot;1610183188727&quot;,</span><br><span class="line">        &quot;number_of_shards&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;number_of_replicas&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;uuid&quot; : &quot;55w3gLZNTVyJnmdi6hTo5g&quot;,</span><br><span class="line">        &quot;version&quot; : &#123;</span><br><span class="line">          &quot;created&quot; : &quot;7100099&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;provided_name&quot; : &quot;user&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：</p>
+<ul>
+<li>如果索引没有手动建立mappings，那么当插入文档数据的时候，会根据文档类型自动设置属性类型。这个就是es的动态映射，帮我们在index索引库中去建立数据结构的相关配置信息。</li>
+<li>“fields”: {“type”: “keyword”}对一个字段设置多种索引模式，使用text类型做全文检索，也可使用keyword类型做聚合和排序</li>
+<li>“ignore_above” : 256设置字段索引和存储的长度最大值，超过则被忽略</li>
+</ul>
+<h2 id="4-2-修改文档"><a href="#4-2-修改文档" class="headerlink" title="4.2 修改文档"></a>4.2 修改文档</h2><h3 id="4-2-1-局部修改"><a href="#4-2-1-局部修改" class="headerlink" title="4.2.1 局部修改"></a>4.2.1 局部修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /user/_doc/1/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;update1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-2-全局修改"><a href="#4-2-2-全局修改" class="headerlink" title="4.2.2 全局修改"></a>4.2.2 全局修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PUT /user/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;update2&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时每次修改后，返回参数中的属性 <code>verison</code> 都会更改</p>
+<h2 id="4-3-删除文档"><a href="#4-3-删除文档" class="headerlink" title="4.3 删除文档"></a>4.3 删除文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /user/_doc/1</span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>：文档删除不是立即删除，文档还是保存在磁盘上，索引增长越来越多，才会把那些曾经标识过删除的，进行清理，从磁盘上移出去。</p>
+<h2 id="4-4-查询文档"><a href="#4-4-查询文档" class="headerlink" title="4.4 查询文档"></a>4.4 查询文档</h2><p>常规查询</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1</span><br><span class="line">GET /index_demo/_doc/_search</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-1-查询结果"><a href="#4-4-1-查询结果" class="headerlink" title="4.4.1 查询结果"></a>4.4.1 查询结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"_index"</span>: <span class="string">"my_doc"</span>,</span><br><span class="line">    <span class="string">"_type"</span>: <span class="string">"_doc"</span>,</span><br><span class="line">    <span class="string">"_id"</span>: <span class="string">"2"</span>,</span><br><span class="line">    <span class="string">"_score"</span>: 1.0,</span><br><span class="line">    <span class="string">"_version"</span>: 9,</span><br><span class="line">    <span class="string">"_source"</span>: &#123;</span><br><span class="line">        <span class="string">"id"</span>: 1002,</span><br><span class="line">        <span class="string">"name"</span>: <span class="string">"imooc-2"</span>,</span><br><span class="line">        <span class="string">"desc"</span>: <span class="string">"imooc is fashion"</span>,</span><br><span class="line">        <span class="string">"create_date"</span>: <span class="string">"2019-12-25"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-2-元数据"><a href="#4-4-2-元数据" class="headerlink" title="4.4.2 元数据"></a>4.4.2 元数据</h3><ul>
+<li>_index：文档数据所属那个索引，理解为数据库的某张表即可。</li>
+<li>_type：文档数据属于哪个类型，新版本使用<code>_doc</code> 。</li>
+<li>_id：文档数据的唯一标识，类似数据库中某张表的主键。可以自动生成或者手动指定。</li>
+<li>_score：查询相关度，是否契合用户匹配，分数越高用户的搜索体验越高。</li>
+<li>_version：版本号。</li>
+<li>_source：文档数据，json格式。</li>
+</ul>
+<h3 id="4-4-3-定制结果集"><a href="#4-4-3-定制结果集" class="headerlink" title="4.4.3 定制结果集"></a>4.4.3 定制结果集</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1?_source=id,name</span><br><span class="line">GET /index_demo/_doc/_search?_source=id,name</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-4-判断文档是否存在"><a href="#4-4-4-判断文档是否存在" class="headerlink" title="4.4.4 判断文档是否存在"></a>4.4.4 判断文档是否存在</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD /index_demo/_doc/1</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/什么是倒排索引/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/什么是倒排索引/" class="post-title-link" itemprop="url">什么是倒排索引?</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-09 15:41:57 / 修改时间：16:42:03" itemprop="dateCreated datePublished" datetime="2021-01-09T15:41:57+08:00">2021-01-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在学习 ES 的过程中，简单的介绍下倒排索引是怎么回事，对倒排索引有一个宏观的感受。</p>
+<h1 id="正排索引"><a href="#正排索引" class="headerlink" title="正排索引"></a>正排索引</h1><p>在讲述倒排索引之前先介绍下正排索引。正排索引就是如下表形式：</p>
+<table>
+<thead>
+<tr>
+<th>文档id</th>
+<th style="text-align:left">文档内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align:left">什么是正排索引</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align:left">什么是倒排索引</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align:left">正排索引和倒排索引</td>
+</tr>
+</tbody>
+</table>
+<h1 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h1><p>倒排索引就是对上表进行转换，最简单的倒排索引如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>单词</th>
+<th>文档ids</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>什么</td>
+<td>1,2</td>
+</tr>
+<tr>
+<td>是</td>
+<td>1,2</td>
+</tr>
+<tr>
+<td>正排</td>
+<td>1,3</td>
+</tr>
+<tr>
+<td>倒排</td>
+<td>2,3</td>
+</tr>
+<tr>
+<td>索引</td>
+<td>1,2,3</td>
+</tr>
+<tr>
+<td>和</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="词频（TF）和位置（POS）"><a href="#词频（TF）和位置（POS）" class="headerlink" title="词频（TF）和位置（POS）"></a>词频（TF）和位置（POS）</h2><p>上表所示的倒排索引之所以是最简单的，是因为这个索引系统只记载了哪些文档包含某个单词。实用的倒排索引还可以记载更多的信息，如下表第3列的<strong>词频</strong>和<strong>位置</strong>。</p>
+<p><strong>TF</strong>：单词在某个文档中出现的次数<br><strong>POS</strong>：单词在文档中出现的位置</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">单词</th>
+<th>文档ids</th>
+<th>文档id:词频TF:&lt;位置POS&gt;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">什么</td>
+<td>1,2</td>
+<td>1:1:<1>,2:1:<1></1></1></td>
+</tr>
+<tr>
+<td style="text-align:left">是</td>
+<td>1,2</td>
+<td>1:1:<2>,2:1:<2></2></2></td>
+</tr>
+<tr>
+<td style="text-align:left">正排</td>
+<td>1,3</td>
+<td>1:1:<3>,3:1:<0></0></3></td>
+</tr>
+<tr>
+<td style="text-align:left">倒排</td>
+<td>2,3</td>
+<td>2:1:<3>,3:1:<5></5></3></td>
+</tr>
+<tr>
+<td style="text-align:left">索引</td>
+<td>1,2,3</td>
+<td>1:1:<5>,2:1:<5>,3:2:&lt;2,7&gt;</5></5></td>
+</tr>
+<tr>
+<td style="text-align:left">和</td>
+<td>3</td>
+<td>3:1:<4></4></td>
+</tr>
+</tbody>
+</table>
+<p>以“索引”这个单词为例，“3:2:&lt;2,7&gt;”：表示在文档id是3的文档中出现2次，在文档中的位置分别是2和7。</p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.cnblogs.com/ottll/p/9470732.html" target="_blank" rel="noopener">https://www.cnblogs.com/ottll/p/9470732.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/理解Redis的持久化机制-RDB-AOF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/理解Redis的持久化机制-RDB-AOF/" class="post-title-link" itemprop="url">理解Redis的持久化机制:RDB&AOF</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-24 11:33:37 / 修改时间：11:38:05" itemprop="dateCreated datePublished" datetime="2020-12-24T11:33:37+08:00">2020-12-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>转载自<a href="https://juejin.cn/post/6844903874927525902#heading-21" target="_blank" rel="noopener">https://juejin.cn/post/6844903874927525902#heading-21</a></p>
+</blockquote>
+<h1 id="什么是Redis持久化"><a href="#什么是Redis持久化" class="headerlink" title="什么是Redis持久化?"></a>什么是Redis持久化?</h1><hr>
+<p><code>Redis</code>作为一个键值对内存数据库(<code>NoSQL</code>)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg"></p>
+<p>这样做有什么问题呢？</p>
+<p>其实，只要稍微有点计算机基础知识的人都知道，存储在内存当中的数据，只要服务器关机(各种原因引起的)，内存中的数据就会消失了，不仅服务器关机会造成数据消失，<code>Redis</code>服务器守护进程退出，内存中的数据也一样会消失。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg"></p>
+<p>于只把<code>Redis</code>当缓存来用的项目来说，数据消失或许问题不大，重新从数据源把数据加载进来就可以了，但如果直接把用户提交的业务数据存储在<code>Redis</code>当中，把<code>Redis</code>作为数据库来使用，在其放存储重要业务数据，那么<code>Redis</code>的内存数据丢失所造成的影响也许是毁灭性。</p>
+<p>为了避免内存中数据丢失，Redis提供了对持久化的支持，我们可以选择不同的方式将数据从内存中保存到硬盘当中，使数据可以持久化保存。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_3.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_3.jpg"></p>
+<p>Redis提供了RDB和AOF两种不同的数据持久化方式，下面我们就来详细介绍一下这种不同的持久化方式吧。</p>
+<h1 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h1><hr>
+<p><code>RDB</code>是一种快照存储持久化方式，具体就是将Redis某一时刻的内存数据保存到硬盘的文件当中，默认保存的文件名为<code>dump.rdb</code>，而在<code>Redis</code>服务器启动时，会重新加载<code>dump.rdb</code>文件的数据到内存当中恢复数据。</p>
+<h2 id="开启RDB持久化方式"><a href="#开启RDB持久化方式" class="headerlink" title="开启RDB持久化方式"></a>开启RDB持久化方式</h2><p>开启<code>RDB</code>持久化方式很简单，客户端可以通过向<code>Redis</code>服务器发送<code>save</code>或<code>bgsave</code>命令让服务器生成<code>rdb</code>文件，或者通过服务器配置文件指定触发<code>RDB</code>条件。</p>
+<h3 id="1-save命令"><a href="#1-save命令" class="headerlink" title="1. save命令"></a>1. save命令</h3><p><code>save</code>命令是一个同步操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 同步数据到磁盘上</span></span><br><span class="line">&gt; save</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_4.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_4.jpg"></p>
+<p><strong>当客户端向服务器发送<code>save</code>命令请求进行持久化时，服务器会阻塞<code>save</code>命令之后的其他客户端的请求，直到数据同步完成。</strong></p>
+<p>如果数据量太大，同步数据会执行很久，而这期间Redis服务器也无法接收其他请求，所以，最好不要在生产环境使用save命令。</p>
+<h3 id="2-bgsave"><a href="#2-bgsave" class="headerlink" title="2. bgsave"></a>2. bgsave</h3><p>与<code>save</code>命令不同，<code>bgsave</code>命令是一个异步操作。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 异步保存数据集到磁盘上</span></span><br><span class="line">&gt; bgsave</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_5.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_5.jpg"></p>
+<p>当客户端发服务发出<code>bgsave</code>命令时，<code>Redis</code>服务器主进程会<code>forks</code>一个子进程来数据同步问题，在将数据保存到rdb文件之后，子进程会退出。</p>
+<p>所以，与<code>save</code>命令相比，<code>Redis</code>服务器在处理<code>bgsave</code>采用子线程进行IO写入，而主进程仍然可以接收其他请求，但<code>forks</code>子进程是同步的，所以<code>forks</code>子进程时，一样不能接收其他请求，这意味着，<strong>如果forks一个子进程花费的时间太久(一般是很快的)，<code>bgsave</code>命令仍然有阻塞其他客户的请求的情况发生。</strong></p>
+<h3 id="3-服务器配置自动触发"><a href="#3-服务器配置自动触发" class="headerlink" title="3. 服务器配置自动触发"></a>3. 服务器配置自动触发</h3><p>除了通过客户端发送命令外，还有一种方式，就是在<code>Redis</code>配置文件中的<code>save</code>指定到达触发RDB持久化的条件，比如【多少秒内至少达到多少写操作】就开启<code>RDB</code>数据同步。</p>
+<p>例如我们可以在配置文件<code>redis.conf</code>指定如下的选项：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 900s内至少达到一条写命令</span><br><span class="line">save 900 1</span><br><span class="line"># 300s内至少达至10条写命令</span><br><span class="line">save 300 10</span><br><span class="line"># 60s内至少达到10000条写命令</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+<p>之后在启动服务器时加载配置文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动服务器加载配置文件</span></span><br><span class="line">redis-server redis.conf</span><br></pre></td></tr></table></figure>
+<p>这种通过服务器配置文件触发RDB的方式，与bgsave命令类似，达到触发条件时，会forks一个子进程进行数据同步，不过<strong>最好不要通过这方式来触发RDB持久化，因为设置触发的时间太短，则容易频繁写入rdb文件，影响服务器性能，时间设置太长则会造成数据丢失</strong>。</p>
+<h2 id="rdb文件"><a href="#rdb文件" class="headerlink" title="rdb文件"></a>rdb文件</h2><p>前面介绍了三种让服务器生成rdb文件的方式，无论是由主进程生成还是子进程来生成，其过程如下：</p>
+<ol>
+<li>生成临时rdb文件，并写入数据。</li>
+<li>完成数据写入，用临时文代替代正式rdb文件。</li>
+<li>删除原来的db文件。</li>
+</ol>
+<p>RDB默认生成的文件名为dump.rdb，当然，我可以通过配置文件进行更加详细配置，比如在单机下启动多个redis服务器进程时，可以通过端口号配置不同的rdb名称，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 是否压缩rdb文件</span><br><span class="line">rdbcompression yes</span><br><span class="line"></span><br><span class="line"># rdb文件的名称</span><br><span class="line">dbfilename redis-6379.rdb</span><br><span class="line"></span><br><span class="line"># rdb文件保存目录</span><br><span class="line">dir ~/redis/</span><br></pre></td></tr></table></figure>
+<h2 id="RDB的几个优点"><a href="#RDB的几个优点" class="headerlink" title="RDB的几个优点"></a>RDB的几个优点</h2><ol>
+<li>与AOF方式相比，通过rdb文件恢复数据比较快。</li>
+<li>rdb文件非常紧凑，适合于数据备份。</li>
+<li>通过RDB进行数据备，由于使用子进程生成，所以对Redis服务器性能影响较小。</li>
+</ol>
+<h2 id="RDB的几个缺点"><a href="#RDB的几个缺点" class="headerlink" title="RDB的几个缺点"></a><strong>RDB的几个缺点</strong></h2><ol>
+<li>如果服务器宕机的话，采用<code>RDB</code>的方式会造成某个时段内数据的丢失，比如我们设置10分钟同步一次或5分钟达到1000次写入就同步一次，那么如果还没达到触发条件服务器就死机了，那么这个时间段的数据会丢失。</li>
+<li>使用save命令会造成服务器阻塞，直接数据同步完成才能接收后续请求。</li>
+<li>使用bgsave命令在forks子进程时，如果数据量太大，forks的过程也会发生阻塞，另外，forks子进程会耗费内存。</li>
+</ol>
+<h1 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h1><p>聊完了<code>RDB</code>,来聊聊<code>Redis</code>的另外一个持久化方式：<code>AOF(Append-only file)</code>。</p>
+<p>与<code>RDB</code>存储某个时刻的快照不同，<code>AOF</code>持久化方式会记录客户端对服务器的每一次写操作命令，并将这些写操作以<code>Redis</code>协议追加保存到以后缀为<code>aof</code>文件末尾，在Redis服务器重启时，会加载并运行<code>aof</code>文件的命令，以达到恢复数据的目的。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_6.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_6.jpg"></p>
+<h2 id="开启AOF持久化方式"><a href="#开启AOF持久化方式" class="headerlink" title="开启AOF持久化方式"></a>开启AOF持久化方式</h2><p>Redis默认不开启AOF持久化方式，我们可以在配置文件中开启并进行更加详细的配置，如下面的redis.conf文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 开启aof机制</span><br><span class="line">appendonly yes</span><br><span class="line"></span><br><span class="line"># aof文件名</span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"># 写入策略,always表示每个写操作都保存到aof文件中,也可以是everysec或no</span><br><span class="line">appendfsync always</span><br><span class="line"></span><br><span class="line"># 默认不重写aof文件</span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"># 保存目录</span><br><span class="line">dir ~/redis/</span><br></pre></td></tr></table></figure>
+<h2 id="三种写入策略"><a href="#三种写入策略" class="headerlink" title="三种写入策略"></a>三种写入策略</h2><p>在上面的配置文件中，我们可以通过<code>appendfsync</code>选项指定写入策略,有三个选项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">appendfsync always</span><br><span class="line"># appendfsync everysec</span><br><span class="line"># appendfsync no</span><br></pre></td></tr></table></figure>
+<p>在上面的配置文件中，我们可以通过<code>appendfsync</code>选项指定写入策略,有三个选项</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">appendfsync always</span><br><span class="line"># appendfsync everysec</span><br><span class="line"># appendfsync no</span><br></pre></td></tr></table></figure>
+<h3 id="1-always"><a href="#1-always" class="headerlink" title="1. always"></a>1. always</h3><p>客户端的每一个写操作都保存到<code>aof</code>文件当，这种策略很安全，但是每个写请注都有IO操作，所以也很慢。</p>
+<h3 id="2-everysec"><a href="#2-everysec" class="headerlink" title="2. everysec"></a>2. everysec</h3><p><code>appendfsync</code>的默认写入策略，每秒写入一次<code>aof</code>文件，因此，最多可能会丢失1s的数据。</p>
+<h3 id="3-no"><a href="#3-no" class="headerlink" title="3. no"></a>3. no</h3><p><code>Redis</code>服务器不负责写入<code>aof</code>，而是交由操作系统来处理什么时候写入<code>aof</code>文件。更快，但也是最不安全的选择，不推荐使用。</p>
+<h2 id="AOF文件重写"><a href="#AOF文件重写" class="headerlink" title="AOF文件重写"></a>AOF文件重写</h2><p>AOF将客户端的每一个写操作都追加到<code>aof</code>文件末尾，比如对一个key多次执行incr命令，这时候，<code>aof</code>保存每一次命令到aof文件中，aof文件会变得非常大。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">incr num 1</span><br><span class="line">incr num 2</span><br><span class="line">incr num 3</span><br><span class="line">incr num 4</span><br><span class="line">incr num 5</span><br><span class="line">incr num 6</span><br><span class="line">...</span><br><span class="line">incr num 100000</span><br></pre></td></tr></table></figure>
+<p>aof文件太大，加载aof文件恢复数据时，就会非常慢，为了解决这个问题，Redis支持aof文件重写，通过重写aof，可以生成一个恢复当前数据的最少命令集，比如上面的例子中那么多条命令，可以重写为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> num 100000</span><br></pre></td></tr></table></figure>
+<p>aof文件是一个二进制文件，并不是像上面的例子一样，直接保存每个命令，而使用Redis自己的格式，上面只是方便演示。</p>
+<h2 id="两种重写方式"><a href="#两种重写方式" class="headerlink" title="两种重写方式"></a>两种重写方式</h2><p>通过在<code>redis.conf</code>配置文件中的选项<code>no-appendfsync-on-rewrite</code>可以设置是否开启重写，这种方式会在每次<code>fsync</code>时都重写，影响服务器性能，因此默认值为no，不推荐使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 默认不重写aof文件</span><br><span class="line">no-appendfsync-on-rewrite no</span><br></pre></td></tr></table></figure>
+<p>客户端向服务器发送<code>bgrewriteaof</code>命令，也可以让服务器进行AOF重写。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 让服务器异步重写追加aof文件命令</span></span><br><span class="line">&gt; bgrewriteaof</span><br></pre></td></tr></table></figure>
+<p><strong>AOF重写方式也是异步操作</strong>，即如果要写入aof文件，则Redis主进程会forks一个子进程来处理，如下所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_7.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_7.jpg"></p>
+<h3 id="重写aof文件的好处"><a href="#重写aof文件的好处" class="headerlink" title="重写aof文件的好处"></a>重写aof文件的好处</h3><ol>
+<li>压缩aof文件，减少磁盘占用量。</li>
+<li>将aof的命令压缩为最小命令集，加快了数据恢复的速度。</li>
+</ol>
+<h2 id="AOF文件损坏"><a href="#AOF文件损坏" class="headerlink" title="AOF文件损坏"></a>AOF文件损坏</h2><p>在写入aof日志文件时，如果Redis服务器宕机，则aof日志文件文件会出格式错误，在重启Redis服务器时，Redis服务器会拒绝载入这个aof文件，可以通过以下步骤修复aof并恢复数据。</p>
+<ol>
+<li>备份现在aof文件，以防万一。</li>
+<li><p>使用<code>redis-check-aof</code>命令修复aof文件，该命令格式如下：</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修复aof日志文件</span></span><br><span class="line">$ redis-check-aof -fix file.aof</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启Redis服务器，加载已经修复的aof文件，恢复数据。</p>
+</li>
+</ol>
+<h2 id="AOF的优点"><a href="#AOF的优点" class="headerlink" title="AOF的优点"></a>AOF的优点</h2><p>AOF只是追加日志文件，因此对服务器性能影响较小，速度比RDB要快，消耗的内存较少。</p>
+<h2 id="AOF的缺点"><a href="#AOF的缺点" class="headerlink" title="AOF的缺点"></a>AOF的缺点</h2><ol>
+<li>AOF方式生成的日志文件太大，即使通过AFO重写，文件体积仍然很大。</li>
+<li>恢复数据的速度比RDB慢。</li>
+</ol>
+<h1 id="选择RDB还是AOF呢？"><a href="#选择RDB还是AOF呢？" class="headerlink" title="选择RDB还是AOF呢？"></a>选择RDB还是AOF呢？</h1><p>通过上面的介绍，我们了解了RDB与AOF各自的优点与缺点，到底要如何选择呢？</p>
+<p>通过下面的表示，我们可以从几个方面对比一下RDB与AOF,在应用时，要根本自己的实际需求，选择RDB或者AOF，其实，如果想要数据足够安全，可以两种方式都开启，但两种持久化方式同时进行IO操作，会严重影响服务器性能，因此有时候不得不做出选择。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_8.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_8.jpg"></p>
+<p>当RDB与AOF两种方式都开启时，Redis会优先使用AOF日志来恢复数据，因为AOF保存的文件比RDB文件更完整。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>上面讲了一大堆<code>Redis</code>的持久化机制的知识，其实，如果你只是单纯把<code>Redis</code>作为缓存服务器，那么可以完全不用考虑持久化，但是，在如今的大多数服务器架构中，<code>Redis</code>的单单只是扮演一个缓存服务器的角色，还可以作为数据库，保存我们的业务数据，此时，我们则需要好好了解有关<code>Redis</code>持久化策略的区别与选择。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hive集成HBase-详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Hive集成HBase-详解/" class="post-title-link" itemprop="url">Hive集成HBase 详解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-11 16:31:29" itemprop="dateCreated datePublished" datetime="2020-11-11T16:31:29+08:00">2020-11-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-20 18:16:15" itemprop="dateModified" datetime="2020-11-20T18:16:15+08:00">2020-11-20</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[TOC]</p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><h2 id="1-1-为什么要集成Hive和HBase"><a href="#1-1-为什么要集成Hive和HBase" class="headerlink" title="1.1 为什么要集成Hive和HBase?"></a>1.1 为什么要集成Hive和HBase?</h2><p>Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着调研和使用的深入，渐渐有用户发现它们均存在不足之处。</p>
+<p>比如 Hive 不应该用来进行实时的查询，因为它需要很长时间才可以返回结果。同时想要将数据实时的插入hive中则完全没有可操作性。</p>
+<p>至于 HBase虽然非常适用于海量明细数据（十亿、百亿）的随机实时查询但只提供了简单的基于 Key 值的快速查询能力—，没法进行大量的条件查询，对于数据分析来说，不太友好。</p>
+<p>在大数据架构中，Hive和HBase是协作关系，Hive方便地提供了Hive QL的接口来简化MapReduce的使用， 而HBase提供了低延迟的数据库访问。如果两者结合，可以利用MapReduce的优势针对HBase存储的大量内容进行离线的计算和分析。</p>
+<h1 id="2-Hive集成HBase的原理"><a href="#2-Hive集成HBase的原理" class="headerlink" title="2 Hive集成HBase的原理"></a>2 Hive集成HBase的原理</h1><p>Hive 整合 hbase 为用户提供一种 sqlOnHbase 的方法。Hive 与 HBase 整合的实现是利用两者本身对外的 API 接口互相通信来完成的，其具体工作交由 Hive 的 lib 目录中的 <code>hive-hbase-handler-xxx.jar</code> 工具类来实现对 HBase 数据的读取。</p>
+<p>通过HBaseStorageHandler，Hive可以获取到Hive表所对应的HBase表名，列簇和列，InputFormat、OutputFormat类，创建和删除HBase表等。</p>
+<p>Hive访问HBase中HTable的数据，实质上是通过MR读取HBase的数据，而MR是使用HiveHBaseTableInputFormat完成对表的切分，获取RecordReader对象来读取数据的。</p>
+<p>对HBase表的切分原则是一个Region切分成一个Split,即表中有多少个Regions,MR中就有多少个Map；</p>
+<p>读取HBase表数据都是通过构建Scanner，对表进行全表扫描，如果有过滤条件，则转化为Filter。当过滤条件为rowkey时，则转化为对rowkey的过滤；Scanner通过RPC调用RegionServer的next()来获取数据。</p>
+<h1 id="3-使用场景"><a href="#3-使用场景" class="headerlink" title="3 使用场景"></a>3 使用场景</h1><h1 id="4-整合"><a href="#4-整合" class="headerlink" title="4 整合"></a>4 整合</h1><p>因为Hive与HBase集成是利用两者本身对外的API接口互相通信来完成的，其具体工作交由Hive的lib目录中的hive-hbase-handler-.jar工具类来实现。所以只需要将hive的 <code>hive-hbase-handler-.jar</code> 复制到<code>hbase/lib</code>中就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/local/hive/lib/hive-hbase-handler-2.3.7.jar /usr/local/hbase/lib/</span><br></pre></td></tr></table></figure>
+<p><strong>注</strong>: 如果在hive整合hbase中，出现版本之类的问题，那么以hbase的版本为主，将hbase中的jar包覆盖hive的jar包。</p>
+<h2 id="4-1-示例"><a href="#4-1-示例" class="headerlink" title="4.1 示例"></a>4.1 示例</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Hive 语句</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_employee(<span class="keyword">id</span> <span class="built_in">int</span>,<span class="keyword">name</span> <span class="keyword">string</span>) </span><br><span class="line"><span class="keyword">stored</span> <span class="keyword">by</span> <span class="string">'org.apache.hadoop.hive.hbase.HBaseStorageHandler'</span> </span><br><span class="line"><span class="keyword">with</span> serdeproperties(<span class="string">"hbase.columns.mapping"</span>=<span class="string">":key,st1:name"</span>) </span><br><span class="line">tblproperties(<span class="string">"hbase.table.name"</span>=<span class="string">"t_employee"</span>,<span class="string">"hbase.mapred.output.outputtable"</span> = <span class="string">"t_employee"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># hbase 语句</span></span><br><span class="line">list</span><br><span class="line"><span class="keyword">describe</span> <span class="string">'t_employee'</span></span><br><span class="line"><span class="comment"># 返回结果</span></span><br><span class="line"><span class="keyword">Table</span> t_employee <span class="keyword">is</span> ENABLED</span><br><span class="line">t_employee</span><br><span class="line"><span class="keyword">COLUMN</span> FAMILIES DESCRIPTION</span><br><span class="line">&#123;<span class="keyword">NAME</span> =&gt; <span class="string">'st1'</span>, BLOOMFILTER =&gt; <span class="string">'ROW'</span>, <span class="keyword">VERSIONS</span> =&gt; <span class="string">'1'</span>, IN_MEMORY =&gt; <span class="string">'false'</span>, KEEP_DELETED_CELLS =&gt; <span class="string">'FALSE'</span>, DATA_BLOCK_ENCODING =&gt; <span class="string">'NONE'</span>, TTL =&gt; <span class="string">'FOREVER'</span>, COMPRESSION =&gt; <span class="string">'NONE'</span></span><br><span class="line">, MIN_VERSIONS =&gt; <span class="string">'0'</span>, BLOCKCACHE =&gt; <span class="string">'true'</span>, <span class="keyword">BLOCKSIZE</span> =&gt; <span class="string">'65536'</span>, REPLICATION_SCOPE =&gt; <span class="string">'0'</span>&#125;</span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span>(s) <span class="keyword">in</span> <span class="number">0.0260</span> <span class="keyword">seconds</span></span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<ol>
+<li><p>这里面出现了三个t_employee表名，第一个t_employee 是hive表中的名称，(id int,name string) 是hive表结构。</p>
+<p>在tblproperties 语句中还出现了2个t_employee表，”hbase.table.name”定义的是在hbase中的表名 ，这个属性是可选的，仅当你想在Hive和Hbase中使用不同名字的表名时才需要填写，如果使用相同的名字则可以省略；</p>
+<p>“hbase.mapred.output.outputtable”定义的第三个t_employee是存储数据表的名称，指定插入数据时写入的表，如果以后需要往该表插入数据就需要指定该值，这个可以不要，表数据就存储在第二个表中了 。</p>
+</li>
+<li><p>stored by ‘org.apache.hadoop.hive.hbase.HBaseStorageHandler’ ：是指定处理的存储器，就是hive-hbase-handler-*.jar包，要做hive和hbase的集成必须要加上这一句；</p>
+</li>
+<li><p>“hbase.columns.mapping” 是定义在hive表中的字段怎么与hbase的列族进行映射。</p>
+<p>   例如:st1就是列族，name就是列。它们之间通过“：”连接。</p>
+<p>   在hive中创建的t_employee表，包括两个字段（int型的id和string型的name），映射为hbase中的表t_employee，其中：key对应hbase的rowkey，value对应hbase的st1:name列。</p>
+</li>
+</ol>
+<h2 id="4-2-字段映射"><a href="#4-2-字段映射" class="headerlink" title="4.2 字段映射"></a>4.2 字段映射</h2><p>控制HBase字段和Hive之间的映射有两种<code>SERDEPROPERTIES</code>:</p>
+<ul>
+<li>hbase.columns.mapping</li>
+<li>hbase.table.default.storage.type，可以是string(default)或binary中的任一个，指定这个选项只有在Hive 0.9之后可使用.</li>
+</ul>
+<p>目前所支持的字段映射多少是有些难处理或存在约束的：</p>
+<ul>
+<li>对于每一个Hive字段，表的创建者必须用逗号分隔的字符串（<code>hbase.columns.mapping</code>）指定对应的入口（Hive表有n个字段，则该字符串得指定n个入口），在各个入口之间不能由空格（因为空格会被解析成字段名中的一部分）。</li>
+<li>映射入口必须是以下两者之一：<strong>行健</strong>或<strong>‘列族名:[列名][#(binary|string)]’</strong><ul>
+<li>如果没有指定类型，则直接使用<code>hbase.table.default.storage.type</code>的值</li>
+<li>合法值的的前缀也是合法的（例如#b表示#binary）</li>
+<li>如果指定某字段为binary，则对应的HBase中的单元格则应该是HBase的Bytes类的内容组成</li>
+</ul>
+</li>
+<li>必须要有确切的行健映射</li>
+<li>如果没有指定列名，则默认使用Hive的字段名作为HBase中的列名</li>
+</ul>
+<h2 id="4-3-数据同步测试"><a href="#4-3-数据同步测试" class="headerlink" title="4.3 数据同步测试"></a>4.3 数据同步测试</h2><p>进入hbase之后，在t_employee中添加两条数据 然后查询该表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">put 't_employee','1001','st1:name','zhaoqian'</span><br><span class="line">put 't_employee','1002','st1:name','sunli'</span><br><span class="line">scan 't_employee'</span><br></pre></td></tr></table></figure>
+<p>查询结果：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled.png"></p>
+<p>然后切换到hive中查询该表</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled%201.png"></p>
+<p>至此，hive 集成hbase 就到此告一段落。</p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://zhuanlan.zhihu.com/p/74041611" target="_blank" rel="noopener">如何整合hive和hbase</a></p>
+<p><a href="https://ask.hellobi.com/blog/marsj/4002" target="_blank" rel="noopener">Hive与HBase的集成实践</a></p>
+<p>[[hbase-1-4-13-安装部署]]</p>
+<p>[[hive2-3-7安装]]</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hive注释中文乱码/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -549,797 +1288,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/hbase-1-4-13-安装部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/hbase-1-4-13-安装部署/" class="post-title-link" itemprop="url">hbase 1.4.13 安装部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-16 17:19:13" itemprop="dateCreated datePublished" datetime="2020-09-16T17:19:13+08:00">2020-09-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-20 18:18:04" itemprop="dateModified" datetime="2020-11-20T18:18:04+08:00">2020-11-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h1 id="认识HBase"><a href="#认识HBase" class="headerlink" title="认识HBase"></a>认识HBase</h1><h2 id="HBase介绍"><a href="#HBase介绍" class="headerlink" title="HBase介绍"></a>HBase介绍</h2><p>HBase = Hadoop database，Hadoop数据库<br>开源数据库<br>官网：<a href="http://hbase.apache.org/" target="_blank" rel="noopener">hbase.apache.org/</a><br>HBase源于Google的BigTable<br>Apache HBase™是Hadoop数据库，是一个分布式，可扩展的大数据存储。<br>当需要对大数据进行随机、实时读/写访问时，请使用Apache HBase™。该项目的目标是托管非常大的表 - 数十亿行X百万列 - 在商品硬件集群上。Apache HBase是一个开源的，分布式的，版本化的非关系数据库nosql，模仿Google的Bigtable： Chang等人的结构化数据分布式存储系统。正如Bigtable利用Google文件系统提供的分布式数据存储一样，Apache HBase在Hadoop和HDFS之上提供类似Bigtable的功能。<br>HBase可执行基于Yarn平台的计算任务，但不擅长。</p>
-<p>&lt; !–more–&gt;</p>
-<h2 id="HBase集群角色"><a href="#HBase集群角色" class="headerlink" title="HBase集群角色"></a>HBase集群角色</h2><ul>
-<li>HDFS：<ul>
-<li>NameNode——主节点</li>
-<li>DataNode——数据存储节点</li>
-</ul>
-</li>
-<li>Yarn：<ul>
-<li>ResourceManager——全局的资源管理器</li>
-<li>NodeManager——分节点资源和任务管理器</li>
-</ul>
-</li>
-<li>HBase：<ul>
-<li>HMaster<ul>
-<li>负责Table表和RegionServer的监控管理工作</li>
-<li>处理元数据的变更</li>
-<li>对HRegionServer进行故障转移</li>
-<li>空闲时对数据进行负载均衡处理</li>
-<li>管理Region</li>
-<li>借助ZooKeeper发布位置到客户端</li>
-</ul>
-</li>
-<li>HRegionServer<ul>
-<li>负责Table数据的实际读写</li>
-<li>刷新缓存数据到HDFS</li>
-<li>处理Region</li>
-<li>可以进行数据压缩</li>
-<li>维护Hlog</li>
-<li>Region分片</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="hbase-架构"><a href="#hbase-架构" class="headerlink" title="hbase 架构"></a>hbase 架构</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png" alt="image-20200916184659443"></p>
-<p>HRegionServer结构：</p>
-<ul>
-<li>HLog：存储HBase的修改记录</li>
-<li>HRegion：根据rowkey（行键，类似id）分割的表的分片</li>
-<li>Store：对应HBase表中的一个列族，可存储多个字段</li>
-<li>HFile：真正的存储文件</li>
-<li>MemStore：保存当前的操作</li>
-<li>ZooKeeper：存放数据的元数据信息，负责维护RegionServer中保存的元数据信息</li>
-<li>DFS Client：存储数据信息到HDFS集群中</li>
-</ul>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
-<li>Hadoop集群环境</li>
-<li>ZooKeeper集群环境</li>
-</ul>
-<h2 id="服务器分配"><a href="#服务器分配" class="headerlink" title="服务器分配"></a>服务器分配</h2><table>
-<thead>
-<tr>
-<th>主机名</th>
-<th>IP</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>centos-node1</td>
-<td>192.168.99.101</td>
-</tr>
-<tr>
-<td>centos-node2</td>
-<td>192.168.99.102</td>
-</tr>
-<tr>
-<td>centos-node3</td>
-<td>192.168.99.103</td>
-</tr>
-</tbody>
-</table>
-<h2 id="解压安装文件到指定目录"><a href="#解压安装文件到指定目录" class="headerlink" title="解压安装文件到指定目录"></a>解压安装文件到指定目录</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar -zxvf hbase-1.4.13.tar.gz -C 目标目录</span><br></pre></td></tr></table></figure>
-<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><h3 id="hbase-env-sh"><a href="#hbase-env-sh" class="headerlink" title="hbase-env.sh"></a>hbase-env.sh</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-env.sh</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The java implementation to use.  Java 1.7+ required.</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=jdk安装路径</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注释掉以下语句（jdk1.8中不需要这个配置）</span></span><br><span class="line"><span class="comment"># export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"><span class="comment"># export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Tell HBase whether it should manage it's own instance of Zookeeper or not.</span></span><br><span class="line"><span class="comment"># 关闭HBase自带的ZooKeeper</span></span><br><span class="line"><span class="built_in">export</span> HBASE_MANAGES_ZK=<span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<h3 id="hbase-site-xml"><a href="#hbase-site-xml" class="headerlink" title="hbase-site.xml"></a>hbase-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi hbase-site.xml</span><br></pre></td></tr></table></figure>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 设置namenode所在位置（HDFS中存放的路径） --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://centos-node1:4000/hbase<span class="tag">&lt;/<span class="name">value</span>&gt;</span>    </span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- 是否开启集群 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.cluster.distributed<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">	<span class="comment">&lt;!-- HBase-0.9.8之前默认端口为60000 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>16000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.master.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16010<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16201<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.regionserver.info.port<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">value</span>&gt;</span>16301<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- zookeeper集群的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.quorum<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="comment">&lt;!-- 注意不要有空格 --&gt;</span>  </span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node1,centos-node2,centos-node3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">&lt;!-- hbase的元数据信息存储在zookeeper的位置 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.zookeeper.property.dataDir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/zookeeper/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="regionservers"><a href="#regionservers" class="headerlink" title="regionservers"></a>regionservers</h3><p>加入节点主机名</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">centos-node1</span><br><span class="line">centos-node2</span><br><span class="line">centos-node3</span><br></pre></td></tr></table></figure>
-<h2 id="解决依赖问题"><a href="#解决依赖问题" class="headerlink" title="解决依赖问题"></a>解决依赖问题</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/hbase/lib</span><br><span class="line">$ rm -fr hadoop-*</span><br><span class="line">$ rm -fr zookeeper-*</span><br></pre></td></tr></table></figure>
-<p>把相关版本的zookeeper和hadoop的依赖包导入到hbase/lib</p>
-<h2 id="软链接hadoop配置"><a href="#软链接hadoop配置" class="headerlink" title="软链接hadoop配置"></a>软链接hadoop配置</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/core-site.xml /usr/<span class="built_in">local</span>/hbase/conf/core-site.xml</span><br><span class="line">$ ln -s /usr/<span class="built_in">local</span>/hadoop/etc/hadoop/hdfs-site.xml /usr/<span class="built_in">local</span>/hbase/conf/hdfs-site.xml</span><br></pre></td></tr></table></figure>
-<h2 id="复制到其他节点"><a href="#复制到其他节点" class="headerlink" title="复制到其他节点"></a>复制到其他节点</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node2:/usr/<span class="built_in">local</span>/</span><br><span class="line">$ scp -r /usr/<span class="built_in">local</span>/hbase centos-node3:/usr/<span class="built_in">local</span>/</span><br></pre></td></tr></table></figure>
-<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/profile</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br><span class="line">JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br><span class="line">HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line">CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar:<span class="variable">$JRE_HOME</span>/lib</span><br><span class="line">ZOOKEEPER_HOME=/usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line">HBASE_HOME=/usr/<span class="built_in">local</span>/hbase</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$ZOOKEEPER_HOME</span>/bin:<span class="variable">$HBASE_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME ZOOKEEPER_HOME HBASE_HOME</span><br></pre></td></tr></table></figure>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
-<h2 id="修改防火墙"><a href="#修改防火墙" class="headerlink" title="修改防火墙"></a>修改防火墙</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务(端口不全)</span></span><br><span class="line">$ firewall-cmd --new-service=hbase --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16000/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16010/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16201/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 16301/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hbase --add-port 2181/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=hbase</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop firewalld</span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewalld</span><br></pre></td></tr></table></figure>
-<h1 id="启动集群"><a href="#启动集群" class="headerlink" title="启动集群"></a>启动集群</h1><ul>
-<li>启动主节点<ul>
-<li><code>hbase-daemon.sh start master</code></li>
-</ul>
-</li>
-<li>启动从节点<ul>
-<li><code>hbase-daemon.sh start regionserver</code></li>
-</ul>
-</li>
-</ul>
-<h1 id="关闭集群"><a href="#关闭集群" class="headerlink" title="关闭集群"></a>关闭集群</h1><ul>
-<li>关闭主节点<ul>
-<li><code>hbase-daemon.sh stop master</code></li>
-</ul>
-</li>
-<li>关闭从节点<ul>
-<li><code>hbase-daemon.sh stop regionserver</code></li>
-</ul>
-</li>
-</ul>
-<h1 id="UI-展示"><a href="#UI-展示" class="headerlink" title="UI 展示"></a>UI 展示</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png" alt="image-20200921184311647"></p>
-<h1 id="hbase-shell的一些命令"><a href="#hbase-shell的一些命令" class="headerlink" title="hbase shell的一些命令"></a>hbase shell的一些命令</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入终端</span></span><br><span class="line">$ hbase shell</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185108081.png" alt="image-20200921185108081"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询表</span></span><br><span class="line">$ list</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185132638.png" alt="image-20200921185132638"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示服务器状态</span></span><br><span class="line">$ status</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png" alt="image-20200921185249611"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示当前用户</span></span><br><span class="line">$ whoami</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png" alt="image-20200921185450703"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line">$ create <span class="string">'表名'</span>, <span class="string">'列族1'</span>, <span class="string">'列族2'</span></span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png" alt="image-20200921185551041"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 表的一些操作</span></span><br><span class="line"><span class="comment"># 全表扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 指定Rowkey扫描</span></span><br><span class="line">$ scan <span class="string">'表名'</span>, &#123;STARTROW =&gt; <span class="string">'Rowkey值'</span>, STOPROW =&gt; <span class="string">'Rowkey值'</span>&#125;</span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">$ describe <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 修改表结构信息</span></span><br><span class="line">$ alter <span class="string">'表名'</span>, &#123;NAME =&gt; <span class="string">'列族名'</span>, 变更字段名 =&gt; <span class="string">' '</span>&#125;</span><br><span class="line"><span class="comment"># 查询指定数据信息</span></span><br><span class="line"><span class="comment"># 指定具体的rowkey</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 指定具体的列</span></span><br><span class="line">$ get <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span></span><br><span class="line"><span class="comment"># 统计表行数</span></span><br><span class="line">$ count <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 根据Rowkey进行统计</span></span><br><span class="line">$ count <span class="string">'表名'</span>, <span class="string">'rowkey'</span></span><br><span class="line"><span class="comment"># 表中添加数据信息。HBase只有覆盖没有修改,覆盖时对应表名、rowkey、列族、列名字段，输入新的值信息</span></span><br><span class="line">$ put <span class="string">'表名'</span>, <span class="string">'rowkey'</span>, <span class="string">'列族:列名'</span>, <span class="string">'值'</span></span><br><span class="line"><span class="comment"># 清空表</span></span><br><span class="line">$ truncate <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="comment"># 指定表不可用</span></span><br><span class="line">$ <span class="built_in">disable</span> <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">$ drop <span class="string">'表名'</span></span><br><span class="line"><span class="comment"># 退出终端</span></span><br><span class="line">$ <span class="built_in">exit</span></span><br><span class="line">$ quit</span><br></pre></td></tr></table></figure>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><ul>
-<li><a href="https://juejin.im/post/6844903797655863309#heading-21" target="_blank" rel="noopener">https://juejin.im/post/6844903797655863309#heading-21</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Zookeeper-3-4-14-安装部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Zookeeper-3-4-14-安装部署/" class="post-title-link" itemprop="url">Zookeeper 3.4.14 安装部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-15 20:09:07" itemprop="dateCreated datePublished" datetime="2020-09-15T20:09:07+08:00">2020-09-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-23 10:39:05" itemprop="dateModified" datetime="2020-09-23T10:39:05+08:00">2020-09-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><blockquote>
-<p>下载地址：<a href="http://zookeeper.apache.org/" target="_blank" rel="noopener">http://zookeeper.apache.org/</a></p>
-</blockquote>
-<p>下载过程就不说了，我们下载了最新的<code>zookeeper-3.4.14</code>。</p>
-<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><p><strong>1、上传安装包</strong></p>
-<p>把下载的最新的包（如：zookeeper-3.4.14.tar.gz）上传到服务器，上传的方式也不多说了。</p>
-<p><strong>2、解压</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar zxvf zookeeper-3.4.14.tar.gz</span><br></pre></td></tr></table></figure>
-<p><strong>3、移动到/usr/local目录下</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s zookeeper-3.4.14 /usr/<span class="built_in">local</span>/zookeeper</span><br></pre></td></tr></table></figure>
-<h3 id="服务器分配"><a href="#服务器分配" class="headerlink" title="服务器分配"></a>服务器分配</h3><table>
-<thead>
-<tr>
-<th>主机名</th>
-<th>IP</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>centos-node1</td>
-<td>192.168.99.101</td>
-</tr>
-<tr>
-<td>centos-node2</td>
-<td>192.168.99.102</td>
-</tr>
-<tr>
-<td>centos-node3</td>
-<td>192.168.99.103</td>
-</tr>
-</tbody>
-</table>
-<h4 id="集群配置"><a href="#集群配置" class="headerlink" title="集群配置"></a>集群配置</h4><p>Zookeeper集群原则上需要2n+1个实例才能保证集群有效性，所以集群规模至少是3台。</p>
-<p>下面演示如何创建3台的Zookeeper集群，N台也是如此。</p>
-<p><strong>1、创建数据文件存储目录</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line">$ mkdir data</span><br></pre></td></tr></table></figure>
-<p><strong>2、添加主配置文件</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> conf</span><br><span class="line">$ cp zoo_sample.cfg zoo.cfg</span><br></pre></td></tr></table></figure>
-<p><strong>3、修改配置</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi zoo.cfg</span><br></pre></td></tr></table></figure>
-<p>先把<code>dataDir=/tmp/zookeeper</code>注释掉，然后添加以下核心配置。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dataDir=/usr/<span class="built_in">local</span>/zookeeper/data</span><br><span class="line">server.1=centos-node1:2888:3888</span><br><span class="line">server.2=centos-node2:2888:3888</span><br><span class="line">server.3=centos-node3:2888:3888</span><br></pre></td></tr></table></figure>
-<p><strong>4、创建myid文件</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> ../data</span><br><span class="line">$ touch myid</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"1"</span>&gt;&gt;myid</span><br></pre></td></tr></table></figure>
-<p>每台机器的myid里面的值对应server.后面的数字x。</p>
-<p><strong>5、开放3个端口</strong></p>
-<p>使用 iptables</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /sbin/iptables -I INPUT -p tcp --dport 2181 -j ACCEPT</span><br><span class="line">$ sudo /sbin/iptables -I INPUT -p tcp --dport 2888 -j ACCEPT</span><br><span class="line">$ sudo /sbin/iptables -I INPUT -p tcp --dport 3888 -j ACCEPT</span><br><span class="line"></span><br><span class="line">$ sudo /etc/rc.d/init.d/iptables save</span><br><span class="line">$ sudo /etc/init.d/iptables restart</span><br><span class="line"></span><br><span class="line">$ sudo /sbin/iptables -L -n</span><br><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt <span class="built_in">source</span>               destination         </span><br><span class="line">ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:3888 </span><br><span class="line">ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:2888 </span><br><span class="line">ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:2181</span><br></pre></td></tr></table></figure>
-<p>或者 firewalld</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务</span></span><br><span class="line">$ firewall-cmd --new-service=zookeeper --permanent</span><br><span class="line">$ firewall-cmd --service=zookeeper --add-port 2181/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=zookeeper --add-port 2888/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=zookeeper --add-port 3888/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=zookeeper</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
-<p><strong>6、配置集群其他机器</strong></p>
-<p>把配置好的Zookeeper目录复制到其他两台机器上，重复上面4-5步。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /usr/<span class="built_in">local</span>/zookeeper centos-node2:/usr/<span class="built_in">local</span>/</span><br></pre></td></tr></table></figure>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/profile</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br><span class="line">JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br><span class="line">HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line">CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar:<span class="variable">$JRE_HOME</span>/lib</span><br><span class="line">ZOOKEEPER_HOME=/usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$ZOOKEEPER_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME HBASE_HOME</span><br></pre></td></tr></table></figure>
-<p><strong>7、重启集群</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/<span class="built_in">local</span>/zookeeper/bin/zkServer.sh start</span><br></pre></td></tr></table></figure>
-<p>3个Zookeeper都要启动。</p>
-<p><strong>8、查看集群状态</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/<span class="built_in">local</span>/zookeeper/bin/zkServer.sh status </span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: /usr/<span class="built_in">local</span>/zookeeper/bin/../conf/zoo.cfg</span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
-<h4 id="客户端连接"><a href="#客户端连接" class="headerlink" title="客户端连接"></a>客户端连接</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./zkCli.sh -server 192.168.99.101:2181</span><br></pre></td></tr></table></figure>
-<p>连接本机的不用带-server。</p>
-<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><p>如果是在单机创建的多个Zookeeper伪集群，需要对应修改配置中的端口、日志文件、数据文件位置等配置信息。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Nginx的upstream指令参数解析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Nginx的upstream指令参数解析/" class="post-title-link" itemprop="url">Nginx的upstream指令参数解析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-09-09 18:09:02 / 修改时间：18:23:28" itemprop="dateCreated datePublished" datetime="2020-09-09T18:09:02+08:00">2020-09-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/nginx/" itemprop="url" rel="index"><span itemprop="name">nginx</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="upstream-指令参数-max-conns"><a href="#upstream-指令参数-max-conns" class="headerlink" title="upstream 指令参数 max_conns"></a><strong>upstream 指令参数 max_conns</strong></h1><p>限制每台server的连接数，用于保护避免过载，可起到限流作用。测试参考配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># worker进程设置1个，便于测试观察成功的连接数</span><br><span class="line">worker_processes 1;</span><br><span class="line">upstream tomcats &#123; </span><br><span class="line">    server 192.168.1.173:8080 max_conns=2; </span><br><span class="line">    server 192.168.1.174:8080 max_conns=2; </span><br><span class="line">    server 192.168.1.175:8080 max_conns=2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="upstream-指令参数-slow-start"><a href="#upstream-指令参数-slow-start" class="headerlink" title="upstream 指令参数 slow_start"></a><strong>upstream 指令参数 slow_start</strong></h1><p>配置了这个参数，他会覆盖权重，慢慢从0开始到正常值。</p>
-<p><strong><em>商业版，需要付费\</em></strong></p>
-<p>配置参考如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123; </span><br><span class="line">    server 192.168.1.173:8080 weight=6 slow_start=60s;</span><br><span class="line">    # server 192.168.1.190:8080; </span><br><span class="line">    server 192.168.1.174:8080 weight=2; </span><br><span class="line">    server 192.168.1.175:8080 weight=2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<ul>
-<li>该参数不能使用在<code>hash</code> 和 <code>random load balancing</code> 中。</li>
-<li>如果在 upstream 中只有一台 server，则该参数失效。</li>
-</ul>
-<h1 id="upstream-指令参数-down、backup"><a href="#upstream-指令参数-down、backup" class="headerlink" title="upstream 指令参数 down、backup"></a><strong>upstream 指令参数 down、backup</strong></h1><p><strong><code>down</code></strong> 用于标记服务节点不可用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123; </span><br><span class="line">	server 192.168.1.173:8080 down;</span><br><span class="line">	# server 192.168.1.190:8080; </span><br><span class="line">	server 192.168.1.174:8080 weight=1; </span><br><span class="line">	server 192.168.1.175:8080 weight=1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<p><strong><code>backup</code></strong>表示当前服务器节点是备用机，只有在其他的服务器都宕机以后，自己才会加入到集群中，被用户访问到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123; </span><br><span class="line">		server 192.168.1.173:8080 backup;</span><br><span class="line">		# server 192.168.1.190:8080; </span><br><span class="line">		server 192.168.1.174:8080 weight=1; </span><br><span class="line">		server 192.168.1.175:8080 weight=1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<ul>
-<li><code>backup</code>参数不能使用在<code>hash</code> 和 <code>random load balancing</code> 中。</li>
-</ul>
-<h1 id="upstream-指令参数-max-fails、fail-timeout"><a href="#upstream-指令参数-max-fails、fail-timeout" class="headerlink" title="upstream 指令参数 max_fails、fail_timeout"></a><strong>upstream 指令参数 max_fails、fail_timeout</strong></h1><p><strong><code>max_fails</code></strong>：表示失败几次，则标记server已宕机，剔出上游服务。</p>
-<p><strong><code>fail_timeout</code></strong>：表示失败的重试时间。假设目前设置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">max_fails=2 fail_timeout=15s</span><br></pre></td></tr></table></figure>
-<p>则代表在15秒内请求某一server失败达到2次后，则认为该server已经挂了或者宕机了，随后再过15秒，这15秒内不会有新的请求到达刚刚挂掉的节点上，而是会请求到正常运作的server，15秒后会再有新请求尝试连接挂掉的server，如果还是失败，重复上一过程，直到恢复。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hadoop-完全分布式安装与部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Hadoop-完全分布式安装与部署/" class="post-title-link" itemprop="url">Hadoop 完全分布式安装与部署</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-03 16:10:22" itemprop="dateCreated datePublished" datetime="2020-09-03T16:10:22+08:00">2020-09-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-16 20:19:48" itemprop="dateModified" datetime="2020-11-16T20:19:48+08:00">2020-11-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[Toc]</p>
-<h1 id="Hadoop-2-7-4-完全分布式安装与部署"><a href="#Hadoop-2-7-4-完全分布式安装与部署" class="headerlink" title="Hadoop 2.7.4 完全分布式安装与部署"></a>Hadoop 2.7.4 完全分布式安装与部署</h1><p>Hadoop官方指导传送门 <a href="http://hadoop.apache.org/docs/r2.7.4/hadoop-project-dist/hadoop-common/ClusterSetup.html" target="_blank" rel="noopener">传送门</a></p>
-<h1 id="服务器准备"><a href="#服务器准备" class="headerlink" title="服务器准备"></a>服务器准备</h1><p>服务器规划，提供 3 台服务器，OS 为<code>centos 7</code></p>
-<table>
-<thead>
-<tr>
-<th>主机名</th>
-<th>IP</th>
-<th>预备分配服务</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>centos-node1</td>
-<td>192.168.99.101</td>
-<td>DataNode,NodeManager,NameNode</td>
-</tr>
-<tr>
-<td>centos-node2</td>
-<td>192.168.99.102</td>
-<td>DataNode,NodeManager,SecondaryNameNode</td>
-</tr>
-<tr>
-<td>centos-node3</td>
-<td>192.168.99.103</td>
-<td>DataNode,NodeManager,ResourceManager,HistoryServer</td>
-</tr>
-</tbody>
-</table>
-<h1 id="修改主机名"><a href="#修改主机名" class="headerlink" title="修改主机名"></a>修改主机名</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> hostnamectl <span class="built_in">set</span>-hostname centos-node1</span></span><br></pre></td></tr></table></figure>
-<h1 id="修改服务器静态IP"><a href="#修改服务器静态IP" class="headerlink" title="修改服务器静态IP"></a>修改服务器静态IP</h1><p>可以使用 <code>netstat -r</code> 来查询网关如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200911142643578.png" alt="image-20200911142643578"></p>
-<p>然后将 dhcp 改为 静态IP</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vim /etc/sysconfig/network-scripts/ifcfg-enp0s8</span></span><br></pre></td></tr></table></figure>
-<p>完全配置如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">TYPE=&quot;Ethernet&quot;</span><br><span class="line">PROXY_METHOD=&quot;none&quot;</span><br><span class="line">BROWSER_ONLY=&quot;no&quot;</span><br><span class="line">#BOOTPROTO=&quot;dhcp&quot;</span><br><span class="line">BOOTPROTO=&quot;static&quot;</span><br><span class="line">DEFROUTE=&quot;yes&quot;</span><br><span class="line">IPV4_FAILURE_FATAL=&quot;no&quot;</span><br><span class="line">IPV6INIT=&quot;yes&quot;</span><br><span class="line">IPV6_AUTOCONF=&quot;yes&quot;</span><br><span class="line">IPV6_DEFROUTE=&quot;yes&quot;</span><br><span class="line">IPV6_FAILURE_FATAL=&quot;no&quot;</span><br><span class="line">IPV6_ADDR_GEN_MODE=&quot;stable-privacy&quot;</span><br><span class="line">NAME=&quot;enp0s8&quot;</span><br><span class="line">UUID=&quot;5b4ea2f4-a5af-4fac-8793-81692730dad9&quot;</span><br><span class="line">DEVICE=&quot;enp0s8&quot;</span><br><span class="line">ONBOOT=&quot;yes&quot;</span><br><span class="line"></span><br><span class="line"># 新增</span><br><span class="line">GATEWAY=192.168.99.0  # 修改网关，虚拟机需要注意修改nat</span><br><span class="line">IPADDR=192.168.99.101 # 分配IP地址</span><br><span class="line">NETMASK=255.255.255.0 # 子网掩码</span><br><span class="line">DNS1=223.5.5.5        # 使用阿里公共DNS1</span><br><span class="line">DNS2=223.6.6.6        # 使用阿里公共DNS2</span><br></pre></td></tr></table></figure>
-<h1 id="修改-hosts"><a href="#修改-hosts" class="headerlink" title="修改 hosts"></a>修改 hosts</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vi /etc/hosts</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加</span></span><br><span class="line">192.168.99.101 centos-node1</span><br><span class="line">192.168.99.102 centos-node2</span><br><span class="line">192.168.99.103 centos-node3</span><br></pre></td></tr></table></figure>
-<h1 id="安装-JDK8"><a href="#安装-JDK8" class="headerlink" title="安装 JDK8"></a>安装 JDK8</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> vi /etc/profile</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 添加</span></span><br><span class="line">JAVA_HOME=/usr/local/java/</span><br><span class="line">JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin</span><br><span class="line">CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib</span><br><span class="line">export JAVA_HOME JRE_HOME PATH CLASSPATH</span><br></pre></td></tr></table></figure>
-<h1 id="增加-dhfs-用户"><a href="#增加-dhfs-用户" class="headerlink" title="增加 dhfs 用户"></a>增加 dhfs 用户</h1><p>通常，建议HDFS和YARN以单独的用户身份运行。</p>
-<p>在大多数安装中，HDFS进程以 “hdfs” 执行。YARN通常使用 “yarn” 帐户</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ adduser hdfs</span><br><span class="line">$ passwd hdfs <span class="comment"># 修改密码</span></span><br></pre></td></tr></table></figure>
-<p>为 <code>/etc/sudoers</code>添加如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200911170014063.png" alt="image-20200911170014063"></p>
-<h1 id="设置-SSH-无密码登录"><a href="#设置-SSH-无密码登录" class="headerlink" title="设置 SSH 无密码登录"></a>设置 SSH 无密码登录</h1><ol>
-<li><p>3 台服务器全部设置</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>各自分配 ssh key</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id centos-node1</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id centos-node2</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id centos-node3</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h1 id="安装部署-Hadoop"><a href="#安装部署-Hadoop" class="headerlink" title="安装部署 Hadoop"></a>安装部署 Hadoop</h1><h2 id="切换至-hdfs-用户"><a href="#切换至-hdfs-用户" class="headerlink" title="切换至 hdfs 用户"></a>切换至 hdfs 用户</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> su - hdfs</span></span><br></pre></td></tr></table></figure>
-<h3 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl -O https://archive.apache.org/dist/hadoop/common/hadoop-2.7.4/hadoop-2.7.4.tar.gz</span></span><br></pre></td></tr></table></figure>
-<h3 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -zxf hadoop-2.7.4.tar.gz  -C /opt/hadoop-2.7.4</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ln -s /opt/hadoop-2.7.4 /usr/<span class="built_in">local</span>/hadoop</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> chown -R hdfs /opt/hadoop-2.7.4</span></span><br></pre></td></tr></table></figure>
-<h3 id="修改环境变量"><a href="#修改环境变量" class="headerlink" title="修改环境变量"></a>修改环境变量</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo vi /etc/profile</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改为</span></span><br><span class="line">JAVA_HOME=/usr/local/java/</span><br><span class="line">JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">HADOOP_HOME=/usr/local/hadoop</span><br><span class="line">CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib</span><br><span class="line"></span><br><span class="line">PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin:$HADOOP_HOME/bin</span><br><span class="line"></span><br><span class="line">export JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME</span><br></pre></td></tr></table></figure>
-<h2 id="修改-Hadoop-配置"><a href="#修改-Hadoop-配置" class="headerlink" title="修改 Hadoop 配置"></a>修改 Hadoop 配置</h2><p>这里我们进入<code>$HADOOP_HOME</code>文件夹开始操作</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p <span class="variable">$HADOOP_HOME</span>/hdfs/data</span><br><span class="line">$ mkdir -p <span class="variable">$HADOOP_HOME</span>/tmp</span><br></pre></td></tr></table></figure>
-<h3 id="配置hadoop-env-sh"><a href="#配置hadoop-env-sh" class="headerlink" title="配置hadoop-env.sh"></a>配置hadoop-env.sh</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hadoop-env.sh</span><br></pre></td></tr></table></figure>
-<p>增加 或 修改</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br></pre></td></tr></table></figure>
-<h3 id="配置core-site-xml"><a href="#配置core-site-xml" class="headerlink" title="配置core-site.xml"></a>配置core-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/core-site.xml</span><br></pre></td></tr></table></figure>
-<p>configuration配置如下</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.defaultFS<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://centos-node1:9000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">description</span>&gt;</span>HDFS的URI，文件系统://namenode标识:端口号<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.tmp.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>/usr/local/hadoop/tmp<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">description</span>&gt;</span>namenode上本地的hadoop临时文件夹<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.root.hosts<span class="tag">&lt;/<span class="name">name</span>&gt;</span>     </span><br><span class="line">	    <span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">	    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.root.groups<span class="tag">&lt;/<span class="name">name</span>&gt;</span>    </span><br><span class="line">      <span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.zhaoshb.hosts<span class="tag">&lt;/<span class="name">name</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.proxyuser.zhaoshb.groups<span class="tag">&lt;/<span class="name">name</span>&gt;</span>     </span><br><span class="line">    	<span class="tag">&lt;<span class="name">value</span>&gt;</span>*<span class="tag">&lt;/<span class="name">value</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>配置说明：</p>
-<p><code>fs.defaultFS</code>为<code>NameNode</code>的地址。 </p>
-<p><code>hadoop.tmp.dir</code>为<code>hadoop</code>临时目录的地址。默认情况下，<code>NameNode</code>和<code>DataNode</code>的数据文件都会存在这个目录下的对应子目录下。</p>
-<h3 id="配置hdfs-site-xml"><a href="#配置hdfs-site-xml" class="headerlink" title="配置hdfs-site.xml"></a>配置hdfs-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/hdfs-site.xml</span><br></pre></td></tr></table></figure>
-<p>内容如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node2:50090<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.http.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node1:50070<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.name.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/usr/local/hadoop/hdfs/name<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.datanode.data.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>file:/usr/local/hadoop/hdfs/data<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.replication<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>配置说明：</p>
-<p><code>dfs.namenode.secondary.http-address</code>是指定<code>secondaryNameNode</code>的http访问地址和端口号，因为在规划中，我们将<code>centos-node2</code>规划为<code>SecondaryNameNode</code>服务器。</p>
-<p><code>dfs.http.address</code>配置的是本机默认的<code>dfs</code>地址，有些服务器可以不用配置，我的试过了，必须加上，不然后续网页打不开。 </p>
-<p><code>dfs.namenode.name.dir</code> 指定name文件夹。</p>
-<p><code>dfs.datanode.data.dir</code> 指定data文件夹。</p>
-<p> <code>dfs.datanode.data.dir</code> 指定副本数，一般小于服务器数，我们设置为<code>3</code></p>
-<h3 id="配置-slaves"><a href="#配置-slaves" class="headerlink" title="配置 slaves"></a>配置 slaves</h3><p>在<code>hadoop2.x</code>中叫做<code>slaves</code>，在<code>3.x</code>版本中改名<code>workers</code>。 用来指定<code>HDFS</code>上有哪些<code>DataNode</code>节点，以及各个节点使用<code>ip地址</code>或者<code>主机名</code>，用换行分隔。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/slaves</span><br></pre></td></tr></table></figure>
-<p>这里我们就使用主机名</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">centos-node1</span><br><span class="line">centos-node2</span><br><span class="line">centos-node3</span><br></pre></td></tr></table></figure>
-<h3 id="配置yarn-site-xml"><a href="#配置yarn-site-xml" class="headerlink" title="配置yarn-site.xml"></a>配置yarn-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/yarn-site.xml</span><br></pre></td></tr></table></figure>
-<p>配置如下</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.resourcemanager.hostname<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node3<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.vmem-check-enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.log-aggregation-enable<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>true<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.log-aggregation.retain-seconds<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>106800<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.application.classpath<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    		<span class="tag">&lt;<span class="name">value</span>&gt;</span></span><br><span class="line">            /opt/hadoop-2.7.4/etc/hadoop,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/common/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/common/lib/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/hdfs/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/hdfs/lib/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/mapreduce/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/mapreduce/lib/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/yarn/*,</span><br><span class="line">            /opt/hadoop-2.7.4/share/hadoop/yarn/lib/*</span><br><span class="line">   		<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>配置说明：</p>
-<p>按照规划使用<code>centos-node3</code>做为 <code>resourcemanager</code> 使用<code>yarn.log-aggregation-enable</code>开启日志聚合，<code>yarn.log-aggregation.retain-seconds</code>配置聚集的日志在HDFS上最多保存多长时间。</p>
-<h3 id="配置mapred-site-xml"><a href="#配置mapred-site-xml" class="headerlink" title="配置mapred-site.xml"></a>配置mapred-site.xml</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi <span class="variable">$HADOOP_HOME</span>/etc/hadoop/mapred-site.xml</span><br></pre></td></tr></table></figure>
-<p>配置如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.framework.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>yarn<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.app.mapreduce.am.env<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>HADOOP_MAPRED_HOME=$&#123;HADOOP_HOME&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.map.env<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>HADOOP_MAPRED_HOME=$&#123;HADOOP_HOME&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.reduce.env<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>HADOOP_MAPRED_HOME=$&#123;HADOOP_HOME&#125;<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.jobhistory.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node3:10020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.jobhistory.webapp.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>centos-node3:19888<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>配置说明：</p>
-<p><code>mapreduce.framework.name</code>设置<code>mapreduce</code>任务运行在yarn上。</p>
-<p> <code>mapreduce.jobhistory.address</code>是设置<code>mapreduce</code>的历史服务器安装在<code>centos-node3</code>上。 </p>
-<p><code>mapreduce.jobhistory.webapp.address</code>是设置历史服务器的web页面地址和端口号。 </p>
-<p><code>yarn.app.mapreduce.am.env</code>,<code>mapreduce.map.env</code>,<code>mapreduce.reduce.env</code>需要设置为<code>HADOOP_MAPRED_HOME=${HADOOP_HOME}</code>，否则在运行yarn程序的时候会出现jar包未找到的错误。</p>
-<h3 id="修改防火墙"><a href="#修改防火墙" class="headerlink" title="修改防火墙"></a>修改防火墙</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务</span></span><br><span class="line">$ firewall-cmd --new-service=hadoop --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 4000/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 8088/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 50090/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 50070/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 10020/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=hadoop --add-port 19888/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=hadoop</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
-<h2 id="启动-Hadoop-集群"><a href="#启动-Hadoop-集群" class="headerlink" title="启动 Hadoop 集群"></a>启动 Hadoop 集群</h2><p>完成上述所有必要的配置后，将文件分发到所有服务器的<code>HADOOP_CONF_DIR</code>目录下<code>/usr/local/hadoop/etc/hadoop</code>。在所有计算机上，该目录应该是相同的目录。</p>
-<p><strong>注意</strong>：启动和停止单个hdfs相关的进程使用的是”hadoop-daemon.sh”脚本，而启动和停止yarn使用的是”yarn-daemon.sh”脚本。</p>
-<h3 id="格式化"><a href="#格式化" class="headerlink" title="格式化"></a>格式化</h3><p>要启动Hadoop集群，需要同时启动<code>HDFS</code>和<code>YARN</code>集群。 首次启动<code>HDFS</code>时，<strong>必须</strong>对其进行格式化。将新的分布式文件系统格式化为<code>hdfs</code>.</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/bin/hdfs namenode -format &lt;群集名称&gt;</span><br></pre></td></tr></table></figure>
-<p>集群名称可以不填写，不出意外，执行完成后<code>$HADOOP_HOME/hdfs</code>中就有东西了。</p>
-<h3 id="启动-HDFS"><a href="#启动-HDFS" class="headerlink" title="启动 HDFS"></a>启动 HDFS</h3><p>如果配置了<code>slaves</code>和<code>ssh互信</code>我们可以</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/start-dfs.sh</span><br></pre></td></tr></table></figure>
-<h3 id="启动-YARN"><a href="#启动-YARN" class="headerlink" title="启动 YARN"></a>启动 YARN</h3><p>如果配置了workers和ssh互信我们可以</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
-<h3 id="启动-ResourceManager"><a href="#启动-ResourceManager" class="headerlink" title="启动 ResourceManager"></a>启动 <strong>ResourceManager</strong></h3><p>规划在<code>centos-node3</code>上，因此我们在<code>centos-node3</code>上执行</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/yarn-daemon.sh start resourcemanager</span><br></pre></td></tr></table></figure>
-<h3 id="启动-HistoryServer"><a href="#启动-HistoryServer" class="headerlink" title="启动 HistoryServer"></a>启动 HistoryServer</h3><p>规划在<code>centos-node3</code>上，因此我们在<code>centos-node3</code>上执行</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="variable">$HADOOP_HOME</span>/sbin/mr-jobhistory-daemon.sh start historyserver</span><br></pre></td></tr></table></figure>
-<h3 id="查看HDFS-Web页面"><a href="#查看HDFS-Web页面" class="headerlink" title="查看HDFS Web页面"></a>查看HDFS Web页面</h3><p>位于<code>centos-node1</code>的<code>50070</code>端口:<a href="http://centos-node1:50070/" target="_blank" rel="noopener">http://centos-node1:50070/</a></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152341967.png" alt="image-20200913152341967"></p>
-<h3 id="查看YARN-Web-页面"><a href="#查看YARN-Web-页面" class="headerlink" title="查看YARN Web 页面"></a>查看YARN Web 页面</h3><p>位于<code>centos-node3</code>的<code>8088</code>端口:<a href="http://centos-node3:8088/" target="_blank" rel="noopener">http://centos-node3:8088/</a></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152504612.png" alt="image-20200913152504612"></p>
-<h3 id="查看历史WEB页面"><a href="#查看历史WEB页面" class="headerlink" title="查看历史WEB页面"></a>查看历史WEB页面</h3><p>位于<code>centos-node3</code>的<code>19888</code>端口:<a href="http://centos-node3:19888/" target="_blank" rel="noopener">http://centos-node3:19888/</a></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152549303.png" alt="image-20200913152549303"></p>
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>为了测试我们使用 <code>wordcount</code> 来测试</p>
-<ol>
-<li><p>新建文件</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi /opt/word.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>文本内容</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hadoop mapreduce hive</span><br><span class="line">hbase spark storm</span><br><span class="line">sqoop hadoop hive</span><br><span class="line">spark hadoop</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建<code>hadoop</code>里文件夹<code>demo</code></p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hadoop fs -mkdir /demo</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>文件写入</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hdfs dfs -put /opt/word.txt /demo/word.txt</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>执行输入到<code>hadoop</code>的<code>/output</code></p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yarn jar <span class="variable">$HADOOP_HOME</span>/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.4.jar wordcount /demo/word.txt /output</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看文件列表</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hdfs dfs -ls /output</span><br></pre></td></tr></table></figure>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Found 2 items</span><br><span class="line">-rw-r--r--   3 root supergroup          0 2020-09-13 16:01 /output/_SUCCESS</span><br><span class="line">-rw-r--r--   3 root supergroup         60 2020-09-13 16:01 /output/part-r-00000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看文件中内容</p>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hdfs dfs -cat /output/part-r-00000</span><br></pre></td></tr></table></figure>
- <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hadoop  3</span><br><span class="line">hbase   1</span><br><span class="line">hive    2</span><br><span class="line">mapreduce       1</span><br><span class="line">spark   2</span><br><span class="line">sqoop   1</span><br><span class="line">storm   1</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Python中-和is的区别/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Python中-和is的区别/" class="post-title-link" itemprop="url">Python中==和is的区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-06-18 19:52:06 / 修改时间：20:09:44" itemprop="dateCreated datePublished" datetime="2020-06-18T19:52:06+08:00">2020-06-18</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文主要内容是 Python 中运算符 <code>==</code> 和 <code>is</code> 的区别。</p>
-<p>进入正文前，首先简单介绍一下 Python 中对象的 3 个基本要素，id(身份标识)、type(数据类型)和value(值)。</p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><code>==</code> 是python标准操作符中的比较操作符，用来比较判断两个对象的value(值)是否相等，例如下面两个字符串间的比较：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="string">'cheesezh'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="string">'cheesezh'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a == b</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
-<p><code>is</code> 也被叫做同一性运算符，这个运算符比较判断的是对象间的唯一身份标识，也就是id是否相同。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = y = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>z = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x == y</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x == z</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x <span class="keyword">is</span> y</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x <span class="keyword">is</span> z</span><br><span class="line"><span class="literal">False</span></span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> id(x)</span><br><span class="line"><span class="number">3075326572</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> id(y)</span><br><span class="line"><span class="number">3075326572</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> id(z)</span><br><span class="line"><span class="number">3075328140</span></span><br></pre></td></tr></table></figure>
-<p>可以明显的看到前 3 个比较都是 True， 最后一个是 False。</p>
-<p>使用 <code>id()</code> 方法查看 x, y, z 的对象ID就明白了。</p>
-<p>我在这里使用的是数组，其实，当它们是 tuple, list, dict 或者 set 时也一样。</p>
-<p>不过，当类型是 int 或者 string 时，它们的对象ID都会一样,</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a <span class="keyword">is</span> b</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="string">"asd"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="string">"asd"</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a <span class="keyword">is</span> b</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法/" class="post-title-link" itemprop="url">apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-05-28 15:39:46 / 修改时间：16:10:47" itemprop="dateCreated datePublished" datetime="2020-05-28T15:39:46+08:00">2020-05-28</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>首先，在Ubuntu的Docker官方镜像中是没有缓存Apt的软件包列表的。因此在做其他任何基础软件的安装前，都需要至少先做一次apt-get update。有时为了加快apt-get安装软件的速度，还需要修改Apt源的列表文件/etc/apt/sources.list。相应的操作用命令表示如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-<p>在容器构建时，为了避免使用apt-get install安装基础软件的过程中需要进行交互操作，使用-y参数来避免安装非必须的文件，从而减小镜像的体积。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get -y --no-install-recommends install</span><br></pre></td></tr></table></figure>
-<p>使用<code>apt-get autoremove</code>命令移除为了满足包依赖而安装的、但不再需要的包；使用<code>apt-get clean</code>命令清除所获得包文件的本地仓库。</p>
-<p><code>DEBIAN_FRONTEND</code>这个环境变量，告知操作系统应该从哪儿获得用户输入。如果设置为<code>noninteractive</code>，你就可以直接运行命令，而无需向用户请求输入（所有操作都是非交互式的）。这在运行apt-get命令的时候格外有用，因为它会不停的提示用户进行到了哪步并且需要不断确认。非交互模式会选择默认的选项并以最快的速度完成构建。请确保只在Dockerfile中调用的RUN命令中设置了该选项，而不是使用ENV命令进行全局的设置。因为ENV命令在整个容器运行过程中都会生效，所以当你通过BASH和容器进行交互时，如果进行了全局设置那就会出问题。</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 正确的做法 - 只为这个命令设置ENV变量</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> DEBIAN_FRONTEND=noninteractive apt-get install -y python3</span></span><br><span class="line"><span class="comment"># 错误地做法 - 为接下来的任何命令都设置ENV变量，包括正在运行地容器</span></span><br><span class="line"><span class="keyword">ENV</span> DEBIAN_FRONTEND noninteractive</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y python3</span></span><br></pre></td></tr></table></figure>
-<p>示例:</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Ali apt-get source.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /etc/apt/sources.list.bak &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://archive.ubuntu.com/ubuntu xenial main restricted"</span> &gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial main restricted multiverse universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted multiverse universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://archive.canonical.com/ubuntu xenial partner"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://archive.canonical.com/ubuntu xenial partner"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted multiverse universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe"</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">"deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse"</span> &gt;&gt;/etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="bash">        ca-certificates \</span></span><br><span class="line"><span class="bash">        vim \</span></span><br><span class="line"><span class="bash">        python \</span></span><br><span class="line"><span class="bash">        libopencv-dev \</span></span><br><span class="line"><span class="bash">        python-pip \</span></span><br><span class="line"><span class="bash">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install --upgrade pip \</span></span><br><span class="line"><span class="bash">    numpy \</span></span><br><span class="line"><span class="bash">    pymongo \</span></span><br><span class="line"><span class="bash">    opencv-python</span></span><br></pre></td></tr></table></figure>
-<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="https://www.aiuai.cn/aifarm299.html" target="_blank" rel="noopener">Docker - 更换内部Ubuntu apt 为国内源</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1409,20 +1357,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">104</span>
+          <span class="site-state-item-count">110</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/blog/categories/">
           
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">25</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">75</span>
+        <span class="site-state-item-count">76</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
