@@ -162,6 +162,795 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Alibaba-Sentinel基础-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Alibaba-Sentinel基础-1/" class="post-title-link" itemprop="url">Alibaba Sentinel基础(1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 14:41:56 / 修改时间：16:32:23" itemprop="dateCreated datePublished" datetime="2021-01-21T14:41:56+08:00">2021-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/微服务/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[TOC]</p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Alibaba Sentinel 基础部分主要分六个部分：</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> Sentinel 全景分析</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 极速入门</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 核心API</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 控制台使用</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 与 Spring 整合 AOP 分析</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 与 Dubbo 整合分析</li>
+</ul>
+<h1 id="2-Sentinel-全景分析"><a href="#2-Sentinel-全景分析" class="headerlink" title="2. Sentinel 全景分析"></a>2. Sentinel 全景分析</h1><p><a href="https://github.com/alibaba/Sentinel/wiki/介绍" target="_blank" rel="noopener">官方介绍</a></p>
+<h2 id="Sentinel-是什么？"><a href="#Sentinel-是什么？" class="headerlink" title="Sentinel 是什么？"></a>Sentinel 是什么？</h2><p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从限流、流量整形、熔断降级、系统负载保护、热点防护等多个维度来帮助开发者保障微服务的稳定性。</p>
+<p>它可以做到以下几点：</p>
+<ul>
+<li><p>流量控制</p>
+</li>
+<li><p>熔断降级</p>
+</li>
+<li><p>系统保护</p>
+</li>
+<li><p>服务安全</p>
+</li>
+</ul>
+<h2 id="Sentinel-的特性"><a href="#Sentinel-的特性" class="headerlink" title="Sentinel 的特性"></a>Sentinel 的特性</h2><ul>
+<li><strong>丰富的应用场景</strong>：Sentinel 承接了阿里巴巴近 10 年的双十一大促流量的核心场景，例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等。</li>
+<li><strong>完备的实时监控</strong>：Sentinel 同时提供实时的监控功能。您可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况。</li>
+<li><strong>广泛的开源生态</strong>：Sentinel 提供开箱即用的与其它开源框架/库的整合模块，例如与 Spring Cloud、Dubbo、gRPC 的整合。您只需要引入相应的依赖并进行简单的配置即可快速地接入 Sentinel。</li>
+<li><strong>完善的 SPI 扩展点</strong>：Sentinel 提供简单易用、完善的 SPI 扩展接口。您可以通过实现扩展接口来快速地定制逻辑。例如定制规则管理、适配动态数据源等。</li>
+</ul>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png"></p>
+<p>部分是 sentinel-dashboard。</p>
+<p>绿色部分是 sentinel-core，是 Sentinel 的核心库。</p>
+<p>紫色部分表示 sentinel 可以持久化规则到配置中心。</p>
+<p>蓝色部分 sentinel 的扩展点。</p>
+<h2 id="Sentinel-的生态"><a href="#Sentinel-的生态" class="headerlink" title="Sentinel 的生态"></a>Sentinel 的生态</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png"></p>
+<h2 id="Sentinel-的组成部分"><a href="#Sentinel-的组成部分" class="headerlink" title="Sentinel 的组成部分"></a>Sentinel 的组成部分</h2><ul>
+<li>核心库：sentinel-core</li>
+<li>控制台：sentinel-dashboard</li>
+<li>第三方支持组件：如spring、dubbo、rocketmq等</li>
+</ul>
+<h1 id="3-Sentinel-极速入门"><a href="#3-Sentinel-极速入门" class="headerlink" title="3. Sentinel 极速入门"></a>3. Sentinel 极速入门</h1><h1 id="4-Sentinel-核心API"><a href="#4-Sentinel-核心API" class="headerlink" title="4. Sentinel 核心API"></a>4. Sentinel 核心API</h1><h1 id="5-Sentinel-控制台使用"><a href="#5-Sentinel-控制台使用" class="headerlink" title="5. Sentinel 控制台使用"></a>5. Sentinel 控制台使用</h1><h1 id="6-Sentinel-与-Spring-整合-AOP-分析"><a href="#6-Sentinel-与-Spring-整合-AOP-分析" class="headerlink" title="6. Sentinel 与 Spring 整合 AOP 分析"></a>6. Sentinel 与 Spring 整合 AOP 分析</h1><h1 id="7-Sentinel-与-Dubbo-整合分析"><a href="#7-Sentinel-与-Dubbo-整合分析" class="headerlink" title="7. Sentinel 与 Dubbo 整合分析"></a>7. Sentinel 与 Dubbo 整合分析</h1>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/AtomicLong原子类方法介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/AtomicLong原子类方法介绍/" class="post-title-link" itemprop="url">AtomicLong原子类方法介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 13:34:36 / 修改时间：13:35:43" itemprop="dateCreated datePublished" datetime="2021-01-21T13:34:36+08:00">2021-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造函数</span></span><br><span class="line">AtomicLong()</span><br><span class="line"><span class="comment">// 创建值为initialValue的AtomicLong对象</span></span><br><span class="line">AtomicLong(<span class="keyword">long</span> initialValue)</span><br><span class="line"><span class="comment">// 以原子方式设置当前值为newValue。</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">long</span> newValue)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">get</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1后的值。等价于“--num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1前的值。等价于“num--”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1后的值。等价于“++num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1前的值。等价于“num++”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta与当前值相加，并返回相加后的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta添加到当前值，并返回相加前的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == expect，则以原子方式将该值设置为update。成功返回true，否则返回false，并且不修改原值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式设置当前值为newValue，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回当前值对应的int值</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">intValue</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值对应的long值</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">longValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 float 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">floatValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 double 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">doubleValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 最后设置为给定值。延时设置变量值，这个等价于set()方法，但是由于字段是volatile类型的，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此次字段的修改会比普通字段（非volatile字段）有稍微的性能延时（尽管可以忽略），</span></span></span><br><span class="line"><span class="function"><span class="comment">// 所以如果不是想立即读取设置的新值，允许在“后台”修改值，那么此方法就很有用。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果还是难以理解，这里就类似于启动一个后台线程如执行修改新值的任务，原线程就不等待修改结果立即返回</span></span></span><br><span class="line"><span class="function"><span class="comment">// （这种解释其实是不正确的，但是可以这么理解）。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="comment">// JSR规范中说：以原子方式读取和有条件地写入变量但不 创建任何 happen-before 排序，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此不提供与除 weakCompareAndSet 目标外任何变量以前或后续读取或写入操作有关的任何保证。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 大意就是说调用weakCompareAndSet时并不能保证不存在happen-before的发生（也就是可能存在指令重排序导致此操作失败）。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 但是从Java源码来看，其实此方法并没有实现JSR规范的要求，最后效果和compareAndSet是等效的，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 都调用了unsafe.compareAndSwapInt()完成操作。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/JUC原子类-AtomicLongArray/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/JUC原子类-AtomicLongArray/" class="post-title-link" itemprop="url">JUC原子类-AtomicLongArray</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 13:33:17 / 修改时间：13:37:22" itemprop="dateCreated datePublished" datetime="2021-01-21T13:33:17+08:00">2021-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>转载自<a href="https://www.cnblogs.com/skywang12345/p/3514604.html" target="_blank" rel="noopener">https://www.cnblogs.com/skywang12345/p/3514604.html</a></p>
+</blockquote>
+<p>在”Java多线程系列–“ <a href="https://www.notion.so/Java-JUC-AtomicLong-842f5bea464847abbfee4d03a18ca99f" target="_blank" rel="noopener">Java多线程JUC原子类之 AtomicLong原子类</a> “中介绍过，AtomicLong是作用是对长整形进行原子操作。而AtomicLongArray的作用则是对”长整形数组”进行原子操作。</p>
+<h1 id="AtomicLongArray函数列表"><a href="#AtomicLongArray函数列表" class="headerlink" title="AtomicLongArray函数列表"></a>AtomicLongArray函数列表</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建给定长度的新 AtomicLongArray。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">int</span> length)</span><br><span class="line"><span class="comment">// 创建与给定数组具有相同长度的新 AtomicLongArray，并从给定数组复制其所有元素。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">long</span>[] array)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以原子方式将给定值添加到索引 i 的元素。</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 获取位置 i 的当前值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将给定值与索引 i 的元素相加。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将位置 i 的元素设置为给定值，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 最终将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回该数组的长度。</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回数组当前值的字符串表示形式。</span></span></span><br><span class="line"><span class="function">String <span class="title">toString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>AtomicLongArray的代码很简单，下面仅以incrementAndGet()为例，对AtomicLong的原理进行说明。</p>
+<h2 id="incrementAndGet-源码如下："><a href="#incrementAndGet-源码如下：" class="headerlink" title="incrementAndGet()源码如下："></a>incrementAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> addAndGet(i, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：incrementAndGet()的作用是以原子方式将long数组的索引 i 的元素加1，并返回加1之后的值。</p>
+<h2 id="addAndGet-源码如下："><a href="#addAndGet-源码如下：" class="headerlink" title="addAndGet()源码如下："></a>addAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查数组是否越界</span></span><br><span class="line">    <span class="keyword">long</span> offset = checkedByteOffset(i);</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 获取long型数组的索引 offset 的原始值</span></span><br><span class="line">        <span class="keyword">long</span> current = getRaw(offset);</span><br><span class="line">        <span class="comment">// 修改long型值</span></span><br><span class="line">        <span class="keyword">long</span> next = current + delta;</span><br><span class="line">        <span class="comment">// 通过CAS更新long型数组的索引 offset的值。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetRaw(offset, current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：addAndGet()首先检查数组是否越界。如果没有越界的话，则先获取数组索引i的值；然后通过CAS函数更新i的值。</p>
+<h2 id="getRaw-源码如下："><a href="#getRaw-源码如下：" class="headerlink" title="getRaw()源码如下："></a>getRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getRaw</span><span class="params">(<span class="keyword">long</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getLongVolatile(array, offset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：unsafe是通过Unsafe.getUnsafe()返回的一个Unsafe对象。通过Unsafe的CAS函数对long型数组的元素进行原子操作。如compareAndSetRaw()就是调用Unsafe的CAS函数，它的源码如下：</p>
+<h2 id="compareAndSetRaw-源码如下："><a href="#compareAndSetRaw-源码如下：" class="headerlink" title="compareAndSetRaw()源码如下："></a>compareAndSetRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">compareAndSetRaw</span><span class="params">(<span class="keyword">long</span> offset, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(array, offset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAtomicArrayLong</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 新建AtomicLongArray对象</span></span><br><span class="line">        <span class="keyword">long</span>[] arrLong = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        AtomicLongArray ala = <span class="keyword">new</span> AtomicLongArray(arrLong);</span><br><span class="line"></span><br><span class="line">        ala.set(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>, len=ala.length(); i&lt;len; i++)</span><br><span class="line">            System.out.printf(<span class="string">"get(%d) : %s\\n"</span>, i, ala.get(i));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"getAndDecrement(0)"</span>, ala.getAndDecrement(<span class="number">0</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"decrementAndGet(1)"</span>, ala.decrementAndGet(<span class="number">1</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"getAndIncrement(2)"</span>, ala.getAndIncrement(<span class="number">2</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"incrementAndGet(3)"</span>, ala.incrementAndGet(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"addAndGet(100)"</span>, ala.addAndGet(<span class="number">0</span>, <span class="number">100</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"getAndAdd(100)"</span>, ala.getAndAdd(<span class="number">1</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"compareAndSet()"</span>, ala.compareAndSet(<span class="number">2</span>, <span class="number">31</span>, <span class="number">1000</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"get(2)"</span>, ala.get(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/RocketMQ集群架构与原理解析-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/RocketMQ集群架构与原理解析-6/" class="post-title-link" itemprop="url">RocketMQ集群架构与原理解析(6)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-20 20:30:21" itemprop="dateCreated datePublished" datetime="2021-01-20T20:30:21+08:00">2021-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-25 23:35:33" itemprop="dateModified" datetime="2021-01-25T23:35:33+08:00">2021-01-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="初识-RocketMQ"><a href="#初识-RocketMQ" class="headerlink" title="初识 RocketMQ"></a>初识 RocketMQ</h1><p>RocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自主研发的一款适用于高并发、高可靠性、海量数据场景的消息中间件。早期开源2.x版本名为MetaQ；15年迭代3.x版本，更名为RocketMQ，16年开始贡献到Apache，经过1年多的孵化，最终成为Apache顶级的开源项目，更新非常频繁，社区活跃度也非常高；目前最新版本为4.5.1-release版本（2019-7-20日前）。RocketMQ参考借鉴了优秀的开源消息中间件Apache Kafka（这也是我们后面课程中重点要讲解的内容哦），其消息的路由、存储、集群划分都借鉴了Kafka优秀的设计思路，并结合自身的 “双十一” 场景进行了合理的扩展和API丰富。</p>
+<h1 id="优秀的能力与支持"><a href="#优秀的能力与支持" class="headerlink" title="优秀的能力与支持"></a>优秀的能力与支持</h1><p>接下来我们一起来看一下RocketMQ优秀的能力吧 ~</p>
+<ul>
+<li>支持集群模型、负载均衡、水平扩展能力</li>
+<li>亿级别的消息堆积能力</li>
+<li>采用零拷贝的原理、顺序写盘、随机读（索引文件）</li>
+<li>丰富的API使用</li>
+<li>代码优秀，底层通信框架采用Netty NIO框架</li>
+<li>NameServer 代替 Zookeeper</li>
+<li>强调集群无单点，可扩展，任意一点高可用，水平可扩展</li>
+<li>消息失败重试机制、消息可查询</li>
+<li>开源社区活跃度、是否足够成熟（经过双十一考验）</li>
+</ul>
+<h1 id="专业术语"><a href="#专业术语" class="headerlink" title="专业术语"></a>专业术语</h1><p>任何一种技术框架，都有 “她” 的专有名词，在你刚开始接触 “她” 的时候，一定要了解 “她” 的专业术语，这样能够更快速、更高效的和 “她” 愉快的玩耍…</p>
+<ul>
+<li>Producer：消息生产者，负责产生消息，一般由业务系统负责产生消息。</li>
+<li>Consumer：消息消费者，负责消费消息，一般是后台系统负责异步消费。</li>
+<li>Push Consumer：Consumer的一种，需要向Consumer对象注册监听。</li>
+<li>Pull Consumer：Consumer的一种，需要主动请求Broker拉取消息。</li>
+<li>Producer Group：生产者集合，一般用于发送一类消息。</li>
+<li>Consumer Group：消费者集合，一般用于接受一类消息进行消费。</li>
+<li>Broker ： MQ消息服务（中转角色，用于消息存储与生产消费转发）。</li>
+</ul>
+<h1 id="RocketMQ核心源码包及功能说明"><a href="#RocketMQ核心源码包及功能说明" class="headerlink" title="RocketMQ核心源码包及功能说明"></a>RocketMQ核心源码包及功能说明</h1><p>如下图所示，我们要带小伙伴们一起来看看RocketMQ源码包的组成，这样更方便我们日后对他有一个深入的学习。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png" alt="https://climg.mukewang.com/5df8401d0919472f03410264.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8404409bd481303400274.png" alt="https://climg.mukewang.com/5df8404409bd481303400274.png"></p>
+<ul>
+<li>rocketmq-broker 主要的业务逻辑，消息收发，主从同步, pagecache</li>
+<li>rocketmq-client 客户端接口，比如生产者和消费者</li>
+<li>rocketmq-common 公用数据结构等等</li>
+<li>rocketmq-distribution 编译模块，编译输出等</li>
+<li>rocketmq-example 示例，比如生产者和消费者</li>
+<li>rocketmq-fliter 进行Broker过滤的不感兴趣的消息传输，减小带宽压力</li>
+<li>rocketmq-logappender、rocketmq-logging日志相关</li>
+<li>rocketmq-namesrv Namesrv服务，用于服务协调</li>
+<li>rocketmq-openmessaging 对外提供服务</li>
+<li>rocketmq-remoting 远程调用接口，封装Netty底层通信</li>
+<li>rocketmq-srvutil 提供一些公用的工具方法，比如解析命令行参数</li>
+<li>rocketmq-store 消息存储核心包</li>
+<li>rocketmq-test 提供一些测试代码包</li>
+<li>rocketmq-tools 管理工具，比如有名的mqadmin工具</li>
+</ul>
+<h1 id="集群架构模型"><a href="#集群架构模型" class="headerlink" title="集群架构模型"></a>集群架构模型</h1><p>RocketMQ为我们提供了丰富的集群架构模型，包括单点模式、主从模式、双主模式、以及生产上使用最多的双主双从模式（或者说多主多从模式），在这里我们仅介绍一下经典的双主双从集群模型，如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8407b0950a18b08540381.png" alt="https://climg.mukewang.com/5df8407b0950a18b08540381.png"></p>
+<ul>
+<li>Producer集群就是生产者集群（他们在同一个生产者组 Producer Group）</li>
+<li>Consumer集群就是消费者集群（他们在同一个消费者组 Consumer Group）</li>
+<li>NameServer集群作为超轻量级的配置中心，只做集群元数据存储和心跳工作，不必保障节点间数据强一致性，也就是说NameServer集群是一个多机热备的概念。</li>
+<li>对于Broker而言，通常Master与Slave为一组服务，他们互为主从节点，通过NameServer与外部的Client端暴露统一的集群入口。Broker就是消息存储的核心MQ服务了。</li>
+</ul>
+<h1 id="集群架构思考"><a href="#集群架构思考" class="headerlink" title="集群架构思考"></a>集群架构思考</h1><p>RocketMQ作为国内顶级的消息中间件，其性能主要依赖于天然的分布式Topic/Queue，并且其内存与磁盘都会存储消息数据，借鉴了Kafka的 “空中接力” 概念（这个我们后面学习Kafka的时候会详细的说明），所谓 “空中接力” 就是指数据不一定要落地，RocketMQ提供了同步/异步双写、同步/异步复制的特性。在真正的生产环境中应该选择符合自己业务的配置。下面针对于RocketMQ的高性能及其瓶颈在这里加以说明：</p>
+<ul>
+<li>架构思考：<ul>
+<li>RocketMQ目前本人在公司内部实际生产环境采用8M-8S的集群架构（8主8从）硬件单点Master为32C，96G内存，500G的SSD</li>
+<li>其主要瓶颈最终会落在IOPS上面，当高峰期来临的时候，磁盘读写能力是主要的性能瓶颈，每秒收发消息IOPS达到10W+ 消息，这也是公司内部主要的可靠性消息中间件</li>
+<li>在很多时候，我们的业务会有一些非核心的消息投递，后续会进行消息中间件的业务拆分，把不重要的消息（可以允许消息丢失、非可靠性投递的消息）采用Kafka的异步发送机制，借助Kafka强大的吞吐量和消息堆积能力来做业务的分流（当然RocketMQ的性能也足够好）。</li>
+<li>为什么瓶颈在IOPS? 根本原因还是因为云环境导致的问题，云环境的SSD物理存储显然和自建机房SSD会有不小的差距，这一点我们无论是从数据库的磁盘性能、还是搜索服务（ElasticSearch）的磁盘性能，都能给出准确的瓶颈点，单机IOPS达到1万左右就是云存储SSD的性能瓶颈，这个也解释了 “木桶短板原理” 的效应，在真正的生产中，CPU的工作主要在等待IO操作，高并发下 CPU资源接近极限，但是IOPS还是达不到我们想要的效果。</li>
+</ul>
+</li>
+</ul>
+<h1 id="本节知识点回顾"><a href="#本节知识点回顾" class="headerlink" title="本节知识点回顾"></a>本节知识点回顾</h1><p>Hi，小伙伴们，本节课我们通过简要的图文学习，带大家快速的过了一下RocketMQ，那么小伙伴们记住一定要在脑海里建立知识的结构体系，并串联起来！无论是现在，还是说未来，本神都希望小伙伴要按照下面的步骤进行回忆和复习：</p>
+<ol>
+<li>RocketMQ的前世今生 ？</li>
+<li>RocketMQ的专业术语？</li>
+<li>RocketMQ源码包的组成？</li>
+<li>RocketMQ的集群架构模型</li>
+<li>RocketMQ在真正生产环境中面临的瓶颈点以及解决方案</li>
+</ol>
+<h1 id="补充课外资料"><a href="#补充课外资料" class="headerlink" title="补充课外资料"></a>补充课外资料</h1><p>为了方便爱学习的小伙伴们，本神特意加餐一波，提供RocketMQ的官方文档和相关软件包，以及对应的代码示例，辅助小伙伴们更好掌握RocketMQ。另外本神还在慕课网上的一门课程详细的讲解了RocketMQ的各个知识点以及实战应用，有想深入学习的小伙伴可以学习共勉。</p>
+<ol>
+<li>官方文档</li>
+<li>RocketMQ4.3.0版本（Linux平台）</li>
+<li>RocketMQ代码示例</li>
+<li>慕课网实战课程《RocketMQ核心技术精讲与高并发抗压实战》传送门：<a href="https://coding.imooc.com/class/292.html" target="_blank" rel="noopener">https://coding.imooc.com/class/292.html</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/分布式文件系统-FastDFS与Nginx实现文件服务器-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/分布式文件系统-FastDFS与Nginx实现文件服务器-6/" class="post-title-link" itemprop="url">分布式文件系统-FastDFS与Nginx实现文件服务器(6)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-20 15:19:32 / 修改时间：15:21:20" itemprop="dateCreated datePublished" datetime="2021-01-20T15:19:32+08:00">2021-01-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/分布式文件系统/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>fastdfs安装好以后是无法通过http访问的，这个时候就需要借助nginx了，所以需要安装fastdfs的第三方模块到nginx中，就能使用了。</p>
+<p>注：nginx需要和storage在同一个节点。</p>
+<h1 id="安装nginx插件"><a href="#安装nginx插件" class="headerlink" title="安装nginx插件"></a>安装nginx插件</h1><ul>
+<li><p>解压nginx的fastdfs压缩包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf fastdfs-nginx-module-1.22.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>复制配置文件如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp mod_fastdfs.conf /etc/fdfs</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef6d608a9590613200494.jpg" alt="https://climg.mukewang.com/5e0ef6d608a9590613200494.jpg"></p>
+</li>
+<li><p>修改/fastdfs-nginx-module/src/config文件，主要是修改路径，把<code>local</code>删除，因为fastdfs安装的时候我们没有修改路径，原路径是<code>/usr</code>：</p>
+<p><img src="https://climg.mukewang.com/5e0ef6e508e482c828261280.png" alt="https://climg.mukewang.com/5e0ef6e508e482c828261280.png"></p>
+</li>
+</ul>
+<h1 id="安装nginx（略）"><a href="#安装nginx（略）" class="headerlink" title="安装nginx（略）"></a>安装nginx（略）</h1><p>其中配置如下：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure \\n--prefix=<span class="regexp">/usr/</span>local/nginx \\n--pid-path=<span class="regexp">/var/</span>run/nginx/nginx.pid \\n--lock-path=<span class="regexp">/var/</span>lock/nginx.lock \\n--error-log-path=<span class="regexp">/var/</span>log/nginx/error.log \\n--http-log-path=<span class="regexp">/var/</span>log/nginx/access.log \\n--<span class="keyword">with</span>-http_gzip_static_module \\n--http-client-body-temp-path=<span class="regexp">/var/</span>temp/nginx/client \\n--http-proxy-temp-path=<span class="regexp">/var/</span>temp/nginx/proxy \\n--http-fastcgi-temp-path=<span class="regexp">/var/</span>temp/nginx/fastcgi \\n--http-uwsgi-temp-path=<span class="regexp">/var/</span>temp/nginx/uwsgi \\n--http-scgi-temp-path=<span class="regexp">/var/</span>temp/nginx/scgi \\n--add-<span class="built_in">module</span>=<span class="regexp">/home/</span>software/fdfs/fastdfs-nginx-<span class="built_in">module</span><span class="number">-1.22</span>/src</span><br></pre></td></tr></table></figure>
+<p>主要新增一个第三方模块</p>
+<p>修改 mod_fastdfs.conf 配置文件：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">base_path=<span class="regexp">/usr/</span>local/fastdfs/tmp</span><br><span class="line">tracker_server=<span class="number">192.168</span><span class="number">.1</span><span class="number">.153</span>:<span class="number">22122</span></span><br><span class="line">group_name=imooc</span><br><span class="line">url_have_group_name = <span class="literal">true</span></span><br><span class="line">store_path0=<span class="regexp">/usr/</span>local/fastdfs/storage</span><br><span class="line">mkdir /usr/local/fastdfs/tmp</span><br></pre></td></tr></table></figure>
+<p>修改nginx.conf，添加如下虚拟主机：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       <span class="number">8888</span>;</span><br><span class="line">    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    location /imooc/M00 &#123;</span><br><span class="line">            ngx_fastdfs_module;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>启动nginx</p>
+<h1 id="测试图片"><a href="#测试图片" class="headerlink" title="测试图片"></a>测试图片</h1><p><img src="https://climg.mukewang.com/5e0ef6fc08fa922e10200650.jpg" alt="https://climg.mukewang.com/5e0ef6fc08fa922e10200650.jpg"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/分布式文件系统-FastDFS-配置storage服务-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/分布式文件系统-FastDFS-配置storage服务-5/" class="post-title-link" itemprop="url">分布式文件系统-FastDFS-配置storage服务(5)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-20 15:16:27 / 修改时间：15:19:09" itemprop="dateCreated datePublished" datetime="2021-01-20T15:16:27+08:00">2021-01-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/分布式文件系统/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="修改storage配置文件"><a href="#修改storage配置文件" class="headerlink" title="修改storage配置文件"></a>修改storage配置文件</h1><ul>
+<li><p>修改该storage.cond配置文件</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef5c108c15a6116000535.jpg" alt="https://climg.mukewang.com/5e0ef5c108c15a6116000535.jpg"></p>
+</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 修改组名</span><br><span class="line">group_name=imooc</span><br><span class="line"># 修改storage的工作空间</span><br><span class="line">base_path=<span class="regexp">/usr/</span>local/fastdfs/storage</span><br><span class="line"># 修改storage的存储空间</span><br><span class="line">store_path0=<span class="regexp">/usr/</span>local/fastdfs/storage</span><br><span class="line"># 修改tracker的地址和端口号，用于心跳</span><br><span class="line">tracker_server=<span class="number">192.168</span><span class="number">.1</span><span class="number">.153</span>:<span class="number">22122</span></span><br><span class="line"></span><br><span class="line"># 后续结合nginx的一个对外服务端口号</span><br><span class="line">http.server_port=<span class="number">8888</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建目录</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/local/fastdfs/storage -p</span><br></pre></td></tr></table></figure>
+<h1 id="启动storage"><a href="#启动storage" class="headerlink" title="启动storage"></a>启动storage</h1><p><strong>前提：必须首先启动tracker</strong></p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/fdfs_storaged /etc/fdfs/storage.conf</span><br></pre></td></tr></table></figure>
+<p>检查进程如下：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep storage</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef61c08e61f1d16000147.jpg" alt="https://climg.mukewang.com/5e0ef61c08e61f1d16000147.jpg"></p>
+<h1 id="测试上传"><a href="#测试上传" class="headerlink" title="测试上传"></a>测试上传</h1><ul>
+<li><p>修改的client.conf配置文件</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef62b089e938e15020712.jpg" alt="https://climg.mukewang.com/5e0ef62b089e938e15020712.jpg"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">base_path=/usr/local/fastdfs/client</span><br><span class="line">tracker_server=192.168.1.153:22122</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/local/fastdfs/client</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试：</p>
+</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget &lt;https:<span class="comment">//www.imooc.com/static/img/index/logo.png&gt;</span></span><br><span class="line">./fdfs_test /etc/fdfs/client.conf upload /home/logo.png</span><br></pre></td></tr></table></figure>
+<p>上传成功：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef64008dfab1e16000857.jpg" alt="https://climg.mukewang.com/5e0ef64008dfab1e16000857.jpg"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/分布式文件系统-FastDFS-tracker-配置-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/分布式文件系统-FastDFS-tracker-配置-4/" class="post-title-link" itemprop="url">分布式文件系统-FastDFS-tracker-配置(4)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-20 15:14:30 / 修改时间：15:15:13" itemprop="dateCreated datePublished" datetime="2021-01-20T15:14:30+08:00">2021-01-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/分布式文件系统/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h1><p>tracker和storage都是同一个fastdfs的主程序的两个不同概念，配置不同的配置文件就可以设定为tracker或者storage</p>
+<h1 id="配置tracker"><a href="#配置tracker" class="headerlink" title="配置tracker"></a>配置tracker</h1><p><code>/etc/fdfs</code>下都是一些配置文件，配置tracker即可</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim tracker.conf</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef55e08c034fc11160388.jpg" alt="https://climg.mukewang.com/5e0ef55e08c034fc11160388.jpg"></p>
+<ul>
+<li><p>修改tracker配置文件，此为tracker的工作目录，保存数据以及日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">base_path=/usr/local/fastdfs/tracker</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/local/fastdfs/tracker -p</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="启动tracker服务"><a href="#启动tracker服务" class="headerlink" title="启动tracker服务"></a>启动tracker服务</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf</span><br></pre></td></tr></table></figure>
+<p>检查进程如下：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep tracker</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef5720852057816000146.jpg" alt="https://climg.mukewang.com/5e0ef5720852057816000146.jpg"></p>
+<ul>
+<li><p>停止tracker</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/stop.sh /etc/fdfs/tracker.conf</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/分布式文件系统-配置FastDFS环境准备工作-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/分布式文件系统-配置FastDFS环境准备工作-3/" class="post-title-link" itemprop="url">分布式文件系统-配置FastDFS环境准备工作(3)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-20 15:11:09 / 修改时间：15:13:42" itemprop="dateCreated datePublished" datetime="2021-01-20T15:11:09+08:00">2021-01-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/分布式文件系统/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://www.cnblogs.com/leechenxiang/p/5406548.html" target="_blank" rel="noopener">fastDFS 一二事 - 简易服务器搭建（单linux）</a></p>
+<p><a href="https://www.cnblogs.com/leechenxiang/p/7089778.html" target="_blank" rel="noopener">腾讯云服务器 安装fastdfs文件服务器</a></p>
+<p><a href="https://github.com/happyfish100/fastdfs/wiki" target="_blank" rel="noopener">happyfish100/fastdfs</a></p>
+<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ul>
+<li>Centos7.x 两台，分别安装tracker与storage</li>
+<li>下载安装包：<ul>
+<li>libfatscommon：FastDFS分离出的一些公用函数包</li>
+<li>FastDFS：FastDFS本体</li>
+<li>fastdfs-nginx-module：FastDFS和nginx的关联模块</li>
+<li>nginx：发布访问服务</li>
+</ul>
+</li>
+</ul>
+<h1 id="安装步骤-tracker与storage都要执行"><a href="#安装步骤-tracker与storage都要执行" class="headerlink" title="安装步骤 (tracker与storage都要执行)"></a>安装步骤 (tracker与storage都要执行)</h1><ol>
+<li><p>安装基础环境</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install -y gcc gcc-c++</span><br><span class="line">yum -y install libevent</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装libfatscommon函数库安装的目录从控制台看一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 解压</span><br><span class="line">tar -zxvf libfastcommon-1.0.42.tar.gz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入libfastcommon文件夹，编译并且安装</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./make.sh</span><br><span class="line">./make.sh install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装fastdfs主程序文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 解压</span><br><span class="line">tar -zxvf fastdfs-6.04.tar.gz</span><br></pre></td></tr></table></figure>
+<p>进入到fastdfs目录，查看fastdfs安装配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd fastdfs-6.04/</span><br><span class="line">vim make.sh</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TARGET_PREFIX=$DESTDIR/usr</span><br><span class="line">TARGET_CONF_PATH=$DESTDIR/etc/fdfs</span><br><span class="line">TARGET_INIT_PATH=$DESTDIR/etc/init.d</span><br></pre></td></tr></table></figure>
+<p>安装fastdfs</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./make.sh</span><br><span class="line">./make.sh install</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef484082a831c05840194.jpg" alt="https://climg.mukewang.com/5e0ef484082a831c05840194.jpg"></p>
+<p>如上图，</p>
+<ul>
+<li><p><code>/usr/bin</code> 中包含了可执行文件；</p>
+</li>
+<li><p><code>/etc/fdfs</code> 包含了配置文件；</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef4aa082ddd3610940470.jpg" alt="https://climg.mukewang.com/5e0ef4aa082ddd3610940470.jpg"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef4bc083b7c0109940238.jpg" alt="https://climg.mukewang.com/5e0ef4bc083b7c0109940238.jpg"></p>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>拷贝配置文件如下：</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /home/software/FastDFS/fastdfs<span class="number">-6.04</span>/conf<span class="comment">/* /etc/fdfs/</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0ef4cf08b65f3b13560470.jpg" alt="https://climg.mukewang.com/5e0ef4cf08b65f3b13560470.jpg"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/分布式文件系统-FastDFS概念梳理-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -334,740 +1123,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-自定义模板配置中文分词/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-自定义模板配置中文分词/" class="post-title-link" itemprop="url">Logstash数据同步 - 自定义模板配置中文分词</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:39:14 / 修改时间：22:40:09" itemprop="dateCreated datePublished" datetime="2021-01-14T22:39:14+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前的数据同步，mappings映射会自动创建，但是分词不会，还是会使用默认的，而我们需要中文分词，这个时候就需要自定义模板功能来设置分词了。</p>
-<h1 id="查看Logstash默认模板"><a href="#查看Logstash默认模板" class="headerlink" title="查看Logstash默认模板"></a>查看Logstash默认模板</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_template/logstash</span><br></pre></td></tr></table></figure>
-<h1 id="修改模板如下"><a href="#修改模板如下" class="headerlink" title="修改模板如下"></a>修改模板如下</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"order"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"version"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"index_patterns"</span>: [<span class="string">"*"</span>],</span><br><span class="line">    <span class="string">"settings"</span>: &#123;</span><br><span class="line">        <span class="string">"index"</span>: &#123;</span><br><span class="line">            <span class="string">"refresh_interval"</span>: <span class="string">"5s"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"mappings"</span>: &#123;</span><br><span class="line">        <span class="string">"_default_"</span>: &#123;</span><br><span class="line">            <span class="string">"dynamic_templates"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"message_field"</span>: &#123;</span><br><span class="line">                        <span class="string">"path_match"</span>: <span class="string">"message"</span>,</span><br><span class="line">                        <span class="string">"match_mapping_type"</span>: <span class="string">"string"</span>,</span><br><span class="line">                        <span class="string">"mapping"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">                            <span class="string">"norms"</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"string_fields"</span>: &#123;</span><br><span class="line">                        <span class="string">"match"</span>: <span class="string">"*"</span>,</span><br><span class="line">                        <span class="string">"match_mapping_type"</span>: <span class="string">"string"</span>,</span><br><span class="line">                        <span class="string">"mapping"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">                            <span class="string">"norms"</span>: <span class="literal">false</span>,</span><br><span class="line">                            <span class="string">"analyzer"</span>: <span class="string">"ik_max_word"</span>,</span><br><span class="line">                            <span class="string">"fields"</span>: &#123;</span><br><span class="line">                                <span class="string">"keyword"</span>: &#123;</span><br><span class="line">                                    <span class="string">"type"</span>: <span class="string">"keyword"</span>,</span><br><span class="line">                                    <span class="string">"ignore_above"</span>: <span class="number">256</span></span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">"properties"</span>: &#123;</span><br><span class="line">                <span class="string">"@timestamp"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"date"</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"@version"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"keyword"</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"geoip"</span>: &#123;</span><br><span class="line">                    <span class="string">"dynamic"</span>: <span class="literal">true</span>,</span><br><span class="line">                    <span class="string">"properties"</span>: &#123;</span><br><span class="line">                        <span class="string">"ip"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"ip"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"location"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"geo_point"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"latitude"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"half_float"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"longitude"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"half_float"</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"aliases"</span>: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="新增如下配置，用于更新模板，设置中文分词"><a href="#新增如下配置，用于更新模板，设置中文分词" class="headerlink" title="新增如下配置，用于更新模板，设置中文分词"></a>新增如下配置，用于更新模板，设置中文分词</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 定义模板名称</span><br><span class="line">template_name =&gt; <span class="string">"myik"</span></span><br><span class="line"># 模板所在位置</span><br><span class="line">template =&gt; <span class="string">"/usr/local/logstash-6.4.3/sync/logstash-ik.json"</span></span><br><span class="line"># 重写模板</span><br><span class="line">template_overwrite =&gt; <span class="literal">true</span></span><br><span class="line"># 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">manage_template =&gt; <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<h1 id="重新运行Logstash进行同步"><a href="#重新运行Logstash进行同步" class="headerlink" title="重新运行Logstash进行同步"></a>重新运行Logstash进行同步</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/local/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-配置/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-配置/" class="post-title-link" itemprop="url">Logstash数据同步-配置</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:20:07 / 修改时间：23:05:09" itemprop="dateCreated datePublished" datetime="2021-01-14T22:20:07+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="logstash同步数据库配置"><a href="#logstash同步数据库配置" class="headerlink" title="logstash同步数据库配置"></a>logstash同步数据库配置</h1><ol>
-<li>上传并解压logstash，路径为 <code>/usr/local/logstash</code></li>
-<li>创建文件名：logstash-db-sync.conf，后缀为<code>conf</code>，文件名随意，位置也随意，为方便起见，路径为<code>/usr/local/logstash/sync</code></li>
-<li>把数据库驱动拷贝至<code>/usr/local/logstash/sync</code>下</li>
-<li><p>配置内容如下：</p>
-   <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">input</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">jdbc</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="comment"># 设置 MySql/MariaDB 数据库url以及数据库名称</span></span><br><span class="line">        <span class="string">jdbc_connection_string</span> <span class="string">=&gt;</span> <span class="string">"jdbc:mysql://192.168.1.6:3306/foodie-shop-dev?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true"</span></span><br><span class="line">        <span class="comment"># 用户名和密码</span></span><br><span class="line">        <span class="string">jdbc_user</span> <span class="string">=&gt;</span> <span class="string">"root"</span></span><br><span class="line">        <span class="string">jdbc_password</span> <span class="string">=&gt;</span> <span class="string">"root"</span></span><br><span class="line">        <span class="comment"># 数据库驱动所在位置，可以是绝对路径或者相对路径</span></span><br><span class="line">        <span class="string">jdbc_driver_library</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/mysql-connector-java-5.1.41.jar"</span></span><br><span class="line">        <span class="comment"># 驱动类名</span></span><br><span class="line">        <span class="string">jdbc_driver_class</span> <span class="string">=&gt;</span> <span class="string">"com.mysql.jdbc.Driver"</span></span><br><span class="line">        <span class="comment"># 开启分页</span></span><br><span class="line">        <span class="string">jdbc_paging_enabled</span> <span class="string">=&gt;</span> <span class="string">"true"</span></span><br><span class="line">        <span class="comment"># 分页每页数量，可以自定义</span></span><br><span class="line">        <span class="string">jdbc_page_size</span> <span class="string">=&gt;</span> <span class="string">"10000"</span></span><br><span class="line">        <span class="comment"># 执行的sql文件路径</span></span><br><span class="line">        <span class="string">statement_filepath</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/foodie-items.sql"</span></span><br><span class="line">        <span class="comment"># 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span></span><br><span class="line">        <span class="string">schedule</span> <span class="string">=&gt;</span> <span class="string">"* * * * *"</span></span><br><span class="line">        <span class="comment"># 索引类型</span></span><br><span class="line">        <span class="string">type</span> <span class="string">=&gt;</span> <span class="string">"_doc"</span></span><br><span class="line">        <span class="comment"># 是否开启记录上次追踪的结果，也就是上次更新的时间，这个会记录到 last_run_metadata_path 的文件</span></span><br><span class="line">        <span class="string">use_column_value</span> <span class="string">=&gt;</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 记录上一次追踪的结果值</span></span><br><span class="line">        <span class="string">last_run_metadata_path</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/track_time"</span></span><br><span class="line">        <span class="comment"># 如果 use_column_value 为true， 配置本参数，追踪的 column 名，可以是自增id或者时间</span></span><br><span class="line">        <span class="string">tracking_column</span> <span class="string">=&gt;</span> <span class="string">"updated_time"</span></span><br><span class="line">        <span class="comment"># tracking_column 对应字段的类型</span></span><br><span class="line">        <span class="string">tracking_column_type</span> <span class="string">=&gt;</span> <span class="string">"timestamp"</span></span><br><span class="line">        <span class="comment"># 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span></span><br><span class="line">        <span class="string">clean_run</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">        <span class="comment"># 数据库字段名称大写转小写</span></span><br><span class="line">        <span class="string">lowercase_column_names</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">output</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">elasticsearch</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="comment"># es地址</span></span><br><span class="line">        <span class="string">hosts</span> <span class="string">=&gt;</span> <span class="string">["192.168.1.187:9200"]</span></span><br><span class="line">        <span class="comment"># 同步的索引名</span></span><br><span class="line">        <span class="string">index</span> <span class="string">=&gt;</span> <span class="string">"foodie-items"</span></span><br><span class="line">        <span class="comment"># 设置_docID和数据相同。itemId与sql同步脚本中的itemId保持一致</span></span><br><span class="line">        <span class="string">document_id</span> <span class="string">=&gt;</span> <span class="string">"<span class="template-variable">%&#123;itemId&#125;</span>"</span></span><br><span class="line">        <span class="comment">#document_id =&gt; "%&#123;id&#125;"</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line">    <span class="comment"># 日志输出</span></span><br><span class="line">    <span class="string">stdout</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">codec</span> <span class="string">=&gt;</span> <span class="string">json_lines</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>sql同步脚本</p>
-   <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    i.id <span class="keyword">as</span> itemId,</span><br><span class="line">    i.item_name <span class="keyword">as</span> itemName,</span><br><span class="line">    i.sell_counts <span class="keyword">as</span> sellCounts,</span><br><span class="line">    ii.url <span class="keyword">as</span> imgUrl,</span><br><span class="line">    tempSpec.price_discount <span class="keyword">as</span> price,</span><br><span class="line">    i.updated_time <span class="keyword">as</span> updated_time</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    items i</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    items_img ii</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id = ii.item_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    (<span class="keyword">SELECT</span> item_id,<span class="keyword">MIN</span>(price_discount) <span class="keyword">as</span> price_discount <span class="keyword">from</span> items_spec <span class="keyword">GROUP</span> <span class="keyword">BY</span> item_id) tempSpec</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id = tempSpec.item_id</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    ii.is_main = <span class="number">1</span></span><br><span class="line">    <span class="keyword">and</span></span><br><span class="line">    i.updated_time &gt;= :sql_last_value</span><br><span class="line"><span class="comment">--:sql_last_value是记录的最后的一个值</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h1 id="启动logstatsh"><a href="#启动logstatsh" class="headerlink" title="启动logstatsh"></a>启动logstatsh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/<span class="built_in">local</span>/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.cnblogs.com/huhangfei/p/7605511.html" target="_blank" rel="noopener">Logstash使用介绍</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-介绍/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:18:19 / 修改时间：22:42:52" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
-<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
-<ul>
-<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
-<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
-</ul>
-<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
-<ul>
-<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
-</ul>
-<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
-<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg"></p>
-<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/spring-boot-2-3-7-es7-集成/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/spring-boot-2-3-7-es7-集成/" class="post-title-link" itemprop="url">spring boot 2.3.7 + es7 集成</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 21:04:41 / 修改时间：21:05:49" itemprop="dateCreated datePublished" datetime="2021-01-14T21:04:41+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="https://blog.csdn.net/qq_20280007/article/details/108388459?utm_medium=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control" target="_blank" rel="noopener">springboot2.3.3中关于spring-data-elasticsearch-4.0.3的使用_阿良~的博客-CSDN博客</a></p>
-<h1 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- spring boot 2.3.7 以上 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 2.3.7.RELEASE 支持 ES 7.X --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-webflux<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  elasticsearch:</span></span><br><span class="line"><span class="attr">    rest:</span></span><br><span class="line"><span class="attr">      uris:</span> <span class="string">&lt;http://localhost:9200&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="对象映射"><a href="#对象映射" class="headerlink" title="对象映射"></a><strong>对象映射</strong></h1><ul>
-<li><p>首先要清楚注解的使用。</p>
-<ul>
-<li>@Document：类注解，以指示该类是映射到数据库的候选对象。最重要的属性是：<ul>
-<li>indexName：用于存储此实体的索引的名称</li>
-<li>type：映射类型。如果未设置，则使用小写的类的简单名称。（当前版本开始不推荐使用）</li>
-<li>shards：索引的分片数。（经测试，分片数无法设置，应该是个BUG，推荐先创建索引设置好分片数和副本数）</li>
-<li>replicas：索引的副本数。（经测试，分片数无法设置，应该是个BUG）</li>
-<li>refreshIntervall：索引的刷新间隔。用于索引创建。默认值为“ 1s”。</li>
-<li>indexStoreType：索引的索引存储类型。用于索引创建。默认值为“ fs”。</li>
-<li>createIndex：配置是否在存储库引导中创建索引。默认值为true。</li>
-<li>versionType：版本管理的配置。默认值为EXTERNAL。</li>
-</ul>
-</li>
-<li>@Id：字段注解，以标记用于标识目的的字段。</li>
-<li>@Field：在字段级别应用并定义字段的属性，大多数属性映射到各自的Elasticsearch映射定义（以下列表不完整，请查看注释Javadoc以获取完整的参考）：<ul>
-<li>name：字段名称，它将在Elasticsearch文档中表示，如果未设置，则使用Java字段名称。</li>
-<li>type：字段类型，可以是文本，关键字，长整数，短整数，字节，双精度，浮点型，半浮点数，标度浮点数，日期，布尔值，二进制，整数等。（属性（FieldType）类型不灵活）</li>
-<li>format和日期类型的pattern定义。必须为日期类型定义。</li>
-<li>store：标记是否将原始字段值存储在Elasticsearch中，默认值为false。</li>
-<li>analyzer，searchAnalyzer，normalizer用于指定自定义分析和正规化。</li>
-</ul>
-</li>
-<li>@GeoPoint：将字段标记为geo_point数据类型。如果字段是GeoPoint类的实例，则可以省略。</li>
-</ul>
-</li>
-<li><p>示例</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.data.annotation.Id;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Field;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.FieldType;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 经测试，更改 shards，replicas的值无法更改</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Document</span>(indexName = <span class="string">"stu"</span>, shards = <span class="number">3</span>, replicas = <span class="number">2</span>, createIndex = <span class="keyword">false</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stu</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long stuId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Float money;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>, type = FieldType.Keyword)</span><br><span class="line">    <span class="keyword">private</span> String sign;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String description;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 getter、setter</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Stu&#123;"</span> +</span><br><span class="line">                <span class="string">"stuId="</span> + stuId +</span><br><span class="line">                <span class="string">", name='"</span> + name + <span class="string">'\\'</span><span class="string">' +</span></span><br><span class="line"><span class="string">                ", age=" + age +</span></span><br><span class="line"><span class="string">                ", money=" + money +</span></span><br><span class="line"><span class="string">                ", sign='</span><span class="string">" + sign + '\\'' +</span></span><br><span class="line"><span class="string">                "</span>, description=<span class="string">'" + description + '</span>\\<span class="string">''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h1 id="ElasticsearchRestTemplate-用法"><a href="#ElasticsearchRestTemplate-用法" class="headerlink" title="ElasticsearchRestTemplate 用法"></a>ElasticsearchRestTemplate 用法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fengxuechao.FoodieSearchApp;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.es.pojo.Stu;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.index.query.QueryBuilders;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.FieldSortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortOrder;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.PageRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.Pageable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHit;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHits;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.query.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span>(classes = FoodieSearchApp.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ElasticsearchRestTemplate esTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 不建议使用 ElasticsearchRestTemplate 对索引进行管理（创建索引，更新映射，删除索引）</span></span><br><span class="line"><span class="comment">     * 索引就像是数据库或者数据库中的表，我们平时是不会是通过java代码频繁的去创建修改删除数据库或者表的</span></span><br><span class="line"><span class="comment">     * 我们只会针对数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 在es中也是同理，我们尽量使用 ElasticsearchRestTemplate 对文档数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 1. 属性（FieldType）类型不灵活</span></span><br><span class="line"><span class="comment">     * 2. 主分片与副本分片数无法设置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Stu stu = <span class="keyword">new</span> Stu();</span><br><span class="line">        stu.setStuId(<span class="number">1007L</span>);</span><br><span class="line">        stu.setName(<span class="string">"iron man"</span>);</span><br><span class="line">        stu.setAge(<span class="number">22</span>);</span><br><span class="line">        stu.setMoney(<span class="number">1000.8f</span>);</span><br><span class="line">        stu.setSign(<span class="string">"I am iron man"</span>);</span><br><span class="line">        stu.setDescription(<span class="string">"I have a spider man"</span>);</span><br><span class="line"></span><br><span class="line">        IndexQuery indexQuery = <span class="keyword">new</span> IndexQueryBuilder().withObject(stu).build();</span><br><span class="line">        esTemplate.index(indexQuery, esTemplate.getIndexCoordinatesFor(stu.getClass()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.indexOps(Stu.class).delete();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; sourceMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        sourceMap.put(<span class="string">"name"</span>, <span class="string">"spider man"</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"money"</span>, <span class="number">99.8f</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"age"</span>, <span class="number">33</span>);</span><br><span class="line"></span><br><span class="line">        IndexRequest indexRequest = <span class="keyword">new</span> IndexRequest();</span><br><span class="line">        indexRequest.source(sourceMap);</span><br><span class="line"></span><br><span class="line">        UpdateQuery updateQuery = UpdateQuery.builder(<span class="string">"1004"</span>)</span><br><span class="line">                .withDocument(Document.from(sourceMap))</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">//        update stu set sign='abc',age=33,money=88.6 where docId='1002'</span></span><br><span class="line"></span><br><span class="line">        esTemplate.update(updateQuery, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Stu stu = esTemplate.get(<span class="string">"1004"</span>, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(stu);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.delete(<span class="string">"1002"</span>, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">searchStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class, esTemplate.getIndexCoordinatesFor(Stu.class));</span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : hits) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">highlightStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String preTag = <span class="string">"&lt;font color='red'&gt;"</span>;</span><br><span class="line">        String postTag = <span class="string">"&lt;/font&gt;"</span>;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        SortBuilder sortBuilder = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"money"</span>)</span><br><span class="line">                .order(SortOrder.DESC);</span><br><span class="line">        SortBuilder sortBuilderAge = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"age"</span>)</span><br><span class="line">                .order(SortOrder.ASC);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withHighlightFields(<span class="keyword">new</span> HighlightBuilder.Field(<span class="string">"description"</span>)</span><br><span class="line">                        .preTags(preTag)</span><br><span class="line">                        .postTags(postTag))</span><br><span class="line">                .withSort(sortBuilder)</span><br><span class="line">                .withSort(sortBuilderAge)</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="comment">// 将</span></span><br><span class="line">        List&lt;SearchHit&lt;Stu&gt;&gt; list = hits.get()</span><br><span class="line">                .peek(stuSearchHit -&gt; stuSearchHit.getContent().setDescription(stuSearchHit.getHighlightField(<span class="string">"description"</span>).get(<span class="number">0</span>))).collect(Collectors.toList());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : list) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/" class="post-title-link" itemprop="url">Elasticsearch 6.4.3 整合SpringBoot - 配置文件</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-13 21:28:55" itemprop="dateCreated datePublished" datetime="2021-01-13T21:28:55+08:00">2021-01-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 22:20:28" itemprop="dateModified" datetime="2021-01-14T22:20:28+08:00">2021-01-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="创建工程，引入依赖"><a href="#创建工程，引入依赖" class="headerlink" title="创建工程，引入依赖"></a>创建工程，引入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;version&gt;2.1.5.RELEASE&lt;/version&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="配置yml"><a href="#配置yml" class="headerlink" title="配置yml"></a>配置yml</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  data:</span></span><br><span class="line"><span class="attr">    elasticsearch:</span></span><br><span class="line"><span class="attr">      cluster-name:</span> <span class="string">es6</span></span><br><span class="line"><span class="attr">      cluster-nodes:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.187</span><span class="string">:9300</span></span><br></pre></td></tr></table></figure>
-<h1 id="版本协调"><a href="#版本协调" class="headerlink" title="版本协调"></a>版本协调</h1><p>目前springboot-data-elasticsearch中的es版本贴合为es-6.4.3，如此一来版本需要统一，把es进行降级。等springboot升级es版本后可以在对接最新版的7.4。</p>
-<h1 id="Netty-issue-fix"><a href="#Netty-issue-fix" class="headerlink" title="Netty issue fix"></a>Netty issue fix</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解决netty引起的issue</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.setProperty(<span class="string">"es.set.netty.runtime.available.processors"</span>, <span class="string">"false"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="附-elasticsearch6-4-3配置文件"><a href="#附-elasticsearch6-4-3配置文件" class="headerlink" title="附 elasticsearch6.4.3配置文件"></a>附 elasticsearch6.4.3配置文件</h1><p>elasticsearch.yml</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">cluster.name:</span> <span class="string">es6</span></span><br><span class="line"><span class="string">node.name:</span> <span class="string">node0</span></span><br><span class="line"><span class="string">path.data:</span> <span class="string">/usr/local/elasticsearch-6.4.3/data</span></span><br><span class="line"><span class="string">path.logs:</span> <span class="string">/usr/local/elasticsearch-6.4.3/logs</span></span><br><span class="line"><span class="string">network.host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="string">./elasticsearch</span></span><br></pre></td></tr></table></figure>
-<p>如果出现如下错误：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg"></p>
-<p>那么需要切换到root用户下去修改配置如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg"></p>
-<p>别忘记 <code>sysctl -p</code> 刷新一下</p>
-<p>最后再次启动OK</p>
-<h1 id="Don’t-forget"><a href="#Don’t-forget" class="headerlink" title="Don’t forget!"></a>Don’t forget!</h1><p>中文分词器也需要去配置一下噢别忘记！：）中文分词器的版本要记得使用6，而不是之前的7，版本一定要贴合噢~比如目前的所有版本都是统一为es-6.4.3，那么下载地址为：<a href="https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3" target="_blank" rel="noopener">https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群脑裂现象探讨/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/ES集群脑裂现象探讨/" class="post-title-link" itemprop="url">ES集群脑裂现象探讨</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-13 20:07:06" itemprop="dateCreated datePublished" datetime="2021-01-13T20:07:06+08:00">2021-01-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 22:20:04" itemprop="dateModified" datetime="2021-01-14T22:20:04+08:00">2021-01-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="什么是脑裂"><a href="#什么是脑裂" class="headerlink" title="什么是脑裂"></a>什么是脑裂</h1><p>如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。</p>
-<h1 id="脑裂解决方案"><a href="#脑裂解决方案" class="headerlink" title="脑裂解决方案"></a>脑裂解决方案</h1><p>master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。</p>
-<p>解决实现原理：半数以上的节点同意选举，节点方可成为新的master。</p>
-<ul>
-<li>discovery.zen.minimum_master_nodes=(N/2)+1<ul>
-<li>N为集群的中master节点的数量，也就是那些 <code>node.master=true</code> 设置的那些服务器节点总数。</li>
-</ul>
-</li>
-</ul>
-<h1 id="ES-7-X"><a href="#ES-7-X" class="headerlink" title="ES 7.X"></a>ES 7.X</h1><p>在最新版7.x中，<code>minimum_master_node</code>这个参数已经被移除了，这一块内容完全由es自身去管理，这样就避免了脑裂的问题，选举也会非常快。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群配置/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/ES集群配置/" class="post-title-link" itemprop="url">ES集群配置</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-13 19:39:32" itemprop="dateCreated datePublished" datetime="2021-01-13T19:39:32+08:00">2021-01-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 22:19:57" itemprop="dateModified" datetime="2021-01-14T22:19:57+08:00">2021-01-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前置操作"><a href="#前置操作" class="headerlink" title="前置操作"></a>前置操作</h1><p>需要确认其它es节点中的data目录，一定要清空，不能有数据。</p>
-<h1 id="配置集群"><a href="#配置集群" class="headerlink" title="配置集群"></a>配置集群</h1><p>修改<code>elasticsearch.yml</code>这个配置文件如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置集群名称，保证每个节点的名称相同，如此就能都处于一个集群之内了</span></span><br><span class="line">cluster.name: es-cluster</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一个节点的名称，必须不一样</span></span><br><span class="line">node.name: es-node1</span><br><span class="line"></span><br><span class="line"><span class="comment"># http端口（使用默认即可）</span></span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主节点，作用主要是用于来管理整个集群，负责创建或删除索引，管理其他非master节点（相当于企业老总）</span></span><br><span class="line">node.master: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据节点，用于对文档数据的增删改查</span></span><br><span class="line">node.data: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 集群列表</span></span><br><span class="line">discovery.seed_hosts: [<span class="string">"192.168.1.184"</span>, <span class="string">"192.168.1.185"</span>, <span class="string">"192.168.1.186"</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动的时候使用一个master节点</span></span><br><span class="line">cluster.initial_master_nodes: [<span class="string">"es-node1"</span>]</span><br></pre></td></tr></table></figure>
-<p>最后可以通过如下命令查看配置文件的内容：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more elasticsearch.yml | grep ^[^<span class="comment">#]</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Consul-Watches监控主动通知/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Consul-Watches监控主动通知/" class="post-title-link" itemprop="url">Consul - Watches监控主动通知</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-13 10:04:09 / 修改时间：10:07:30" itemprop="dateCreated datePublished" datetime="2021-01-13T10:04:09+08:00">2021-01-13</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/注册中心/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1 概念"></a>1 概念</h1><p>当Consul中注册的服务信息发生变化的时候，我们除了定时通过接口去查询最新的服务信息之外，consul还提供了watch机制，通过监控consul数据的变化，主动通知。</p>
-<p>目前conusl watch支持两种通知方式：<strong>可执行程序</strong>和<strong>Http接口</strong>。</p>
-<p>consul watch支持监控的数据类型：</p>
-<ul>
-<li>services - 监控指定列表服务的可用性</li>
-<li>service - 监控指定服务的实例</li>
-<li>nodes - 监控节点</li>
-<li>key - 监控特定的键值对</li>
-<li>keyprefix - 监控consul配置中心的前缀</li>
-<li>checks - 监控健康检查的值</li>
-<li>event - 监控自定义用户事件</li>
-</ul>
-<p>也就是说，consul支持监控服务、键值数据、节点信息，只要发生变化，就通知我们。</p>
-<h1 id="2-基本用法"><a href="#2-基本用法" class="headerlink" title="2 基本用法"></a>2 基本用法</h1><p>我们以监控键值数据的变化为例子，介绍watch机制的用法。</p>
-<p>watch监控的配置信息是跟consul的配置文件放在一起的，通过配置文件中的watches字段，设置监控信息。</p>
-<p>说明：watches的配置，大致用法就是通过type，配置监控数据的类型，然后根据不同数据类型配置不同的参数，最后选择一种通知方式进行配置。</p>
-<h2 id="2-1-通过可执行程序通知"><a href="#2-1-通过可执行程序通知" class="headerlink" title="2.1 通过可执行程序通知"></a>2.1 通过可执行程序通知</h2><p>当我们监控的数据发生变化，consul agent会调用我们配置的可执行程序（命令、脚本等等），并且通过标准输入，以Json格式传入通知的参数， 我们只要在程序中根据参数处理业务即可。</p>
-<p>例子：</p>
-<p>下面是我们consul agent的配置，文件名是 <code>/etc/consul/watches.json</code> 。</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>, </span><br><span class="line">	<span class="attr">"data_dir"</span>: <span class="string">"/var/consul"</span>, </span><br><span class="line">	<span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">"watches"</span>: [&#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"key"</span>,</span><br><span class="line">		<span class="attr">"key"</span>: <span class="string">"foo/bar/baz"</span>,</span><br><span class="line">		<span class="attr">"handler_type"</span>: <span class="string">"script"</span>,</span><br><span class="line">		<span class="attr">"args"</span>: [<span class="string">"/usr/bin/my-service-handler.sh"</span>, <span class="string">"-redis"</span>]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个例子的意思，监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令。</p>
-<p>参数说明：</p>
-<ul>
-<li><p>datacenter - 数据中心的名字</p>
-</li>
-<li><p>data_dir - consul数据存放目录</p>
-</li>
-<li><p>ui - 开启consul ui</p>
-</li>
-<li><p>watches - 配置监控信息，如果监控的数据发生变化，则根据配置执行通知。</p>
-<p>watches参数说明：</p>
-<ul>
-<li>type - 监控的数据类型</li>
-<li>key - 监控的键值数据的Key</li>
-<li>handler_type - 通知类型，支持script和http</li>
-<li>args - 配置通知类型为script的，执行命令，是一个数组，第一个元素是命令，后面第2个到第N个元素是命令的参数。</li>
-</ul>
-</li>
-</ul>
-<p>例子的<code>watches</code>配置的意思就是：</p>
-<p>监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令， 这个命令可以通过标准输入，接收变化的数据。</p>
-<p>启动consul，就会加载watches配置。</p>
-<h2 id="2-2-通过Http接口通知"><a href="#2-2-通过Http接口通知" class="headerlink" title="2.2 通过Http接口通知"></a>2.2 通过Http接口通知</h2><p>通过http接口通知数据变化，大体上配置跟上面一样，区别是多了一些http接口的配置参数。</p>
-<p>例子：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">	<span class="attr">"data_dir"</span>: <span class="string">"/Users/jogin/Documents/work/local/consul/data"</span>,</span><br><span class="line">	<span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">"watches"</span>: [&#123;</span><br><span class="line">		<span class="attr">"type"</span>: <span class="string">"key"</span>,</span><br><span class="line">		<span class="attr">"key"</span>: <span class="string">"foo/bar/baz"</span>,</span><br><span class="line">		<span class="attr">"handler_type"</span>: <span class="string">"http"</span>,</span><br><span class="line">		<span class="attr">"http_handler_config"</span>: &#123;</span><br><span class="line">			<span class="attr">"path"</span>: <span class="string">"&lt;https://localhost:8000/watch&gt;"</span>,</span><br><span class="line">			<span class="attr">"method"</span>: <span class="string">"POST"</span>,</span><br><span class="line">			<span class="attr">"header"</span>: &#123;</span><br><span class="line">				<span class="attr">"x-foo"</span>: [<span class="string">"bar"</span>, <span class="string">"baz"</span>]</span><br><span class="line">			&#125;,</span><br><span class="line">			<span class="attr">"timeout"</span>: <span class="string">"10s"</span>,</span><br><span class="line">			<span class="attr">"tls_skip_verify"</span>: <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个例子的意思，就是当<code>key=foo/bar/baz</code>的键值数据发生变化，就通过<code>https://localhost:8000/watch</code>通知我们。</p>
-<p>我们关注<code>watches</code>字段的配置信息，下面是参数说明：</p>
-<ul>
-<li><p>type - watch监控类型是key</p>
-</li>
-<li><p>key - 监控foo/bar/baz这个key</p>
-</li>
-<li><p>handler_type - 通知类型, http</p>
-</li>
-<li><p>http_handler_config - 配置http通知信息。</p>
-<p>http_handler_config参数说明：</p>
-<ul>
-<li>path - 通知Url</li>
-<li>method - http请求方法</li>
-<li>header - 自定义Http请求头，没有可以忽略</li>
-<li>timeout - 超时时间，10秒</li>
-<li>tls_skip_verify - 是否跳过tls验证</li>
-</ul>
-</li>
-</ul>
-<h1 id="3-监控服务"><a href="#3-监控服务" class="headerlink" title="3 监控服务"></a>3 监控服务</h1><p>上面介绍了watch的基本用法，我们也可以监控服务信息的变化，例如当有人注册新的服务或者服务不可用的时候，通知我们。</p>
-<p>我们忽略掉，consul agent的配置，单独看watches的配置。</p>
-<p>监控所有的服务的配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;services&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>监控单个服务的配置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;service&quot;,</span><br><span class="line">                &quot;service&quot;: &quot;要监控的服务名&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="4-监控键值数据"><a href="#4-监控键值数据" class="headerlink" title="4 监控键值数据"></a>4 监控键值数据</h1><p>前面介绍过基本Key的监控，其实我们还可以通过key的前缀，批量监控一批key，只要key的前缀相同，这些Key下面的数据发生变化，都会发送通知。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;keyprefix&quot;,</span><br><span class="line">		&quot;prefix&quot;: &quot;foo/&quot;,</span><br><span class="line">		&quot;args&quot;: [&quot;/usr/bin/my-service-handler.sh&quot;, &quot;-redis&quot;]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>监控类型为：keyprefix</p>
-<p>通过prefix字段，配置key的前缀。</p>
-<p>这个配置的意思就是：以foo/开头的Key, 数据发生变化，都会执行args参数，配置的命令。</p>
-<h1 id="5-监控节点"><a href="#5-监控节点" class="headerlink" title="5 监控节点"></a>5 监控节点</h1><p>我们也可以监控consul集群节点的变化信息。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;nodes&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>没有其他额外的参数，type=nodes即可，当节点信息发生变化，会根据配置的方式通知。</p>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.consul.io/docs/dynamic-app-config/watches" target="_blank" rel="noopener">Consul by HashiCorp</a></p>
-<p><a href="https://www.cnblogs.com/ExMan/p/11907491.html" target="_blank" rel="noopener">ExplorerMan</a></p>
-<p><a href="https://www.tizi365.com/archives/535.html" target="_blank" rel="noopener">Consul Watches监控服务变化</a></p>
-<p><a href="https://toutiao.io/posts/zeu435/preview" target="_blank" rel="noopener">开发者头条</a></p>
-<p><a href="https://www.notion.so/Consul-6982c01eb1594549ab0a6dd463f16cfd" target="_blank" rel="noopener">Consul 单机集群搭建</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/13/">13</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/14/">14</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1133,7 +1192,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1146,7 +1205,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-count">81</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
