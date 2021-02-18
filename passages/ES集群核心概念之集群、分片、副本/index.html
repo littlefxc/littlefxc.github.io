@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.gitee.io","root":"/blog/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ES集群核心概念1）Cluster：集群ES可以作为一个独立的单个搜索服务器。不过，为了处理大型数据集，实现容错和高可用性，ES可以运行在许多互相合作的服务器上。这些服务器的集合称为集群，集群内的节点的cluster.name相同。 2）Node：节点形成集群的每个服务器称为节点。 ES 为分配不同的任务，定义了以下几个节点角色：Master,Data Node,Coordinating Node">
+<meta name="keywords" content="es">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ES集群核心概念之集群、分片、副本">
+<meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/ES集群核心概念之集群、分片、副本/index.html">
+<meta property="og:site_name" content="littlefxc&#39;s blog">
+<meta property="og:description" content="ES集群核心概念1）Cluster：集群ES可以作为一个独立的单个搜索服务器。不过，为了处理大型数据集，实现容错和高可用性，ES可以运行在许多互相合作的服务器上。这些服务器的集合称为集群，集群内的节点的cluster.name相同。 2）Node：节点形成集群的每个服务器称为节点。 ES 为分配不同的任务，定义了以下几个节点角色：Master,Data Node,Coordinating Node">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png">
+<meta property="og:updated_time" content="2021-02-18T13:32:20.734Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ES集群核心概念之集群、分片、副本">
+<meta name="twitter:description" content="ES集群核心概念1）Cluster：集群ES可以作为一个独立的单个搜索服务器。不过，为了处理大型数据集，实现容错和高可用性，ES可以运行在许多互相合作的服务器上。这些服务器的集合称为集群，集群内的节点的cluster.name相同。 2）Node：节点形成集群的每个服务器称为节点。 ES 为分配不同的任务，定义了以下几个节点角色：Master,Data Node,Coordinating Node">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png">
+
+<link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/ES集群核心概念之集群、分片、副本/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ES集群核心概念之集群、分片、副本 | littlefxc's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">littlefxc's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/littlefxc" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES集群核心概念之集群、分片、副本/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ES集群核心概念之集群、分片、副本
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-18 21:31:27 / 修改时间：21:32:20" itemprop="dateCreated datePublished" datetime="2021-02-18T21:31:27+08:00">2021-02-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="ES集群核心概念"><a href="#ES集群核心概念" class="headerlink" title="ES集群核心概念"></a><strong>ES集群核心概念</strong></h1><h3 id="1）Cluster：集群"><a href="#1）Cluster：集群" class="headerlink" title="1）Cluster：集群"></a><strong>1）Cluster：集群</strong></h3><p>ES可以作为一个独立的单个搜索服务器。不过，为了处理大型数据集，实现容错和高可用性，ES可以运行在许多互相合作的服务器上。这些服务器的集合称为集群，集群内的节点的<code>cluster.name</code>相同。</p>
+<h3 id="2）Node：节点"><a href="#2）Node：节点" class="headerlink" title="2）Node：节点"></a><strong>2）Node：节点</strong></h3><p>形成集群的每个服务器称为节点。</p>
+<p>ES 为分配不同的任务，定义了以下几个节点角色：<code>Master</code>,<code>Data Node</code>,<code>Coordinating Node</code>,<code>Ingest Node</code></p>
+<ul>
+<li><p><strong>Master 节点</strong>：每个 ES 节点启动之前都会有个默认配置 <code>node.master:true</code> ,也就是说每个节点都有可能成为 Master 节点，这些节点被称作 <code>Master-eligible nodes</code> ，就是合格的有资格成为 Master 节点的节点。当然 <strong>Master 只能有一个</strong>，所以会通过选举的方法对这启动的节点选举，被选中的节点才会成为 Master 节点。 Master 节点主要是负责维护集群的状态，像所有节点的信息，所有的索引和它相关的 Mapping 关系，配置信息，分片的路由等。既然 Master 节点维护了这么重要的信息，玩意它挂了怎么办？挂了的话，将会对其他的有资格成为 Master 节点的节点重新选举出另一个 Master 节点，因此这就说明了其他 Master-eligible nodes 也会保存集群信息，但是只有 Master 节点有权限能够修改，试想如果其他节点也能修改的话，这将会导致数据不一致的问题。</p>
+</li>
+<li><p><strong>Data Node 节点</strong>：数据节点，这个节点主要负责数据的存储，在数据扩展上起到了至关重要的作用。也就是说读写数据都会找到相应的 Data Node 节点。</p>
+</li>
+<li><p><strong>Coordinating Node 节点</strong>：协调节点主要负责协调客户端的请求，将接收到的请求分发给合适的节点，并把结果汇集到一起。比如客户端请求查询某个索引的数据，协调节点将会把请求分发给保存相关的数据的 DataNode 节点，找到相应的分片，并把查询到的结果都汇集返回。并且每个节点都默认起到了 Coordinating Node 的职责。</p>
+</li>
+<li><p><strong>Ingest Node节点</strong>: Ingest node 专门对索引的文档做预处理,发生在对真实文档建立索引之前。在建立索引对文档预处理之前，先定义一个管道（pipeline），管道里指定了一系列的处理器。每个处理器能够把文档按照某种特定的方式转换。比如在管道里定义一个从某个文档中移除字段的处理器，紧接着一个重命名字段的处理器。集群的状态也会被存储到配置的管道内。定义一个管道，简单的在索引或者bulk request(一种批量请求方法)操作上定义 pipeline 参数,这样 ingest node 就会知道哪个管道在使用。这个节点在使用过程中用的也不多，所以大概了解一下就行。</p>
+</li>
+<li><p>文档读写原理</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png"></p>
+</li>
+</ul>
+<p><strong>说明：</strong></p>
+<ul>
+<li><strong>一个节点可以充当一个或多个角色，默认三个角色都有。</strong></li>
+<li><strong>协调节点：一个节点只作为接收请求、转发请求到其他节点、汇总各个节点返回数据等功能的节点。就叫协调节点。</strong></li>
+</ul>
+<h3 id="3）Index：索引"><a href="#3）Index：索引" class="headerlink" title="3）Index：索引"></a><strong>3）Index：索引</strong></h3><p>在 ES 中, 索引是一组文档的集合。索引的作用相当于图书的目录，可以根据目录中的页码快速找到所需的内容。当表中有大量记录时，若要对表进行查询，第一种搜索信息方式是全表搜索，是将所有记录一一取出，和查询条件进行一一对比，然后返回满足条件的记录，这样做会消耗大量数据库系统时间，并造成大量磁盘I/O操作；第二种就是在表中建立索引，然后在索引中找到符合查询条件的索引值，最后通过保存在索引中的ROWID（相当于页码）快速找到表中对应的记录。</p>
+<h3 id="4）Shard：分片"><a href="#4）Shard：分片" class="headerlink" title="4）Shard：分片"></a><strong>4）Shard：分片</strong></h3><p>当有大量的文档时，由于内存的限制、磁盘处理能力不足、无法足够快的响应客户端的请求等，一个节点可能不够。</p>
+<p>这种情况下，数据可以分为较小的分片。每个分片放到不同的服务器上。当你查询的索引分布在多个分片上时，ES会把查询发送给每个相关的分片，并将结果组合在一起，而应用程序并不知道分片的存在。即：这个过程对用户来说是透明的。</p>
+<p><strong>说明：</strong></p>
+<ul>
+<li><strong>创建索引的时候就确定好主分片的数量，除非重索引。</strong></li>
+<li><strong>分片对应的存储实体是索引。</strong></li>
+<li><strong>一个分片就是一个 Lucene 实例</strong></li>
+</ul>
+<h3 id="5）路由"><a href="#5）路由" class="headerlink" title="5）路由"></a><strong>5）路由</strong></h3><p>Elasticsearch 如何知道一个文档应该存放到哪个分片中呢？当我们创建文档时，它如何决定这个文档应当被存储在分片 1 还是分片 2 中呢？首先这肯定不会是随机的，否则将来要获取文档的时候我们就不知道从何处寻找了。实际上，这个过程是根据下面这个公式决定的：<code>shard = hash(routing) % number_of_primary_shards</code>， <code>routing</code> 是一个可变值，唯一不可重复，默认是<code>文档的 _id</code> ，也可以设置成一个自定义的值。 <code>routing</code> 通过 <code>hash 函数</code>生成一个数字，然后这个数字再除以 <code>number_of_primary_shards</code> （主分片的数量）后得到余数 。这个分布在 0 到 number_of_primary_shards-1 之间的余数，就是我们所寻求的文档所在分片的位置。这就解释了为什么我们要在创建索引的时候就确定好主分片的数量 并且永远不会改变这个数量：因为如果数量变化了，那么所有之前路由的值都会无效，文档也再也找不到了。所有的文档 API( get 、 index 、 delete 、 bulk 、 update 以及 mget )都接受一个叫做 routing 的路由参数 ，通过这个参数我们可以自定义文档到分片的映射。一个自定义的路由参数可以用来确保所有相关的文档——例如所有属于同一个用户的文档——都被存储到同一个分片中。</p>
+<h3 id="6）Replia：副本"><a href="#6）Replia：副本" class="headerlink" title="6）Replia：副本"></a><strong>6）Replia：副本</strong></h3><p>在创建某个索引之前，需要指定分配这个索引多少个分片？多少个副本？副本就这这个分片的备胎，当分片挂掉了，它的副本就会随时准备上位，因此副本也是个分片只不过不负责主要功能。</p>
+<p>不仅仅如此，ES 如何能够提高数据吞吐量呢？增加副本个数就是个不错的选择，比如说读写分离，读数据的时候从副本上读，写数据的时候只用主分片去写。需要注意的是，主分片的个数实在建立索引之前要确定，建立完索引之后，是不能够进行修改的，除非重新建索引。因此在建索引之前，一定要合理的配置分片个数，副本个数的话后期是可以改动的。</p>
+<p>为提高查询吞吐量或实现高可用性，可以使用分片副本。副本是一个分片的精确复制，每个分片可以有零个或多个副本。ES中可以有许多相同的分片，其中之一被选择更改索引操作，这种特殊的分片称为主分片。当主分片丢失时，如：该分片所在的数据不可用时，集群将副本提升为新的主分片。Elasticsearch 禁止同一个分片的主分片和副本分片在同一个节点上，所以如果是一个节点的集群是不能有副本的。</p>
+<p>它在节点失败的情况下提供高可用性。由于这个原因，需要注意的是，副本分片永远不会分配到与主分片相同的节点上。</p>
+<p><strong>如何设置副本</strong></p>
+<p>启动 2 个 ES 节点，配置分片个数为 3，副本个数为 1（每个分片有一个副本）。如下图，蓝色的代表主分片，绿色的是副本，仔细一点不难发现，分片与其副本不在同一个节点内。这是非常合理的，因为副本本来就是主分片的备胎，当主分片节点挂了，另外一个节点的副本将会充当主分片，如果它们在同一个节点内，副本将发挥不到作用。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png"></p>
+<p><strong>水平扩展原理</strong></p>
+<p>单个节点的容量是有限的，如果后期两个节点的容量不能够支持三个分片，那么另外启动一个节点就可以了，ES 会自动的重新规划分片，如下图：可以看到 A3 节点已经被自动的分配到 Node3 节点里面了，另外副本 B1 从 Node2 移动到 Node3 节点，B3 分片从 Node1 节点被分配到 Node2 节点。这里想一下，如果再启动一个节点呢？是的，再启动一个节点将不会对主分片起到任何作用，因为主分片不可以修改，只有三个，但是副本可以修改，能够起到扩容的作用。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/es/" rel="tag"># es</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/passages/Java多线程JUC原子类之AtomicReference/" rel="prev" title="Java多线程JUC原子类之AtomicReference">
+      <i class="fa fa-chevron-left"></i> Java多线程JUC原子类之AtomicReference
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ES集群核心概念"><span class="nav-number">1.</span> <span class="nav-text">ES集群核心概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1）Cluster：集群"><span class="nav-number">1.0.1.</span> <span class="nav-text">1）Cluster：集群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2）Node：节点"><span class="nav-number">1.0.2.</span> <span class="nav-text">2）Node：节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3）Index：索引"><span class="nav-number">1.0.3.</span> <span class="nav-text">3）Index：索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4）Shard：分片"><span class="nav-number">1.0.4.</span> <span class="nav-text">4）Shard：分片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5）路由"><span class="nav-number">1.0.5.</span> <span class="nav-text">5）路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6）Replia：副本"><span class="nav-number">1.0.6.</span> <span class="nav-text">6）Replia：副本</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">冯雪超</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">82</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/littlefxc" title="GitHub → https://github.com/littlefxc" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2575974990@qq.com" title="E-Mail → mailto:2575974990@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">冯雪超</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/muse.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -29,7 +29,7 @@
 <meta property="og:description" content="准备工作查看系统版本12[root@k8s-master-1 ~]# cat /etc/centos-releaseCentOS Linux release 7.6.1810 (Core) overlay2介绍 overlay的改进版，只支持4.0以上内核添加了Multiple lower layers in overlayfs的特性，所以overlay2可以直接造成muitiple lower">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://littlefxc.gitee.io/blog/passages/Kubenete集群安装指南/Kubenete集群安装指南/">
-<meta property="og:updated_time" content="2020-05-28T03:02:39.980Z">
+<meta property="og:updated_time" content="2021-02-05T08:48:19.093Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kubernetes集群安装指南">
 <meta name="twitter:description" content="准备工作查看系统版本12[root@k8s-master-1 ~]# cat /etc/centos-releaseCentOS Linux release 7.6.1810 (Core) overlay2介绍 overlay的改进版，只支持4.0以上内核添加了Multiple lower layers in overlayfs的特性，所以overlay2可以直接造成muitiple lower">
@@ -200,7 +200,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-28 11:02:39" itemprop="dateModified" datetime="2020-05-28T11:02:39+08:00">2020-05-28</time>
+                <time title="修改时间：2021-02-05 16:48:19" itemprop="dateModified" datetime="2021-02-05T16:48:19+08:00">2021-02-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -263,7 +263,7 @@
 <p>查看节点，<code>kubectl get node</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS     ROLES    AGE     VERSION</span><br><span class="line">k8s-master-1   NotReady   master   3m25s   v1.18.0</span><br></pre></td></tr></table></figure>
 <p>node节点为<code>NotReady</code>，因为 pod <code>coredns</code> 没有启动，缺少网络pod.</p>
-<h2 id="安装-calico-网络"><a href="#安装-calico-网络" class="headerlink" title="安装 calico 网络"></a>安装 calico 网络</h2><p>官方文档地址：<a href="https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#instructions" target="_blank" rel="noopener">Instructions</a></p>
+<h2 id="安装-calico-网络"><a href="#安装-calico-网络" class="headerlink" title="安装 calico 网络"></a>安装 calico 网络</h2><p>官方文档地址：<a href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/" target="_blank" rel="noopener">Instructions</a></p>
 <h3 id="下载-calico-的-k8s-文件"><a href="#下载-calico-的-k8s-文件" class="headerlink" title="下载 calico 的 k8s 文件"></a>下载 calico 的 k8s 文件</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat kubeadm-init.yaml | grep serviceSubnet:</span></span><br><span class="line">  serviceSubnet: 10.96.0.0/12</span><br></pre></td></tr></table></figure>
 <p>打开 <code>calico.yaml</code>, 将<code>192.168.0.0/16</code>修改为<code>10.96.0.0/12</code></p>
 <blockquote>
@@ -274,11 +274,11 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS   ROLES    AGE   VERSION</span><br><span class="line">k8s-master-1   Ready    master   15m   v1.18.0</span><br></pre></td></tr></table></figure>
 <h2 id="安装-dashboard"><a href="#安装-dashboard" class="headerlink" title="安装 dashboard"></a>安装 dashboard</h2><h3 id="部署-dashboard"><a href="#部署-dashboard" class="headerlink" title="部署 dashboard"></a>部署 dashboard</h3><p>官方文档：<a href="https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/" target="_blank" rel="noopener">网页界面 (Dashboard)</a></p>
 <p>官方部署dashboard的服务没使用nodeport，将yaml文件下载到本地，在service里添加<code>NodePort</code></p>
-<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>官方文档地址: <a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user" target="_blank" rel="noopener">Creating sample user</a></p>
+<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>官方文档地址: <a href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md" target="_blank" rel="noopener">Creating sample user</a></p>
 <p>创建一个用于登录Dashboard的用户. 创建文件<code>dashboard-adminuser.yaml</code>内容如下:</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line"><span class="attr">  apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line"><span class="attr">  kind:</span> <span class="string">ClusterRole</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="attr">- kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">  namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure>
 <p>执行命令<code>kubectl apply -f dashboard-adminuser.yaml</code>.</p>
-<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>官方文档地址：<a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user#bearer-token" target="_blank" rel="noopener">Bearer Token</a></p>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>官方文档地址：<a href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md" target="_blank" rel="noopener">Bearer Token</a></p>
 <p>使用token进行登录，执行下面命令获取token</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-t4hxz  | grep token | awk <span class="string">'NR==3&#123;print $2&#125;'</span></span><br></pre></td></tr></table></figure>
 <p>复制该Token到登录页, 点击登录即可, 效果如下:</p>
@@ -389,7 +389,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-count">140</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -402,7 +402,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">81</span>
+        <span class="site-state-item-count">82</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
