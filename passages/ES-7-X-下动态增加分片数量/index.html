@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.gitee.io","root":"/blog/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 背景在老版本的ES（例如2.3版本）中， index的shard数量定好后，就不能再修改，除非重建数据才能实现。 从ES6.1开始，ES 支持可以在线操作扩大shard的数量（注意：操作期间也需要对index锁写） 从ES7.0开始，split时候，不再需要加参数 index.number_of_routing_shards 具体参考官方文档： https://www.elastic.co/g">
+<meta name="keywords" content="es,elk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ES 7.X 下动态增加分片数量">
+<meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/ES-7-X-下动态增加分片数量/index.html">
+<meta property="og:site_name" content="littlefxc&#39;s blog">
+<meta property="og:description" content="1 背景在老版本的ES（例如2.3版本）中， index的shard数量定好后，就不能再修改，除非重建数据才能实现。 从ES6.1开始，ES 支持可以在线操作扩大shard的数量（注意：操作期间也需要对index锁写） 从ES7.0开始，split时候，不再需要加参数 index.number_of_routing_shards 具体参考官方文档： https://www.elastic.co/g">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/774.jpg">
+<meta property="og:updated_time" content="2021-02-19T13:55:45.484Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ES 7.X 下动态增加分片数量">
+<meta name="twitter:description" content="1 背景在老版本的ES（例如2.3版本）中， index的shard数量定好后，就不能再修改，除非重建数据才能实现。 从ES6.1开始，ES 支持可以在线操作扩大shard的数量（注意：操作期间也需要对index锁写） 从ES7.0开始，split时候，不再需要加参数 index.number_of_routing_shards 具体参考官方文档： https://www.elastic.co/g">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/774.jpg">
+
+<link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/ES-7-X-下动态增加分片数量/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ES 7.X 下动态增加分片数量 | littlefxc's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">littlefxc's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/littlefxc" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES-7-X-下动态增加分片数量/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ES 7.X 下动态增加分片数量
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-19 21:54:09 / 修改时间：21:55:45" itemprop="dateCreated datePublished" datetime="2021-02-19T21:54:09+08:00">2021-02-19</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1 背景"></a>1 <strong>背景</strong></h1><p>在老版本的ES（例如2.3版本）中， index的shard数量定好后，就不能再修改，除非重建数据才能实现。</p>
+<p>从ES6.1开始，ES 支持可以在线操作扩大shard的数量（注意：操作期间也需要对index锁写）</p>
+<p>从ES7.0开始，split时候，不再需要加参数 index.number_of_routing_shards</p>
+<p><strong>具体参考官方文档：</strong></p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-split-index.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-split-index.html</a></p>
+<p><a href="https://www.elastic.co/guide/en/elasticsearch/reference/6.1/indices-split-index.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/6.1/indices-split-index.html</a></p>
+<h1 id="2-split的过程："><a href="#2-split的过程：" class="headerlink" title="2 split的过程："></a>2 <strong>split的过程：</strong></h1><p>1、创建一个新的目标index，其定义与源index相同，但是具有更多的primary shard。</p>
+<p>2、将segment从源index硬链接到目标index。（如果文件系统不支持硬链接，则将所有segment都复制到新索引中，这是一个非常耗时的过程。）</p>
+<p>3、创建低级文件后，再次对所有文档进行哈希处理，以删除属于不同shard的documents</p>
+<p>4、恢复目标索引，就像它是刚刚重新打开的封闭索引一样。</p>
+<h1 id="3-为啥ES不支持增量resharding？"><a href="#3-为啥ES不支持增量resharding？" class="headerlink" title="3 为啥ES不支持增量resharding？"></a>3 <strong>为啥ES不支持增量resharding？</strong></h1><p>从N个分片到N + 1个分片。增量重新分片确实是许多键值存储支持的功能。仅添加一个新的分片并将新的数据推入该新的分片是不可行的：这可能是一个索引瓶颈，并根据给定的_id来确定文档所属的分片，这对于获取，删除和更新请求是必需的，会变得很复杂。这意味着我们需要使用其他哈希方案重新平衡现有数据。</p>
+<p>键值存储有效执行此操作的最常见方式是使用一致的哈希。当分片的数量从N增加到N + 1时，一致的哈希仅需要重定位键的1 / N。但是，Elasticsearch的存储单位（碎片）是Lucene索引。由于它们以搜索为导向的数据结构，仅占Lucene索引的很大一部分，即仅占5％的文档，将其删除并在另一个分片上建立索引通常比键值存储要高得多的成本。如上节所述，当通过增加乘数来增加分片数量时，此成本保持合理：这允许Elasticsearch在本地执行拆分，这又允许在索引级别执行拆分，而不是为需要重新索引的文档重新编制索引移动，以及使用硬链接进行有效的文件复制。</p>
+<p>对于仅追加数据，可以通过创建新索引并将新数据推送到其中，同时添加一个别名来覆盖读取操作的新旧索引，从而获得更大的灵活性。假设旧索引和新索引分别具有M和N个分片，与搜索具有M + N个分片的索引相比，这没有开销。</p>
+<h1 id="4-索引能进行split的前提条件："><a href="#4-索引能进行split的前提条件：" class="headerlink" title="4 索引能进行split的前提条件："></a>4 <strong>索引能进行split的前提条件：</strong></h1><p>1、目标索引不能存在。</p>
+<p>2、源索引必须比目标索引具有更少的primary shard。</p>
+<p>3、目标索引中主shard的数量必须是源索引中主shard的数量的倍数。</p>
+<p>4、处理拆分过程的节点必须具有足够的可用磁盘空间，以容纳现有索引的第二个副本。</p>
+<h1 id="5-操作"><a href="#5-操作" class="headerlink" title="5 操作"></a>5 <strong>操作</strong></h1><p><strong>下面是具体的实验部分：</strong></p>
+<blockquote>
+<p>tips：实验机器有限，索引的replica都设置为0，生产上至少replica&gt;=1</p>
+</blockquote>
+<h2 id="5-1-创建一个索引，2个主shard，没有副本"><a href="#5-1-创建一个索引，2个主shard，没有副本" class="headerlink" title="5.1 创建一个索引，2个主shard，没有副本"></a>5.1 <strong>创建一个索引，2个主shard，没有副本</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “&lt;http://localhost:9200/twitter?pretty”&gt; -H ‘Content-Type: application/json’ -d’ &#123; “settings”: &#123; “index.number_of_shards”: 2, “index.number_of_replicas”: 0 &#125;, “aliases”: &#123; “my_search_indices”: &#123;&#125; &#125; &#125;’ </span><br><span class="line"><span class="comment"># index.number_of_shards：主分片设定个数 </span></span><br><span class="line"><span class="comment"># index.number_of_replicas：副本分片设定个数，一个副本就等于把整个索引备份1份 </span></span><br><span class="line"><span class="comment"># aliases：设定索引别名”my_search_indices”</span></span><br></pre></td></tr></table></figure>
+<h3 id="写入几条测试数据"><a href="#写入几条测试数据" class="headerlink" title="写入几条测试数据"></a><strong>写入几条测试数据</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “&lt;http://localhost:9200/my_search_indices/_doc/11?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 11, “name”:“lee”, “age”:“23” &#125;’ </span><br><span class="line"></span><br><span class="line">curl -s –X PUT “&lt;http://localhost:9200/my_search_indices/_doc/22?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 22, “name”:“amd”, “age”:“22” &#125;’</span><br></pre></td></tr></table></figure>
+<h3 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a><strong>查询数据</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -XGET “&lt;http://localhost:9200/my_search_indices/_search”&gt; | jq .</span><br></pre></td></tr></table></figure>
+<h2 id="5-2-对索引锁写，以便下面执行split操作"><a href="#5-2-对索引锁写，以便下面执行split操作" class="headerlink" title="5.2 对索引锁写，以便下面执行split操作"></a>5.2 <strong>对索引锁写，以便下面执行split操作</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “&lt;http://localhost:9200/twitter/_settings?pretty”&gt; -H ‘Content-Type: application/json’ -d ‘&#123; “settings”: &#123; “index.blocks.write”: <span class="literal">true</span> &#125; &#125;’ </span><br><span class="line"><span class="comment"># index.blocks.write：写入锁定，只能读，不能写</span></span><br></pre></td></tr></table></figure>
+<h3 id="写数据测试，确保锁写生效"><a href="#写数据测试，确保锁写生效" class="headerlink" title="写数据测试，确保锁写生效"></a><strong>写数据测试，确保锁写生效</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “&lt;http://localhost:9200/twitter/_doc/33?pretty”&gt; -H ‘Content-Type: application/json’ -d ‘&#123; “id”: 33, “name”:“amd”, “age”:“33” &#125;’ </span><br><span class="line"><span class="comment"># 测试写入失败</span></span><br></pre></td></tr></table></figure>
+<h3 id="取消-twitter-索引的alias"><a href="#取消-twitter-索引的alias" class="headerlink" title="取消 twitter 索引的alias"></a><strong>取消 twitter 索引的alias</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X POST “&lt;http://localhost:9200/_aliases?pretty”&gt; -H ‘Content-Type: application/json’ -d ‘&#123; “actions” : [ &#123; “remove” : &#123; “index” : “twitter”, “<span class="built_in">alias</span>” : “my_search_indices” &#125; &#125; ] &#125;‘ </span><br><span class="line"></span><br><span class="line">curl -s -X GET “&lt;http://localhost:9200/_cat/aliases”&gt;</span><br></pre></td></tr></table></figure>
+<p>第二种方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取消索引别名 </span></span><br><span class="line">curl -s -X DELETE “&lt;http://localhost:9200/twitter/_alias/my_search_indices”&gt; </span><br><span class="line">curl -s -X GET“&lt;http://localhost:9200/_cat/aliases”&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="5-3-开始执行-split-切分索引的操作，调整后索引名称为new-twitter，且主shard数量为8"><a href="#5-3-开始执行-split-切分索引的操作，调整后索引名称为new-twitter，且主shard数量为8" class="headerlink" title="5.3 开始执行 split 切分索引的操作，调整后索引名称为new_twitter，且主shard数量为8"></a>5.3 <strong>开始执行 split 切分索引的操作，调整后索引名称为new_twitter，且主shard数量为8</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X POST “&lt;http://localhost:9200/twitter/_split/new_twitter?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “settings”: &#123; “index.number_of_shards”: 8, “index.number_of_replicas”: 0 &#125; &#125;’</span><br></pre></td></tr></table></figure>
+<h3 id="对新的index添加alias"><a href="#对新的index添加alias" class="headerlink" title="对新的index添加alias"></a><strong>对新的index添加alias</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X POST “&lt;http://localhost:9200/_aliases?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “actions” : [ &#123; “add” : &#123; “index” : “new_twitter”, “<span class="built_in">alias</span>” : “my_search_indices” &#125; &#125; ] &#125;’</span><br></pre></td></tr></table></figure>
+<p>第二种方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新建索引别名 </span></span><br><span class="line">curl -s -X PUT “&lt;http://localhost:9200/new_twitter/_alias/my_search_indices”&gt;</span><br></pre></td></tr></table></figure>
+<p>结果：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">	<span class="attr">"acknowledged"</span> : <span class="literal">true</span>, </span><br><span class="line">  <span class="attr">"shards_acknowledged” : true, </span></span><br><span class="line">  "index" : "new_twitter" </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>补充：</strong></p>
+<p><strong>查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。</strong></p>
+<h2 id="5-4-查看新索引的数据，能正常查看"><a href="#5-4-查看新索引的数据，能正常查看" class="headerlink" title="5.4 查看新索引的数据，能正常查看"></a>5.4 <strong>查看新索引的数据，能正常查看</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -XGET “&lt;http://localhost:9200/my_search_indices/_search”&gt; | jq .</span><br></pre></td></tr></table></figure>
+<h3 id="查看split的进度，可以使用-cat-recovery-这个api，-或者在-cerebro-界面上查看。"><a href="#查看split的进度，可以使用-cat-recovery-这个api，-或者在-cerebro-界面上查看。" class="headerlink" title="查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。"></a><strong>查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X GET “&lt;http://localhost:9200/_cat/recovery”&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="对新索引写数据测试-可以看到失败的"><a href="#对新索引写数据测试-可以看到失败的" class="headerlink" title="对新索引写数据测试,可以看到失败的"></a><strong>对新索引写数据测试,可以看到失败的</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “localhost:9200/my_search_indices/_doc/33?pretty” -H ‘Content-Type: application/json’ -d ‘&#123; “id”: 33, “name”:“amd”, “age”:“33” &#125;’ <span class="comment"># 写入失败</span></span><br></pre></td></tr></table></figure>
+<h3 id="打开索引的写功能"><a href="#打开索引的写功能" class="headerlink" title="打开索引的写功能"></a><strong>打开索引的写功能</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_settings?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “settings”: &#123; “index.blocks.write”: <span class="literal">false</span> &#125; &#125;’</span><br></pre></td></tr></table></figure>
+<h3 id="再次对新索引写数据测试-可以看到此时，写入是成功的"><a href="#再次对新索引写数据测试-可以看到此时，写入是成功的" class="headerlink" title="再次对新索引写数据测试,可以看到此时，写入是成功的"></a><strong>再次对新索引写数据测试,可以看到此时，写入是成功的</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_doc/33?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 33, “name”:“amd”, “age”:“33” &#125;’ </span><br><span class="line"></span><br><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_doc/44?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 44, “name”:“intel”, “age”:“4” &#125;’</span><br></pre></td></tr></table></figure>
+<p>此时，老的那个索引还是只读的，我们确保新索引OK后，就可以考虑关闭或者删除老的 twitter索引了。</p>
+<h3 id="测试将新数据写入别名"><a href="#测试将新数据写入别名" class="headerlink" title="测试将新数据写入别名"></a><strong>测试将新数据写入别名</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_doc/44?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 44, “name”:“amd”, “age”:“44” &#125;’ </span><br><span class="line"><span class="comment"># 写入也是ok 的</span></span><br></pre></td></tr></table></figure>
+<h3 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a><strong>删除索引</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X DELETE “&lt;http://localhost:9200/new_twitter”&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h1><p>贴一张 生产环境执行后的index的截图，可以看到新的index的每个shard体积只有老index的一半，这样也就分摊了index的压力：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/774.jpg" alt="https://www.xiaohuait.com/wp-content/uploads/2020/09/774.jpg"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blog/tags/es/" rel="tag"># es</a>
+              <a href="/blog/tags/elk/" rel="tag"># elk</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog/passages/ES集群核心概念之集群、分片、副本/" rel="prev" title="ES集群核心概念之集群、分片、副本">
+      <i class="fa fa-chevron-left"></i> ES集群核心概念之集群、分片、副本
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blog/passages/KAFKA-配置参数详解/" rel="next" title="KAFKA 配置参数详解">
+      KAFKA 配置参数详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-背景"><span class="nav-number">1.</span> <span class="nav-text">1 背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-split的过程："><span class="nav-number">2.</span> <span class="nav-text">2 split的过程：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-为啥ES不支持增量resharding？"><span class="nav-number">3.</span> <span class="nav-text">3 为啥ES不支持增量resharding？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-索引能进行split的前提条件："><span class="nav-number">4.</span> <span class="nav-text">4 索引能进行split的前提条件：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-操作"><span class="nav-number">5.</span> <span class="nav-text">5 操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-创建一个索引，2个主shard，没有副本"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 创建一个索引，2个主shard，没有副本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写入几条测试数据"><span class="nav-number">5.1.1.</span> <span class="nav-text">写入几条测试数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询数据"><span class="nav-number">5.1.2.</span> <span class="nav-text">查询数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-对索引锁写，以便下面执行split操作"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 对索引锁写，以便下面执行split操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写数据测试，确保锁写生效"><span class="nav-number">5.2.1.</span> <span class="nav-text">写数据测试，确保锁写生效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消-twitter-索引的alias"><span class="nav-number">5.2.2.</span> <span class="nav-text">取消 twitter 索引的alias</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-开始执行-split-切分索引的操作，调整后索引名称为new-twitter，且主shard数量为8"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 开始执行 split 切分索引的操作，调整后索引名称为new_twitter，且主shard数量为8</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对新的index添加alias"><span class="nav-number">5.3.1.</span> <span class="nav-text">对新的index添加alias</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-查看新索引的数据，能正常查看"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 查看新索引的数据，能正常查看</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查看split的进度，可以使用-cat-recovery-这个api，-或者在-cerebro-界面上查看。"><span class="nav-number">5.4.1.</span> <span class="nav-text">查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对新索引写数据测试-可以看到失败的"><span class="nav-number">5.4.2.</span> <span class="nav-text">对新索引写数据测试,可以看到失败的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开索引的写功能"><span class="nav-number">5.4.3.</span> <span class="nav-text">打开索引的写功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#再次对新索引写数据测试-可以看到此时，写入是成功的"><span class="nav-number">5.4.4.</span> <span class="nav-text">再次对新索引写数据测试,可以看到此时，写入是成功的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试将新数据写入别名"><span class="nav-number">5.4.5.</span> <span class="nav-text">测试将新数据写入别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除索引"><span class="nav-number">5.4.6.</span> <span class="nav-text">删除索引</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">冯雪超</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog/archives/">
+        
+          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/blog/categories/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blog/tags/">
+          
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/littlefxc" title="GitHub → https://github.com/littlefxc" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2575974990@qq.com" title="E-Mail → mailto:2575974990@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">冯雪超</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog/lib/anime.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.min.js"></script>
+  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
+<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
+<script src="/blog/js/schemes/muse.js"></script>
+<script src="/blog/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

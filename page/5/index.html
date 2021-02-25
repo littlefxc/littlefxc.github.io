@@ -162,6 +162,338 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-自定义模板配置中文分词/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Logstash数据同步-自定义模板配置中文分词/" class="post-title-link" itemprop="url">Logstash数据同步 - 自定义模板配置中文分词</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-14 22:39:14 / 修改时间：22:40:09" itemprop="dateCreated datePublished" datetime="2021-01-14T22:39:14+08:00">2021-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前的数据同步，mappings映射会自动创建，但是分词不会，还是会使用默认的，而我们需要中文分词，这个时候就需要自定义模板功能来设置分词了。</p>
+<h1 id="查看Logstash默认模板"><a href="#查看Logstash默认模板" class="headerlink" title="查看Logstash默认模板"></a>查看Logstash默认模板</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_template/logstash</span><br></pre></td></tr></table></figure>
+<h1 id="修改模板如下"><a href="#修改模板如下" class="headerlink" title="修改模板如下"></a>修改模板如下</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"order"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"version"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"index_patterns"</span>: [<span class="string">"*"</span>],</span><br><span class="line">    <span class="string">"settings"</span>: &#123;</span><br><span class="line">        <span class="string">"index"</span>: &#123;</span><br><span class="line">            <span class="string">"refresh_interval"</span>: <span class="string">"5s"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"mappings"</span>: &#123;</span><br><span class="line">        <span class="string">"_default_"</span>: &#123;</span><br><span class="line">            <span class="string">"dynamic_templates"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"message_field"</span>: &#123;</span><br><span class="line">                        <span class="string">"path_match"</span>: <span class="string">"message"</span>,</span><br><span class="line">                        <span class="string">"match_mapping_type"</span>: <span class="string">"string"</span>,</span><br><span class="line">                        <span class="string">"mapping"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">                            <span class="string">"norms"</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"string_fields"</span>: &#123;</span><br><span class="line">                        <span class="string">"match"</span>: <span class="string">"*"</span>,</span><br><span class="line">                        <span class="string">"match_mapping_type"</span>: <span class="string">"string"</span>,</span><br><span class="line">                        <span class="string">"mapping"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">                            <span class="string">"norms"</span>: <span class="literal">false</span>,</span><br><span class="line">                            <span class="string">"analyzer"</span>: <span class="string">"ik_max_word"</span>,</span><br><span class="line">                            <span class="string">"fields"</span>: &#123;</span><br><span class="line">                                <span class="string">"keyword"</span>: &#123;</span><br><span class="line">                                    <span class="string">"type"</span>: <span class="string">"keyword"</span>,</span><br><span class="line">                                    <span class="string">"ignore_above"</span>: <span class="number">256</span></span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">"properties"</span>: &#123;</span><br><span class="line">                <span class="string">"@timestamp"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"date"</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"@version"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"keyword"</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"geoip"</span>: &#123;</span><br><span class="line">                    <span class="string">"dynamic"</span>: <span class="literal">true</span>,</span><br><span class="line">                    <span class="string">"properties"</span>: &#123;</span><br><span class="line">                        <span class="string">"ip"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"ip"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"location"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"geo_point"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"latitude"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"half_float"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"longitude"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"half_float"</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"aliases"</span>: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="新增如下配置，用于更新模板，设置中文分词"><a href="#新增如下配置，用于更新模板，设置中文分词" class="headerlink" title="新增如下配置，用于更新模板，设置中文分词"></a>新增如下配置，用于更新模板，设置中文分词</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 定义模板名称</span><br><span class="line">template_name =&gt; <span class="string">"myik"</span></span><br><span class="line"># 模板所在位置</span><br><span class="line">template =&gt; <span class="string">"/usr/local/logstash-6.4.3/sync/logstash-ik.json"</span></span><br><span class="line"># 重写模板</span><br><span class="line">template_overwrite =&gt; <span class="literal">true</span></span><br><span class="line"># 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">manage_template =&gt; <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h1 id="重新运行Logstash进行同步"><a href="#重新运行Logstash进行同步" class="headerlink" title="重新运行Logstash进行同步"></a>重新运行Logstash进行同步</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/local/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-配置/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Logstash数据同步-配置/" class="post-title-link" itemprop="url">Logstash数据同步-配置</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-14 22:20:07 / 修改时间：23:05:09" itemprop="dateCreated datePublished" datetime="2021-01-14T22:20:07+08:00">2021-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="logstash同步数据库配置"><a href="#logstash同步数据库配置" class="headerlink" title="logstash同步数据库配置"></a>logstash同步数据库配置</h1><ol>
+<li>上传并解压logstash，路径为 <code>/usr/local/logstash</code></li>
+<li>创建文件名：logstash-db-sync.conf，后缀为<code>conf</code>，文件名随意，位置也随意，为方便起见，路径为<code>/usr/local/logstash/sync</code></li>
+<li>把数据库驱动拷贝至<code>/usr/local/logstash/sync</code>下</li>
+<li><p>配置内容如下：</p>
+   <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">input</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">jdbc</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="comment"># 设置 MySql/MariaDB 数据库url以及数据库名称</span></span><br><span class="line">        <span class="string">jdbc_connection_string</span> <span class="string">=&gt;</span> <span class="string">"jdbc:mysql://192.168.1.6:3306/foodie-shop-dev?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true"</span></span><br><span class="line">        <span class="comment"># 用户名和密码</span></span><br><span class="line">        <span class="string">jdbc_user</span> <span class="string">=&gt;</span> <span class="string">"root"</span></span><br><span class="line">        <span class="string">jdbc_password</span> <span class="string">=&gt;</span> <span class="string">"root"</span></span><br><span class="line">        <span class="comment"># 数据库驱动所在位置，可以是绝对路径或者相对路径</span></span><br><span class="line">        <span class="string">jdbc_driver_library</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/mysql-connector-java-5.1.41.jar"</span></span><br><span class="line">        <span class="comment"># 驱动类名</span></span><br><span class="line">        <span class="string">jdbc_driver_class</span> <span class="string">=&gt;</span> <span class="string">"com.mysql.jdbc.Driver"</span></span><br><span class="line">        <span class="comment"># 开启分页</span></span><br><span class="line">        <span class="string">jdbc_paging_enabled</span> <span class="string">=&gt;</span> <span class="string">"true"</span></span><br><span class="line">        <span class="comment"># 分页每页数量，可以自定义</span></span><br><span class="line">        <span class="string">jdbc_page_size</span> <span class="string">=&gt;</span> <span class="string">"10000"</span></span><br><span class="line">        <span class="comment"># 执行的sql文件路径</span></span><br><span class="line">        <span class="string">statement_filepath</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/foodie-items.sql"</span></span><br><span class="line">        <span class="comment"># 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span></span><br><span class="line">        <span class="string">schedule</span> <span class="string">=&gt;</span> <span class="string">"* * * * *"</span></span><br><span class="line">        <span class="comment"># 索引类型</span></span><br><span class="line">        <span class="string">type</span> <span class="string">=&gt;</span> <span class="string">"_doc"</span></span><br><span class="line">        <span class="comment"># 是否开启记录上次追踪的结果，也就是上次更新的时间，这个会记录到 last_run_metadata_path 的文件</span></span><br><span class="line">        <span class="string">use_column_value</span> <span class="string">=&gt;</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 记录上一次追踪的结果值</span></span><br><span class="line">        <span class="string">last_run_metadata_path</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/track_time"</span></span><br><span class="line">        <span class="comment"># 如果 use_column_value 为true， 配置本参数，追踪的 column 名，可以是自增id或者时间</span></span><br><span class="line">        <span class="string">tracking_column</span> <span class="string">=&gt;</span> <span class="string">"updated_time"</span></span><br><span class="line">        <span class="comment"># tracking_column 对应字段的类型</span></span><br><span class="line">        <span class="string">tracking_column_type</span> <span class="string">=&gt;</span> <span class="string">"timestamp"</span></span><br><span class="line">        <span class="comment"># 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span></span><br><span class="line">        <span class="string">clean_run</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">        <span class="comment"># 数据库字段名称大写转小写</span></span><br><span class="line">        <span class="string">lowercase_column_names</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">output</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">elasticsearch</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="comment"># es地址</span></span><br><span class="line">        <span class="string">hosts</span> <span class="string">=&gt;</span> <span class="string">["192.168.1.187:9200"]</span></span><br><span class="line">        <span class="comment"># 同步的索引名</span></span><br><span class="line">        <span class="string">index</span> <span class="string">=&gt;</span> <span class="string">"foodie-items"</span></span><br><span class="line">        <span class="comment"># 设置_docID和数据相同。itemId与sql同步脚本中的itemId保持一致</span></span><br><span class="line">        <span class="string">document_id</span> <span class="string">=&gt;</span> <span class="string">"<span class="template-variable">%&#123;itemId&#125;</span>"</span></span><br><span class="line">        <span class="comment">#document_id =&gt; "%&#123;id&#125;"</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line">    <span class="comment"># 日志输出</span></span><br><span class="line">    <span class="string">stdout</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">codec</span> <span class="string">=&gt;</span> <span class="string">json_lines</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>sql同步脚本</p>
+   <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    i.id <span class="keyword">as</span> itemId,</span><br><span class="line">    i.item_name <span class="keyword">as</span> itemName,</span><br><span class="line">    i.sell_counts <span class="keyword">as</span> sellCounts,</span><br><span class="line">    ii.url <span class="keyword">as</span> imgUrl,</span><br><span class="line">    tempSpec.price_discount <span class="keyword">as</span> price,</span><br><span class="line">    i.updated_time <span class="keyword">as</span> updated_time</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    items i</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    items_img ii</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id = ii.item_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    (<span class="keyword">SELECT</span> item_id,<span class="keyword">MIN</span>(price_discount) <span class="keyword">as</span> price_discount <span class="keyword">from</span> items_spec <span class="keyword">GROUP</span> <span class="keyword">BY</span> item_id) tempSpec</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id = tempSpec.item_id</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    ii.is_main = <span class="number">1</span></span><br><span class="line">    <span class="keyword">and</span></span><br><span class="line">    i.updated_time &gt;= :sql_last_value</span><br><span class="line"><span class="comment">--:sql_last_value是记录的最后的一个值</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="启动logstatsh"><a href="#启动logstatsh" class="headerlink" title="启动logstatsh"></a>启动logstatsh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/<span class="built_in">local</span>/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.cnblogs.com/huhangfei/p/7605511.html" target="_blank" rel="noopener">Logstash使用介绍</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Logstash数据同步-介绍/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-14 22:18:19 / 修改时间：22:42:52" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
+<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
+<ul>
+<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
+<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
+</ul>
+<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
+<ul>
+<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
+</ul>
+<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
+<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg"></p>
+<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/spring-boot-2-3-7-es7-集成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/spring-boot-2-3-7-es7-集成/" class="post-title-link" itemprop="url">spring boot 2.3.7 + es7 集成</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-14 21:04:41 / 修改时间：21:05:49" itemprop="dateCreated datePublished" datetime="2021-01-14T21:04:41+08:00">2021-01-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="https://blog.csdn.net/qq_20280007/article/details/108388459?utm_medium=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control" target="_blank" rel="noopener">springboot2.3.3中关于spring-data-elasticsearch-4.0.3的使用_阿良~的博客-CSDN博客</a></p>
+<h1 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- spring boot 2.3.7 以上 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 2.3.7.RELEASE 支持 ES 7.X --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-webflux<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  elasticsearch:</span></span><br><span class="line"><span class="attr">    rest:</span></span><br><span class="line"><span class="attr">      uris:</span> <span class="string">&lt;http://localhost:9200&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="对象映射"><a href="#对象映射" class="headerlink" title="对象映射"></a><strong>对象映射</strong></h1><ul>
+<li><p>首先要清楚注解的使用。</p>
+<ul>
+<li>@Document：类注解，以指示该类是映射到数据库的候选对象。最重要的属性是：<ul>
+<li>indexName：用于存储此实体的索引的名称</li>
+<li>type：映射类型。如果未设置，则使用小写的类的简单名称。（当前版本开始不推荐使用）</li>
+<li>shards：索引的分片数。（经测试，分片数无法设置，应该是个BUG，推荐先创建索引设置好分片数和副本数）</li>
+<li>replicas：索引的副本数。（经测试，分片数无法设置，应该是个BUG）</li>
+<li>refreshIntervall：索引的刷新间隔。用于索引创建。默认值为“ 1s”。</li>
+<li>indexStoreType：索引的索引存储类型。用于索引创建。默认值为“ fs”。</li>
+<li>createIndex：配置是否在存储库引导中创建索引。默认值为true。</li>
+<li>versionType：版本管理的配置。默认值为EXTERNAL。</li>
+</ul>
+</li>
+<li>@Id：字段注解，以标记用于标识目的的字段。</li>
+<li>@Field：在字段级别应用并定义字段的属性，大多数属性映射到各自的Elasticsearch映射定义（以下列表不完整，请查看注释Javadoc以获取完整的参考）：<ul>
+<li>name：字段名称，它将在Elasticsearch文档中表示，如果未设置，则使用Java字段名称。</li>
+<li>type：字段类型，可以是文本，关键字，长整数，短整数，字节，双精度，浮点型，半浮点数，标度浮点数，日期，布尔值，二进制，整数等。（属性（FieldType）类型不灵活）</li>
+<li>format和日期类型的pattern定义。必须为日期类型定义。</li>
+<li>store：标记是否将原始字段值存储在Elasticsearch中，默认值为false。</li>
+<li>analyzer，searchAnalyzer，normalizer用于指定自定义分析和正规化。</li>
+</ul>
+</li>
+<li>@GeoPoint：将字段标记为geo_point数据类型。如果字段是GeoPoint类的实例，则可以省略。</li>
+</ul>
+</li>
+<li><p>示例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.data.annotation.Id;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Field;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.FieldType;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 经测试，更改 shards，replicas的值无法更改</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Document</span>(indexName = <span class="string">"stu"</span>, shards = <span class="number">3</span>, replicas = <span class="number">2</span>, createIndex = <span class="keyword">false</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stu</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long stuId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Float money;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>, type = FieldType.Keyword)</span><br><span class="line">    <span class="keyword">private</span> String sign;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String description;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 getter、setter</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Stu&#123;"</span> +</span><br><span class="line">                <span class="string">"stuId="</span> + stuId +</span><br><span class="line">                <span class="string">", name='"</span> + name + <span class="string">'\\'</span><span class="string">' +</span></span><br><span class="line"><span class="string">                ", age=" + age +</span></span><br><span class="line"><span class="string">                ", money=" + money +</span></span><br><span class="line"><span class="string">                ", sign='</span><span class="string">" + sign + '\\'' +</span></span><br><span class="line"><span class="string">                "</span>, description=<span class="string">'" + description + '</span>\\<span class="string">''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="ElasticsearchRestTemplate-用法"><a href="#ElasticsearchRestTemplate-用法" class="headerlink" title="ElasticsearchRestTemplate 用法"></a>ElasticsearchRestTemplate 用法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fengxuechao.FoodieSearchApp;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.es.pojo.Stu;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.index.query.QueryBuilders;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.FieldSortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortOrder;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.PageRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.Pageable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHit;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHits;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.query.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span>(classes = FoodieSearchApp.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ElasticsearchRestTemplate esTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 不建议使用 ElasticsearchRestTemplate 对索引进行管理（创建索引，更新映射，删除索引）</span></span><br><span class="line"><span class="comment">     * 索引就像是数据库或者数据库中的表，我们平时是不会是通过java代码频繁的去创建修改删除数据库或者表的</span></span><br><span class="line"><span class="comment">     * 我们只会针对数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 在es中也是同理，我们尽量使用 ElasticsearchRestTemplate 对文档数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 1. 属性（FieldType）类型不灵活</span></span><br><span class="line"><span class="comment">     * 2. 主分片与副本分片数无法设置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Stu stu = <span class="keyword">new</span> Stu();</span><br><span class="line">        stu.setStuId(<span class="number">1007L</span>);</span><br><span class="line">        stu.setName(<span class="string">"iron man"</span>);</span><br><span class="line">        stu.setAge(<span class="number">22</span>);</span><br><span class="line">        stu.setMoney(<span class="number">1000.8f</span>);</span><br><span class="line">        stu.setSign(<span class="string">"I am iron man"</span>);</span><br><span class="line">        stu.setDescription(<span class="string">"I have a spider man"</span>);</span><br><span class="line"></span><br><span class="line">        IndexQuery indexQuery = <span class="keyword">new</span> IndexQueryBuilder().withObject(stu).build();</span><br><span class="line">        esTemplate.index(indexQuery, esTemplate.getIndexCoordinatesFor(stu.getClass()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.indexOps(Stu.class).delete();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; sourceMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        sourceMap.put(<span class="string">"name"</span>, <span class="string">"spider man"</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"money"</span>, <span class="number">99.8f</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"age"</span>, <span class="number">33</span>);</span><br><span class="line"></span><br><span class="line">        IndexRequest indexRequest = <span class="keyword">new</span> IndexRequest();</span><br><span class="line">        indexRequest.source(sourceMap);</span><br><span class="line"></span><br><span class="line">        UpdateQuery updateQuery = UpdateQuery.builder(<span class="string">"1004"</span>)</span><br><span class="line">                .withDocument(Document.from(sourceMap))</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">//        update stu set sign='abc',age=33,money=88.6 where docId='1002'</span></span><br><span class="line"></span><br><span class="line">        esTemplate.update(updateQuery, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Stu stu = esTemplate.get(<span class="string">"1004"</span>, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(stu);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.delete(<span class="string">"1002"</span>, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">searchStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class, esTemplate.getIndexCoordinatesFor(Stu.class));</span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : hits) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">highlightStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String preTag = <span class="string">"&lt;font color='red'&gt;"</span>;</span><br><span class="line">        String postTag = <span class="string">"&lt;/font&gt;"</span>;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        SortBuilder sortBuilder = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"money"</span>)</span><br><span class="line">                .order(SortOrder.DESC);</span><br><span class="line">        SortBuilder sortBuilderAge = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"age"</span>)</span><br><span class="line">                .order(SortOrder.ASC);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withHighlightFields(<span class="keyword">new</span> HighlightBuilder.Field(<span class="string">"description"</span>)</span><br><span class="line">                        .preTags(preTag)</span><br><span class="line">                        .postTags(postTag))</span><br><span class="line">                .withSort(sortBuilder)</span><br><span class="line">                .withSort(sortBuilderAge)</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="comment">// 将</span></span><br><span class="line">        List&lt;SearchHit&lt;Stu&gt;&gt; list = hits.get()</span><br><span class="line">                .peek(stuSearchHit -&gt; stuSearchHit.getContent().setDescription(stuSearchHit.getHighlightField(<span class="string">"description"</span>).get(<span class="number">0</span>))).collect(Collectors.toList());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : list) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Elasticsearch-6-4-3-整合SpringBoot-配置文件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -763,561 +1095,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES-之-DSL-搜索/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/ES-之-DSL-搜索/" class="post-title-link" itemprop="url">ES 之 DSL 搜索</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-12 20:56:00" itemprop="dateCreated datePublished" datetime="2021-01-12T20:56:00+08:00">2021-01-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-18 21:35:39" itemprop="dateModified" datetime="2021-02-18T21:35:39+08:00">2021-02-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-准备数据"><a href="#1-准备数据" class="headerlink" title="1 准备数据"></a>1 准备数据</h1><ul>
-<li><p>建立索引 shop（名字随意）</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_mapping</span><br><span class="line">&#123; <span class="string">"properties"</span>: &#123; <span class="string">"id"</span>: &#123; <span class="string">"type"</span>: <span class="string">"long"</span> &#125;, <span class="string">"age"</span>: &#123; <span class="string">"type"</span>: <span class="string">"integer"</span> &#125;, <span class="string">"username"</span>: &#123; <span class="string">"type"</span>: <span class="string">"keyword"</span> &#125;, <span class="string">"nickname"</span>: &#123; <span class="string">"type"</span>: <span class="string">"text"</span>, <span class="string">"analyzer"</span>: <span class="string">"ik_max_word"</span> &#125;, <span class="string">"money"</span>: &#123; <span class="string">"type"</span>: <span class="string">"float"</span> &#125;, <span class="string">"desc"</span>: &#123; <span class="string">"type"</span>: <span class="string">"text"</span>, <span class="string">"analyzer"</span>: <span class="string">"ik_max_word"</span> &#125;, <span class="string">"sex"</span>: &#123; <span class="string">"type"</span>: <span class="string">"byte"</span> &#125;, <span class="string">"birthday"</span>: &#123; <span class="string">"type"</span>: <span class="string">"date"</span> &#125;, <span class="string">"face"</span>: &#123; <span class="string">"type"</span>: <span class="string">"text"</span>, <span class="string">"index"</span>: <span class="literal">false</span> &#125; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>录入数据</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/1001</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1001,</span><br><span class="line">    <span class="string">"age"</span>: 18,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"imoocAmazing"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"慕课网"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 88.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"我在慕课网学习java和前端，学习到了很多知识"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 0,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1992-12-24"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1002</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1002,</span><br><span class="line">    <span class="string">"age"</span>: 19,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"justbuy"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"周杰棍"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 77.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"今天上下班都很堵，车流量很大"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1993-01-24"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1003</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1003,</span><br><span class="line">    <span class="string">"age"</span>: 20,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"bigFace"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"飞翔的巨鹰"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 66.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"慕课网团队和导游坐飞机去海外旅游，去了新马泰和欧洲"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1996-01-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1004</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1004,</span><br><span class="line">    <span class="string">"age"</span>: 22,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"flyfish"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"水中鱼"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 55.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"昨天在学校的池塘里，看到有很多鱼在游泳，然后就去慕课网上课了"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 0,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1988-02-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1005</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1005,</span><br><span class="line">    <span class="string">"age"</span>: 25,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"gotoplay"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"ps游戏机"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 155.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"今年生日，女友送了我一台play station游戏机，非常好玩，非常不错"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1989-03-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1006</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1006,</span><br><span class="line">    <span class="string">"age"</span>: 19,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"missimooc"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"我叫小慕"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 156.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"我叫凌云慕，今年20岁，是一名律师，我在琦䯲星球做演讲"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1993-04-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1007</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1007,</span><br><span class="line">    <span class="string">"age"</span>: 19,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"msgame"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"gamexbox"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 1056.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"明天去进货，最近微软处理很多游戏机，还要买xbox游戏卡带"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1985-05-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1008</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1008,</span><br><span class="line">    <span class="string">"age"</span>: 19,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"muke"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"慕学习"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 1056.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"大学毕业后，可以到imooc.com进修"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1995-06-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1009</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1009,</span><br><span class="line">    <span class="string">"age"</span>: 22,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"shaonian"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"骚年轮"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 96.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"骚年在大学毕业后，考研究生去了"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1998-07-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1010</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1010,</span><br><span class="line">    <span class="string">"age"</span>: 30,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"tata"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"隔壁老王"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 100.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"隔壁老外去国外出差，带给我很多好吃的"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1988-07-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1011</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1011,</span><br><span class="line">    <span class="string">"age"</span>: 31,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"sprder"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"皮特帕克"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 180.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"它是一个超级英雄"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1989-08-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1012</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: 1012,</span><br><span class="line">    <span class="string">"age"</span>: 31,</span><br><span class="line">    <span class="string">"username"</span>: <span class="string">"super hero"</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"super hero"</span>,</span><br><span class="line">    <span class="string">"money"</span>: 188.8,</span><br><span class="line">    <span class="string">"desc"</span>: <span class="string">"BatMan, GreenArrow, SpiderMan, IronMan... are all Super Hero"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: 1,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"1980-08-14"</span>,</span><br><span class="line">    <span class="string">"face"</span>: <span class="string">"https://www.imooc.com/static/img/index/logo.png"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h1 id="2-使用-QueryString-查询"><a href="#2-使用-QueryString-查询" class="headerlink" title="2 使用 QueryString 查询"></a>2 使用 QueryString 查询</h1><p>查询[字段]包含[内容]的文档</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/_search?q=desc:慕课网</span><br><span class="line">GET /shop/_doc/_search?q=nickname:慕&amp;q=age:<span class="number">25</span></span><br></pre></td></tr></table></figure>
-<h1 id="3-DSL"><a href="#3-DSL" class="headerlink" title="3 DSL"></a>3 DSL</h1><h2 id="3-1-match-查询"><a href="#3-1-match-查询" class="headerlink" title="3.1 match - 查询"></a>3.1 match - 查询</h2><p>全文检索</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"match"</span>: &#123;</span><br><span class="line">      <span class="string">"desc"</span>: <span class="string">"慕课网"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-2-exists-判断某个字段是否存在"><a href="#3-2-exists-判断某个字段是否存在" class="headerlink" title="3.2 exists - 判断某个字段是否存在"></a>3.2 exists - 判断某个字段是否存在</h2><p>exists可以理解为SQL中的exists函数，就是判断是否存在该字段。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"exists"</span>: &#123;</span><br><span class="line">      <span class="string">"field"</span>: <span class="string">"desc"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-3-match-all-查询所有与分页"><a href="#3-3-match-all-查询所有与分页" class="headerlink" title="3.3 match_all - 查询所有与分页"></a>3.3 match_all - 查询所有与分页</h2><p>可以查询集群所有索引库的信息，包括一些隐藏索性库的信息。</p>
-<h3 id="3-3-1-在索引中查询所有的文档"><a href="#3-3-1-在索引中查询所有的文档" class="headerlink" title="3.3.1 在索引中查询所有的文档"></a>3.3.1 在索引中查询所有的文档</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/_search</span><br></pre></td></tr></table></figure>
-<p>或者指定返回属性</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match_all"</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"_source"</span>: [<span class="string">"id"</span>, <span class="string">"nickname"</span>, <span class="string">"age"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>Head 可视化操作</p>
-<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_1.jpg"></p>
-</li>
-</ul>
-<h3 id="3-3-2-分页查询"><a href="#3-3-2-分页查询" class="headerlink" title="3.3.2 分页查询"></a>3.3.2 分页查询</h3><p>默认查询是只有10条记录，可以通过分页来展示</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match_all"</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"from"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"size"</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">"query"</span>: &#123;</span><br><span class="line">		<span class="string">"match_all"</span>: &#123;&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="string">"_source"</span>: [</span><br><span class="line">		<span class="string">"id"</span>,</span><br><span class="line">		<span class="string">"nickname"</span>,</span><br><span class="line">		<span class="string">"age"</span></span><br><span class="line">	],</span><br><span class="line">	<span class="string">"from"</span>: <span class="number">5</span>,</span><br><span class="line">	<span class="string">"size"</span>: <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>Head 可视化操作</p>
-<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_2.jpg"></p>
-</li>
-</ul>
-<h2 id="3-4-term-精确查询"><a href="#3-4-term-精确查询" class="headerlink" title="3.4 term - 精确查询"></a>3.4 term - 精确查询</h2><p>term主要用于精确匹配哪些值，比如数字，日期，布尔值或 not_analyzed 的字符串(未经分析的文本数据类型)</p>
-<h3 id="3-4-1-term精确搜索与match分词搜索"><a href="#3-4-1-term精确搜索与match分词搜索" class="headerlink" title="3.4.1 term精确搜索与match分词搜索"></a>3.4.1 term精确搜索与match分词搜索</h3><p>搜索的时候会把用户搜索内容，比如“慕课网强大”作为一整个关键词去搜索，而不会对其进行分词后再搜索</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"term"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: <span class="string">"慕课网"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">对比</span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: <span class="string">"慕课网"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>注：match会对<code>慕课网慕课网</code></p>
-<p>  先进行分词（其实就是全文检索），在查询，而term则不会，直接把</p>
-<p>  作为一个整的词汇去搜索。</p>
-</li>
-<li><p>head 可视化操作对比：</p>
-<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/5df73ae408b52e4b14850283.jpg" alt="https://climg.mukewang.com/5df73ae408b52e4b14850283.jpg"></p>
-<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/5df73af9088d880314890314.jpg" alt="https://climg.mukewang.com/5df73af9088d880314890314.jpg"></p>
-</li>
-</ul>
-<h3 id="3-4-2-terms-多个词语匹配检索"><a href="#3-4-2-terms-多个词语匹配检索" class="headerlink" title="3.4.2 terms 多个词语匹配检索"></a>3.4.2 terms 多个词语匹配检索</h3><p>相当于是tag标签查询，比如慕课网的一些课程会打上<code>前端</code>/<code>后端</code>/<code>大数据</code>/<code>就业课</code>这样的标签，可以完全匹配做类似标签的查询</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"terms"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: [<span class="string">"慕课网"</span>, <span class="string">"学习"</span>, <span class="string">"骚年"</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-5-match-phrase"><a href="#3-5-match-phrase" class="headerlink" title="3.5 match_phrase"></a>3.5 match_phrase</h2><p>match：分词后只要有匹配就返回，match_phrase：分词结果必须在text字段分词中都包含，而且顺序必须相同，而且必须都是连续的。（搜索比较严格）</p>
-<p>slop：允许词语间跳过的数量</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match_phrase"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: &#123;</span><br><span class="line">            	<span class="string">"query"</span>: <span class="string">"大学 毕业 研究生"</span>,</span><br><span class="line">            	<span class="string">"slop"</span>: <span class="number">2</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-6-match（operator）-ids"><a href="#3-6-match（operator）-ids" class="headerlink" title="3.6 match（operator）/ids"></a>3.6 match（operator）/ids</h2><h3 id="3-6-1-match-扩展"><a href="#3-6-1-match-扩展" class="headerlink" title="3.6.1 match 扩展"></a>3.6.1 match 扩展</h3><ul>
-<li><p>operator</p>
-<ul>
-<li>or：搜索内容分词后，只要存在一个词语匹配就展示结果</li>
-<li><p>and：搜索内容分词后，都要满足词语匹配</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">POST     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: <span class="string">"慕课网"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 等同于</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: &#123;</span><br><span class="line">                <span class="string">"query"</span>: <span class="string">"xbox游戏机"</span>,</span><br><span class="line">                <span class="string">"operator"</span>: <span class="string">"or"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 相当于 select * from shop where desc='xbox' or|and desc='游戏机'</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>minimum_should_match: 最低匹配精度，至少有[分词后的词语个数]x百分百，得出一个数据值取整。举个例子：当前属性设置为<code>70</code>，若一个用户查询检索内容分词后有10个词语，那么匹配度按照 10x70%=7，则desc中至少需要有7个词语匹配，就展示；若分词后有8个，则 8x70%=5.6，则desc中至少需要有5个词语匹配，就展示。</p>
-<p>  minimum_should_match 也能设置具体的数字，表示个数</p>
-  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: &#123;</span><br><span class="line">                <span class="string">"query"</span>: <span class="string">"女友生日送我好玩的xbox游戏机"</span>,</span><br><span class="line">                <span class="string">"minimum_should_match"</span>: <span class="string">"60%"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="3-6-2-根据文档主键ids搜索"><a href="#3-6-2-根据文档主键ids搜索" class="headerlink" title="3.6.2 根据文档主键ids搜索"></a>3.6.2 根据文档主键ids搜索</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/<span class="number">1001</span></span><br></pre></td></tr></table></figure>
-<p>查询多个</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"ids"</span>: &#123;</span><br><span class="line">            <span class="string">"type"</span>: <span class="string">"_doc"</span>,</span><br><span class="line">            <span class="string">"values"</span>: [<span class="string">"1001"</span>, <span class="string">"1010"</span>, <span class="string">"1008"</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-7-multi-match-boost"><a href="#3-7-multi-match-boost" class="headerlink" title="3.7 multi_match/boost"></a>3.7 multi_match/boost</h2><h3 id="3-7-1-multi-match-多字段查询"><a href="#3-7-1-multi-match-多字段查询" class="headerlink" title="3.7.1 multi_match - 多字段查询"></a>3.7.1 multi_match - 多字段查询</h3><p>满足使用match在多个字段中进行查询的需求</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"multi_match"</span>: &#123;</span><br><span class="line">            <span class="string">"query"</span>: <span class="string">"皮特帕克慕课网"</span>,</span><br><span class="line">            <span class="string">"fields"</span>: [<span class="string">"desc"</span>, <span class="string">"nickname"</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="3-7-2-boost-权重"><a href="#3-7-2-boost-权重" class="headerlink" title="3.7.2 boost - 权重"></a>3.7.2 boost - 权重</h3><p>权重，为某个字段设置权重，权重越高，文档相关性得分就越高。通畅来说搜索商品名称要比商品简介的权重更高。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"multi_match"</span>: &#123;</span><br><span class="line">                <span class="string">"query"</span>: <span class="string">"皮特帕克慕课网"</span>,</span><br><span class="line">                <span class="string">"fields"</span>: [<span class="string">"desc"</span>, <span class="string">"nickname^10"</span>]</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>nickname^10</code> 代表搜索提升10倍相关性，也就是说用户搜索的时候其实以这个<code>nickname</code>为主，<code>desc</code>为辅，<code>nickname</code>的匹配相关度当然要提高权重比例了。</p>
-<h2 id="3-8-bool-布尔查询"><a href="#3-8-bool-布尔查询" class="headerlink" title="3.8 bool - 布尔查询"></a>3.8 bool - 布尔查询</h2><p>可以组合多重查询</p>
-<ul>
-<li>must：查询必须匹配搜索条件，譬如 and</li>
-<li>should：查询匹配满足1个以上条件，譬如 or</li>
-<li>must_not：不匹配搜索条件，一个都不要满足</li>
-<li><p>实操1：</p>
-  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"bool"</span>: &#123;</span><br><span class="line">            <span class="string">"must"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"multi_match"</span>: &#123;</span><br><span class="line">                        <span class="string">"query"</span>: <span class="string">"慕课网"</span>,</span><br><span class="line">                        <span class="string">"fields"</span>: [<span class="string">"desc"</span>, <span class="string">"nickname"</span>]</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"term"</span>: &#123;</span><br><span class="line">                        <span class="string">"sex"</span>: <span class="number">1</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"term"</span>: &#123;</span><br><span class="line">                        <span class="string">"birthday"</span>: <span class="string">"1996-01-14"</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"bool"</span>: &#123;</span><br><span class="line">            <span class="string">"should（must_not）"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"multi_match"</span>: &#123;</span><br><span class="line">                        <span class="string">"query"</span>: <span class="string">"学习"</span>,</span><br><span class="line">                        <span class="string">"fields"</span>: [<span class="string">"desc"</span>, <span class="string">"nickname"</span>]</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">"match"</span>: &#123;</span><br><span class="line">                		<span class="string">"desc"</span>: <span class="string">"游戏"</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"term"</span>: &#123;</span><br><span class="line">                        <span class="string">"sex"</span>: <span class="number">0</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>实操2：</p>
-  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"bool"</span>: &#123;</span><br><span class="line">            <span class="string">"must"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">"match"</span>: &#123;</span><br><span class="line">                		<span class="string">"desc"</span>: <span class="string">"慕"</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">"match"</span>: &#123;</span><br><span class="line">                		<span class="string">"nickname"</span>: <span class="string">"慕"</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">"should"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">"match"</span>: &#123;</span><br><span class="line">                		<span class="string">"sex"</span>: <span class="string">"0"</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">"must_not"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">"term"</span>: &#123;</span><br><span class="line">                		<span class="string">"birthday"</span>: <span class="string">"1992-12-24"</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>Head 可视化组合查询</p>
-<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/es-12_3.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-12_3.jpg"></p>
-</li>
-<li><p>为指定词语加权</p>
-<p>  特殊场景下，某些词语可以单独加权，这样可以排得更加靠前。</p>
-  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"bool"</span>: &#123;</span><br><span class="line">            <span class="string">"should"</span>: [</span><br><span class="line">            	&#123;</span><br><span class="line">            		<span class="string">"match"</span>: &#123;</span><br><span class="line">            			<span class="string">"desc"</span>: &#123;</span><br><span class="line">            				<span class="string">"query"</span>: <span class="string">"律师"</span>,</span><br><span class="line">            				<span class="string">"boost"</span>: <span class="number">18</span></span><br><span class="line">            			&#125;</span><br><span class="line">            		&#125;</span><br><span class="line">            	&#125;,</span><br><span class="line">            	&#123;</span><br><span class="line">            		<span class="string">"match"</span>: &#123;</span><br><span class="line">            			<span class="string">"desc"</span>: &#123;</span><br><span class="line">            				<span class="string">"query"</span>: <span class="string">"进修"</span>,</span><br><span class="line">            				<span class="string">"boost"</span>: <span class="number">2</span></span><br><span class="line">            			&#125;</span><br><span class="line">            		&#125;</span><br><span class="line">            	&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="3-9-post-filter-过滤器"><a href="#3-9-post-filter-过滤器" class="headerlink" title="3.9 post_filter - 过滤器"></a>3.9 post_filter - 过滤器</h2><p>对搜索出来的结果进行数据过滤。不会到es库里去搜，不会去计算文档的相关度分数，所以过滤的性能会比较高，过滤器可以和全文搜索结合在一起使用。<code>post_filter</code>元素是一个顶层元素，只会对搜索结果进行过滤。不会计算数据的匹配度相关性分数，不会根据分数去排序，query则相反，会计算分数，也会按照分数去排序。</p>
-<p>使用场景：</p>
-<ul>
-<li>query：根据用户搜索条件检索匹配记录</li>
-<li>post_filter：用于查询后，对结果数据的筛选</li>
-</ul>
-<p>实操：查询账户金额大于80元，小于160元的用户。并且生日在1998-07-14的用户</p>
-<ul>
-<li>gte：大于等于</li>
-<li>lte：小于等于</li>
-<li>gt：大于</li>
-<li>lt：小于（除此以外还能做其他的match等操作也行）</li>
-</ul>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">"query"</span>: &#123;</span><br><span class="line">		<span class="string">"match"</span>: &#123;</span><br><span class="line">			<span class="string">"desc"</span>: <span class="string">"慕课网游戏"</span></span><br><span class="line">		&#125;	</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"post_filter"</span>: &#123;</span><br><span class="line">		<span class="string">"range"</span>: &#123;</span><br><span class="line">			<span class="string">"money"</span>: &#123;</span><br><span class="line">				<span class="string">"gt"</span>: <span class="number">60</span>,</span><br><span class="line">				<span class="string">"lt"</span>: <span class="number">1000</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-10-sort-排序"><a href="#3-10-sort-排序" class="headerlink" title="3.10 sort - 排序"></a>3.10 sort - 排序</h2><p>es的排序同sql，可以desc也可以asc。也支持组合排序。</p>
-<ul>
-<li><p>实操：</p>
-  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">"query"</span>: &#123;</span><br><span class="line">		<span class="string">"match"</span>: &#123;</span><br><span class="line">			<span class="string">"desc"</span>: <span class="string">"慕课网游戏"</span></span><br><span class="line">		&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"post_filter"</span>: &#123;</span><br><span class="line">    	<span class="string">"range"</span>: &#123;</span><br><span class="line">    		<span class="string">"money"</span>: &#123;</span><br><span class="line">    			<span class="string">"gt"</span>: <span class="number">55.8</span>,</span><br><span class="line">    			<span class="string">"lte"</span>: <span class="number">155.8</span></span><br><span class="line">    		&#125;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"sort"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"age"</span>: <span class="string">"desc"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"money"</span>: <span class="string">"desc"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>对文本排序</p>
-<p>  由于文本会被分词，所以往往要去做排序会报错，通常我们可以为这个字段增加额外的一个附属属性，类型为keyword，用于做排序。</p>
-<ol>
-<li><p>创建新的索引</p>
- <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /shop2/_mapping</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"properties"</span>: &#123;</span><br><span class="line">        <span class="string">"id"</span>: &#123;</span><br><span class="line">            <span class="string">"type"</span>: <span class="string">"long"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"nickname"</span>: &#123;</span><br><span class="line">            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">            <span class="string">"analyzer"</span>: <span class="string">"ik_max_word"</span>,</span><br><span class="line">            <span class="string">"fields"</span>: &#123;</span><br><span class="line">                <span class="string">"keyword"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"keyword"</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>插入数据</p>
- <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: <span class="number">1001</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"美丽的风景"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: <span class="number">1002</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"漂亮的小哥哥"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: <span class="number">1003</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"飞翔的巨鹰"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: <span class="number">1004</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"完美的天空"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"id"</span>: <span class="number">1005</span>,</span><br><span class="line">    <span class="string">"nickname"</span>: <span class="string">"广阔的海域"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>排序</p>
- <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop2/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"sort"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">"nickname.keyword"</span>: <span class="string">"desc"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-</li>
-</ul>
-<h2 id="3-11-highlight-高亮显示"><a href="#3-11-highlight-高亮显示" class="headerlink" title="3.11 highlight - 高亮显示"></a>3.11 highlight - 高亮显示</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"match"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: <span class="string">"慕课网"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"highlight"</span>: &#123;</span><br><span class="line">        <span class="string">"pre_tags"</span>: [<span class="string">"&lt;span&gt;"</span>],</span><br><span class="line">        <span class="string">"post_tags"</span>: [<span class="string">"&lt;/span&gt;"</span>],</span><br><span class="line">        <span class="string">"fields"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-12-prefix-前缀"><a href="#3-12-prefix-前缀" class="headerlink" title="3.12 prefix - 前缀"></a>3.12 prefix - 前缀</h2><p>根据前缀去查询</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"query"</span>: &#123;</span><br><span class="line">        <span class="string">"prefix"</span>: &#123;</span><br><span class="line">            <span class="string">"desc"</span>: <span class="string">"imo"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-13-fuzzy-模糊搜索"><a href="#3-13-fuzzy-模糊搜索" class="headerlink" title="3.13 fuzzy - 模糊搜索"></a>3.13 fuzzy - 模糊搜索</h2><p>模糊搜索，并不是指的sql的模糊搜索，而是用户在进行搜索的时候的打字错误现象，搜索引擎会自动纠正，然后尝试匹配索引库中的数据。</p>
-<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"fuzzy"</span>: &#123;</span><br><span class="line">      <span class="string">"desc"</span>: <span class="string">"imoov.coom"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 或多字段搜索</span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"multi_match"</span>: &#123;</span><br><span class="line">      <span class="string">"fields"</span>: [ <span class="string">"desc"</span>, <span class="string">"nickname"</span>],</span><br><span class="line">      <span class="string">"query"</span>: <span class="string">"imcoc supor"</span>,</span><br><span class="line">      <span class="string">"fuzziness"</span>: <span class="string">"AUTO"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"multi_match"</span>: &#123;</span><br><span class="line">      <span class="string">"fields"</span>: [ <span class="string">"desc"</span>, <span class="string">"nickname"</span>],</span><br><span class="line">      <span class="string">"query"</span>: <span class="string">"演说"</span>,</span><br><span class="line">      <span class="string">"fuzziness"</span>: <span class="string">"1"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>官文：<a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/fuzzy-match-query.html" target="_blank" rel="noopener">https://www.elastic.co/guide/cn/elasticsearch/guide/current/fuzzy-match-query.html</a></li>
-</ul>
-<h2 id="3-14-wildcard-占位符查询"><a href="#3-14-wildcard-占位符查询" class="headerlink" title="3.14 wildcard - 占位符查询"></a>3.14 wildcard - 占位符查询</h2><p>占位符查询。</p>
-<ul>
-<li>？：1个字符</li>
-<li><p>：1个或多个字符</p>
-  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"query"</span>: &#123;</span><br><span class="line">    <span class="string">"wildcard"</span>: &#123;</span><br><span class="line">      <span class="string">"desc"</span>: <span class="string">"*oo?"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">"query"</span>: &#123;</span><br><span class="line">    	<span class="string">"wildcard"</span>: &#123;</span><br><span class="line">    		<span class="string">"desc"</span>: <span class="string">"演*"</span></span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>官文：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html</a></p>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES-之分词与内置分词器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/ES-之分词与内置分词器/" class="post-title-link" itemprop="url">ES 之分词与内置分词器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-11 20:32:21" itemprop="dateCreated datePublished" datetime="2021-01-11T20:32:21+08:00">2021-01-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-18 21:35:43" itemprop="dateModified" datetime="2021-02-18T21:35:43+08:00">2021-02-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="什么是分词？"><a href="#什么是分词？" class="headerlink" title="什么是分词？"></a>什么是分词？</h1><p>把文本转换为一个个的单词，分词称之为analysis。es默认只对英文语句做分词，中文不支持，每个中文字都会被拆分为独立的个体。</p>
-<ul>
-<li>英文分词：I study in <a href="http://imooc.com/" target="_blank" rel="noopener">imooc.com</a></li>
-<li>中文分词：我在慕课网学习</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /_analyze</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"analyzer"</span>: <span class="string">"standard"</span>,</span><br><span class="line">    <span class="string">"text"</span>: <span class="string">"text文本"</span></span><br><span class="line">&#125;</span><br><span class="line">POST /my_doc/_analyze</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">"analyzer"</span>: <span class="string">"standard"</span>,</span><br><span class="line">    <span class="string">"field"</span>: <span class="string">"name"</span>,</span><br><span class="line">    <span class="string">"text"</span>: <span class="string">"text文本"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="es内置分词器"><a href="#es内置分词器" class="headerlink" title="es内置分词器"></a>es内置分词器</h1><ul>
-<li><p>standard：默认分词，单词会被拆分，大小会转换为小写。</p>
-</li>
-<li><p>simple：按照非字母分词。大写转为小写。</p>
-</li>
-<li><p>whitespace：按照空格分词。忽略大小写。</p>
-</li>
-<li><p>stop：去除无意义单词，比如<code>the</code>/<code>a</code>/<code>an</code>/<code>is</code>…</p>
-</li>
-<li><p>keyword：不做分词。把整个文本作为一个单独的关键词。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;analyzer&quot;: &quot;standard&quot;,</span><br><span class="line">    &quot;text&quot;: &quot;My name is Peter Parker,I am a Super Hero. I don&apos;t like the Criminals.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/ES之文档乐观锁控制-if-seq-no与if-primary-term/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/ES之文档乐观锁控制-if-seq-no与if-primary-term/" class="post-title-link" itemprop="url">ES之文档乐观锁控制 if_seq_no与if_primary_term</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-11 20:11:28" itemprop="dateCreated datePublished" datetime="2021-01-11T20:11:28+08:00">2021-01-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-18 21:36:04" itemprop="dateModified" datetime="2021-02-18T21:36:04+08:00">2021-02-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="观察操作"><a href="#观察操作" class="headerlink" title="观察操作"></a>观察操作</h1><ul>
-<li><p>插入新数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /my_doc/_doc</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1010,</span><br><span class="line">    &quot;name&quot;: &quot;imooc-1010&quot;,</span><br><span class="line">    &quot;desc&quot;: &quot;imoocimooc！&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-24&quot;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 1</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修改数据</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 2</span><br><span class="line">1234567</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>模拟两个客户端操作同一个文档数据，_version都携带为一样的数值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 操作1</span><br><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update?if_seq_no=&#123;数值&#125;&amp;if_primary_term=&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 操作2</span><br><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update?if_seq_no=&#123;数值&#125;&amp;if_primary_term=&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课2&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="版本元数据"><a href="#版本元数据" class="headerlink" title="版本元数据"></a>版本元数据</h1><ul>
-<li>_seq_no：文档版本号，作用同_version（相当于学生编号，每个班级的班主任为学生分配编号，效率要比学校教务处分配来的更加高效，管理起来更方便）</li>
-<li>_primary_term：文档所在位置（相当于班级）</li>
-<li>官文地址：<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html</a></li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Consul-单机集群搭建/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Consul-单机集群搭建/" class="post-title-link" itemprop="url">Consul 单机集群搭建</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-11 16:41:37" itemprop="dateCreated datePublished" datetime="2021-01-11T16:41:37+08:00">2021-01-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-13 11:02:22" itemprop="dateModified" datetime="2021-01-13T11:02:22+08:00">2021-01-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/注册中心/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-Consul-单机集群搭建"><a href="#1-Consul-单机集群搭建" class="headerlink" title="1 Consul 单机集群搭建"></a>1 Consul 单机集群搭建</h1><p>本文是在生产环境中Consul服务端节点不稳定后，导致注册到Consul集群上的部分服务不可用，从而造成开放能力平台无法使用的背景下产生的。</p>
-<p>目的是探讨一个高可用Consul集群方案。</p>
-<h2 id="1-1-consul-架构"><a href="#1-1-consul-架构" class="headerlink" title="1.1 consul 架构"></a>1.1 consul 架构</h2><p>Server负责组成 cluster 的复杂工作（选举、状态维护、转发请求到 lead），以及 consul 提供的服务（响应 RCP 请求）。考虑到容错和收敛，一般部署 3 ~ 5 个比较合适，而client数量不做限制，架构如下:</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/consul架构1.png" alt="consul 架构"></p>
-<h2 id="1-2-Consul-节点规划"><a href="#1-2-Consul-节点规划" class="headerlink" title="1.2 Consul 节点规划"></a>1.2 Consul 节点规划</h2><table>
-<thead>
-<tr>
-<th><strong>节点名称</strong></th>
-<th>节点类型</th>
-<th><strong>HTTP端口</strong></th>
-<th><strong>DNS端口</strong></th>
-<th><strong>serf_lan端口</strong></th>
-<th><strong>serf_wan端口</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>consul-server-1</td>
-<td>server</td>
-<td>8501</td>
-<td>8601</td>
-<td>8001</td>
-<td>8002</td>
-</tr>
-<tr>
-<td>consul-server-2</td>
-<td>server</td>
-<td>8502</td>
-<td>8602</td>
-<td>8101</td>
-<td>8102</td>
-</tr>
-<tr>
-<td>consul-server-3</td>
-<td>server</td>
-<td>8503</td>
-<td>8603</td>
-<td>8201</td>
-<td>8202</td>
-</tr>
-<tr>
-<td>consul-client-1</td>
-<td>client</td>
-<td>8504</td>
-<td>8604</td>
-<td>8301</td>
-<td>8302</td>
-</tr>
-<tr>
-<td>consul-client-2</td>
-<td>client</td>
-<td>8505</td>
-<td>8605</td>
-<td>8401</td>
-<td>8402</td>
-</tr>
-</tbody>
-</table>
-<h2 id="1-3-Consul-服务端节点配置文件模版"><a href="#1-3-Consul-服务端节点配置文件模版" class="headerlink" title="1.3 Consul 服务端节点配置文件模版"></a>1.3 Consul 服务端节点配置文件模版</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"bind_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"client_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"ports"</span>: &#123;</span><br><span class="line">        <span class="attr">"http"</span>: <span class="number">8501</span>,</span><br><span class="line">        <span class="attr">"dns"</span>: <span class="number">8601</span>,</span><br><span class="line">        <span class="attr">"serf_lan"</span>: <span class="number">8001</span>,</span><br><span class="line">        <span class="attr">"serf_wan"</span>: <span class="number">8002</span>,</span><br><span class="line">        <span class="attr">"server"</span>: <span class="number">8000</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">    <span class="attr">"data_dir"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-server-1/data"</span>,</span><br><span class="line">    <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"log_file"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-server-1/log/consul.log"</span>,</span><br><span class="line">    <span class="attr">"node_name"</span>: <span class="string">"consul-server-1"</span>,</span><br><span class="line">    <span class="attr">"disable_host_node_id"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"server"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"bootstrap_expect"</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="attr">"rejoin_after_leave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"retry_join"</span>: [</span><br><span class="line">        <span class="string">"127.0.0.1:8001"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8101"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8201"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>注意：</p>
-<ul>
-<li><strong>disable_host_node_id</strong>：不使用host信息生成node ID，适用于同一台服务器部署多个实例用于测试的情况。随机生成nodeID。</li>
-</ul>
-<h2 id="1-4-Consul-客户端节点配置文件模版"><a href="#1-4-Consul-客户端节点配置文件模版" class="headerlink" title="1.4 Consul 客户端节点配置文件模版"></a>1.4 Consul 客户端节点配置文件模版</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"bind_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"client_addr"</span>: <span class="string">"127.0.0.1"</span>,</span><br><span class="line">    <span class="attr">"ports"</span>: &#123;</span><br><span class="line">        <span class="attr">"http"</span>: <span class="number">8505</span>,</span><br><span class="line">        <span class="attr">"dns"</span>: <span class="number">8605</span>,</span><br><span class="line">        <span class="attr">"serf_lan"</span>: <span class="number">8401</span>,</span><br><span class="line">        <span class="attr">"serf_wan"</span>: <span class="number">8402</span>,</span><br><span class="line">        <span class="attr">"server"</span>: <span class="number">8400</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"datacenter"</span>: <span class="string">"dc1"</span>,</span><br><span class="line">    <span class="attr">"data_dir"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-client-2/data"</span>,</span><br><span class="line">    <span class="attr">"log_level"</span>: <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"log_file"</span>: <span class="string">"/Users/fengxuechao/WorkSpace/IdeaProjects/consul/consul-client-2/log/consul.log"</span>,</span><br><span class="line">    <span class="attr">"node_name"</span>: <span class="string">"consul-client-2"</span>,</span><br><span class="line">    <span class="attr">"disable_host_node_id"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"server"</span>: <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">"ui"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"rejoin_after_leave"</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"retry_join"</span>: [</span><br><span class="line">        <span class="string">"127.0.0.1:8001"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8101"</span>,</span><br><span class="line">        <span class="string">"127.0.0.1:8201"</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="1-5-搭建集群"><a href="#1-5-搭建集群" class="headerlink" title="1.5 搭建集群"></a>1.5 搭建集群</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Consul 服务端节点目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;</span><br><span class="line"><span class="comment"># 创建 Consul 服务端节点可执行文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/bin</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点配置文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/config</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点数据文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/data</span><br><span class="line"><span class="comment"># 创建  Consul 服务端节点日志文件目录</span></span><br><span class="line">mkdir consul-server-&#123;1,2,3&#125;/<span class="built_in">log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># consul 客户端节点目录结构与服务端节点目录结构保持一致</span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="comment"># Consul 服务端节点搭建</span></span><br><span class="line">nohup consul-server-1/bin/consul agent -config-dir=consul-server-1/config &amp;</span><br><span class="line">nohup consul-server-2/bin/consul agent -config-dir=consul-server-2/config &amp;</span><br><span class="line">nohup consul-server-3/bin/consul agent -config-dir=consul-server-3/config &amp;</span><br><span class="line"><span class="comment"># Consul 客户端节点搭建</span></span><br><span class="line">nohup consul-client-1/bin/consul agent -config-dir=consul-client-1/config &amp;</span><br><span class="line">nohup consul-client-2/bin/consul agent -config-dir=consul-client-2/config &amp;</span><br></pre></td></tr></table></figure>
-<h1 id="2-Consul-的一些命令"><a href="#2-Consul-的一些命令" class="headerlink" title="2 Consul 的一些命令"></a>2 Consul 的一些命令</h1><h2 id="2-1-查看-consul-集群列表"><a href="#2-1-查看-consul-集群列表" class="headerlink" title="2.1 查看 consul 集群列表"></a>2.1 查看 consul 集群列表</h2><p>验证 Consul 集群是否搭建成功</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul operator raft list-peers -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
-<h2 id="2-2-查看-Consul-节点列表"><a href="#2-2-查看-Consul-节点列表" class="headerlink" title="2.2 查看 Consul 节点列表"></a>2.2 查看 Consul 节点列表</h2><p>查看 Consul 的所有节点列表</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul members -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
-<h2 id="2-3-移除一个-Server-节点"><a href="#2-3-移除一个-Server-节点" class="headerlink" title="2.3 移除一个 Server 节点"></a>2.3 移除一个 Server 节点</h2><p>验证 Consul 客户端节点不会丢失</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">consul-server-1/bin/consul leave -http-addr=127.0.0.1:8501</span><br></pre></td></tr></table></figure>
-<h1 id="3-验证"><a href="#3-验证" class="headerlink" title="3 验证"></a>3 验证</h1><h2 id="3-1-模拟一个-Consul-服务端宕机"><a href="#3-1-模拟一个-Consul-服务端宕机" class="headerlink" title="3.1 模拟一个 Consul 服务端宕机"></a>3.1 模拟一个 Consul 服务端宕机</h2><ol>
-<li>移除 Consul 服务端节点前：</li>
-</ol>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210112101929745.png" alt="image-20210112101929745"></p>
-<ol start="2">
-<li><p>移除 Consul 服务端节点。命令参考章节2.3。</p>
-<p>结果如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102147403.png" alt="image-20210112102147403"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102223434.png" alt="image-20210112102223434"></p>
-</li>
-</ol>
-<h1 id="4-结论"><a href="#4-结论" class="headerlink" title="4 结论"></a>4 结论</h1><p>说明当一个consul服务端节点宕机，并不会影响 Consul 客户端节点的可用性。</p>
-<p>在每个数据中心，client和server是混合的。一般建议有3-5台server。这是基于有故障情况下的可用性和性能之间的权衡结果，因为越多的机器加入达成共识越慢。虽然每个节点的服务注册数量是有上限的，但是并不限制client的数量，它们可以很容易的扩展到数千或者数万台。</p>
-<h1 id="5-参考资源"><a href="#5-参考资源" class="headerlink" title="5 参考资源"></a>5 参考资源</h1><p><a href="https://blog.csdn.net/u014635374/article/details/106313858" target="_blank" rel="noopener">https://blog.csdn.net/u014635374/article/details/106313858</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/14/">14</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/15/">15</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1383,7 +1164,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">144</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1396,7 +1177,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">82</span>
+        <span class="site-state-item-count">84</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

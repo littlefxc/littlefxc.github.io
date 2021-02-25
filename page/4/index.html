@@ -162,6 +162,411 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Alibaba-Sentinel基础-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Alibaba-Sentinel基础-1/" class="post-title-link" itemprop="url">Alibaba Sentinel基础(1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 14:41:56 / 修改时间：16:32:23" itemprop="dateCreated datePublished" datetime="2021-01-21T14:41:56+08:00">2021-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/微服务/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[TOC]</p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Alibaba Sentinel 基础部分主要分六个部分：</p>
+<ul>
+<li style="list-style: none"><input type="checkbox" checked> Sentinel 全景分析</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 极速入门</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 核心API</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 控制台使用</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 与 Spring 整合 AOP 分析</li>
+<li style="list-style: none"><input type="checkbox"> Sentinel 与 Dubbo 整合分析</li>
+</ul>
+<h1 id="2-Sentinel-全景分析"><a href="#2-Sentinel-全景分析" class="headerlink" title="2. Sentinel 全景分析"></a>2. Sentinel 全景分析</h1><p><a href="https://github.com/alibaba/Sentinel/wiki/介绍" target="_blank" rel="noopener">官方介绍</a></p>
+<h2 id="Sentinel-是什么？"><a href="#Sentinel-是什么？" class="headerlink" title="Sentinel 是什么？"></a>Sentinel 是什么？</h2><p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从限流、流量整形、熔断降级、系统负载保护、热点防护等多个维度来帮助开发者保障微服务的稳定性。</p>
+<p>它可以做到以下几点：</p>
+<ul>
+<li><p>流量控制</p>
+</li>
+<li><p>熔断降级</p>
+</li>
+<li><p>系统保护</p>
+</li>
+<li><p>服务安全</p>
+</li>
+</ul>
+<h2 id="Sentinel-的特性"><a href="#Sentinel-的特性" class="headerlink" title="Sentinel 的特性"></a>Sentinel 的特性</h2><ul>
+<li><strong>丰富的应用场景</strong>：Sentinel 承接了阿里巴巴近 10 年的双十一大促流量的核心场景，例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等。</li>
+<li><strong>完备的实时监控</strong>：Sentinel 同时提供实时的监控功能。您可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况。</li>
+<li><strong>广泛的开源生态</strong>：Sentinel 提供开箱即用的与其它开源框架/库的整合模块，例如与 Spring Cloud、Dubbo、gRPC 的整合。您只需要引入相应的依赖并进行简单的配置即可快速地接入 Sentinel。</li>
+<li><strong>完善的 SPI 扩展点</strong>：Sentinel 提供简单易用、完善的 SPI 扩展接口。您可以通过实现扩展接口来快速地定制逻辑。例如定制规则管理、适配动态数据源等。</li>
+</ul>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png"></p>
+<p>部分是 sentinel-dashboard。</p>
+<p>绿色部分是 sentinel-core，是 Sentinel 的核心库。</p>
+<p>紫色部分表示 sentinel 可以持久化规则到配置中心。</p>
+<p>蓝色部分 sentinel 的扩展点。</p>
+<h2 id="Sentinel-的生态"><a href="#Sentinel-的生态" class="headerlink" title="Sentinel 的生态"></a>Sentinel 的生态</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png"></p>
+<h2 id="Sentinel-的组成部分"><a href="#Sentinel-的组成部分" class="headerlink" title="Sentinel 的组成部分"></a>Sentinel 的组成部分</h2><ul>
+<li>核心库：sentinel-core</li>
+<li>控制台：sentinel-dashboard</li>
+<li>第三方支持组件：如spring、dubbo、rocketmq等</li>
+</ul>
+<h1 id="3-Sentinel-极速入门"><a href="#3-Sentinel-极速入门" class="headerlink" title="3. Sentinel 极速入门"></a>3. Sentinel 极速入门</h1><h1 id="4-Sentinel-核心API"><a href="#4-Sentinel-核心API" class="headerlink" title="4. Sentinel 核心API"></a>4. Sentinel 核心API</h1><h1 id="5-Sentinel-控制台使用"><a href="#5-Sentinel-控制台使用" class="headerlink" title="5. Sentinel 控制台使用"></a>5. Sentinel 控制台使用</h1><h1 id="6-Sentinel-与-Spring-整合-AOP-分析"><a href="#6-Sentinel-与-Spring-整合-AOP-分析" class="headerlink" title="6. Sentinel 与 Spring 整合 AOP 分析"></a>6. Sentinel 与 Spring 整合 AOP 分析</h1><h1 id="7-Sentinel-与-Dubbo-整合分析"><a href="#7-Sentinel-与-Dubbo-整合分析" class="headerlink" title="7. Sentinel 与 Dubbo 整合分析"></a>7. Sentinel 与 Dubbo 整合分析</h1>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/AtomicLong原子类方法介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/AtomicLong原子类方法介绍/" class="post-title-link" itemprop="url">AtomicLong原子类方法介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 13:34:36 / 修改时间：13:35:43" itemprop="dateCreated datePublished" datetime="2021-01-21T13:34:36+08:00">2021-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造函数</span></span><br><span class="line">AtomicLong()</span><br><span class="line"><span class="comment">// 创建值为initialValue的AtomicLong对象</span></span><br><span class="line">AtomicLong(<span class="keyword">long</span> initialValue)</span><br><span class="line"><span class="comment">// 以原子方式设置当前值为newValue。</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">long</span> newValue)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">get</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1后的值。等价于“--num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1前的值。等价于“num--”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1后的值。等价于“++num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1前的值。等价于“num++”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta与当前值相加，并返回相加后的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta添加到当前值，并返回相加前的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == expect，则以原子方式将该值设置为update。成功返回true，否则返回false，并且不修改原值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式设置当前值为newValue，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回当前值对应的int值</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">intValue</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值对应的long值</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">longValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 float 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">floatValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 double 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">doubleValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 最后设置为给定值。延时设置变量值，这个等价于set()方法，但是由于字段是volatile类型的，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此次字段的修改会比普通字段（非volatile字段）有稍微的性能延时（尽管可以忽略），</span></span></span><br><span class="line"><span class="function"><span class="comment">// 所以如果不是想立即读取设置的新值，允许在“后台”修改值，那么此方法就很有用。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果还是难以理解，这里就类似于启动一个后台线程如执行修改新值的任务，原线程就不等待修改结果立即返回</span></span></span><br><span class="line"><span class="function"><span class="comment">// （这种解释其实是不正确的，但是可以这么理解）。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="comment">// JSR规范中说：以原子方式读取和有条件地写入变量但不 创建任何 happen-before 排序，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此不提供与除 weakCompareAndSet 目标外任何变量以前或后续读取或写入操作有关的任何保证。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 大意就是说调用weakCompareAndSet时并不能保证不存在happen-before的发生（也就是可能存在指令重排序导致此操作失败）。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 但是从Java源码来看，其实此方法并没有实现JSR规范的要求，最后效果和compareAndSet是等效的，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 都调用了unsafe.compareAndSwapInt()完成操作。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/JUC原子类-AtomicLongArray/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/JUC原子类-AtomicLongArray/" class="post-title-link" itemprop="url">JUC原子类-AtomicLongArray</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-21 13:33:17 / 修改时间：13:37:22" itemprop="dateCreated datePublished" datetime="2021-01-21T13:33:17+08:00">2021-01-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>转载自<a href="https://www.cnblogs.com/skywang12345/p/3514604.html" target="_blank" rel="noopener">https://www.cnblogs.com/skywang12345/p/3514604.html</a></p>
+</blockquote>
+<p>在”Java多线程系列–“ <a href="https://www.notion.so/Java-JUC-AtomicLong-842f5bea464847abbfee4d03a18ca99f" target="_blank" rel="noopener">Java多线程JUC原子类之 AtomicLong原子类</a> “中介绍过，AtomicLong是作用是对长整形进行原子操作。而AtomicLongArray的作用则是对”长整形数组”进行原子操作。</p>
+<h1 id="AtomicLongArray函数列表"><a href="#AtomicLongArray函数列表" class="headerlink" title="AtomicLongArray函数列表"></a>AtomicLongArray函数列表</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建给定长度的新 AtomicLongArray。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">int</span> length)</span><br><span class="line"><span class="comment">// 创建与给定数组具有相同长度的新 AtomicLongArray，并从给定数组复制其所有元素。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">long</span>[] array)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以原子方式将给定值添加到索引 i 的元素。</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 获取位置 i 的当前值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将给定值与索引 i 的元素相加。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将位置 i 的元素设置为给定值，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 最终将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回该数组的长度。</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回数组当前值的字符串表示形式。</span></span></span><br><span class="line"><span class="function">String <span class="title">toString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>AtomicLongArray的代码很简单，下面仅以incrementAndGet()为例，对AtomicLong的原理进行说明。</p>
+<h2 id="incrementAndGet-源码如下："><a href="#incrementAndGet-源码如下：" class="headerlink" title="incrementAndGet()源码如下："></a>incrementAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> addAndGet(i, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：incrementAndGet()的作用是以原子方式将long数组的索引 i 的元素加1，并返回加1之后的值。</p>
+<h2 id="addAndGet-源码如下："><a href="#addAndGet-源码如下：" class="headerlink" title="addAndGet()源码如下："></a>addAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查数组是否越界</span></span><br><span class="line">    <span class="keyword">long</span> offset = checkedByteOffset(i);</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 获取long型数组的索引 offset 的原始值</span></span><br><span class="line">        <span class="keyword">long</span> current = getRaw(offset);</span><br><span class="line">        <span class="comment">// 修改long型值</span></span><br><span class="line">        <span class="keyword">long</span> next = current + delta;</span><br><span class="line">        <span class="comment">// 通过CAS更新long型数组的索引 offset的值。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetRaw(offset, current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：addAndGet()首先检查数组是否越界。如果没有越界的话，则先获取数组索引i的值；然后通过CAS函数更新i的值。</p>
+<h2 id="getRaw-源码如下："><a href="#getRaw-源码如下：" class="headerlink" title="getRaw()源码如下："></a>getRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getRaw</span><span class="params">(<span class="keyword">long</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getLongVolatile(array, offset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>说明：unsafe是通过Unsafe.getUnsafe()返回的一个Unsafe对象。通过Unsafe的CAS函数对long型数组的元素进行原子操作。如compareAndSetRaw()就是调用Unsafe的CAS函数，它的源码如下：</p>
+<h2 id="compareAndSetRaw-源码如下："><a href="#compareAndSetRaw-源码如下：" class="headerlink" title="compareAndSetRaw()源码如下："></a>compareAndSetRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">compareAndSetRaw</span><span class="params">(<span class="keyword">long</span> offset, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(array, offset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAtomicArrayLong</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 新建AtomicLongArray对象</span></span><br><span class="line">        <span class="keyword">long</span>[] arrLong = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        AtomicLongArray ala = <span class="keyword">new</span> AtomicLongArray(arrLong);</span><br><span class="line"></span><br><span class="line">        ala.set(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>, len=ala.length(); i&lt;len; i++)</span><br><span class="line">            System.out.printf(<span class="string">"get(%d) : %s\\n"</span>, i, ala.get(i));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"getAndDecrement(0)"</span>, ala.getAndDecrement(<span class="number">0</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"decrementAndGet(1)"</span>, ala.decrementAndGet(<span class="number">1</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"getAndIncrement(2)"</span>, ala.getAndIncrement(<span class="number">2</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"incrementAndGet(3)"</span>, ala.incrementAndGet(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"addAndGet(100)"</span>, ala.addAndGet(<span class="number">0</span>, <span class="number">100</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"getAndAdd(100)"</span>, ala.getAndAdd(<span class="number">1</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"compareAndSet()"</span>, ala.compareAndSet(<span class="number">2</span>, <span class="number">31</span>, <span class="number">1000</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\\n"</span>, <span class="string">"get(2)"</span>, ala.get(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/RocketMQ集群架构与原理解析-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/RocketMQ集群架构与原理解析-6/" class="post-title-link" itemprop="url">RocketMQ集群架构与原理解析(6)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-20 20:30:21" itemprop="dateCreated datePublished" datetime="2021-01-20T20:30:21+08:00">2021-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-25 23:35:33" itemprop="dateModified" datetime="2021-01-25T23:35:33+08:00">2021-01-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="初识-RocketMQ"><a href="#初识-RocketMQ" class="headerlink" title="初识 RocketMQ"></a>初识 RocketMQ</h1><p>RocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自主研发的一款适用于高并发、高可靠性、海量数据场景的消息中间件。早期开源2.x版本名为MetaQ；15年迭代3.x版本，更名为RocketMQ，16年开始贡献到Apache，经过1年多的孵化，最终成为Apache顶级的开源项目，更新非常频繁，社区活跃度也非常高；目前最新版本为4.5.1-release版本（2019-7-20日前）。RocketMQ参考借鉴了优秀的开源消息中间件Apache Kafka（这也是我们后面课程中重点要讲解的内容哦），其消息的路由、存储、集群划分都借鉴了Kafka优秀的设计思路，并结合自身的 “双十一” 场景进行了合理的扩展和API丰富。</p>
+<h1 id="优秀的能力与支持"><a href="#优秀的能力与支持" class="headerlink" title="优秀的能力与支持"></a>优秀的能力与支持</h1><p>接下来我们一起来看一下RocketMQ优秀的能力吧 ~</p>
+<ul>
+<li>支持集群模型、负载均衡、水平扩展能力</li>
+<li>亿级别的消息堆积能力</li>
+<li>采用零拷贝的原理、顺序写盘、随机读（索引文件）</li>
+<li>丰富的API使用</li>
+<li>代码优秀，底层通信框架采用Netty NIO框架</li>
+<li>NameServer 代替 Zookeeper</li>
+<li>强调集群无单点，可扩展，任意一点高可用，水平可扩展</li>
+<li>消息失败重试机制、消息可查询</li>
+<li>开源社区活跃度、是否足够成熟（经过双十一考验）</li>
+</ul>
+<h1 id="专业术语"><a href="#专业术语" class="headerlink" title="专业术语"></a>专业术语</h1><p>任何一种技术框架，都有 “她” 的专有名词，在你刚开始接触 “她” 的时候，一定要了解 “她” 的专业术语，这样能够更快速、更高效的和 “她” 愉快的玩耍…</p>
+<ul>
+<li>Producer：消息生产者，负责产生消息，一般由业务系统负责产生消息。</li>
+<li>Consumer：消息消费者，负责消费消息，一般是后台系统负责异步消费。</li>
+<li>Push Consumer：Consumer的一种，需要向Consumer对象注册监听。</li>
+<li>Pull Consumer：Consumer的一种，需要主动请求Broker拉取消息。</li>
+<li>Producer Group：生产者集合，一般用于发送一类消息。</li>
+<li>Consumer Group：消费者集合，一般用于接受一类消息进行消费。</li>
+<li>Broker ： MQ消息服务（中转角色，用于消息存储与生产消费转发）。</li>
+</ul>
+<h1 id="RocketMQ核心源码包及功能说明"><a href="#RocketMQ核心源码包及功能说明" class="headerlink" title="RocketMQ核心源码包及功能说明"></a>RocketMQ核心源码包及功能说明</h1><p>如下图所示，我们要带小伙伴们一起来看看RocketMQ源码包的组成，这样更方便我们日后对他有一个深入的学习。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png" alt="https://climg.mukewang.com/5df8401d0919472f03410264.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8404409bd481303400274.png" alt="https://climg.mukewang.com/5df8404409bd481303400274.png"></p>
+<ul>
+<li>rocketmq-broker 主要的业务逻辑，消息收发，主从同步, pagecache</li>
+<li>rocketmq-client 客户端接口，比如生产者和消费者</li>
+<li>rocketmq-common 公用数据结构等等</li>
+<li>rocketmq-distribution 编译模块，编译输出等</li>
+<li>rocketmq-example 示例，比如生产者和消费者</li>
+<li>rocketmq-fliter 进行Broker过滤的不感兴趣的消息传输，减小带宽压力</li>
+<li>rocketmq-logappender、rocketmq-logging日志相关</li>
+<li>rocketmq-namesrv Namesrv服务，用于服务协调</li>
+<li>rocketmq-openmessaging 对外提供服务</li>
+<li>rocketmq-remoting 远程调用接口，封装Netty底层通信</li>
+<li>rocketmq-srvutil 提供一些公用的工具方法，比如解析命令行参数</li>
+<li>rocketmq-store 消息存储核心包</li>
+<li>rocketmq-test 提供一些测试代码包</li>
+<li>rocketmq-tools 管理工具，比如有名的mqadmin工具</li>
+</ul>
+<h1 id="集群架构模型"><a href="#集群架构模型" class="headerlink" title="集群架构模型"></a>集群架构模型</h1><p>RocketMQ为我们提供了丰富的集群架构模型，包括单点模式、主从模式、双主模式、以及生产上使用最多的双主双从模式（或者说多主多从模式），在这里我们仅介绍一下经典的双主双从集群模型，如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8407b0950a18b08540381.png" alt="https://climg.mukewang.com/5df8407b0950a18b08540381.png"></p>
+<ul>
+<li>Producer集群就是生产者集群（他们在同一个生产者组 Producer Group）</li>
+<li>Consumer集群就是消费者集群（他们在同一个消费者组 Consumer Group）</li>
+<li>NameServer集群作为超轻量级的配置中心，只做集群元数据存储和心跳工作，不必保障节点间数据强一致性，也就是说NameServer集群是一个多机热备的概念。</li>
+<li>对于Broker而言，通常Master与Slave为一组服务，他们互为主从节点，通过NameServer与外部的Client端暴露统一的集群入口。Broker就是消息存储的核心MQ服务了。</li>
+</ul>
+<h1 id="集群架构思考"><a href="#集群架构思考" class="headerlink" title="集群架构思考"></a>集群架构思考</h1><p>RocketMQ作为国内顶级的消息中间件，其性能主要依赖于天然的分布式Topic/Queue，并且其内存与磁盘都会存储消息数据，借鉴了Kafka的 “空中接力” 概念（这个我们后面学习Kafka的时候会详细的说明），所谓 “空中接力” 就是指数据不一定要落地，RocketMQ提供了同步/异步双写、同步/异步复制的特性。在真正的生产环境中应该选择符合自己业务的配置。下面针对于RocketMQ的高性能及其瓶颈在这里加以说明：</p>
+<ul>
+<li>架构思考：<ul>
+<li>RocketMQ目前本人在公司内部实际生产环境采用8M-8S的集群架构（8主8从）硬件单点Master为32C，96G内存，500G的SSD</li>
+<li>其主要瓶颈最终会落在IOPS上面，当高峰期来临的时候，磁盘读写能力是主要的性能瓶颈，每秒收发消息IOPS达到10W+ 消息，这也是公司内部主要的可靠性消息中间件</li>
+<li>在很多时候，我们的业务会有一些非核心的消息投递，后续会进行消息中间件的业务拆分，把不重要的消息（可以允许消息丢失、非可靠性投递的消息）采用Kafka的异步发送机制，借助Kafka强大的吞吐量和消息堆积能力来做业务的分流（当然RocketMQ的性能也足够好）。</li>
+<li>为什么瓶颈在IOPS? 根本原因还是因为云环境导致的问题，云环境的SSD物理存储显然和自建机房SSD会有不小的差距，这一点我们无论是从数据库的磁盘性能、还是搜索服务（ElasticSearch）的磁盘性能，都能给出准确的瓶颈点，单机IOPS达到1万左右就是云存储SSD的性能瓶颈，这个也解释了 “木桶短板原理” 的效应，在真正的生产中，CPU的工作主要在等待IO操作，高并发下 CPU资源接近极限，但是IOPS还是达不到我们想要的效果。</li>
+</ul>
+</li>
+</ul>
+<h1 id="本节知识点回顾"><a href="#本节知识点回顾" class="headerlink" title="本节知识点回顾"></a>本节知识点回顾</h1><p>Hi，小伙伴们，本节课我们通过简要的图文学习，带大家快速的过了一下RocketMQ，那么小伙伴们记住一定要在脑海里建立知识的结构体系，并串联起来！无论是现在，还是说未来，本神都希望小伙伴要按照下面的步骤进行回忆和复习：</p>
+<ol>
+<li>RocketMQ的前世今生 ？</li>
+<li>RocketMQ的专业术语？</li>
+<li>RocketMQ源码包的组成？</li>
+<li>RocketMQ的集群架构模型</li>
+<li>RocketMQ在真正生产环境中面临的瓶颈点以及解决方案</li>
+</ol>
+<h1 id="补充课外资料"><a href="#补充课外资料" class="headerlink" title="补充课外资料"></a>补充课外资料</h1><p>为了方便爱学习的小伙伴们，本神特意加餐一波，提供RocketMQ的官方文档和相关软件包，以及对应的代码示例，辅助小伙伴们更好掌握RocketMQ。另外本神还在慕课网上的一门课程详细的讲解了RocketMQ的各个知识点以及实战应用，有想深入学习的小伙伴可以学习共勉。</p>
+<ol>
+<li>官方文档</li>
+<li>RocketMQ4.3.0版本（Linux平台）</li>
+<li>RocketMQ代码示例</li>
+<li>慕课网实战课程《RocketMQ核心技术精讲与高并发抗压实战》传送门：<a href="https://coding.imooc.com/class/292.html" target="_blank" rel="noopener">https://coding.imooc.com/class/292.html</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/分布式文件系统-FastDFS与Nginx实现文件服务器-6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -718,342 +1123,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-自定义模板配置中文分词/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-自定义模板配置中文分词/" class="post-title-link" itemprop="url">Logstash数据同步 - 自定义模板配置中文分词</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:39:14 / 修改时间：22:40:09" itemprop="dateCreated datePublished" datetime="2021-01-14T22:39:14+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前的数据同步，mappings映射会自动创建，但是分词不会，还是会使用默认的，而我们需要中文分词，这个时候就需要自定义模板功能来设置分词了。</p>
-<h1 id="查看Logstash默认模板"><a href="#查看Logstash默认模板" class="headerlink" title="查看Logstash默认模板"></a>查看Logstash默认模板</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_template/logstash</span><br></pre></td></tr></table></figure>
-<h1 id="修改模板如下"><a href="#修改模板如下" class="headerlink" title="修改模板如下"></a>修改模板如下</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"order"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"version"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"index_patterns"</span>: [<span class="string">"*"</span>],</span><br><span class="line">    <span class="string">"settings"</span>: &#123;</span><br><span class="line">        <span class="string">"index"</span>: &#123;</span><br><span class="line">            <span class="string">"refresh_interval"</span>: <span class="string">"5s"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"mappings"</span>: &#123;</span><br><span class="line">        <span class="string">"_default_"</span>: &#123;</span><br><span class="line">            <span class="string">"dynamic_templates"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"message_field"</span>: &#123;</span><br><span class="line">                        <span class="string">"path_match"</span>: <span class="string">"message"</span>,</span><br><span class="line">                        <span class="string">"match_mapping_type"</span>: <span class="string">"string"</span>,</span><br><span class="line">                        <span class="string">"mapping"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">                            <span class="string">"norms"</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">"string_fields"</span>: &#123;</span><br><span class="line">                        <span class="string">"match"</span>: <span class="string">"*"</span>,</span><br><span class="line">                        <span class="string">"match_mapping_type"</span>: <span class="string">"string"</span>,</span><br><span class="line">                        <span class="string">"mapping"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"text"</span>,</span><br><span class="line">                            <span class="string">"norms"</span>: <span class="literal">false</span>,</span><br><span class="line">                            <span class="string">"analyzer"</span>: <span class="string">"ik_max_word"</span>,</span><br><span class="line">                            <span class="string">"fields"</span>: &#123;</span><br><span class="line">                                <span class="string">"keyword"</span>: &#123;</span><br><span class="line">                                    <span class="string">"type"</span>: <span class="string">"keyword"</span>,</span><br><span class="line">                                    <span class="string">"ignore_above"</span>: <span class="number">256</span></span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">"properties"</span>: &#123;</span><br><span class="line">                <span class="string">"@timestamp"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"date"</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"@version"</span>: &#123;</span><br><span class="line">                    <span class="string">"type"</span>: <span class="string">"keyword"</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">"geoip"</span>: &#123;</span><br><span class="line">                    <span class="string">"dynamic"</span>: <span class="literal">true</span>,</span><br><span class="line">                    <span class="string">"properties"</span>: &#123;</span><br><span class="line">                        <span class="string">"ip"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"ip"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"location"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"geo_point"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"latitude"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"half_float"</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">"longitude"</span>: &#123;</span><br><span class="line">                            <span class="string">"type"</span>: <span class="string">"half_float"</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">"aliases"</span>: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="新增如下配置，用于更新模板，设置中文分词"><a href="#新增如下配置，用于更新模板，设置中文分词" class="headerlink" title="新增如下配置，用于更新模板，设置中文分词"></a>新增如下配置，用于更新模板，设置中文分词</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 定义模板名称</span><br><span class="line">template_name =&gt; <span class="string">"myik"</span></span><br><span class="line"># 模板所在位置</span><br><span class="line">template =&gt; <span class="string">"/usr/local/logstash-6.4.3/sync/logstash-ik.json"</span></span><br><span class="line"># 重写模板</span><br><span class="line">template_overwrite =&gt; <span class="literal">true</span></span><br><span class="line"># 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">manage_template =&gt; <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<h1 id="重新运行Logstash进行同步"><a href="#重新运行Logstash进行同步" class="headerlink" title="重新运行Logstash进行同步"></a>重新运行Logstash进行同步</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/local/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-配置/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-配置/" class="post-title-link" itemprop="url">Logstash数据同步-配置</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:20:07 / 修改时间：23:05:09" itemprop="dateCreated datePublished" datetime="2021-01-14T22:20:07+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="logstash同步数据库配置"><a href="#logstash同步数据库配置" class="headerlink" title="logstash同步数据库配置"></a>logstash同步数据库配置</h1><ol>
-<li>上传并解压logstash，路径为 <code>/usr/local/logstash</code></li>
-<li>创建文件名：logstash-db-sync.conf，后缀为<code>conf</code>，文件名随意，位置也随意，为方便起见，路径为<code>/usr/local/logstash/sync</code></li>
-<li>把数据库驱动拷贝至<code>/usr/local/logstash/sync</code>下</li>
-<li><p>配置内容如下：</p>
-   <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">input</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">jdbc</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="comment"># 设置 MySql/MariaDB 数据库url以及数据库名称</span></span><br><span class="line">        <span class="string">jdbc_connection_string</span> <span class="string">=&gt;</span> <span class="string">"jdbc:mysql://192.168.1.6:3306/foodie-shop-dev?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true"</span></span><br><span class="line">        <span class="comment"># 用户名和密码</span></span><br><span class="line">        <span class="string">jdbc_user</span> <span class="string">=&gt;</span> <span class="string">"root"</span></span><br><span class="line">        <span class="string">jdbc_password</span> <span class="string">=&gt;</span> <span class="string">"root"</span></span><br><span class="line">        <span class="comment"># 数据库驱动所在位置，可以是绝对路径或者相对路径</span></span><br><span class="line">        <span class="string">jdbc_driver_library</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/mysql-connector-java-5.1.41.jar"</span></span><br><span class="line">        <span class="comment"># 驱动类名</span></span><br><span class="line">        <span class="string">jdbc_driver_class</span> <span class="string">=&gt;</span> <span class="string">"com.mysql.jdbc.Driver"</span></span><br><span class="line">        <span class="comment"># 开启分页</span></span><br><span class="line">        <span class="string">jdbc_paging_enabled</span> <span class="string">=&gt;</span> <span class="string">"true"</span></span><br><span class="line">        <span class="comment"># 分页每页数量，可以自定义</span></span><br><span class="line">        <span class="string">jdbc_page_size</span> <span class="string">=&gt;</span> <span class="string">"10000"</span></span><br><span class="line">        <span class="comment"># 执行的sql文件路径</span></span><br><span class="line">        <span class="string">statement_filepath</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/foodie-items.sql"</span></span><br><span class="line">        <span class="comment"># 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span></span><br><span class="line">        <span class="string">schedule</span> <span class="string">=&gt;</span> <span class="string">"* * * * *"</span></span><br><span class="line">        <span class="comment"># 索引类型</span></span><br><span class="line">        <span class="string">type</span> <span class="string">=&gt;</span> <span class="string">"_doc"</span></span><br><span class="line">        <span class="comment"># 是否开启记录上次追踪的结果，也就是上次更新的时间，这个会记录到 last_run_metadata_path 的文件</span></span><br><span class="line">        <span class="string">use_column_value</span> <span class="string">=&gt;</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 记录上一次追踪的结果值</span></span><br><span class="line">        <span class="string">last_run_metadata_path</span> <span class="string">=&gt;</span> <span class="string">"/usr/local/logstash-6.4.3/sync/track_time"</span></span><br><span class="line">        <span class="comment"># 如果 use_column_value 为true， 配置本参数，追踪的 column 名，可以是自增id或者时间</span></span><br><span class="line">        <span class="string">tracking_column</span> <span class="string">=&gt;</span> <span class="string">"updated_time"</span></span><br><span class="line">        <span class="comment"># tracking_column 对应字段的类型</span></span><br><span class="line">        <span class="string">tracking_column_type</span> <span class="string">=&gt;</span> <span class="string">"timestamp"</span></span><br><span class="line">        <span class="comment"># 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span></span><br><span class="line">        <span class="string">clean_run</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">        <span class="comment"># 数据库字段名称大写转小写</span></span><br><span class="line">        <span class="string">lowercase_column_names</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">output</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">elasticsearch</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="comment"># es地址</span></span><br><span class="line">        <span class="string">hosts</span> <span class="string">=&gt;</span> <span class="string">["192.168.1.187:9200"]</span></span><br><span class="line">        <span class="comment"># 同步的索引名</span></span><br><span class="line">        <span class="string">index</span> <span class="string">=&gt;</span> <span class="string">"foodie-items"</span></span><br><span class="line">        <span class="comment"># 设置_docID和数据相同。itemId与sql同步脚本中的itemId保持一致</span></span><br><span class="line">        <span class="string">document_id</span> <span class="string">=&gt;</span> <span class="string">"<span class="template-variable">%&#123;itemId&#125;</span>"</span></span><br><span class="line">        <span class="comment">#document_id =&gt; "%&#123;id&#125;"</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line">    <span class="comment"># 日志输出</span></span><br><span class="line">    <span class="string">stdout</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="string">codec</span> <span class="string">=&gt;</span> <span class="string">json_lines</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>sql同步脚本</p>
-   <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    i.id <span class="keyword">as</span> itemId,</span><br><span class="line">    i.item_name <span class="keyword">as</span> itemName,</span><br><span class="line">    i.sell_counts <span class="keyword">as</span> sellCounts,</span><br><span class="line">    ii.url <span class="keyword">as</span> imgUrl,</span><br><span class="line">    tempSpec.price_discount <span class="keyword">as</span> price,</span><br><span class="line">    i.updated_time <span class="keyword">as</span> updated_time</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    items i</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    items_img ii</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id = ii.item_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    (<span class="keyword">SELECT</span> item_id,<span class="keyword">MIN</span>(price_discount) <span class="keyword">as</span> price_discount <span class="keyword">from</span> items_spec <span class="keyword">GROUP</span> <span class="keyword">BY</span> item_id) tempSpec</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id = tempSpec.item_id</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    ii.is_main = <span class="number">1</span></span><br><span class="line">    <span class="keyword">and</span></span><br><span class="line">    i.updated_time &gt;= :sql_last_value</span><br><span class="line"><span class="comment">--:sql_last_value是记录的最后的一个值</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h1 id="启动logstatsh"><a href="#启动logstatsh" class="headerlink" title="启动logstatsh"></a>启动logstatsh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/<span class="built_in">local</span>/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://www.cnblogs.com/huhangfei/p/7605511.html" target="_blank" rel="noopener">Logstash使用介绍</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Logstash数据同步-介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Logstash数据同步-介绍/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 22:18:19 / 修改时间：22:42:52" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
-<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
-<ul>
-<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
-<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
-</ul>
-<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3" target="_blank" rel="noopener">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
-<ul>
-<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
-</ul>
-<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
-<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg"></p>
-<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/spring-boot-2-3-7-es7-集成/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/spring-boot-2-3-7-es7-集成/" class="post-title-link" itemprop="url">spring boot 2.3.7 + es7 集成</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-14 21:04:41 / 修改时间：21:05:49" itemprop="dateCreated datePublished" datetime="2021-01-14T21:04:41+08:00">2021-01-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><a href="https://blog.csdn.net/qq_20280007/article/details/108388459?utm_medium=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control" target="_blank" rel="noopener">springboot2.3.3中关于spring-data-elasticsearch-4.0.3的使用_阿良~的博客-CSDN博客</a></p>
-<h1 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- spring boot 2.3.7 以上 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 2.3.7.RELEASE 支持 ES 7.X --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-webflux<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  elasticsearch:</span></span><br><span class="line"><span class="attr">    rest:</span></span><br><span class="line"><span class="attr">      uris:</span> <span class="string">&lt;http://localhost:9200&gt;</span></span><br></pre></td></tr></table></figure>
-<h1 id="对象映射"><a href="#对象映射" class="headerlink" title="对象映射"></a><strong>对象映射</strong></h1><ul>
-<li><p>首先要清楚注解的使用。</p>
-<ul>
-<li>@Document：类注解，以指示该类是映射到数据库的候选对象。最重要的属性是：<ul>
-<li>indexName：用于存储此实体的索引的名称</li>
-<li>type：映射类型。如果未设置，则使用小写的类的简单名称。（当前版本开始不推荐使用）</li>
-<li>shards：索引的分片数。（经测试，分片数无法设置，应该是个BUG，推荐先创建索引设置好分片数和副本数）</li>
-<li>replicas：索引的副本数。（经测试，分片数无法设置，应该是个BUG）</li>
-<li>refreshIntervall：索引的刷新间隔。用于索引创建。默认值为“ 1s”。</li>
-<li>indexStoreType：索引的索引存储类型。用于索引创建。默认值为“ fs”。</li>
-<li>createIndex：配置是否在存储库引导中创建索引。默认值为true。</li>
-<li>versionType：版本管理的配置。默认值为EXTERNAL。</li>
-</ul>
-</li>
-<li>@Id：字段注解，以标记用于标识目的的字段。</li>
-<li>@Field：在字段级别应用并定义字段的属性，大多数属性映射到各自的Elasticsearch映射定义（以下列表不完整，请查看注释Javadoc以获取完整的参考）：<ul>
-<li>name：字段名称，它将在Elasticsearch文档中表示，如果未设置，则使用Java字段名称。</li>
-<li>type：字段类型，可以是文本，关键字，长整数，短整数，字节，双精度，浮点型，半浮点数，标度浮点数，日期，布尔值，二进制，整数等。（属性（FieldType）类型不灵活）</li>
-<li>format和日期类型的pattern定义。必须为日期类型定义。</li>
-<li>store：标记是否将原始字段值存储在Elasticsearch中，默认值为false。</li>
-<li>analyzer，searchAnalyzer，normalizer用于指定自定义分析和正规化。</li>
-</ul>
-</li>
-<li>@GeoPoint：将字段标记为geo_point数据类型。如果字段是GeoPoint类的实例，则可以省略。</li>
-</ul>
-</li>
-<li><p>示例</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.data.annotation.Id;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Field;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.FieldType;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 经测试，更改 shards，replicas的值无法更改</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Document</span>(indexName = <span class="string">"stu"</span>, shards = <span class="number">3</span>, replicas = <span class="number">2</span>, createIndex = <span class="keyword">false</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stu</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long stuId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> Float money;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>, type = FieldType.Keyword)</span><br><span class="line">    <span class="keyword">private</span> String sign;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field</span>(store = <span class="keyword">true</span>)</span><br><span class="line">    <span class="keyword">private</span> String description;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 getter、setter</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Stu&#123;"</span> +</span><br><span class="line">                <span class="string">"stuId="</span> + stuId +</span><br><span class="line">                <span class="string">", name='"</span> + name + <span class="string">'\\'</span><span class="string">' +</span></span><br><span class="line"><span class="string">                ", age=" + age +</span></span><br><span class="line"><span class="string">                ", money=" + money +</span></span><br><span class="line"><span class="string">                ", sign='</span><span class="string">" + sign + '\\'' +</span></span><br><span class="line"><span class="string">                "</span>, description=<span class="string">'" + description + '</span>\\<span class="string">''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h1 id="ElasticsearchRestTemplate-用法"><a href="#ElasticsearchRestTemplate-用法" class="headerlink" title="ElasticsearchRestTemplate 用法"></a>ElasticsearchRestTemplate 用法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fengxuechao.FoodieSearchApp;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.es.pojo.Stu;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.index.query.QueryBuilders;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.FieldSortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortOrder;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.PageRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.Pageable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHit;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHits;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.query.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span>(classes = FoodieSearchApp.class)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ElasticsearchRestTemplate esTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 不建议使用 ElasticsearchRestTemplate 对索引进行管理（创建索引，更新映射，删除索引）</span></span><br><span class="line"><span class="comment">     * 索引就像是数据库或者数据库中的表，我们平时是不会是通过java代码频繁的去创建修改删除数据库或者表的</span></span><br><span class="line"><span class="comment">     * 我们只会针对数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 在es中也是同理，我们尽量使用 ElasticsearchRestTemplate 对文档数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 1. 属性（FieldType）类型不灵活</span></span><br><span class="line"><span class="comment">     * 2. 主分片与副本分片数无法设置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Stu stu = <span class="keyword">new</span> Stu();</span><br><span class="line">        stu.setStuId(<span class="number">1007L</span>);</span><br><span class="line">        stu.setName(<span class="string">"iron man"</span>);</span><br><span class="line">        stu.setAge(<span class="number">22</span>);</span><br><span class="line">        stu.setMoney(<span class="number">1000.8f</span>);</span><br><span class="line">        stu.setSign(<span class="string">"I am iron man"</span>);</span><br><span class="line">        stu.setDescription(<span class="string">"I have a spider man"</span>);</span><br><span class="line"></span><br><span class="line">        IndexQuery indexQuery = <span class="keyword">new</span> IndexQueryBuilder().withObject(stu).build();</span><br><span class="line">        esTemplate.index(indexQuery, esTemplate.getIndexCoordinatesFor(stu.getClass()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.indexOps(Stu.class).delete();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; sourceMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        sourceMap.put(<span class="string">"name"</span>, <span class="string">"spider man"</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"money"</span>, <span class="number">99.8f</span>);</span><br><span class="line">        sourceMap.put(<span class="string">"age"</span>, <span class="number">33</span>);</span><br><span class="line"></span><br><span class="line">        IndexRequest indexRequest = <span class="keyword">new</span> IndexRequest();</span><br><span class="line">        indexRequest.source(sourceMap);</span><br><span class="line"></span><br><span class="line">        UpdateQuery updateQuery = UpdateQuery.builder(<span class="string">"1004"</span>)</span><br><span class="line">                .withDocument(Document.from(sourceMap))</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">//        update stu set sign='abc',age=33,money=88.6 where docId='1002'</span></span><br><span class="line"></span><br><span class="line">        esTemplate.update(updateQuery, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Stu stu = esTemplate.get(<span class="string">"1004"</span>, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(stu);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.delete(<span class="string">"1002"</span>, IndexCoordinates.of(<span class="string">"stu"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">searchStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class, esTemplate.getIndexCoordinatesFor(Stu.class));</span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : hits) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">highlightStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String preTag = <span class="string">"&lt;font color='red'&gt;"</span>;</span><br><span class="line">        String postTag = <span class="string">"&lt;/font&gt;"</span>;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        SortBuilder sortBuilder = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"money"</span>)</span><br><span class="line">                .order(SortOrder.DESC);</span><br><span class="line">        SortBuilder sortBuilderAge = <span class="keyword">new</span> FieldSortBuilder(<span class="string">"age"</span>)</span><br><span class="line">                .order(SortOrder.ASC);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">"description"</span>, <span class="string">"spider man"</span>))</span><br><span class="line">                .withHighlightFields(<span class="keyword">new</span> HighlightBuilder.Field(<span class="string">"description"</span>)</span><br><span class="line">                        .preTags(preTag)</span><br><span class="line">                        .postTags(postTag))</span><br><span class="line">                .withSort(sortBuilder)</span><br><span class="line">                .withSort(sortBuilderAge)</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"检索后的总分页数目为："</span> + hits.getTotalHits());</span><br><span class="line">        <span class="comment">// 将</span></span><br><span class="line">        List&lt;SearchHit&lt;Stu&gt;&gt; list = hits.get()</span><br><span class="line">                .peek(stuSearchHit -&gt; stuSearchHit.getContent().setDescription(stuSearchHit.getHighlightField(<span class="string">"description"</span>).get(<span class="number">0</span>))).collect(Collectors.toList());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : list) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/blog/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/14/">14</a><a class="extend next" rel="next" href="/blog/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/blog/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/15/">15</a><a class="extend next" rel="next" href="/blog/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1119,7 +1192,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">144</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1132,7 +1205,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">82</span>
+        <span class="site-state-item-count">84</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
