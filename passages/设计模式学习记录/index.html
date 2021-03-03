@@ -5,39 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 3.9.0">
-  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-<link rel="stylesheet" href="/blog/css/main.css">
+<link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/blog/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.gitee.io","root":"/blog/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="记录在学习设计模式过程中的点滴 单例模式 优点：  单例模式可以保证内存中只有一个实例对象，从而会减少内存的开销； 单例模式可以避免对资源的多重占用； 单例模式设置全局访问点，可以起到优化和共享资源的访问的作用；   缺点：  扩展难， 因为单例模式通常是没有接口的啊，如果想要扩展，那么你唯一途径就是修改之前的代码，所以说单例模式违背了开闭原则； 调试难，因为在并发测试中，单例模式是不利于代码的调">
 <meta name="keywords" content="设计模式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="设计模式学习记录">
-<meta property="og:url" content="https://littlefxc.gitee.io/blog/passages/设计模式学习记录/index.html">
+<meta property="og:url" content="https://littlefxc.github.io/passages/设计模式学习记录/index.html">
 <meta property="og:site_name" content="littlefxc&#39;s blog">
 <meta property="og:description" content="记录在学习设计模式过程中的点滴 单例模式 优点：  单例模式可以保证内存中只有一个实例对象，从而会减少内存的开销； 单例模式可以避免对资源的多重占用； 单例模式设置全局访问点，可以起到优化和共享资源的访问的作用；   缺点：  扩展难， 因为单例模式通常是没有接口的啊，如果想要扩展，那么你唯一途径就是修改之前的代码，所以说单例模式违背了开闭原则； 调试难，因为在并发测试中，单例模式是不利于代码的调">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/fbc5b62b7710fe70d99ab45f7cc8b53d.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/443fc2b10d2bc790bbe6aee06eea25a1.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/001bf164def93d6de76d1edfca33844f.png">
-<meta property="og:updated_time" content="2021-02-25T11:55:55.772Z">
+<meta property="og:updated_time" content="2021-03-03T05:00:37.369Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="设计模式学习记录">
 <meta name="twitter:description" content="记录在学习设计模式过程中的点滴 单例模式 优点：  单例模式可以保证内存中只有一个实例对象，从而会减少内存的开销； 单例模式可以避免对资源的多重占用； 单例模式设置全局访问点，可以起到优化和共享资源的访问的作用；   缺点：  扩展难， 因为单例模式通常是没有接口的啊，如果想要扩展，那么你唯一途径就是修改之前的代码，所以说单例模式违背了开闭原则； 调试难，因为在并发测试中，单例模式是不利于代码的调">
 <meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/fbc5b62b7710fe70d99ab45f7cc8b53d.png">
 
-<link rel="canonical" href="https://littlefxc.gitee.io/blog/passages/设计模式学习记录/">
+<link rel="canonical" href="https://littlefxc.github.io/passages/设计模式学习记录/">
 
 
 <script id="page-configurations">
@@ -99,7 +99,7 @@
 
   <div class="site-meta">
 
-    <a href="/blog/" class="brand" rel="start">
+    <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">littlefxc's blog</h1>
       <span class="logo-line-after"><i></i></span>
@@ -119,27 +119,27 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
         <li class="menu-item menu-item-about">
 
-    <a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
   </ul>
@@ -172,10 +172,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/设计模式学习记录/">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.github.io/passages/设计模式学习记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.gif">
       <meta itemprop="name" content="冯雪超">
       <meta itemprop="description" content="">
     </span>
@@ -202,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-02-25 19:55:55" itemprop="dateModified" datetime="2021-02-25T19:55:55+08:00">2021-02-25</time>
+                <time title="修改时间：2021-03-03 13:00:37" itemprop="dateModified" datetime="2021-03-03T13:00:37+08:00">2021-03-03</time>
               </span>
 
           
@@ -247,10 +247,13 @@
 <p>当第一个线程调用<code>getInstance()</code>方法时，第二个线程也可以调用，但是第一个线程执行<code>synchronized</code>时候，第二个线程就会发现阻塞，但是此时的阻塞是<code>getInstance()</code>内部的阻塞。</p>
 <h2 id="静态内部类单例实现"><a href="#静态内部类单例实现" class="headerlink" title="静态内部类单例实现"></a>静态内部类单例实现</h2><p>虽然双重检测锁的单例模式解决了线程安全和性能问题，但是毕竟涉及加锁的操作，多多少少就会到了性能的影响，下面我们分享一下更加优雅的单例模式实现，如下代码所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LazyStaticInnerClassSingleton</span> </span>&#123;</span><br><span class="line">    <span class="comment">//  在构造方法里面抛出异常真的合适？</span></span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">LazyStaticInnerClassSingleton</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(LazyHolder.INSTANCE != <span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"不允许创建多个实例"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// static 保证这个方法不会被重写 覆盖</span></span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> LazyStaticInnerClassSingleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> LazyHolder.INSTANCE;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Java 默认不会加载内部类</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">LazyHolder</span></span>&#123;</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> LazyStaticInnerClassSingleton INSTANCE=<span class="keyword">new</span> LazyStaticInnerClassSingleton();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="创建者模式"><a href="#创建者模式" class="headerlink" title="创建者模式"></a>创建者模式</h1><h2 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/fbc5b62b7710fe70d99ab45f7cc8b53d.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/工厂模式类图.png"></p>
+<h1 id="创建者模式"><a href="#创建者模式" class="headerlink" title="创建者模式"></a>创建者模式</h1><h2 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h2><p>工厂模式又称工厂方法模式，是一种创建者模式，主要是在父类中提供一个创建对象的方法，允许子类决定实例化对象的类型。</p>
+<p>这种设计模式也是 Java 开发中最常见的一种模式，它的主要意图是定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式使其创建过程延迟到子类进行。</p>
+<p>简单来说，就是为了提供代码结构的扩展性，屏蔽每一个功能类中的具体实现逻辑。让外部可以更简单的只是知道调用即可，同时这也是去掉众多 ifelse 的方式。当然这也可能有一些缺点，比如需要实现的类非常多，如何去维护，怎样去降低成本。但这些问题都可以在后续的设计模式结合使用中，逐步降低。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/fbc5b62b7710fe70d99ab45f7cc8b53d.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/工厂模式类图.png"></p>
 <h2 id="抽象工厂方法模式"><a href="#抽象工厂方法模式" class="headerlink" title="抽象工厂方法模式"></a>抽象工厂方法模式</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/443fc2b10d2bc790bbe6aee06eea25a1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/抽象工厂模式.png"></p>
 <h2 id="建造者模式"><a href="#建造者模式" class="headerlink" title="建造者模式"></a>建造者模式</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/001bf164def93d6de76d1edfca33844f.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/建造者模式.png"></p>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://msjavacoder.github.io/msJava/#/docs/设计模式/单例模式" target="_blank" rel="noopener">https://msjavacoder.github.io/msJava/#/docs/设计模式/单例模式</a></p>
+<h2 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h2><h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://msjavacoder.github.io/msJava/#/docs/设计模式/单例模式" target="_blank" rel="noopener">https://msjavacoder.github.io/msJava/#/docs/设计模式/单例模式</a></p>
 
     </div>
 
@@ -260,7 +263,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/blog/tags/设计模式/" rel="tag"># 设计模式</a>
+              <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
           </div>
 
         
@@ -269,7 +272,7 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/blog/passages/JVM-调优/" rel="prev" title="JVM 调优">
+    <a href="/passages/JVM-调优/" rel="prev" title="JVM 调优">
       <i class="fa fa-chevron-left"></i> JVM 调优
     </a></div>
       <div class="post-nav-item"></div>
@@ -331,7 +334,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#单例模式"><span class="nav-number">1.</span> <span class="nav-text">单例模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#饿汉式标准写法"><span class="nav-number">1.1.</span> <span class="nav-text">饿汉式标准写法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#饿汉式静态块机制写法"><span class="nav-number">1.2.</span> <span class="nav-text">饿汉式静态块机制写法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懒汉式单例写法"><span class="nav-number">1.3.</span> <span class="nav-text">懒汉式单例写法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#synchronized修饰的懒汉式单例实现"><span class="nav-number">1.4.</span> <span class="nav-text">synchronized修饰的懒汉式单例实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懒汉式-双重检测单例实现"><span class="nav-number">1.5.</span> <span class="nav-text">懒汉式-双重检测单例实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态内部类单例实现"><span class="nav-number">1.6.</span> <span class="nav-text">静态内部类单例实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建者模式"><span class="nav-number">2.</span> <span class="nav-text">创建者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#工厂方法模式"><span class="nav-number">2.1.</span> <span class="nav-text">工厂方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象工厂方法模式"><span class="nav-number">2.2.</span> <span class="nav-text">抽象工厂方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建造者模式"><span class="nav-number">2.3.</span> <span class="nav-text">建造者模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资源"><span class="nav-number">3.</span> <span class="nav-text">参考资源</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#单例模式"><span class="nav-number">1.</span> <span class="nav-text">单例模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#饿汉式标准写法"><span class="nav-number">1.1.</span> <span class="nav-text">饿汉式标准写法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#饿汉式静态块机制写法"><span class="nav-number">1.2.</span> <span class="nav-text">饿汉式静态块机制写法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懒汉式单例写法"><span class="nav-number">1.3.</span> <span class="nav-text">懒汉式单例写法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#synchronized修饰的懒汉式单例实现"><span class="nav-number">1.4.</span> <span class="nav-text">synchronized修饰的懒汉式单例实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#懒汉式-双重检测单例实现"><span class="nav-number">1.5.</span> <span class="nav-text">懒汉式-双重检测单例实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#静态内部类单例实现"><span class="nav-number">1.6.</span> <span class="nav-text">静态内部类单例实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建者模式"><span class="nav-number">2.</span> <span class="nav-text">创建者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#工厂方法模式"><span class="nav-number">2.1.</span> <span class="nav-text">工厂方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象工厂方法模式"><span class="nav-number">2.2.</span> <span class="nav-text">抽象工厂方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建造者模式"><span class="nav-number">2.3.</span> <span class="nav-text">建造者模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原型模式"><span class="nav-number">2.4.</span> <span class="nav-text">原型模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资源"><span class="nav-number">3.</span> <span class="nav-text">参考资源</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -343,20 +346,20 @@
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/blog/archives/">
+          <a href="/archives/">
         
           <span class="site-state-item-count">144</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/blog/categories/">
+            <a href="/categories/">
           
         <span class="site-state-item-count">28</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/blog/tags/">
+            <a href="/tags/">
           
         <span class="site-state-item-count">84</span>
         <span class="site-state-item-name">标签</span></a>
@@ -416,12 +419,12 @@
   </div>
 
   
-  <script src="/blog/lib/anime.min.js"></script>
-  <script src="/blog/lib/velocity/velocity.min.js"></script>
-  <script src="/blog/lib/velocity/velocity.ui.min.js"></script>
-<script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script>
-<script src="/blog/js/schemes/muse.js"></script>
-<script src="/blog/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
 
 
 
