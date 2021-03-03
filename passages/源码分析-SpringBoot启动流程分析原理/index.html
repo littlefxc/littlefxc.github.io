@@ -17,15 +17,15 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。  很多程序员都感慨Sp">
+  <meta name="description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="源码分析:SpringBoot启动流程分析原理">
 <meta property="og:url" content="https://littlefxc.github.io/passages/源码分析-SpringBoot启动流程分析原理/index.html">
 <meta property="og:site_name" content="littlefxc&#39;s blog">
-<meta property="og:description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。  很多程序员都感慨Sp">
+<meta property="og:description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png">
@@ -37,10 +37,10 @@
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png">
-<meta property="og:updated_time" content="2021-01-13T01:32:54.314Z">
+<meta property="og:updated_time" content="2021-03-03T11:00:40.259Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="源码分析:SpringBoot启动流程分析原理">
-<meta name="twitter:description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。  很多程序员都感慨Sp">
+<meta name="twitter:description" content="我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。">
 <meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png">
 
 <link rel="canonical" href="https://littlefxc.github.io/passages/源码分析-SpringBoot启动流程分析原理/">
@@ -114,6 +114,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -148,11 +149,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -208,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-13 09:32:54" itemprop="dateModified" datetime="2021-01-13T09:32:54+08:00">2021-01-13</time>
+                <time title="修改时间：2021-03-03 19:00:40" itemprop="dateModified" datetime="2021-03-03T19:00:40+08:00">2021-03-03</time>
               </span>
 
           
@@ -225,6 +253,7 @@
         <blockquote>
 <p>我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。</p>
 </blockquote>
+<a id="more"></a>
 <p>很多程序员都感慨<strong><code>SpringBoot</code></strong>的到来大大解放了生产力，但是也有聪明的程序猿会多思考一下下，<strong><code>SpringBoot</code></strong>是怎么做到的约定的配置？它配置在了哪里？又是怎么启动的作用等等一系列的问号在跟女朋友花前月下的时候，依然会时不时冒出来。这严重影响了程序猿们的”幸”福生活，为了能广大”程序猿”同胞过上幸福美满的生活，今天咱么就来一起跟随源码探究下<strong><code>SpringBoot</code></strong>到底是如何做到”<strong>约定优于配置</strong>“的。</p>
 <p>首先，我们先介绍下我们的演示的项目环境，我们先试用<strong><code>Spring Initializr</code></strong>来创建一个<strong><code>SpirngBoot</code></strong>工程。我们使用的版本是<strong><code>SpringBoot 2.1.5.RELEASE</code></strong>。</p>
 <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png"></p>
@@ -370,7 +399,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">143</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -454,6 +483,8 @@
 
 
 
+
+  <script src="/js/local-search.js"></script>
 
 
 

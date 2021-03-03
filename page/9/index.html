@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta property="og:type" content="website">
@@ -99,6 +99,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -133,11 +134,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -158,84 +186,6 @@
 
           <div class="content index posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.github.io/passages/文件上传与魔数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/passages/文件上传与魔数/" class="post-title-link" itemprop="url">文件上传与魔数</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-11-27 10:19:25 / 修改时间：10:49:12" itemprop="dateCreated datePublished" datetime="2019-11-27T10:19:25+08:00">2019-11-27</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="问题的出现"><a href="#问题的出现" class="headerlink" title="问题的出现"></a>问题的出现</h2><p>今天在测试图片上传的时候，工作电脑中没有现成的图片（其实是懒得找），又不想去网上下载就把word文档改了后缀名(.jpeg)上传，没想到上传失败。</p>
-<p>心里头非常纳闷，第一反应是代码有BUG，打开项目的过程中，不对。我把文件后缀名重新改回在上传文件，可以正常上传了。</p>
-<h2 id="定位问题"><a href="#定位问题" class="headerlink" title="定位问题"></a>定位问题</h2><p>由此，问题已经定位了，是我的这个不正常行为引起的。但为什么会出现这个问题，打开搜索引擎一通猛搜。</p>
-<p>原来是有一个叫做 <code>magic number</code> 的东西，文件的起始几个字节的内容是固定的，这几个字节的内容也被称为 <code>magic number</code>, 因此可以根据这几个字节的内容确定文件类型。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>常见的文件类型的魔数</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> FileType &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * JPEG</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    JPEG(<span class="string">"JPEG"</span>, <span class="string">"FFD8FF"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * PNG</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PNG(<span class="string">"PNG"</span>, <span class="string">"89504E47"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * GIF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    GIF(<span class="string">"GIF"</span>, <span class="string">"47494638"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * TIFF</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    TIFF(<span class="string">"TIFF"</span>, <span class="string">"49492A00"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Windows bitmap</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    BMP(<span class="string">"BMP"</span>, <span class="string">"424D"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * CAD</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    DWG(<span class="string">"DWG"</span>, <span class="string">"41433130"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adobe photoshop</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PSD(<span class="string">"PSD"</span>, <span class="string">"38425053"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Rich Text Format</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RTF(<span class="string">"RTF"</span>, <span class="string">"7B5C727466"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * XML</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    XML(<span class="string">"XML"</span>, <span class="string">"3C3F786D6C"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * HTML</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    HTML(<span class="string">"HTML"</span>, <span class="string">"68746D6C3E"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Outlook Express</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    DBX(<span class="string">"DBX"</span>, <span class="string">"CFAD12FEC5FD746F "</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Outlook</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PST(<span class="string">"PST"</span>, <span class="string">"2142444E"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * doc;xls;dot;ppt;xla;ppa;pps;pot;msi;sdw;db</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    OLE2(<span class="string">"OLE2"</span>, <span class="string">"0xD0CF11E0A1B11AE1"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Microsoft Word/Excel</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    XLS_DOC(<span class="string">"XLS_DOC"</span>, <span class="string">"D0CF11E0"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Microsoft Access</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MDB(<span class="string">"MDB"</span>, <span class="string">"5374616E64617264204A"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Word Perfect</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    WPB(<span class="string">"WPB"</span>, <span class="string">"FF575043"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Postscript</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    EPS_PS(<span class="string">"EPS_PS"</span>, <span class="string">"252150532D41646F6265"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Adobe Acrobat</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PDF(<span class="string">"PDF"</span>, <span class="string">"255044462D312E"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Windows Password</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    PWL(<span class="string">"PWL"</span>, <span class="string">"E3828596"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ZIP Archive</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    ZIP(<span class="string">"ZIP"</span>, <span class="string">"504B0304"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ARAR Archive</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RAR(<span class="string">"RAR"</span>, <span class="string">"52617221"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * WAVE</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    WAV(<span class="string">"WAV"</span>, <span class="string">"57415645"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * AVI</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    AVI(<span class="string">"AVI"</span>, <span class="string">"41564920"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Real Audio</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RAM(<span class="string">"RAM"</span>, <span class="string">"2E7261FD"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Real Media</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    RM(<span class="string">"RM"</span>, <span class="string">"2E524D46"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Quicktime</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MOV(<span class="string">"MOV"</span>, <span class="string">"6D6F6F76"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Windows Media</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    ASF(<span class="string">"ASF"</span>, <span class="string">"3026B2758E66CF11"</span>),</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * MIDI</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    MID(<span class="string">"MID"</span>, <span class="string">"4D546864"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String key;</span><br><span class="line">    <span class="keyword">private</span> String value;</span><br><span class="line"></span><br><span class="line">    FileType(String key, String value) &#123;</span><br><span class="line">        <span class="keyword">this</span>.key = key;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getKey</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> key;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>具体的实现就是根据文件的魔数判断文件的真实类型</p>
-<p>文件工具类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取文件投</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> filePath 文件路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 16 进制的文件投信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">getFileHeader</span><span class="params">(String filePath)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">28</span>];</span><br><span class="line">        InputStream inputStream = <span class="keyword">new</span> FileInputStream(filePath);</span><br><span class="line">        inputStream.read(b, <span class="number">0</span>, <span class="number">28</span>);</span><br><span class="line">        inputStream.close();</span><br><span class="line">        <span class="keyword">return</span> bytes2hex(b);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将字节数组转换成16进制字符串</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> String <span class="title">bytes2hex</span><span class="params">(<span class="keyword">byte</span>[] src)</span> </span>&#123;</span><br><span class="line">        StringBuilder stringBuilder = <span class="keyword">new</span> StringBuilder(<span class="string">""</span>);</span><br><span class="line">        <span class="keyword">if</span> (src == <span class="keyword">null</span> || src.length &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">byte</span> b : src) &#123;</span><br><span class="line">            <span class="keyword">int</span> v = b &amp; <span class="number">0xFF</span>;</span><br><span class="line">            String hv = Integer.toHexString(v);</span><br><span class="line">            <span class="keyword">if</span> (hv.length() &lt; <span class="number">2</span>) &#123;</span><br><span class="line">                stringBuilder.append(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            stringBuilder.append(hv);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stringBuilder.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据文件路径获取文件类型</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> filePath 文件路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 文件类型</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> FileType <span class="title">getFileType</span><span class="params">(String filePath)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String fileHead = getFileHeader(filePath);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == fileHead || fileHead.length() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        fileHead = fileHead.toUpperCase();</span><br><span class="line">        FileType[] fileTypes = FileType.values();</span><br><span class="line">        <span class="keyword">for</span> (FileType type : fileTypes) &#123;</span><br><span class="line">            <span class="keyword">if</span> (fileHead.startsWith(type.getValue())) &#123;</span><br><span class="line">                <span class="keyword">return</span> type;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>没想到这个被有意无意忽视的问题就这样出现在我的面前，真是意料之外，又在情理之中。</p>
-<p>考虑一个问题，还是得想的多一点。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
       
   
   
@@ -1121,6 +1071,79 @@ ribbon.MaxAutoRetriesNextServer=1
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.github.io/passages/Java8-LocalDateTime记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/passages/Java8-LocalDateTime记录/" class="post-title-link" itemprop="url">Java8-LocalDateTime记录</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-08-28 09:38:13 / 修改时间：10:06:26" itemprop="dateCreated datePublished" datetime="2019-08-28T09:38:13+08:00">2019-08-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Java8-LocalDateTime记录"><a href="#Java8-LocalDateTime记录" class="headerlink" title="Java8-LocalDateTime记录"></a>Java8-LocalDateTime记录</h1><p>文中都使用的时区都是东8区，也就是北京时间。这是为了防止服务器设置时区错误时导致时间不对，如果您是其他时区，请自行修改。</p>
+<h2 id="关键类介绍"><a href="#关键类介绍" class="headerlink" title="关键类介绍"></a>关键类介绍</h2><p>– Instant:它代表的是时间戳<br>– LocalDate:不包含具体时间的日期，比如2019-08-28。它可以用来存储生日，周年纪念日，入职日期等。<br>– LocalTime:它代表的是不含日期的时间<br>– LocalDateTime:它包含了日期及时间，不过还是没有偏移信息或者说时区。<br>– ZonedDateTime:这是一个包含时区的完整的日期时间，偏移量是以UTC/格林威治时间为基准的。</p>
+<h2 id="Java8新增的DateTimeFormatter与SimpleDateFormat的区别"><a href="#Java8新增的DateTimeFormatter与SimpleDateFormat的区别" class="headerlink" title="Java8新增的DateTimeFormatter与SimpleDateFormat的区别"></a>Java8新增的DateTimeFormatter与SimpleDateFormat的区别</h2><p>两者最大的区别是，Java8的DateTimeFormatter是线程安全的，而SimpleDateFormat并不是线程安全。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.text.DateFormat;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDate;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//解析日期</span></span><br><span class="line">        String dateStr= <span class="string">"2016年10月25日"</span>;</span><br><span class="line">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(<span class="string">"yyyy年MM月dd日"</span>);</span><br><span class="line">        LocalDate date= LocalDate.parse(dateStr, formatter);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//日期转换为字符串</span></span><br><span class="line">        LocalDateTime now = LocalDateTime.now();</span><br><span class="line">        DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">"yyyy年MM月dd日 hh:mm a"</span>);</span><br><span class="line">        String nowStr = now .format(format);</span><br><span class="line">        System.out.println(nowStr);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//ThreadLocal来限制SimpleDateFormat</span></span><br><span class="line">        System.out.println(format(<span class="keyword">new</span> Date()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//要在高并发环境下能有比较好的体验，可以使用ThreadLocal来限制SimpleDateFormat只能在线程内共享，这样就避免了多线程导致的线程安全问题。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;DateFormat&gt; threadLocal = <span class="keyword">new</span> ThreadLocal&lt;DateFormat&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> DateFormat <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">format</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> threadLocal.get().format(date);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="LocalDateTime获取毫秒数"><a href="#LocalDateTime获取毫秒数" class="headerlink" title="LocalDateTime获取毫秒数"></a>LocalDateTime获取毫秒数</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取秒数</span></span><br><span class="line">Long second = LocalDateTime.now().toEpochSecond(ZoneOffset.of(<span class="string">"+8"</span>));</span><br><span class="line"><span class="comment">//获取毫秒数</span></span><br><span class="line">Long milliSecond = LocalDateTime.now().toInstant(ZoneOffset.of(<span class="string">"+8"</span>)).toEpochMilli();</span><br></pre></td></tr></table></figure>
+<h2 id="LocalDateTime与String互转"><a href="#LocalDateTime与String互转" class="headerlink" title="LocalDateTime与String互转"></a>LocalDateTime与String互转</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//时间转字符串格式化</span></span><br><span class="line"> DateTimeFormatter formatter = DateTimeFormatter.ofPattern(<span class="string">"yyyyMMddHHmmssSSS"</span>);</span><br><span class="line"> String dateTime = LocalDateTime.now(ZoneOffset.of(<span class="string">"+8"</span>)).format(formatter);</span><br><span class="line"></span><br><span class="line"><span class="comment">//字符串转时间</span></span><br><span class="line">String dateTimeStr = <span class="string">"2018-07-28 14:11:15"</span>;</span><br><span class="line">DateTimeFormatter df = DateTimeFormatter.ofPattern(<span class="string">"yyyy-MM-dd HH:mm:ss"</span>);</span><br><span class="line">LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, df);</span><br></pre></td></tr></table></figure>
+<h2 id="Date与LocalDateTime互转"><a href="#Date与LocalDateTime互转" class="headerlink" title="Date与LocalDateTime互转"></a>Date与LocalDateTime互转</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将java.util.Date 转换为java8 的java.time.LocalDateTime,默认时区为东8区</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalDateTime <span class="title">dateConvertToLocalDateTime</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> date.toInstant().atOffset(ZoneOffset.of(<span class="string">"+8"</span>)).toLocalDateTime();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将java8 的 java.time.LocalDateTime 转换为 java.util.Date，默认时区为东8区</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Date <span class="title">localDateTimeConvertToDate</span><span class="params">(LocalDateTime localDateTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Date.from(localDateTime.toInstant(ZoneOffset.of(<span class="string">"+8"</span>)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试转换是否正确</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testDateConvertToLocalDateTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Date date = DateUtils.parseDate(<span class="string">"2018-08-01 21:22:22"</span>, DateUtils.DATE_YMDHMS);</span><br><span class="line">    LocalDateTime localDateTime = DateUtils.dateConvertToLocalDateTime(date);</span><br><span class="line">    Long localDateTimeSecond = localDateTime.toEpochSecond(ZoneOffset.of(<span class="string">"+8"</span>));</span><br><span class="line">    Long dateSecond = date.toInstant().atOffset(ZoneOffset.of(<span class="string">"+8"</span>)).toEpochSecond();</span><br><span class="line">    Assert.assertTrue(dateSecond.equals(localDateTimeSecond));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -1190,7 +1213,7 @@ ribbon.MaxAutoRetriesNextServer=1
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">143</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1274,6 +1297,8 @@ ribbon.MaxAutoRetriesNextServer=1
 
 
 
+
+  <script src="/js/local-search.js"></script>
 
 
 

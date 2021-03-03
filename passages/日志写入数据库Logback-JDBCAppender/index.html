@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="Logback-DBAppenderDBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。这三个表是 logging_event、logging_event_property 和 logging_event_exception。在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。它们可以在 logback-classic/src/mai">
@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="littlefxc&#39;s blog">
 <meta property="og:description" content="Logback-DBAppenderDBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。这三个表是 logging_event、logging_event_property 和 logging_event_exception。在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。它们可以在 logback-classic/src/mai">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2021-01-14T14:21:37.353Z">
+<meta property="og:updated_time" content="2021-03-03T11:01:55.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="日志写入数据库Logback-JDBCAppender">
 <meta name="twitter:description" content="Logback-DBAppenderDBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。这三个表是 logging_event、logging_event_property 和 logging_event_exception。在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。它们可以在 logback-classic/src/mai">
@@ -104,6 +104,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -138,11 +139,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -198,7 +226,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-14 22:21:37" itemprop="dateModified" datetime="2021-01-14T22:21:37+08:00">2021-01-14</time>
+                <time title="修改时间：2021-03-03 19:01:55" itemprop="dateModified" datetime="2021-03-03T19:01:55+08:00">2021-03-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -222,6 +250,7 @@
 
       
         <h1 id="Logback-DBAppender"><a href="#Logback-DBAppender" class="headerlink" title="Logback-DBAppender"></a>Logback-DBAppender</h1><p>DBAppender以独立于Java编程语言的格式将日志事件插入到三个数据库表中。<br>这三个表是 <code>logging_event</code>、<code>logging_event_property</code> 和 <code>logging_event_exception</code>。<br>在使用DBAppender之前，它们必须存在。Logback附带了创建表的SQL脚本。<br>它们可以在 <code>logback-classic/src/main/java/ch/qos/logback/classic/db/script</code> 文件夹下找到。<br>对于每个最流行的数据库系统，都有一个特定的脚本。如果您的特定类型的数据库系统缺少脚本，那么应该很容易以现有脚本为例编写一个脚本。<br>如果JDBC驱动程序支持JDBC 3.0规范中引入的getGeneratedKeys方法，假设您已经创建了如上所述的适当的数据库表，那么就不需要额外的步骤。<br>否则，必须有适合您的数据库系统的sql方言。目前，logback有H2、HSQL、MS SQL Server、MySQL、Oracle、PostgreSQL、SQLLite和Sybase等多种方言。</p>
+<a id="more"></a>
 <p>如前所述，logback使用三个表来存储日志事件数据:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> logging_event_property;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> logging_event_exception;</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> logging_event;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> logging_event</span><br><span class="line">(</span><br><span class="line">    timestmp         <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    formatted_message  <span class="built_in">TEXT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    logger_name       <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    level_string      <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    thread_name       <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    reference_flag    <span class="built_in">SMALLINT</span>,</span><br><span class="line">    arg0              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    arg1              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    arg2              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    arg3              <span class="built_in">VARCHAR</span>(<span class="number">254</span>),</span><br><span class="line">    caller_filename   <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    caller_class      <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    caller_method     <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    caller_line       <span class="built_in">CHAR</span>(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    event_id          <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT PRIMARY <span class="keyword">KEY</span></span><br><span class="line">);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> logging_event_property</span><br><span class="line">(</span><br><span class="line">    event_id	      <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    mapped_key        <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    mapped_value      <span class="built_in">TEXT</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(event_id, mapped_key),</span><br><span class="line">    <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> (event_id) <span class="keyword">REFERENCES</span> logging_event(event_id)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> logging_event_exception</span><br><span class="line">(</span><br><span class="line">    event_id         <span class="built_in">BIGINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    i                <span class="built_in">SMALLINT</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    trace_line       <span class="built_in">VARCHAR</span>(<span class="number">254</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span>(event_id, i),</span><br><span class="line">    <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> (event_id) <span class="keyword">REFERENCES</span> logging_event(event_id)</span><br><span class="line">);</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
 <h2 id="maven-依赖"><a href="#maven-依赖" class="headerlink" title="maven 依赖"></a>maven 依赖</h2><p>通过使用 <code>platform-bom</code> 来管理依赖的版本问题。使用 druid 作为 JDBCAppender 的连接池。</p>
@@ -328,7 +357,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">143</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -412,6 +441,8 @@
 
 
 
+
+  <script src="/js/local-search.js"></script>
 
 
 

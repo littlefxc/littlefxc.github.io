@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta property="og:type" content="website">
@@ -99,6 +99,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -133,11 +134,38 @@
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -158,82 +186,6 @@
 
           <div class="content index posts-expand">
             
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.github.io/passages/CentOS7下yum安装和配置NFS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/passages/CentOS7下yum安装和配置NFS/" class="post-title-link" itemprop="url">CentOS7下yum安装和配置NFS</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-04-29 14:54:31 / 修改时间：15:04:48" itemprop="dateCreated datePublished" datetime="2020-04-29T14:54:31+08:00">2020-04-29</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。</p>
-<p>根据官网说明 <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/ch-nfs" target="_blank" rel="noopener">Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4</a> 以后，支持 NFS v4.2 不需要 rpcbind 了，但是如果客户端只支持 NFC v3 则需要 rpcbind 这个服务。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/passages/CentOS7下yum安装和配置NFS/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
       
   
   
@@ -703,10 +655,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-03-05 11:13:47 / 修改时间：11:23:56" itemprop="dateCreated datePublished" datetime="2020-03-05T11:13:47+08:00">2020-03-05</time>
+              <time title="创建时间：2020-03-05 11:13:47" itemprop="dateCreated datePublished" datetime="2020-03-05T11:13:47+08:00">2020-03-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-03 19:01:47" itemprop="dateModified" datetime="2021-03-03T19:01:47+08:00">2021-03-03</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -729,29 +687,15 @@
 
       
           <h2 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h2><pre><code>在生产环境中,首先服务器磁盘满了之后,会导致一系列小问题,网站能正常访问, 但是不能登录以及一些奇奇怪怪的问题,但是不能耽误用户访问呀,所以我们的及 时清理磁盘空间出来,让MySQL能够正常写入各种数据
-</code></pre><p>我们先直接操作,然后在来说说有些什么原因导致磁盘使用很快的原因</p>
-<pre><code>首先我们进入到/目录  
-df -h 查看我们服务器的磁盘信息--如下字样表示的挂载点已经满了
-    /dev/vda1        40G  40G   0G  100% /
-接下来我们在进行筛选,看看到底是什么文件占用比较大,能删除的话我们可以直接先删除掉
-du -h --max-depth=1 我们在查看当前目录下具体是哪一个目录里面占用比较大
-第一次执行的时候可能会有一点点慢,不着急,耐心等待一下,显示出来的第一列就是该目录占用的总共大小,第二列就是目录
-最后一行的时候我们会看到.这个目录下,这个我们可以忽略掉,不要问我为什么能忽略
-查看你的具体是哪一个目录占用比较大,那我们就进入到哪一个目录
-进入当目录之后还是使用  du -h --max-depth=1  来进行筛选查看目录下是文件还是目录占用大,如果是目录继续进行筛选
-筛选之后可以使用 ls –lhS 来进行文件从大到小排序,如果文件没有必要的用处的时候我们就可以对其进行删除操作了
-</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结:"></a>总结:</h2><p>其实在本次素材中,我们使用的到的Linux命令就四个</p>
-<pre><code>cd / 进入到根目录
-df -h 查看当前磁盘情况
-du -h --max-depth=1 查看当前目录下各目录的大小
-ls –lhS 查看当前目录下最大的文件
-接下来我们来分析一下有哪些原因会造成磁盘占用快
-    1,生产环境中是否还是开启了不必要的日志记录,除了要做数据分析的日志其他日志能关就关掉
-    2,是否存在僵尸文件,即已删除文件因句柄被占用未释放导致相应空间未释放。
-    3,数据库中是否存在很多垃圾信息没及时清理掉,建议在开发阶段中不要使用生产环境的库
-    4,是否有生成很多静态页面?
-    5,省略N字,写的不好的地方,欢迎大家补充
 </code></pre>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/passages/如何快速清理Linux磁盘空间/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -936,7 +880,7 @@ ls –lhS 查看当前目录下最大的文件
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-13 09:32:54" itemprop="dateModified" datetime="2021-01-13T09:32:54+08:00">2021-01-13</time>
+                <time title="修改时间：2021-03-03 19:00:40" itemprop="dateModified" datetime="2021-03-03T19:00:40+08:00">2021-03-03</time>
               </span>
 
           
@@ -953,58 +897,96 @@ ls –lhS 查看当前目录下最大的文件
           <blockquote>
 <p>我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。</p>
 </blockquote>
-<p>很多程序员都感慨<strong><code>SpringBoot</code></strong>的到来大大解放了生产力，但是也有聪明的程序猿会多思考一下下，<strong><code>SpringBoot</code></strong>是怎么做到的约定的配置？它配置在了哪里？又是怎么启动的作用等等一系列的问号在跟女朋友花前月下的时候，依然会时不时冒出来。这严重影响了程序猿们的”幸”福生活，为了能广大”程序猿”同胞过上幸福美满的生活，今天咱么就来一起跟随源码探究下<strong><code>SpringBoot</code></strong>到底是如何做到”<strong>约定优于配置</strong>“的。</p>
-<p>首先，我们先介绍下我们的演示的项目环境，我们先试用<strong><code>Spring Initializr</code></strong>来创建一个<strong><code>SpirngBoot</code></strong>工程。我们使用的版本是<strong><code>SpringBoot 2.1.5.RELEASE</code></strong>。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png"></p>
-<p>接下来就只在<strong>pom.xml</strong>文件中添加一个web工程的依赖，是为了观察后面容器类型的源码。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这样我们的环境就准备好了。</p>
-<p>我们跟着<strong>SpringBoot</strong>的源码来探究它的启动流程，首先，先找到这个应用程序的入口主方法，在上面打一个断点</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png"></p>
-<p>启动之后，<strong>F5</strong> 进入到 <code>run()</code> 方法</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ConfigurableApplicationContext <span class="title">run</span><span class="params">(Class&lt;?&gt;[] primarySources,String[] args)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> SpringApplication(primarySources).run(args);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到这里会执行<code>new SpringApplication(primarySources)</code>创建spring应用对象，继续F5往下跟会执行<strong>SpringApplication构造器</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SpringApplication构造器</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">SpringApplication</span><span class="params">(ResourceLoader resourceLoader, Class&lt;?&gt;... primarySources)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 资源加载器</span></span><br><span class="line">		<span class="keyword">this</span>.resourceLoader = resourceLoader;</span><br><span class="line">		Assert.notNull(primarySources, <span class="string">"PrimarySources must not be null"</span>);</span><br><span class="line">		<span class="keyword">this</span>.primarySources = <span class="keyword">new</span> LinkedHashSet&lt;&gt;(Arrays.asList(primarySources));</span><br><span class="line">    <span class="comment">// 1. 可能的web应用程序类型的类型。</span></span><br><span class="line">		<span class="keyword">this</span>.webApplicationType = WebApplicationType.deduceFromClasspath();</span><br><span class="line">    <span class="comment">// 2. 设置初始化应用context</span></span><br><span class="line">		setInitializers((Collection) getSpringFactoriesInstances(</span><br><span class="line">				ApplicationContextInitializer.class));</span><br><span class="line">	<span class="comment">// 3.设置初始化监听	</span></span><br><span class="line">    setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));</span><br><span class="line">	<span class="comment">// 4. 推演主程序类	</span></span><br><span class="line">    <span class="keyword">this</span>.mainApplicationClass = deduceMainApplicationClass();</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p>很多不为人知的事情都是发生在这个对象初始化的时候，这里我们都来一一解密</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> WebApplicationType <span class="title">deduceFromClasspath</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (ClassUtils.isPresent(WEBFLUX_INDICATOR_CLASS, <span class="keyword">null</span>)</span><br><span class="line">				&amp;&amp; !ClassUtils.isPresent(WEBMVC_INDICATOR_CLASS, <span class="keyword">null</span>)</span><br><span class="line">				&amp;&amp; !ClassUtils.isPresent(JERSEY_INDICATOR_CLASS, <span class="keyword">null</span>)) &#123;</span><br><span class="line">			<span class="keyword">return</span> WebApplicationType.REACTIVE;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> (String className : SERVLET_INDICATOR_CLASSES) &#123;</span><br><span class="line">			<span class="keyword">if</span> (!ClassUtils.isPresent(className, <span class="keyword">null</span>)) &#123;</span><br><span class="line">				<span class="keyword">return</span> WebApplicationType.NONE;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">    <span class="comment">// 这里是我们测试web容器</span></span><br><span class="line">		<span class="keyword">return</span> WebApplicationType.SERVLET;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="一、推断-web-应用类型"><a href="#一、推断-web-应用类型" class="headerlink" title="一、推断 web 应用类型"></a>一、推断 web 应用类型</h1><p>这段代码是来推断我们的应用是哪种 web 应用程序</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> WebApplicationType &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * The application should not run as a web application and should not start an</span></span><br><span class="line"><span class="comment">	 * embedded web server.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	NONE, <span class="comment">// 不是web应用</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * The application should run as a servlet-based web application and should start an</span></span><br><span class="line"><span class="comment">	 * embedded servlet web server.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	SERVLET, <span class="comment">// servlet容器</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * The application should run as a reactive web application and should start an</span></span><br><span class="line"><span class="comment">	 * embedded reactive web server.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	REACTIVE;  <span class="comment">// 反应型web应用（webflux）</span></span><br></pre></td></tr></table></figure>
-<p>当然一开始我们加入了web的依赖，所以我们是<code>servlet</code>容器，</p>
-<h1 id="二、初始化应用上下文"><a href="#二、初始化应用上下文" class="headerlink" title="二、初始化应用上下文"></a><strong>二、初始化应用上下文</strong></h1><p>在设置初始化应用context的时候 ，是先执行了getSpringFactoriesInstances(ApplicationContextInitializer.class)方法，参数是ApplicationContextInitializer.class字节码对象</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;T&gt; <span class="function">Collection&lt;T&gt; <span class="title">getSpringFactoriesInstances</span><span class="params">(Class&lt;T&gt; type,</span></span></span><br><span class="line"><span class="function"><span class="params">		Class&lt;?&gt;[] parameterTypes, Object... args)</span> </span>&#123;</span><br><span class="line">		ClassLoader classLoader = getClassLoader();</span><br><span class="line">		<span class="comment">// Use names and ensure unique to protect against duplicates</span></span><br><span class="line">		Set&lt;String&gt; names = <span class="keyword">new</span> LinkedHashSet&lt;&gt;(</span><br><span class="line">      <span class="comment">// 加载ApplicationContextInitializer.class类型的类</span></span><br><span class="line">       <span class="comment">// 这里传入就是参数 ApplicationContextInitializer.clas</span></span><br><span class="line">	 	SpringFactoriesLoader.loadFactoryNames(type, classLoader));</span><br><span class="line">    <span class="comment">// 实例化加载到的类</span></span><br><span class="line">		List&lt;T&gt; instances = createSpringFactoriesInstances(type, parameterTypes,</span><br><span class="line">				classLoader, args, names);</span><br><span class="line">		AnnotationAwareOrderComparator.sort(instances);</span><br><span class="line">	<span class="comment">// 返回</span></span><br><span class="line">    <span class="keyword">return</span> instances;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">loadFactoryNames</span><span class="params">(Class&lt;?&gt; factoryClass, @Nullable ClassLoader classLoader)</span> </span>&#123;</span><br><span class="line">		String factoryClassName = factoryClass.getName();</span><br><span class="line">		<span class="keyword">return</span> loadSpringFactories(classLoader).getOrDefault(factoryClassName, Collections.emptyList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们先来看看他是如何加载到这些类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, List&lt;String&gt;&gt; loadSpringFactories(<span class="meta">@Nullable</span> ClassLoader classLoader) &#123;</span><br><span class="line">    <span class="comment">// 先从缓存中拿</span></span><br><span class="line">		MultiValueMap&lt;String, String&gt; result = cache.get(classLoader);</span><br><span class="line">		<span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> result;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line"><span class="comment">// 去资源路径下加载</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACTORIES_RESOURCE_LOCATION = <span class="string">"META-INF/spring.factories"</span>; </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FACTORIES_RESOURCE_LOCATION = <span class="string">"META-INF/spring.factories"</span>; </span><br><span class="line">	Enumeration&lt;URL&gt; urls = (classLoader != <span class="keyword">null</span> ?	</span><br><span class="line"> classLoader.getResources(FACTORIES_RESOURCE_LOCATION) :     ClassLoader.getSystemResources(FACTORIES_RESOURCE_LOCATION);			result = <span class="keyword">new</span> LinkedMultiValueMap&lt;&gt;();</span><br><span class="line">			<span class="keyword">while</span> (urls.hasMoreElements()) &#123;</span><br><span class="line">				URL url = urls.nextElement();</span><br><span class="line">				UrlResource resource = <span class="keyword">new</span> UrlResource(url);</span><br><span class="line">				Properties properties = PropertiesLoaderUtils.loadProperties(resource);</span><br><span class="line">				<span class="keyword">for</span> (Map.Entry&lt;?, ?&gt; entry : properties.entrySet()) &#123;</span><br><span class="line">					String factoryClassName = ((String) entry.getKey()).trim();</span><br><span class="line">					<span class="keyword">for</span> (String factoryName : StringUtils.commaDelimitedListToStringArray((String) entry.getValue())) &#123;</span><br><span class="line">			result.add(factoryClassName, factoryName.trim());</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			cache.put(classLoader, result);</span><br><span class="line">             <span class="comment">// 返回所有的加载的类</span></span><br><span class="line">			<span class="keyword">return</span> result;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (IOException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Unable to load factories from location ["</span> +</span><br><span class="line">					FACTORIES_RESOURCE_LOCATION + <span class="string">"]"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p>这里有两个加载配置类的地方其实都指向了<strong><code>META-INF/spring.factories</code></strong>，通过断点我们可以看到应用程序是加载了以下几个jar下的<strong><code>spring.factores</code></strong>文件。</p>
-<p>双击Shift搜索spring.factories可以看到它存在于以下工程中</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_3.png"></p>
-<p><strong><code>spring-boot-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong>（截图未完整截取）</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_4.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_4.png"></p>
-<p><strong><code>spring-boot-autoconfigure-2.1.5.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong> </p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_5.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_5.png"></p>
-<p><strong><code>spring-beans-5.1.7.RELEASE.jar</code></strong>下的<strong><code>spring.factores</code></strong> </p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_6.png"></p>
-<p>从Map中根据<strong><code>org.springframework.context.ApplicationContextInitializer</code></strong>的类型拿到需要的类初始化类，断点进入<strong><code>getOrDefault(factoryClassName, Collections.emptyList());</code></strong>方法</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_7.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_7.png"></p>
-<p>之后就是把加载到的需要初始化的类进行实例化添加到一个集合中等待备用</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setInitializers</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">			Collection&lt;? extends ApplicationContextInitializer&lt;?&gt;&gt; initializers)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.initializers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">		<span class="keyword">this</span>.initializers.addAll(initializers);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="三、初始化监听器类"><a href="#三、初始化监听器类" class="headerlink" title="三、初始化监听器类"></a><strong>三、初始化监听器类</strong></h1><p>最关键的的还是这句</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png"></p>
-<p>当我们跟进去之后，会发现在初始化监听类的时候和上面初始化应用上下文是一样的代码。唯一不同的是<strong><code>getSpringFactoriesInstances(ApplicationListener.class))</code></strong>传进去的是<strong><code>ApplicationListener.class</code></strong>所以这里就不再赘述。</p>
-<h1 id="四、推演主程序类"><a href="#四、推演主程序类" class="headerlink" title="四、推演主程序类"></a><strong>四、推演主程序类</strong></h1><p>也就是这个最关键的代码了</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">**<span class="keyword">this</span>.mainApplicationClass = deduceMainApplicationClass();**</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png"></p>
-<p>到这里就完成了<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的过程。</p>
-<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><strong>小结</strong></h1><p>这篇文章主要是给大家说了下<strong><code>SpringBoot</code></strong>启动过程中初始化<strong><code>SpringApplication</code></strong>的流程，大致可以分为四个步骤:</p>
-<ol>
-<li>推演web应用的类型（如果没有加web依赖类型NONE）</li>
-<li>初始化<strong><code>ApplicationContextInitializer</code></strong></li>
-<li>初始化<strong><code>ApplicationListener</code></strong></li>
-<li>推演出主程序类</li>
-</ol>
-<p>通过这样四个步骤就完成了第一步<strong><code>SpringApplication</code></strong>的初始化过程。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/passages/源码分析-SpringBoot启动流程分析原理/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
 
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.github.io/passages/文件上传与魔数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/passages/文件上传与魔数/" class="post-title-link" itemprop="url">文件上传与魔数</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-27 10:19:25" itemprop="dateCreated datePublished" datetime="2019-11-27T10:19:25+08:00">2019-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-03 19:00:08" itemprop="dateModified" datetime="2021-03-03T19:00:08+08:00">2021-03-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="问题的出现"><a href="#问题的出现" class="headerlink" title="问题的出现"></a>问题的出现</h2><p>今天在测试图片上传的时候，工作电脑中没有现成的图片（其实是懒得找），又不想去网上下载就把word文档改了后缀名(.jpeg)上传，没想到上传失败。</p>
+<p>心里头非常纳闷，第一反应是代码有BUG，打开项目的过程中，不对。我把文件后缀名重新改回在上传文件，可以正常上传了。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/passages/文件上传与魔数/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1088,7 +1070,7 @@ ls –lhS 查看当前目录下最大的文件
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">143</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1172,6 +1154,8 @@ ls –lhS 查看当前目录下最大的文件
 
 
 
+
+  <script src="/js/local-search.js"></script>
 
 
 
