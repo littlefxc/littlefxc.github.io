@@ -190,6 +190,90 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hive注释中文乱码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Hive注释中文乱码/" class="post-title-link" itemprop="url">Hive注释中文乱码</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-11-02 16:44:32 / 修改时间：17:05:15" itemprop="dateCreated datePublished" datetime="2020-11-02T16:44:32+08:00">2020-11-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/大数据/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>[TOC]</p>
+<h1 id="1-Hive注释中文乱码"><a href="#1-Hive注释中文乱码" class="headerlink" title="1. Hive注释中文乱码"></a>1. Hive注释中文乱码</h1><p>创建表的时候，comment说明字段包含中文，表成功创建成功之后，中文说明显示乱码</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">if</span> <span class="keyword">not</span> <span class="keyword">exists</span> capacity_stats_live_access (</span><br><span class="line">  <span class="keyword">id</span> <span class="built_in">bigint</span> <span class="keyword">comment</span> <span class="string">'主键'</span>,</span><br><span class="line">  device_num <span class="built_in">varchar</span>(<span class="number">100</span>) <span class="keyword">COMMENT</span> <span class="string">'设备号'</span>,</span><br><span class="line">  start_time <span class="built_in">timestamp</span> <span class="keyword">COMMENT</span> <span class="string">'调阅开始时间'</span>,</span><br><span class="line">  finish_time <span class="built_in">timestamp</span> <span class="keyword">COMMENT</span> <span class="string">'调阅结束时间'</span>,</span><br><span class="line">  <span class="keyword">duration</span> <span class="built_in">int</span> <span class="keyword">COMMENT</span> <span class="string">'耗时，单位秒'</span>,</span><br><span class="line">  response <span class="built_in">int</span> <span class="keyword">COMMENT</span> <span class="string">'调用结果 1.成功 0.失败'</span></span><br><span class="line">) <span class="keyword">COMMENT</span> <span class="string">'直播调阅日志统计'</span>;</span><br></pre></td></tr></table></figure>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive中文注释乱码.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled.png"></p>
+<p>这是因为在MySQL中的元数据出现乱码</p>
+<h1 id="2-针对元数据库metastore中的表-分区-视图的编码设置"><a href="#2-针对元数据库metastore中的表-分区-视图的编码设置" class="headerlink" title="2. 针对元数据库metastore中的表,分区,视图的编码设置"></a>2. 针对元数据库metastore中的表,分区,视图的编码设置</h1><p>因为我们知道 metastore 支持数据库级别，表级别的字符集是 <code>latin1</code> 。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%201-20201102170449594.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%201.png"></p>
+<p>那么我们只需要把相应注释的地方的字符集由 latin1 改成 utf-8，就可以了。用到注释的就三个地方，表、分区、视图。如下修改分为两个步骤：</p>
+<h2 id="2-1-进入数据库-Metastore-中执行以下-5-条-SQL-语句"><a href="#2-1-进入数据库-Metastore-中执行以下-5-条-SQL-语句" class="headerlink" title="2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句"></a>2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句</h2><p>修改表字段注解和表注解 <code>COLUMNS_V2</code>，<code>TABLE_PARAMS</code> </p>
+<p>修改分区字段注解 <code>PARTITION_PARAMS</code>，<code>PARTITION_KEYS</code> </p>
+<p>修改索引注解<code>INDEX_PARAMS</code> </p>
+<h2 id="2-2-修改-metastore-的连接-URL"><a href="#2-2-修改-metastore-的连接-URL" class="headerlink" title="2.2. 修改 metastore 的连接 URL"></a>2.2. 修改 metastore 的连接 URL</h2><p>修改hive-site.xml配置文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionURL<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>jdbc:mysql://IP:3306/db_name?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=UTF-8<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>JDBC connect string for a JDBC metastore<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-3-验证"><a href="#2-3-验证" class="headerlink" title="2.3. 验证"></a>2.3. 验证</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%202-20201102170449708.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%202.png"></p>
+<p>发现注释还是乱码。</p>
+<p>把表删除然后重新创建。效果如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%203-20201102170449863.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%203.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Hive-数据类型和存储格式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1284,82 +1368,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/CentOS7下yum安装和配置NFS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/CentOS7下yum安装和配置NFS/" class="post-title-link" itemprop="url">CentOS7下yum安装和配置NFS</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2020-04-29 14:54:31 / 修改时间：15:04:48" itemprop="dateCreated datePublished" datetime="2020-04-29T14:54:31+08:00">2020-04-29</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。</p>
-<p>根据官网说明 <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/ch-nfs" target="_blank" rel="noopener">Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4</a> 以后，支持 NFS v4.2 不需要 rpcbind 了，但是如果客户端只支持 NFC v3 则需要 rpcbind 这个服务。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/blog/passages/CentOS7下yum安装和配置NFS/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1442,7 +1450,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">85</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

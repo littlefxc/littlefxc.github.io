@@ -190,6 +190,164 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/RabbitMQ集群架构模型与原理解析-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/RabbitMQ集群架构模型与原理解析-5/" class="post-title-link" itemprop="url">RabbitMQ集群架构模型与原理解析(5)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-25 22:41:51 / 修改时间：23:34:22" itemprop="dateCreated datePublished" datetime="2021-01-25T22:41:51+08:00">2021-01-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_4_5.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_4_5.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_2.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_3.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_4.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_4.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_11.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_11.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_10.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_10.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_5.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_5.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_6.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_7.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_7.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_8.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_8.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_9.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_9.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_12.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_12.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_13.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_13.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_14.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_14.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_15.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_15.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_16.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_16.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_17.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_17.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_18.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_18.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_18.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_5_18.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Rabbitmq核心API-其他关键概念讲解-18/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/images/avatar.gif">
+      <meta itemprop="name" content="冯雪超">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="littlefxc's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog/passages/Rabbitmq核心API-其他关键概念讲解-18/" class="post-title-link" itemprop="url">Rabbitmq核心API-其他关键概念讲解(18)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-25 22:39:41 / 修改时间：23:33:49" itemprop="dateCreated datePublished" datetime="2021-01-25T22:39:41+08:00">2021-01-25</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_1.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_2.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_3.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_5.png" alt="rabbitmq_18_5"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_6.png" alt="rabbitmq_18_6"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Rabbitmq核心API-Exchange之Fanout-17/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -678,63 +836,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Java多线程JUC之AtomicReference/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Java多线程JUC之AtomicReference/" class="post-title-link" itemprop="url">Java多线程JUC之AtomicReference</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-25 17:36:37" itemprop="dateCreated datePublished" datetime="2021-01-25T17:36:37+08:00">2021-01-25</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Java多线程JUC原子类之-AtomicLong原子类/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -758,10 +859,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-01-25 17:10:03 / 修改时间：17:11:49" itemprop="dateCreated datePublished" datetime="2021-01-25T17:10:03+08:00">2021-01-25</time>
+              <time title="创建时间：2021-01-25 17:10:03" itemprop="dateCreated datePublished" datetime="2021-01-25T17:10:03+08:00">2021-01-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-22 18:48:42" itemprop="dateModified" datetime="2021-03-22T18:48:42+08:00">2021-03-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -853,10 +960,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-01-25 17:04:06 / 修改时间：17:04:56" itemprop="dateCreated datePublished" datetime="2021-01-25T17:04:06+08:00">2021-01-25</time>
+              <time title="创建时间：2021-01-25 17:04:06" itemprop="dateCreated datePublished" datetime="2021-01-25T17:04:06+08:00">2021-01-25</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-22 18:48:55" itemprop="dateModified" datetime="2021-03-22T18:48:55+08:00">2021-03-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -894,113 +1007,6 @@
 <h1 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAtomicArrayLong</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 新建AtomicLongArray对象</span></span><br><span class="line">        <span class="keyword">long</span>[] arrLong = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        AtomicLongArray ala = <span class="keyword">new</span> AtomicLongArray(arrLong);</span><br><span class="line"></span><br><span class="line">        ala.set(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>, len=ala.length(); i&lt;len; i++)</span><br><span class="line">            System.out.printf(<span class="string">"get(%d) : %s\n"</span>, i, ala.get(i));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"getAndDecrement(0)"</span>, ala.getAndDecrement(<span class="number">0</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"decrementAndGet(1)"</span>, ala.decrementAndGet(<span class="number">1</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"getAndIncrement(2)"</span>, ala.getAndIncrement(<span class="number">2</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"incrementAndGet(3)"</span>, ala.incrementAndGet(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"addAndGet(100)"</span>, ala.addAndGet(<span class="number">0</span>, <span class="number">100</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"getAndAdd(100)"</span>, ala.getAndAdd(<span class="number">1</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"compareAndSet()"</span>, ala.compareAndSet(<span class="number">2</span>, <span class="number">31</span>, <span class="number">1000</span>));</span><br><span class="line">        System.out.printf(<span class="string">"%20s : %s\n"</span>, <span class="string">"get(2)"</span>, ala.get(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>结果如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://littlefxc.gitee.io/blog/passages/Alibaba-Sentinel基础-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/blog/images/avatar.gif">
-      <meta itemprop="name" content="冯雪超">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="littlefxc's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/blog/passages/Alibaba-Sentinel基础-1/" class="post-title-link" itemprop="url">Alibaba Sentinel基础(1)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-01-21 14:41:56 / 修改时间：16:32:23" itemprop="dateCreated datePublished" datetime="2021-01-21T14:41:56+08:00">2021-01-21</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/blog/categories/微服务/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>[TOC]</p>
-<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Alibaba Sentinel 基础部分主要分六个部分：</p>
-<ul>
-<li style="list-style: none"><input type="checkbox" checked> Sentinel 全景分析</li>
-<li style="list-style: none"><input type="checkbox"> Sentinel 极速入门</li>
-<li style="list-style: none"><input type="checkbox"> Sentinel 核心API</li>
-<li style="list-style: none"><input type="checkbox"> Sentinel 控制台使用</li>
-<li style="list-style: none"><input type="checkbox"> Sentinel 与 Spring 整合 AOP 分析</li>
-<li style="list-style: none"><input type="checkbox"> Sentinel 与 Dubbo 整合分析</li>
-</ul>
-<h1 id="2-Sentinel-全景分析"><a href="#2-Sentinel-全景分析" class="headerlink" title="2. Sentinel 全景分析"></a>2. Sentinel 全景分析</h1><p><a href="https://github.com/alibaba/Sentinel/wiki/介绍" target="_blank" rel="noopener">官方介绍</a></p>
-<h2 id="Sentinel-是什么？"><a href="#Sentinel-是什么？" class="headerlink" title="Sentinel 是什么？"></a>Sentinel 是什么？</h2><p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从限流、流量整形、熔断降级、系统负载保护、热点防护等多个维度来帮助开发者保障微服务的稳定性。</p>
-<p>它可以做到以下几点：</p>
-<ul>
-<li><p>流量控制</p>
-</li>
-<li><p>熔断降级</p>
-</li>
-<li><p>系统保护</p>
-</li>
-<li><p>服务安全</p>
-</li>
-</ul>
-<h2 id="Sentinel-的特性"><a href="#Sentinel-的特性" class="headerlink" title="Sentinel 的特性"></a>Sentinel 的特性</h2><ul>
-<li><strong>丰富的应用场景</strong>：Sentinel 承接了阿里巴巴近 10 年的双十一大促流量的核心场景，例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等。</li>
-<li><strong>完备的实时监控</strong>：Sentinel 同时提供实时的监控功能。您可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况。</li>
-<li><strong>广泛的开源生态</strong>：Sentinel 提供开箱即用的与其它开源框架/库的整合模块，例如与 Spring Cloud、Dubbo、gRPC 的整合。您只需要引入相应的依赖并进行简单的配置即可快速地接入 Sentinel。</li>
-<li><strong>完善的 SPI 扩展点</strong>：Sentinel 提供简单易用、完善的 SPI 扩展接口。您可以通过实现扩展接口来快速地定制逻辑。例如定制规则管理、适配动态数据源等。</li>
-</ul>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png"></p>
-<p>部分是 sentinel-dashboard。</p>
-<p>绿色部分是 sentinel-core，是 Sentinel 的核心库。</p>
-<p>紫色部分表示 sentinel 可以持久化规则到配置中心。</p>
-<p>蓝色部分 sentinel 的扩展点。</p>
-<h2 id="Sentinel-的生态"><a href="#Sentinel-的生态" class="headerlink" title="Sentinel 的生态"></a>Sentinel 的生态</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png"></p>
-<h2 id="Sentinel-的组成部分"><a href="#Sentinel-的组成部分" class="headerlink" title="Sentinel 的组成部分"></a>Sentinel 的组成部分</h2><ul>
-<li>核心库：sentinel-core</li>
-<li>控制台：sentinel-dashboard</li>
-<li>第三方支持组件：如spring、dubbo、rocketmq等</li>
-</ul>
-<h1 id="3-Sentinel-极速入门"><a href="#3-Sentinel-极速入门" class="headerlink" title="3. Sentinel 极速入门"></a>3. Sentinel 极速入门</h1><h1 id="4-Sentinel-核心API"><a href="#4-Sentinel-核心API" class="headerlink" title="4. Sentinel 核心API"></a>4. Sentinel 核心API</h1><h1 id="5-Sentinel-控制台使用"><a href="#5-Sentinel-控制台使用" class="headerlink" title="5. Sentinel 控制台使用"></a>5. Sentinel 控制台使用</h1><h1 id="6-Sentinel-与-Spring-整合-AOP-分析"><a href="#6-Sentinel-与-Spring-整合-AOP-分析" class="headerlink" title="6. Sentinel 与 Spring 整合 AOP 分析"></a>6. Sentinel 与 Spring 整合 AOP 分析</h1><h1 id="7-Sentinel-与-Dubbo-整合分析"><a href="#7-Sentinel-与-Dubbo-整合分析" class="headerlink" title="7. Sentinel 与 Dubbo 整合分析"></a>7. Sentinel 与 Dubbo 整合分析</h1>
       
     </div>
 
@@ -1097,7 +1103,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/blog/tags/">
           
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">85</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
