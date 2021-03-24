@@ -1,7 +1,8 @@
 ---
 title: filebeat
 date: 2019-08-07 17:13:33
-tags:
+categories: ELK
+tags: filebeat
 ---
 
 ## filebeat

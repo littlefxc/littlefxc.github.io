@@ -312,7 +312,7 @@ node节点为`NotReady`，因为 pod `coredns` 没有启动，缺少网络pod.
 
 ## 安装 calico 网络
 
-官方文档地址：[Instructions](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#instructions)
+官方文档地址：[Instructions](https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
 
 ### 下载 calico 的 k8s 文件
 
@@ -346,7 +346,7 @@ k8s-master-1   Ready    master   15m   v1.18.0
 
 ### 创建用户
 
-官方文档地址: [Creating sample user](https://github.com/kubernetes/dashboard/wiki/Creating-sample-user)
+官方文档地址: [Creating sample user](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
 
 创建一个用于登录Dashboard的用户. 创建文件`dashboard-adminuser.yaml`内容如下:
 
@@ -375,7 +375,7 @@ subjects:
 
 ### 登录
 
-官方文档地址：[Bearer Token](https://github.com/kubernetes/dashboard/wiki/Creating-sample-user#bearer-token)
+官方文档地址：[Bearer Token](https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md)
 
 使用token进行登录，执行下面命令获取token
 

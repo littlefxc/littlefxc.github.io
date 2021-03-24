@@ -1,8 +1,10 @@
 ---
 title: ES 之分词与内置分词器
 date: 2021-01-11 20:32:21
-categories: elasticsearch
-tags: es
+categories: ELK
+tags: 
+- es
+- elk
 ---
 
 # 什么是分词？

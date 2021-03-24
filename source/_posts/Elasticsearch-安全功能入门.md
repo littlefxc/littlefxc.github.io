@@ -1,7 +1,7 @@
 ---
 title: Elasticsearch 安全功能入门
 date: 2019-11-27 09:46:37
-categories: elasticsearch
+categories: ELK
 tags:
 - 安全
 - es

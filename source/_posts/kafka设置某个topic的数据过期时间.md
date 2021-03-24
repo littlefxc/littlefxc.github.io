@@ -1,10 +1,10 @@
 ---
 title: kafka设置某个topic的数据过期时间
 date: 2019-08-22 09:24:49
-categories: Kafka
-tags:
-- Kafka
-- 中间件
+categories: mq
+tags: 
+- mq
+- kafka
 ---
 
 #  kafka 单独设置某个topic的数据过期时间

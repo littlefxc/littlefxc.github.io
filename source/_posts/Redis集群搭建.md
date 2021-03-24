@@ -1,10 +1,12 @@
 ---
 title: Redis集群搭建
 date: 2021-01-11 11:50:38
+categories: 缓存
 tags:
+- redis
 ---
 
-## ****redis.conf 配置****
+## redis.conf 配置
 
 ```
 # 开启集群模式
@@ -17,12 +19,12 @@ cluster-node-timeout 5000
 appendonly yes
 ```
 
-## ****启动6个redis实例****
+## 启动6个redis实例
 
 1. 启动6台
 2. 如果启动过程出错，把rdb等文件删除清空
 
-## ****创建集群****
+## 创建集群
 
 ```bash
 #####
@@ -36,7 +38,7 @@ redis-cli -a 密码 --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5
 
 `slots`：槽，用于装数据，主节点有，从节点没有
 
-## ****检查集群信息****
+## 检查集群信息
 
 ```bash
 redis-cli --cluster check 192.168.25.64:6380

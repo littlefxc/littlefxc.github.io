@@ -5,25 +5,29 @@ categories: 注册中心
 tags: consul
 ---
 
-# Consul 单机集群搭建
+# 1 Consul 单机集群搭建
 
-## consul 架构
+本文是在生产环境中Consul服务端节点不稳定后，导致注册到Consul集群上的部分服务不可用，从而造成开放能力平台无法使用的背景下产生的。
 
-官方比较推荐的是三台以上的server，而client数量不做限制，网上大多数推荐的架构如下:
+目的是探讨一个高可用Consul集群方案。
+
+## 1.1 consul 架构
+
+Server负责组成 cluster 的复杂工作（选举、状态维护、转发请求到 lead），以及 consul 提供的服务（响应 RCP 请求）。考虑到容错和收敛，一般部署 3 ~ 5 个比较合适，而client数量不做限制，架构如下:
 
 ![consul 架构](https://gitee.com/littlefxc/oss/raw/master/images/consul架构1.png)
 
-## Consul 节点规划
+## 1.2 Consul 节点规划
 
 | **节点名称**    | 节点类型 | **HTTP端口** | **DNS端口** | **serf_lan端口** | **serf_wan端口** |
 | --------------- | -------- | ------------ | ----------- | ---------------- | ---------------- |
-| consul-server-1 | server   | 8501         | 8001        | 8002             | 8000             |
-| consul-server-2 | server   | 8502         | 8101        | 8102             | 8100             |
-| consul-server-3 | server   | 8503         | 8201        | 8103             | 8200             |
-| consul-client-1 | client   | 8504         | 8301        | 8104             | 8300             |
-| consul-client-2 | client   | 8505         | 8401        | 8105             | 8400             |
+| consul-server-1 | server   | 8501         | 8601        | 8001             | 8002             |
+| consul-server-2 | server   | 8502         | 8602        | 8101             | 8102             |
+| consul-server-3 | server   | 8503         | 8603        | 8201             | 8202             |
+| consul-client-1 | client   | 8504         | 8604        | 8301             | 8302             |
+| consul-client-2 | client   | 8505         | 8605        | 8401             | 8402             |
 
-## Consul 服务端节点配置文件模版
+## 1.3 Consul 服务端节点配置文件模版
 
 ```json
 {
@@ -56,9 +60,9 @@ tags: consul
 
 注意：
 
-- **disable_host_node_id**：禁用主机信息生成节点ID。因为是单机，所以要禁用它。单机集群搭建成功与否就靠它。
+- **disable_host_node_id**：不使用host信息生成node ID，适用于同一台服务器部署多个实例用于测试的情况。随机生成nodeID。
 
-## Consul 客户端节点配置文件模版
+## 1.4 Consul 客户端节点配置文件模版
 
 ```json
 {
@@ -88,7 +92,7 @@ tags: consul
 }
 ```
 
-## 搭建集群
+## 1.5 搭建集群
 
 ```sh
 # 创建 Consul 服务端节点目录
@@ -114,9 +118,9 @@ nohup consul-client-1/bin/consul agent -config-dir=consul-client-1/config &
 nohup consul-client-2/bin/consul agent -config-dir=consul-client-2/config &
 ```
 
-# Consul 的一些命令
+# 2 Consul 的一些命令
 
-## 查看 consul 集群列表
+## 2.1 查看 consul 集群列表
 
 验证 Consul 集群是否搭建成功
 
@@ -124,7 +128,7 @@ nohup consul-client-2/bin/consul agent -config-dir=consul-client-2/config &
 consul-server-1/bin/consul operator raft list-peers -http-addr=127.0.0.1:8501
 ```
 
-## 查看 Consul 节点列表
+## 2.2 查看 Consul 节点列表
 
 查看 Consul 的所有节点列表
 
@@ -132,7 +136,7 @@ consul-server-1/bin/consul operator raft list-peers -http-addr=127.0.0.1:8501
 consul-server-1/bin/consul members -http-addr=127.0.0.1:8501
 ```
 
-## 移除一个 Server 节点
+## 2.3 移除一个 Server 节点
 
 验证 Consul 客户端节点不会丢失
 
@@ -140,6 +144,30 @@ consul-server-1/bin/consul members -http-addr=127.0.0.1:8501
 consul-server-1/bin/consul leave -http-addr=127.0.0.1:8501
 ```
 
-# 参考资源
+# 3 验证
+
+## 3.1 模拟一个 Consul 服务端宕机
+
+1. 移除 Consul 服务端节点前：
+
+![image-20210112101929745](https://gitee.com/littlefxc/oss/raw/master/images/image-20210112101929745.png)
+
+2. 移除 Consul 服务端节点。命令参考章节2.3。
+
+   结果如下：
+
+   ![image-20210112102147403](https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102147403.png)
+
+   ![image-20210112102223434](https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102223434.png)
+
+# 4 结论
+
+说明当一个consul服务端节点宕机，并不会影响 Consul 客户端节点的可用性。
+
+在每个数据中心，client和server是混合的。一般建议有3-5台server。这是基于有故障情况下的可用性和性能之间的权衡结果，因为越多的机器加入达成共识越慢。虽然每个节点的服务注册数量是有上限的，但是并不限制client的数量，它们可以很容易的扩展到数千或者数万台。
+
+
+
+# 5 参考资源
 
 https://blog.csdn.net/u014635374/article/details/106313858

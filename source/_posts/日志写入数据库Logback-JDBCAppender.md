@@ -17,6 +17,8 @@ DBAppender以独立于Java编程语言的格式将日志事件插入到三个数
 如果JDBC驱动程序支持JDBC 3.0规范中引入的getGeneratedKeys方法，假设您已经创建了如上所述的适当的数据库表，那么就不需要额外的步骤。
 否则，必须有适合您的数据库系统的sql方言。目前，logback有H2、HSQL、MS SQL Server、MySQL、Oracle、PostgreSQL、SQLLite和Sybase等多种方言。
 
+<!-- more -->
+
 如前所述，logback使用三个表来存储日志事件数据:
 
 ```sql

@@ -1,7 +1,7 @@
 ---
 title: elasticsearch
 date: 2019-08-07 19:41:34
-categories: elasticsearch
+categories: ELK
 tags: es
 ---
 

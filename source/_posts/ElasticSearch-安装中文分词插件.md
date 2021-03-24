@@ -1,7 +1,7 @@
 ---
 title: ElasticSearch 安装中文分词插件
 date: 2019-11-27 09:45:05
-categories: elasticsearch
+categories: ELK
 tags:
 - 插件
 - 中文分词

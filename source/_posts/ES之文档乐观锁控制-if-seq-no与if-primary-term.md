@@ -1,7 +1,7 @@
 ---
 title: ES之文档乐观锁控制 if_seq_no与if_primary_term
 date: 2021-01-11 20:11:28
-categories: elasticsearch
+categories: ELK
 tags: es
 ---
 

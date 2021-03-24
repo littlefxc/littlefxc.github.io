@@ -1,7 +1,7 @@
 ---
 title: Elasticsearch 的 REST API 的使用介绍
 date: 2021-01-09 16:41:04
-categories: elasticsearch
+categories: ELK
 tags: es
 ---
 

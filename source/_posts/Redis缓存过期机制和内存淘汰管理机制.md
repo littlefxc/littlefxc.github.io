@@ -1,7 +1,9 @@
 ---
 title: Redis缓存过期机制和内存淘汰管理机制
 date: 2021-01-11 11:51:36
+categories: 缓存
 tags:
+- redis
 ---
 
 转载自 https://blog.csdn.net/qq_36986015/article/details/106802555

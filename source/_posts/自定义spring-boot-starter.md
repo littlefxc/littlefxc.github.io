@@ -10,6 +10,8 @@ tags:
 
 模仿学习Spring Boot starter写一个关于Quartz的自动配置的依赖。
 
+<!-- more -->
+
 ## 1. 自定义Starter的模块结构
 
 ![模块结构.png](https://img-blog.csdnimg.cn/20190108084505544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70)

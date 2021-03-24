@@ -17,6 +17,8 @@ categories: redis
 
 这样做有什么问题呢？
 
+<!-- more -->
+
 其实，只要稍微有点计算机基础知识的人都知道，存储在内存当中的数据，只要服务器关机(各种原因引起的)，内存中的数据就会消失了，不仅服务器关机会造成数据消失，`Redis`服务器守护进程退出，内存中的数据也一样会消失。
 
 ![https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg](https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg)

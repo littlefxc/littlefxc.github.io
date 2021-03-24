@@ -1,7 +1,9 @@
 ---
 title: redis数据结构sortedset
 date: 2019-07-22 16:17:30
+categories: 缓存
 tags:
+- redis
 ---
 
 ## Redis 有序集合(sorted set)
