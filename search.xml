@@ -2462,7 +2462,8 @@ bin/elasticsearch-setup-passwords interactive
         <category>nginx</category>
       </categories>
       <tags>
-        <tag>upstream,nginx</tag>
+        <tag>nginx</tag>
+        <tag>upstream</tag>
       </tags>
   </entry>
   <entry>
@@ -4372,13 +4373,6 @@ bin/elasticsearch-setup-passwords interactive
       <tags>
         <tag>logback,kafka,logstash</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>nginx</title>
-    <url>/2019/06/11/nginx/</url>
-    <content><![CDATA[<span id="more"></span>
-
-<h2 id="nginx-介绍"><a href="#nginx-介绍" class="headerlink" title="nginx 介绍"></a>nginx 介绍</h2>]]></content>
   </entry>
   <entry>
     <title>rabbitmq整合springboot2.x(23)</title>
@@ -10066,11 +10060,6 @@ end
       </tags>
   </entry>
   <entry>
-    <title>netty入门</title>
-    <url>/2021/04/29/netty%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
     <title>基于Redis的setnx实现分布式锁</title>
     <url>/2021/05/07/%E5%9F%BA%E4%BA%8ERedis%E7%9A%84setnx%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
     <content><![CDATA[<h1 id="基于Redis的setnx实现分布式锁"><a href="#基于Redis的setnx实现分布式锁" class="headerlink" title="基于Redis的setnx实现分布式锁"></a>基于Redis的setnx实现分布式锁</h1><h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><ul>
@@ -10109,6 +10098,7 @@ end
 
 ]]></content>
       <tags>
+        <tag>redis</tag>
         <tag>分布式锁</tag>
       </tags>
   </entry>
@@ -10186,6 +10176,453 @@ end
   <entry>
     <title>netty入门示例</title>
     <url>/2021/05/11/netty%E5%85%A5%E9%97%A8%E7%A4%BA%E4%BE%8B/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>现在，我们开始编写一个最简单的Netty示例，在这之前我们先熟悉一下最基本的编码实现步骤！</p>
+<p>Netty实现通信的步骤：（客户端与服务器端基本一致）</p>
+<ul>
+<li>创建两个的NIO线程组，一个专门用于网络事件处理（接受客户端的连接），另一个则进行网络通信读写。</li>
+<li>创建一个ServerBootstrap对象，配置Netty的一系列参数，例如接受传出数据的缓存大小等等。</li>
+<li>创建一个实际处理数据的类ChannelInitializer，进行初始化的准备工作，比如设置接受传出数据的字符集、格式、已经实际处理数据的接口。</li>
+<li>绑定端口，执行同步阻塞方法等待服务器端启动即可。</li>
+</ul>
+<span id="more"></span>
+
+<p>Netty的使用非常简单，仅仅引入依赖即可快速开始：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.netty<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>netty-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.1.12.Final<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Netty-Server"><a href="#Netty-Server" class="headerlink" title="Netty Server"></a>Netty Server</h1><p>Netty Server端需要编写 Server 与 ServerHandler两个核心类！</p>
+<h2 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Server</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1. 创建两个线程组: 一个用于进行网络连接接受的 另一个用于我们的实际处理（网络通信的读写）</span></span><br><span class="line"></span><br><span class="line">        EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">        EventLoopGroup workGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2. 通过辅助类去构造server/client</span></span><br><span class="line">        ServerBootstrap b = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//3. 进行Nio Server的基础配置</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//3.1 绑定两个线程组</span></span><br><span class="line">        b.group(bossGroup, workGroup)</span><br><span class="line">                <span class="comment">//3.2 因为是server端，所以需要配置NioServerSocketChannel</span></span><br><span class="line">                .channel(NioServerSocketChannel.class)</span><br><span class="line">                <span class="comment">//3.3 设置链接超时时间</span></span><br><span class="line">                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, <span class="number">3000</span>)</span><br><span class="line">                <span class="comment">//3.4 设置TCP backlog参数 = sync队列 + accept队列</span></span><br><span class="line">                .option(ChannelOption.SO_BACKLOG, <span class="number">1024</span>)</span><br><span class="line">                <span class="comment">//3.5 设置配置项 通信不延迟</span></span><br><span class="line">                .childOption(ChannelOption.TCP_NODELAY, <span class="keyword">true</span>)</span><br><span class="line">                <span class="comment">//3.6 设置配置项 接收与发送缓存区大小</span></span><br><span class="line">                .childOption(ChannelOption.SO_RCVBUF, <span class="number">1024</span> * <span class="number">32</span>)</span><br><span class="line">                .childOption(ChannelOption.SO_SNDBUF, <span class="number">1024</span> * <span class="number">32</span>)</span><br><span class="line">                <span class="comment">//3.7 进行初始化 ChannelInitializer , 用于构建双向链表 &quot;pipeline&quot; 添加业务handler处理</span></span><br><span class="line">                .childHandler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                        <span class="comment">//3.8 这里仅仅只是添加一个业务处理器：ServerHandler（后面我们要针对他进行编码）</span></span><br><span class="line">                        ch.pipeline().addLast(<span class="keyword">new</span> ServerHandler());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//4. 服务器端绑定端口并启动服务;使用channel级别的监听close端口 阻塞的方式</span></span><br><span class="line">        ChannelFuture cf = b.bind(<span class="number">8765</span>).sync();</span><br><span class="line">        cf.channel().closeFuture().sync();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//5. 释放资源</span></span><br><span class="line">        bossGroup.shutdownGracefully();</span><br><span class="line">        workGroup.shutdownGracefully();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ServerHandler"><a href="#ServerHandler" class="headerlink" title="ServerHandler"></a>ServerHandler</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerHandler</span> <span class="keyword">extends</span> <span class="title">ChannelInboundHandlerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * channelActive</span></span><br><span class="line"><span class="comment">     * 通道激活方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.err.println(<span class="string">&quot;server channel active..&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * channelRead</span></span><br><span class="line"><span class="comment">     * 读写数据核心方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1. 读取客户端的数据(缓存中去取并打印到控制台)</span></span><br><span class="line">        ByteBuf buf = (ByteBuf) msg;</span><br><span class="line">        <span class="keyword">byte</span>[] request = <span class="keyword">new</span> <span class="keyword">byte</span>[buf.readableBytes()];</span><br><span class="line">        buf.readBytes(request);</span><br><span class="line">        String requestBody = <span class="keyword">new</span> String(request, <span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">        System.err.println(<span class="string">&quot;Server: &quot;</span> + requestBody);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//2. 返回响应数据</span></span><br><span class="line">        String responseBody = <span class="string">&quot;返回响应数据，&quot;</span> + requestBody;</span><br><span class="line">        ctx.writeAndFlush(Unpooled.copiedBuffer(responseBody.getBytes()));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * exceptionCaught</span></span><br><span class="line"><span class="comment">     * 捕获异常方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ctx.fireExceptionCaught(cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Netty-Client"><a href="#Netty-Client" class="headerlink" title="Netty Client"></a>Netty Client</h1><p>Netty Client端需要编写 Client与 ClientHandler两个核心类！</p>
+<h2 id="Client"><a href="#Client" class="headerlink" title="Client"></a>Client</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Client</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//1. 创建两个线程组: 只需要一个线程组用于我们的实际处理（网络通信的读写）</span></span><br><span class="line">		EventLoopGroup workGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2. 通过辅助类去构造client,然后进行配置响应的配置参数</span></span><br><span class="line">		Bootstrap b = <span class="keyword">new</span> Bootstrap();</span><br><span class="line">		b.group(workGroup)</span><br><span class="line">		 .channel(NioSocketChannel.class)</span><br><span class="line">		 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, <span class="number">3000</span>)</span><br><span class="line">		 .option(ChannelOption.SO_RCVBUF, <span class="number">1024</span> * <span class="number">32</span>)</span><br><span class="line">		 .option(ChannelOption.SO_SNDBUF, <span class="number">1024</span> * <span class="number">32</span>)</span><br><span class="line">		 <span class="comment">//3. 初始化ChannelInitializer</span></span><br><span class="line">		 .handler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">				<span class="comment">//3.1  添加客户端业务处理类</span></span><br><span class="line">				ch.pipeline().addLast(<span class="keyword">new</span> ClientHandler());	</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">		<span class="comment">//4. 服务器端绑定端口并启动服务; 使用channel级别的监听close端口 阻塞的方式</span></span><br><span class="line">		ChannelFuture cf = b.connect(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8765</span>).syncUninterruptibly();</span><br><span class="line"></span><br><span class="line">		<span class="comment">//5. 发送一条数据到服务器端</span></span><br><span class="line">		cf.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">&quot;hello netty!&quot;</span>.getBytes()));</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//6. 休眠一秒钟后再发送一条数据到服务端</span></span><br><span class="line">		Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">		cf.channel().writeAndFlush(Unpooled.copiedBuffer(<span class="string">&quot;hello netty again!&quot;</span>.getBytes()));</span><br><span class="line"></span><br><span class="line">		<span class="comment">//7. 同步阻塞关闭监听并释放资源</span></span><br><span class="line">		cf.channel().closeFuture().sync();</span><br><span class="line">		workGroup.shutdownGracefully();</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ClientHandler"><a href="#ClientHandler" class="headerlink" title="ClientHandler"></a>ClientHandler</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClientHandler</span> <span class="keyword">extends</span> <span class="title">ChannelInboundHandlerAdapter</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  channelActive</span></span><br><span class="line"><span class="comment">     *  客户端通道激活</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelActive</span><span class="params">(ChannelHandlerContext ctx)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	System.err.println(<span class="string">&quot;client channel active..&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  channelRead</span></span><br><span class="line"><span class="comment">     *  真正的数据最终会走到这个方法进行处理</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead</span><span class="params">(ChannelHandlerContext ctx, Object msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    	</span><br><span class="line">    	<span class="comment">// 固定模式的 try .. finally  </span></span><br><span class="line">    	<span class="comment">// 在try代码片段处理逻辑, finally进行释放缓存资源, 也就是 Object msg (buffer)</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ByteBuf buf = (ByteBuf) msg;</span><br><span class="line">            <span class="keyword">byte</span>[] req = <span class="keyword">new</span> <span class="keyword">byte</span>[buf.readableBytes()];</span><br><span class="line">            buf.readBytes(req);</span><br><span class="line"></span><br><span class="line">            String body = <span class="keyword">new</span> String(req, <span class="string">&quot;utf-8&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;Client :&quot;</span> + body );</span><br><span class="line">            String response = <span class="string">&quot;收到服务器端的返回信息：&quot;</span> + body;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            ReferenceCountUtil.release(msg);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  exceptionCaught</span></span><br><span class="line"><span class="comment">     *  异常捕获方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exceptionCaught</span><span class="params">(ChannelHandlerContext ctx, Throwable cause)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ctx.fireExceptionCaught(cause);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/vYiVSQ.png" alt="vYiVSQ.png"></p>
+<p>客户端向服务端发送数据</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/eUQopw.png" alt="eUQopw.png"></p>
+<p>客户端收到服务端返回的数据</p>
+]]></content>
+      <categories>
+        <category>netty</category>
+      </categories>
+      <tags>
+        <tag>netty</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL索引底层:B+数详解</title>
+    <url>/2021/05/12/MySQL%E7%B4%A2%E5%BC%95%E5%BA%95%E5%B1%82-B-%E6%95%B0%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<blockquote>
+<p>转载自 <a href="https://mp.weixin.qq.com/s/JqaN_1GPiqRQzXt2AizmdA">https://mp.weixin.qq.com/s/JqaN_1GPiqRQzXt2AizmdA</a></p>
+</blockquote>
+<p>当我们发现SQL执行很慢的时候，自然而然想到的就是加索引。对于范围查询，索引的底层结构就是B+树。今天我们一起来学习一下B+树哈~</p>
+<span id="more"></span>
+
+
+<ul>
+<li>树简介、树种类</li>
+<li>B-树、B+树简介</li>
+<li>B+树插入</li>
+<li>B+树查找</li>
+<li>B+树删除</li>
+<li>B+树经典面试题</li>
+</ul>
+<h3 id="树的简介"><a href="#树的简介" class="headerlink" title="树的简介"></a>树的简介</h3><h4 id="树的简介-1"><a href="#树的简介-1" class="headerlink" title="树的简介"></a>树的简介</h4><p>树跟数组、链表、堆栈一样，是一种数据结构。它由有限个节点，组成具有层次关系的集合。因为它看起来像一棵树，所以得其名。一颗普通的树如下:</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141128650.png" alt="图片"></p>
+<p>树是包含n（n为整数，大于0）个结点， n-1条边的有穷集，它有以下特点：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>每个结点或者无子结点或者只有有限个子结点；</li>
+<li>有一个特殊的结点,它没有父结点，称为根结点；</li>
+<li>每一个非根节点有且只有一个父节点；</li>
+<li>树里面没有环路</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<p>一些有关于树的概念：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>结点的度：一个结点含有的子结点个数称为该结点的度；</li>
+<li>树的度：一棵树中，最大结点的度称为树的度；</li>
+<li>父结点：若一个结点含有子结点，则这个结点称为其子结点的父结点；</li>
+<li>深度：对于任意结点n,n的深度为从根到n的唯一路径长，根结点的深度为0；</li>
+<li>高度：对于任意结点n,n的高度为从n到一片树叶的最长路径长，所有树叶的高度为0；</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<h4 id="树的种类"><a href="#树的种类" class="headerlink" title="树的种类"></a>树的种类</h4><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039205.png" alt="图片"></p>
+<p>按照有序性，可以分为有序树和无序树：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>无序树：树中任意节点的子结点之间没有顺序关系</li>
+<li>有序树：树中任意节点的子结点之间有顺序关系</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<p>按照节点包含子树个数，可以分为B树和二叉树，二叉树可以分为以下几种：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>二叉树：每个节点最多含有两个子树的树称为二叉树；</li>
+<li>二叉查找树：首先它是一颗二叉树，若左子树不空，则左子树上所有结点的值均小于它的根结点的值；若右子树不空，则右子树上所有结点的值均大于它的根结点的值；左、右子树也分别为二叉排序树；</li>
+<li>满二叉树：叶节点除外的所有节点均含有两个子树的树被称为满二叉树；</li>
+<li>完全二叉树：如果一颗二叉树除去最后一层节点为满二叉树，且最后一层的结点依次从左到右分布</li>
+<li>霍夫曼树：带权路径最短的二叉树。</li>
+<li>红黑树：红黑树是一颗特殊的二叉查找树，每个节点都是黑色或者红色，根节点、叶子节点是黑色。如果一个节点是红色的，则它的子节点必须是黑色的。</li>
+<li>平衡二叉树（AVL）：一 棵空树或它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<h3 id="B-树、B-树简介"><a href="#B-树、B-树简介" class="headerlink" title="B-树、B+树简介"></a>B-树、B+树简介</h3><h4 id="B-树-简介"><a href="#B-树-简介" class="headerlink" title="B-树 简介"></a>B-树 简介</h4><p>B-树，也称为B树，是一种平衡的多叉树（可以对比一下平衡二叉查找树），它比较适用于对外查找。看下这几个概念哈：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>阶数：一个节点最多有多少个孩子节点。（一般用字母m表示）</li>
+<li>关键字：节点上的数值就是关键字</li>
+<li>度：一个节点拥有的子节点的数量。</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<p>一颗m阶的B-树，有以下特征：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>根结点至少有两个子女；</li>
+<li>每个非根节点所包含的关键字个数 j 满足：⌈m/2⌉ - 1 &lt;= j &lt;= m - 1.(⌈⌉表示向上取整)</li>
+<li>有k个关键字(关键字按递增次序排列)的非叶结点恰好有k+1个孩子。</li>
+<li>所有的叶子结点都位于同一层。</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<p>一棵简单的B-树如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039307.png" alt="图片"></p>
+<h4 id="B-树简介"><a href="#B-树简介" class="headerlink" title="B+ 树简介"></a>B+ 树简介</h4><p>B+树是B-树的变体，也是一颗多路搜索树。一棵m阶的B+树主要有这些特点：</p>
+<blockquote>
+<p>❝</p>
+<ul>
+<li>每个结点至多有m个子女;</li>
+<li>非根节点关键值个数范围：<a href="%E6%B3%A8%E6%84%8F%E6%98%AF%E8%BF%99%E4%B8%AA%E5%93%88%EF%BC%8C%E5%90%8E%E9%9D%A2%E5%9B%BE%E4%BE%8B%E5%86%99%E9%94%99%E4%BA%86">m/2</a> &lt;= k &lt;= m-1</li>
+<li>相邻叶子节点是通过指针连起来的，并且是关键字大小排序的。</li>
+</ul>
+<p>❞</p>
+</blockquote>
+<p>一颗3阶的B+树如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039396.png" alt="图片"></p>
+<p>B+树和B-树的主要区别如下：</p>
+<ul>
+<li>B-树内部节点是保存数据的;而B+树内部节点是不保存数据的，只作索引作用，它的叶子节点才保存数据。</li>
+<li>B+树相邻的叶子节点之间是通过链表指针连起来的，B-树却不是。</li>
+<li>查找过程中，B-树在找到具体的数值以后就结束，而B+树则需要通过索引找到叶子结点中的数据才结束</li>
+<li>B-树中任何一个关键字出现且只出现在一个结点中，而B+树可以出现多次。</li>
+</ul>
+<h3 id="B-树的插入"><a href="#B-树的插入" class="headerlink" title="B+树的插入"></a>B+树的插入</h3><p>B+树插入要记住这几个步骤：</p>
+<ul>
+<li>1.B+树插入都是在叶子结点进行的，就是插入前，需要先找到要插入的叶子结点。</li>
+<li>2.如果被插入关键字的叶子节点，当前含有的关键字数量是小于阶数m，则直接插入。</li>
+<li>3.如果插入关键字后，叶子节点当前含有的关键字数目等于阶数m，则插，该节点开始<strong>「分裂」</strong>为两个新的节点，一个节点包含⌊m/2⌋ 个关键字，另外一个关键字包含⌈m/2⌉个关键值。（⌊m/2⌋表示向下取整，⌈m/2⌉表示向上取整，如⌈3/2⌉=2）。</li>
+<li>4.分裂后，需要将第⌈m/2⌉的关键字上移到父结点。如果这时候父结点中包含的关键字个数小于m，则插入操作完成。</li>
+<li>5.分裂后，需要将⌈m/2⌉的关键字上移到父结点。如果父结点中包含的关键字个数等于m，则继续分裂父结点。</li>
+</ul>
+<p>以一颗4阶的B+树为例子吧，4阶的话，关键值最多3（m-1）个。假设插入以下数据43，48，36，32,37,49,28.</p>
+<ol>
+<li>在空树中插入43</li>
+</ol>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039451.png" alt="图片"></p>
+<p>这时候根结点就一个关键值，此时它是根结点也是叶子结点。</p>
+<ol>
+<li>依次插入48，36</li>
+</ol>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039479.png" alt="图片"></p>
+<p>这时候跟节点拥有3个关键字，已经满了</p>
+<ol>
+<li>继续插入 32，发现当前节点关键字已经不小于阶数4了，于是分裂 第⌈4/2⌉=2（下标0,1,2）个，也即43上移到父节点。</li>
+</ol>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039528.png" alt="图片"></p>
+<ol>
+<li>继续插入37，49，前节点关键字都是还没满的，直接插入，如下：</li>
+</ol>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039570.png" alt="图片"></p>
+<ol>
+<li><p>最后插入28，发现当前节点关键字也是不小于阶数4了，于是分裂，于是分裂， 第 ⌈4/2⌉=2个，也就是36上移到父节点，因父子节点只有2个关键值，还是小于4的，所以不用继续分裂，插入完成</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039628.png" alt="图片"></p>
+</li>
+</ol>
+<h3 id="B-树的查找"><a href="#B-树的查找" class="headerlink" title="B+树的查找"></a>B+树的查找</h3><p>因为B+树的数据都是在叶子节点上的，内部节点只是指针索引的作用，因此，查找过程需要搜索到叶子节点上。还是以这颗B+树为例吧：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039695.png" alt="图片"></p>
+<h4 id="B-树单值查询"><a href="#B-树单值查询" class="headerlink" title="B+ 树单值查询"></a>B+ 树单值查询</h4><p>假设我们要查的值为32.</p>
+<p>第一次磁盘 I/O，查找磁盘块1，即根节点（36,43）,因为32小于36，因此访问根节点的左边第一个孩子节点</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039753.png" alt="图片"></p>
+<p>第二次磁盘 I/O, 查找磁盘块2，即根节点的第一个孩子节点，获得区间(28,32),遍历即可得32.</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039811.png" alt="图片"></p>
+<p>动态图如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640.gif" alt="图片"></p>
+<h4 id="B-树范围查询"><a href="#B-树范围查询" class="headerlink" title="B+ 树范围查询"></a>B+ 树范围查询</h4><p>假设我们要查找区间 [32,40]区间的值.</p>
+<p>第一步先访问根节点，发现区间的左端点32小于36,则访问根节点的第一个左子树(28,32);</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039753.png" alt="图片"></p>
+<p>第二步访问节点（28,32），找到32，于是开始遍历链表，把[32,40]区间值找出来，这也是B+树比B-树高效的地方。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040015.png" alt="图片"></p>
+<h3 id="B-树的删除"><a href="#B-树的删除" class="headerlink" title="B+树的删除"></a>B+树的删除</h3><p>B+树删除关键字，分这几种情况</p>
+<ul>
+<li>找到包含关键值的结点，如果关键字个数大于⌈m/2⌉-1，直接删除即可；</li>
+<li>找到包含关键值的结点,如果关键字个数大于⌈m/2⌉-1，并且关键值是当前节点的最大（小）值，并且该关键值存在父子节点中，那么删除该关键字，同时需要相应调整父节点的值。</li>
+<li>找到包含关键值的结点，如果删除该关键字后，关键字个数小于⌈m/2⌉，并且其兄弟结点有多余的关键字，则从其兄弟结点借用关键字</li>
+<li>找到包含关键值的结点，如果删除该关键字后，关键字个数小于⌈m/2⌉，并且其兄弟结点没有多余的关键字，则与兄弟结点合并。</li>
+</ul>
+<h4 id="如果关键字个数大于⌈m-2⌉，直接删除即可；"><a href="#如果关键字个数大于⌈m-2⌉，直接删除即可；" class="headerlink" title="如果关键字个数大于⌈m/2⌉，直接删除即可；"></a>如果关键字个数大于⌈m/2⌉，直接删除即可；</h4><p>假设当前有这么一颗5阶的B+树</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040073.png" alt="图片"></p>
+<p>如果删除22，因为关键字个数为3 &gt; ⌈5/2⌉-1=2， 直接删除（⌈⌉表示向上取整的意思）</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040297.gif" alt="图片"></p>
+<h4 id="如果关键字个数大于⌈m-2⌉-1，并且删除的关键字存在于父子节点中，那么需要相应调整父子节点的值"><a href="#如果关键字个数大于⌈m-2⌉-1，并且删除的关键字存在于父子节点中，那么需要相应调整父子节点的值" class="headerlink" title="如果关键字个数大于⌈m/2⌉-1，并且删除的关键字存在于父子节点中，那么需要相应调整父子节点的值"></a>如果关键字个数大于⌈m/2⌉-1，并且删除的关键字存在于父子节点中，那么需要相应调整父子节点的值</h4><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040356.png" alt="图片"></p>
+<p>如果删除20，因为关键字个数为3 &gt; ⌈5/2⌉-1=2，并且20是当前节点的边界值，且存在父子节点中，所以删除后，其父子节点也要响应调整。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040470.gif" alt="图片"></p>
+<h4 id="如果删除该关键字后，关键字个数小于⌈m-2⌉-1，兄弟节点可以借用"><a href="#如果删除该关键字后，关键字个数小于⌈m-2⌉-1，兄弟节点可以借用" class="headerlink" title="如果删除该关键字后，关键字个数小于⌈m/2⌉-1，兄弟节点可以借用"></a>如果删除该关键字后，关键字个数小于⌈m/2⌉-1，兄弟节点可以借用</h4><p>以下这颗5阶的B+树，</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040508.png" alt="图片"></p>
+<p>如果删除15,删除关键字的结点只剩1个关键字，小于⌈5/2⌉-1=2，不满足B+树特点，但是其兄弟节点拥有3个元素（7,8,9），可以借用9过来，如图：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040618.gif" alt="图片"></p>
+<h4 id="在删除关键字后，如果导致其结点中关键字个数不足，并且兄弟结点没有得借用的话，需要合并兄弟结点"><a href="#在删除关键字后，如果导致其结点中关键字个数不足，并且兄弟结点没有得借用的话，需要合并兄弟结点" class="headerlink" title="在删除关键字后，如果导致其结点中关键字个数不足，并且兄弟结点没有得借用的话，需要合并兄弟结点"></a>在删除关键字后，如果导致其结点中关键字个数不足，并且兄弟结点没有得借用的话，需要合并兄弟结点</h4><p>以下这颗5阶的B+树：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041062.png" alt="图片"></p>
+<p>如果删除关键字7，删除关键字的结点只剩1个关键字，小于⌈5/2⌉-1=2，不满足B+树特点，并且兄弟结点没法借用，因此发生合并，如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041325.gif" alt="图片"></p>
+<p>主要流程酱紫：</p>
+<ul>
+<li>因为7被删掉后，只剩一个8的关键字，不满足B+树特点（⌈m/2⌉-1&lt;=关键字&lt;=m-1）。</li>
+<li>并且没有兄弟结点关键字借用，因此8与前面的兄弟结点结合。</li>
+<li>被删关键字结点的父节点，7索引也被删掉了，只剩一个9，并且其右兄弟结点（18,20）只有两个关键字，也是没得借，因此在此合并。</li>
+<li>被删关键字结点的父子节点，也和其兄弟结点合并后，只剩一个子树分支，因此根节点（16）也下移了。</li>
+</ul>
+<p>所以删除关键字7后的结果如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041459.png" alt="图片"></p>
+<h3 id="B-树经典面试题"><a href="#B-树经典面试题" class="headerlink" title="B+树经典面试题"></a>B+树经典面试题</h3><ul>
+<li>InnoDB一棵B+树可以存放多少行数据？</li>
+<li>为什么索引结构默认使用B+树，而不是hash，二叉树，红黑树，B-树？</li>
+<li>B-树和B+树的区别</li>
+</ul>
+<h4 id="InnoDB一棵B-树可以存放多少行数据？"><a href="#InnoDB一棵B-树可以存放多少行数据？" class="headerlink" title="InnoDB一棵B+树可以存放多少行数据？"></a>InnoDB一棵B+树可以存放多少行数据？</h4><p>这个问题的简单回答是：约2千万行。</p>
+<ul>
+<li>在计算机中，磁盘存储数据最小单元是扇区，一个扇区的大小是512字节。</li>
+<li>文件系统中，最小单位是块，一个块大小就是4k；</li>
+<li>InnoDB存储引擎最小储存单元是页，一页大小就是16k。</li>
+</ul>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041528.png" alt="图片"></p>
+<p>因为B+树叶子存的是数据，内部节点存的是键值+指针。索引组织表通过非叶子节点的二分查找法以及指针确定数据在哪个页中，进而再去数据页中找到需要的数据；</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/640.jpg" alt="图片"></p>
+<p>假设B+树的高度为2的话，即有一个根结点和若干个叶子结点。这棵B+树的存放总记录数为=根结点指针数*单个叶子节点记录行数。</p>
+<ul>
+<li>如果一行记录的数据大小为1k，那么单个叶子节点可以存的记录数 =16k/1k =16.</li>
+<li>非叶子节点内存放多少指针呢？我们假设主键ID为bigint类型，长度为8字节，而指针大小在InnoDB源码中设置为6字节，所以就是8+6=14字节，16k/14B =16*1024B/14B = 1170</li>
+</ul>
+<p>因此，一棵高度为2的B+树，能存放1170 * 16=18720条这样的数据记录。同理一棵高度为3的B+树，能存放1170 *1170 *16 =21902400，也就是说，可以存放两千万左右的记录。B+树高度一般为1-3层，已经满足千万级别的数据存储。</p>
+<h4 id="为什么索引结构默认使用B-树，而不是B-Tree，Hash哈希，二叉树，红黑树？"><a href="#为什么索引结构默认使用B-树，而不是B-Tree，Hash哈希，二叉树，红黑树？" class="headerlink" title="为什么索引结构默认使用B+树，而不是B-Tree，Hash哈希，二叉树，红黑树？"></a>为什么索引结构默认使用B+树，而不是B-Tree，Hash哈希，二叉树，红黑树？</h4><p>简单版回答如下：</p>
+<ul>
+<li>Hash哈希，只适合等值查询，不适合范围查询。</li>
+<li>一般二叉树，可能会特殊化为一个链表，相当于全表扫描。</li>
+<li>红黑树，是一种特化的平衡二叉树，MySQL 数据量很大的时候，索引的体积也会很大，内存放不下的而从磁盘读取，树的层次太高的话，读取磁盘的次数就多了。</li>
+<li>B-Tree，叶子节点和非叶子节点都保存数据，相同的数据量，B+树更矮壮，也是就说，相同的数据量，B+树数据结构，查询磁盘的次数会更少。</li>
+</ul>
+<h4 id="B-树和B-树的区别"><a href="#B-树和B-树的区别" class="headerlink" title="B-树和B+树的区别"></a>B-树和B+树的区别</h4><ul>
+<li>B-树内部节点是保存数据的;而B+树内部节点是不保存数据的，只作索引作用，它的叶子节点才保存数据。</li>
+<li>B+树相邻的叶子节点之间是通过链表指针连起来的，B-树却不是。</li>
+<li>查找过程中，B-树在找到具体的数值以后就结束，而B+树则需要通过索引找到叶子结点中的数据才结束</li>
+<li>B-树中任何一个关键字出现且只出现在一个结点中，而B+树可以出现多次。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>mysql</tag>
+        <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于Redisson实现分布式锁</title>
+    <url>/2021/05/16/%E5%9F%BA%E4%BA%8ERedisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Redisson 除了实现了redis基本功能以外，还重新实现了Java并发包里面的内容。</p>
+<p>如何使用Redisson？Redisson可以说是redis客户端的加强版本，它里面的内容较多，也提供了分布式锁的实现，使用简单只需简单配置和调用即可，步骤如下：</p>
+<ol>
+<li><p>引入Redisson的Jar包</p>
+</li>
+<li><p>进行Redisson与Redis的配置</p>
+</li>
+<li><p>使用分布式锁</p>
+</li>
+</ol>
+<p>使用方式：</p>
+<ul>
+<li>通过Java API方式引入Redisson</li>
+<li>Spring项目引入Redisson</li>
+<li>SpringBoot项目引入Redisson </li>
+</ul>
+<span id="more"></span>
+
+<h1 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedissonLockApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testRedissonLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Config config = <span class="keyword">new</span> Config();</span><br><span class="line">        config.useSingleServer().setAddress(<span class="string">&quot;redis://localhost&quot;</span>);</span><br><span class="line">        RedissonClient redisson = Redisson.create(config);</span><br><span class="line"></span><br><span class="line">        RLock rLock = redisson.getLock(<span class="string">&quot;order&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rLock.lock(<span class="number">30</span>, TimeUnit.SECONDS);</span><br><span class="line">            log.info(<span class="string">&quot;我获得了锁！！！&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;我释放了锁！！&quot;</span>);</span><br><span class="line">            rLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果演示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/MBFX4f.png"></p>
+<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><p>引用依赖：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.redisson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redisson-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.15.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>配置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">spring.redis.host&#x3D;localhost</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedissonLockController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redisson;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;redissonLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redissonLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RLock rLock = redisson.getLock(<span class="string">&quot;order&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法！！&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rLock.lock(<span class="number">30</span>, TimeUnit.SECONDS);</span><br><span class="line">            log.info(<span class="string">&quot;我获得了锁！！！&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;我释放了锁！！&quot;</span>);</span><br><span class="line">            rLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成！！&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成！！&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果演示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/2lvzmZ.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/skDIpq.png"></p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a href="https://github.com/redisson/redisson">https://github.com/redisson/redisson</a></p>
+]]></content>
+      <tags>
+        <tag>redis</tag>
+        <tag>分布式锁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分布式锁的对比</title>
+    <url>/2021/05/18/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AF%B9%E6%AF%94/</url>
+    <content><![CDATA[<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/6zUNz2.png"></p>
+<span id="more"></span>
+
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/GJm1lP.png"></p>
+]]></content>
+      <tags>
+        <tag>分布式锁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于Zookeeper的Curator客户端实现分布式锁</title>
+    <url>/2021/05/16/%E5%9F%BA%E4%BA%8EZookeeper%E7%9A%84Curator%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>curator 是Java语言实现的增强版zookeeper客户端详情见<a href="http://curator.apache.org/">官网</a></p>
+<p>curator 的使用步骤：</p>
+<ol>
+<li>引入curator客户端</li>
+<li>curator 已经实现了分布式锁的方法</li>
+<li>直接调用即可</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCuratorLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">    RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);</span><br><span class="line">    CuratorFramework client = CuratorFrameworkFactory.newClient(<span class="string">&quot;localhost:2181&quot;</span>, retryPolicy);</span><br><span class="line">    client.start();</span><br><span class="line">    InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(client, <span class="string">&quot;/order&quot;</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> ( lock.acquire(<span class="number">30</span>, TimeUnit.SECONDS) ) &#123;</span><br><span class="line">            <span class="keyword">try</span>  &#123;</span><br><span class="line">                log.info(<span class="string">&quot;我获得了锁！！！&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">finally</span>  &#123;</span><br><span class="line">                lock.release();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    client.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>分布式锁</tag>
+        <tag>zookeeper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于Zookeeper的瞬时节点实现分布式锁</title>
+    <url>/2021/05/12/%E5%9F%BA%E4%BA%8EZookeeper%E7%9A%84%E7%9E%AC%E6%97%B6%E8%8A%82%E7%82%B9%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[<h1 id="Zookeeper-的数据结构"><a href="#Zookeeper-的数据结构" class="headerlink" title="Zookeeper 的数据结构"></a>Zookeeper 的数据结构</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/UE5cYm.png"></p>
+<p>详细内容见官网</p>
+<span id="more"></span>
+
+<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/JbLkYC.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/o3SdiJ.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/7D9zYJ.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/X36dAV.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/GUkIWX.png"></p>
+<ol>
+<li>线程A、B、C、D在zookeeper中的节点序号分别是1、2、3、4。</li>
+<li>节点序号最小的线程A 获得锁</li>
+<li>线程B 监听序号是1的节点（设置了一个观察器，监听节点1），线程C监听序号是2的节点，以此类推。</li>
+<li>线程A执行完任务后，序号为1的节点消失，线程B得到通知，线程B执行任务后，序号为2的节点消失，后续线程以此类推</li>
+</ol>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><h2 id="ZkLock"><a href="#ZkLock" class="headerlink" title="ZkLock"></a>ZkLock</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ZkLock</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span>, <span class="title">Watcher</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> ZooKeeper zooKeeper;</span><br><span class="line">    <span class="keyword">private</span> String znode;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ZkLock</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.zooKeeper = <span class="keyword">new</span> ZooKeeper(<span class="string">&quot;localhost:2181&quot;</span>,</span><br><span class="line">                <span class="number">10000</span>,<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">getLock</span><span class="params">(String businessCode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//创建业务 根节点</span></span><br><span class="line">            Stat stat = zooKeeper.exists(<span class="string">&quot;/&quot;</span> + businessCode, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (stat==<span class="keyword">null</span>)&#123;</span><br><span class="line">                zooKeeper.create(<span class="string">&quot;/&quot;</span> + businessCode,businessCode.getBytes(),</span><br><span class="line">                        ZooDefs.Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                        CreateMode.PERSISTENT);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建瞬时有序节点  /order/order_00000001</span></span><br><span class="line">            znode = zooKeeper.create(<span class="string">&quot;/&quot;</span> + businessCode + <span class="string">&quot;/&quot;</span> + businessCode + <span class="string">&quot;_&quot;</span>, businessCode.getBytes(),</span><br><span class="line">                    ZooDefs.Ids.OPEN_ACL_UNSAFE,</span><br><span class="line">                    CreateMode.EPHEMERAL_SEQUENTIAL);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//获取业务节点下 所有的子节点</span></span><br><span class="line">            List&lt;String&gt; childrenNodes = zooKeeper.getChildren(<span class="string">&quot;/&quot;</span> + businessCode, <span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//子节点排序</span></span><br><span class="line">            Collections.sort(childrenNodes);</span><br><span class="line">            <span class="comment">//获取序号最小的（第一个）子节点</span></span><br><span class="line">            String firstNode = childrenNodes.get(<span class="number">0</span>);</span><br><span class="line">            <span class="comment">//如果创建的节点是第一个子节点，则获得锁</span></span><br><span class="line">            <span class="keyword">if</span> (znode.endsWith(firstNode))&#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//不是第一个子节点，则监听前一个节点</span></span><br><span class="line">            String lastNode = firstNode;</span><br><span class="line">            <span class="keyword">for</span> (String node:childrenNodes)&#123;</span><br><span class="line">                <span class="keyword">if</span> (znode.endsWith(node))&#123;</span><br><span class="line">                    zooKeeper.exists(<span class="string">&quot;/&quot;</span>+businessCode+<span class="string">&quot;/&quot;</span>+lastNode,<span class="keyword">true</span>);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    lastNode = node;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span> (<span class="keyword">this</span>)&#123;</span><br><span class="line">                wait();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        zooKeeper.delete(znode,-<span class="number">1</span>);</span><br><span class="line">        zooKeeper.close();</span><br><span class="line">        log.info(<span class="string">&quot;我已经释放了锁！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (event.getType() == Event.EventType.NodeDeleted)&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (<span class="keyword">this</span>)&#123;</span><br><span class="line">                notify();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="单元测试"><a href="#单元测试" class="headerlink" title="单元测试"></a>单元测试</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DistributeZkLockApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testZkLock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ZkLock zkLock = <span class="keyword">new</span> ZkLock();</span><br><span class="line">        <span class="keyword">boolean</span> lock = zkLock.getLock(<span class="string">&quot;order&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;获得锁的结果：&quot;</span>+lock);</span><br><span class="line"></span><br><span class="line">        zkLock.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;zkLock&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">zookeeperLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">    log.info(<span class="string">&quot;我进入了方法！&quot;</span>);</span><br><span class="line">    <span class="keyword">try</span> (ZkLock zkLock = <span class="keyword">new</span> ZkLock()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (zkLock.getLock(<span class="string">&quot;order&quot;</span>))&#123;</span><br><span class="line">            log.info(<span class="string">&quot;我获得了锁&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    log.info(<span class="string">&quot;方法执行完成！&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;方法执行完成！&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序启动两个，演示结果：</p>
+<p>第一个程序的日志：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Y2fTpH.png"></p>
+<p>第二个程序的日志：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rYNilY.png"></p>
+<p>结论：第一个程序在11:04:51获得锁，10秒后即11:05:01释放锁，第二个程序在11:05:01获得锁，10妙后释放锁。ZkLock已经完成了我们的期望结果。</p>
+]]></content>
+      <tags>
+        <tag>分布式锁</tag>
+        <tag>zookeeper</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>读写分离、分库分表</title>
+    <url>/2021/05/20/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E3%80%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在当今这个时代，人们对互联网的依赖程度非常高，也因此产生了大量的数据，企业视这些数据为瑰宝。而这些被视为瑰宝的数据为我们的系统带来了很大的烦恼。这些海量数据的存储与访问成为了系统设计与使用的瓶颈，而这些数据往往存储在数据库中，传统的数据库存在着先天的不足，即单机（单库）性能瓶颈，并且扩展起来非常的困难。在当今的这个大数据时代，我们急需解决这个问题。如果单机数据库易于扩展，数据可切分，就可以避免这些问题，但是当前的这些数据库厂商，包括开源的数据库MySQL在内，提供这些服务都是需要收费的，所以我们转向一些第三方的软件，使用这些软件做数据的切分，将原本在一台数据库上的数据，分散到多台数据库当中，降低每一个单体数据库的负载。那么我们如何做数据切分呢？</p>
+<span id="more"></span>
+
+<h2 id="数据切分"><a href="#数据切分" class="headerlink" title="数据切分"></a>数据切分</h2><p>数据切分，简单的说，就是通过某种条件，将我们之前存储在一台数据库上的数据，分散到多台数据库中，从而达到降低单台数据库负载的效果。数据切分，根据其切分的规则，大致分为两种类型，垂直切分和水平切分。</p>
+<h3 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h3><p>垂直切分就是按照不同的表或者Schema切分到不同的数据库中，比如：在我们的课程中，订单表（order）和商品表（product）在同一个数据库中，而我们现在要对其切分，使得订单表（order）和商品表（product）分别落到不同的物理机中的不同的数据库中，使其完全隔离，从而达到降低数据库负载的效果。如图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df98f83095fac1e06150519.png" alt="图片描述"></p>
+<p>垂直切分的特点就是规则简单，易于实施，可以根据业务模块进行划分，各个业务之间耦合性低，相互影响也较小。</p>
+<p>一个架构设计较好的应用系统，其总体功能肯定是有多个不同的功能模块组成的。每一个功能模块对应着数据库里的一系列表。例如在咱们的课程当中，商品功能模块对应的表包括：类目、属性、属性值、品牌、商品、sku等表。而在订单模块中，对应的表包括：订单、订单明细、订单收货地址、订单日志等。如图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df98fd70918ff9505720593.png" alt="图片描述"></p>
+<p>在架构设计中，各个功能模块之间的交互越统一、越少越好。这样，系统模块之间的耦合度会很低，各个系统模块的可扩展性、可维护性也会大大提高。这样的系统，实现数据的垂直切分就会很容易。</p>
+<p>但是，在实际的系统架构设计中，有一些表很难做到完全的独立，往往存在跨库join的现象。还是上面的例子，比如我们接到了一个需求，要求查询某一个类目产生了多少订单，如果在单体数据库中，我们直接连表查询就可以了。但是现在垂直切分成了两个数据库，跨库连表查询是十分影响性能的，也不推荐这样用，只能通过接口去调取服务，这样系统的复杂度又升高了。对于这种很难做到完全独立的表，作为系统架构设计人员，就要去做平衡，是数据库让步于业务，将这些表放在一个数据库当中？还是拆分成多个数据库，业务之间通过接口来调用呢？在系统初期，数据量比较小，资源也有限，往往会选择放在一个数据库当中。而随着业务的发展，数据量达到了一定的规模，就有必要去进行数据的垂直切分了。而如何进行切分，切分到什么程度，则是对架构师的一个艰难的考验。</p>
+<p>下面我们来看看垂直切分的优缺点：</p>
+<p>优点：</p>
+<ul>
+<li>拆分后业务清晰，拆分规则明确；</li>
+<li>系统之间容易扩展和整合；</li>
+<li>数据维护简单</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>部分业务表无法join，只能通过接口调用，提升了系统的复杂度；</li>
+<li>跨库事务难以处理；</li>
+<li>垂直切分后，某些业务数据过于庞大，仍然存在单体性能瓶颈；</li>
+</ul>
+<p>正如缺点中的最后一条所说，当某一个业务模块的数据暴增时，仍然存在着单机性能缺陷。还是之前的例子，如果出现了一个爆款商品，订单量急剧上升，达到了单机性能瓶颈，那么你所有和订单相关的业务都要受到影响。这时我们就要用到水平切分。</p>
+<h3 id="水平切分"><a href="#水平切分" class="headerlink" title="水平切分"></a>水平切分</h3><p>水平切分相比垂直切分，更为复杂。它需要将一个表中的数据，根据某种规则拆分到不同的数据库中，例如：订单尾号为奇数的订单放在了订单数据库1中，而订单尾号为偶数的订单放在了订单数据库2中。这样，原本存在一个数据库中的订单数据，被水平的切分成了两个数据库。在查询订单数据时，我们还要根据订单的尾号，判断这个订单在数据库1中，还是在数据库2中，然后将这条SQL语句发送到正确的数据库中，查出订单。水平切分的架构图如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df98ff209eb4fc605460581.png" alt="图片描述"></p>
+<p>水平拆分数据，要先订单拆分的规则，找到你要按哪个维度去拆分，还是前面订单的例子，我们按照订单尾号的奇偶去拆分，那么这样拆分会有什么影响呢？假如我是一个用户，我下了两个订单，一个订单尾号为奇数，一个订单尾号为偶数，这时，我去个人中心，订单列表页去查看我的订单。那么这个订单列表页要去怎么查，要根据我的用户id分别取订单1库和订单2库去查询出订单，然后再合并成一个列表，是不是很麻烦。所以，咱们在拆分数据时，一定要结合业务，选择出适合当前业务场景的拆分规则。那么按照用户id去拆分数据就合理吗？也不一定，比如：咱们的身份变了，不是买家了，而是卖家，我这个卖家有很多的订单，卖家的后台系统也有订单列表页，那这个订单列表页要怎么样去查？是不是也要在所有的订单库中查一遍，然后再聚合成一个订单列表呀。那这样看，是不是按照用户id去拆分订单又不合理了。所以在做数据水平拆分时，是对架构师的真正考验。</p>
+<p>我们看看几种水平拆分的典型的分片规则：</p>
+<ul>
+<li><p>用户id求模，我们前面已经提到过；</p>
+</li>
+<li><p>按照日期去拆分数据；</p>
+</li>
+<li><p>按照其他字段求模，去拆分数据；</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df990110998744709370731.png" alt="图片描述"></p>
+</li>
+</ul>
+<p>上面是按照用户id去求模拆分的一个示意图。</p>
+<p>咱们再来看看水平拆分的优缺点：</p>
+<p>优点：</p>
+<ul>
+<li>解决了单库大数据、高并发的性能瓶颈；</li>
+<li>拆分规则封装好，对应用端几乎透明，开发人员无需关心拆分细节；</li>
+<li>提高了系统的稳定性和负载能力；</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>拆分规则很难抽象；</li>
+<li>分片事务一致性难以解决；</li>
+<li>二次扩展时，数据迁移、维护难度大。比如：开始我们按照用户id对2求模，但是随着业务的增长，2台数据库难以支撑，还是继续拆分成4个数据库，那么这时就需要做数据迁移了。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>世界上的万物没有完美的，有利就有弊，就像数据切分一样。无论是垂直切分，还是水平切分，它们解决了海量数据的存储和访问性能问题，但也随之而来的带来了很多新问题，它们的共同缺点有：</p>
+<ul>
+<li>分布式的事务问题；</li>
+<li>跨库join问题；</li>
+<li>多数据源的管理问题</li>
+</ul>
+<p>针对多数据源的管理问题，主要有两种思路：</p>
+<ol>
+<li>客户端模式，在每个应用模块内，配置自己需要的数据源，直接访问数据库，在各模块内完成数据的整合；</li>
+<li>中间代理模式，中间代理统一管理所有的数据源，数据库层对开发人员完全透明，开发人员无需关注拆分的细节。</li>
+</ol>
+<p>基于这两种模式，目前都有成熟的第三方软件，接下来在我们的视频中，会分别给大家介绍这两种模式的代表作：</p>
+<ul>
+<li>中间代理模式：MyCat</li>
+<li>客户端模式：sharding-jdbc</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>读写分离</tag>
+        <tag>分库分表</tag>
+      </tags>
   </entry>
 </search>

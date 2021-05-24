@@ -195,20 +195,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-count">165</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">103</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,602 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/04/06/flink-java-quickstart/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/06/flink-java-quickstart/" class="post-title-link" itemprop="url">一个 Flink 简单的入门 quickstart</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-04-06 20:14:03 / 修改时间：20:17:27" itemprop="dateCreated datePublished" datetime="2021-04-06T20:14:03+08:00">2021-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[TOC]</p>
+<h2 id="Mac-OS-安装-flink"><a href="#Mac-OS-安装-flink" class="headerlink" title="Mac OS 安装 flink"></a>Mac OS 安装 flink</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">brew install apache-flink</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动-flink"><a href="#启动-flink" class="headerlink" title="启动 flink"></a>启动 flink</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/opt/apache-flink/libexec/bin/start-cluster.sh</span><br></pre></td></tr></table></figure>
+
+<p>查看 flink 的 Web 界面 <a target="_blank" rel="noopener" href="http://localhost:8081/">http://localhost:8081/</a></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/flink_quickstart_launch_flink.png" alt="flink_quickstart_launch_flink.png"></p>
+<h2 id="新建一个-maven-工程"><a href="#新建一个-maven-工程" class="headerlink" title="新建一个 maven 工程"></a>新建一个 maven 工程</h2><h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.flink<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>flink-streaming-java_2.12<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.11.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="SocketTextStreamWordCount"><a href="#SocketTextStreamWordCount" class="headerlink" title="SocketTextStreamWordCount"></a>SocketTextStreamWordCount</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.fengxuechao.example.flink.quickstart;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.common.functions.FlatMapFunction;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.api.java.tuple.Tuple2;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.DataStreamSource;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;</span><br><span class="line"><span class="keyword">import</span> org.apache.flink.util.Collector;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2021/4/6</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SocketTextStreamWordCount</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//参数检查</span></span><br><span class="line">        <span class="keyword">if</span> (args.length != <span class="number">2</span>) &#123;</span><br><span class="line">            System.err.println(<span class="string">&quot;USAGE:\nSocketTextStreamWordCount &lt;hostname&gt; &lt;port&gt;&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String hostname = args[<span class="number">0</span>];</span><br><span class="line">        Integer port = Integer.parseInt(args[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// set up the streaming execution environment</span></span><br><span class="line">        <span class="keyword">final</span> StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取数据</span></span><br><span class="line">        DataStreamSource&lt;String&gt; stream = env.socketTextStream(hostname, port);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//计数</span></span><br><span class="line">        SingleOutputStreamOperator&lt;Tuple2&lt;String, Integer&gt;&gt; sum = stream.map(value -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;map:&quot;</span> + value);</span><br><span class="line">            <span class="keyword">return</span> value;</span><br><span class="line">        &#125;).flatMap(<span class="keyword">new</span> LineSplitter())</span><br><span class="line">                .keyBy(<span class="number">0</span>)</span><br><span class="line">                .sum(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        sum.print();</span><br><span class="line"></span><br><span class="line">        env.execute(<span class="string">&quot;Java WordCount from SocketTextStream Example&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">LineSplitter</span> <span class="keyword">implements</span> <span class="title">FlatMapFunction</span>&lt;<span class="title">String</span>, <span class="title">Tuple2</span>&lt;<span class="title">String</span>, <span class="title">Integer</span>&gt;&gt; </span>&#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">flatMap</span><span class="params">(String s, Collector&lt;Tuple2&lt;String, Integer&gt;&gt; collector)</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;LineSplitter.value:&quot;</span>+s);</span><br><span class="line">            String[] tokens = s.toLowerCase().split(<span class="string">&quot;\\W+&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;LineSplitter.value.splits:&quot;</span>+ Arrays.toString(tokens));</span><br><span class="line">            <span class="keyword">for</span> (String token : tokens) &#123;</span><br><span class="line">                <span class="keyword">if</span> (token.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    collector.collect(<span class="keyword">new</span> Tuple2&lt;String, Integer&gt;(token, <span class="number">1</span>));</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">&quot;LineSplitter.value.split:&quot;</span>+ token);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><h3 id="maven-项目打包"><a href="#maven-项目打包" class="headerlink" title="maven 项目打包"></a>maven 项目打包</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package</span><br></pre></td></tr></table></figure>
+
+<h3 id="监听-9000-端口"><a href="#监听-9000-端口" class="headerlink" title="监听 9000 端口"></a>监听 9000 端口</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -l 9000</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/flink_quickstart_nc.png" alt="img.png"></p>
+<h3 id="使用-flink-运行程序"><a href="#使用-flink-运行程序" class="headerlink" title="使用 flink 运行程序"></a>使用 flink 运行程序</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flink run -c org.fengxuechao.example.flink.quickstart.SocketTextStreamWordCount flink/quickstart/target/quickstart-1.0-SNAPSHOT.jar 127.0.0.1 9000</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看-flink-界面的日志"><a href="#查看-flink-界面的日志" class="headerlink" title="查看 flink 界面的日志"></a>查看 flink 界面的日志</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/flink_quickstart_webui_log.png" alt="img.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/26/opentsdb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/26/opentsdb/" class="post-title-link" itemprop="url">opentsdb</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-26 11:28:48" itemprop="dateCreated datePublished" datetime="2021-03-26T11:28:48+08:00">2021-03-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-31 11:06:18" itemprop="dateModified" datetime="2021-03-31T11:06:18+08:00">2021-03-31</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="1-OpenTSDB-概述"><a href="#1-OpenTSDB-概述" class="headerlink" title="1 OpenTSDB 概述"></a>1 OpenTSDB 概述</h1><p><a target="_blank" rel="noopener" href="http://opentsdb.net/overview.html">官网概述</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/OpenTSDB/opentsdb">源码</a></p>
+<p>OpenTSDB是基于HBase的分布式、可伸缩的时间序列数据库。它存储的是时间序列数据，时间序列数据是指在不同时间点上收集到的数据，这类数据反映了一个对象随时间的变化状态或程度。</p>
+<h2 id="1-1-架构"><a href="#1-1-架构" class="headerlink" title="1.1 架构"></a>1.1 架构</h2><p>OpenTSDB由时间序列守护进程（TSD）和一组命令行实用程序组成。与OpenTSDB的交互主要通过运行一个或多个TSD来实现。每个TSD都是独立的。没有主服务器，没有共享状态，因此您可以根据需要运行任意数量的TSD来处理您向其投入的任何负载。每个TSD使用CloudTable集群中的HBase来存储和检索时间序列数据。数据模式经过高度优化，可快速聚合相似的时间序列，从而最大限度地减少存储空间。TSD的用户不需要直接访问底层存储。您可以通过HTTP API与TSD进行通信。所有通信都发生在同一个端口上（TSD通过查看它收到的前几个字节来确定客户端的协议）。</p>
+<p><img src="http://opentsdb.net/img/tsdb-architecture.png" alt="tsdb-architecture"></p>
+<h2 id="1-2-基本概念"><a href="#1-2-基本概念" class="headerlink" title="1.2 基本概念"></a>1.2 基本概念</h2><ul>
+<li><p><strong>data point</strong>：时间序列数据点，包括metric、timestamp、value和tag。表示某个metric在某个时间点的数值。</p>
+</li>
+<li><p><strong>metric</strong>：指标项。例如，在系统监控中的CPU使用率、内存、IO等指标。</p>
+</li>
+<li><p><strong>timestamp</strong>：UNIX时间戳（自Epoch以来的秒或毫秒），即value产生的时间。</p>
+</li>
+<li><p><strong>value</strong>：某个metric的值，是JSON格式的事件或直方图/摘要。</p>
+</li>
+<li><p>tag：标签，是由Tagk和Tagv组成的键值对。用于描述该点所属的时间序列。</p>
+<p>标签允许您从不同的源或相关实体中分离出类似的数据点，因此您可以轻松地单独或成组地绘制它们。标签的一个常见用法是使用生成数据点的机器名称以及机器所属的集群或池的名称来注释数据点。这使您可以轻松地制作显示每个服务器的服务状态的仪表盘，以及显示跨逻辑服务器池的聚合状态的仪表盘。</p>
+</li>
+</ul>
+<h2 id="1-3-OpenTSDB系统表简介"><a href="#1-3-OpenTSDB系统表简介" class="headerlink" title="1.3 OpenTSDB系统表简介"></a>1.3 OpenTSDB系统表简介</h2><p>OpenTSDB是基于HBase存储时序列数据的，在集群中开启OpenTSDB后，系统会在集群中创建4张HBase表。OpenTSDB系统表如下表所示。</p>
+<blockquote>
+<p>请不要人为去修改这4张HBase表，因为这可能会导致OpenTSDB不可用。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>表名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OPENTSDB.DATA</td>
+<td>用于存储数据点，OpenTSDB的所有数据都存储在这个表中。OpenTSDB按照salt进行分区，默认20个region，暂不支持设置。</td>
+</tr>
+<tr>
+<td>OPENTSDB.UID</td>
+<td>用于存储UID映射，数据点中的每个metric，tag都会映射成UID，同时每个UID反向映射为metric，tag，这些映射关系存储在这个表中。</td>
+</tr>
+<tr>
+<td>OPENTSDB.TREE</td>
+<td>用于存储metric的结构信息，默认未开启该特性。</td>
+</tr>
+<tr>
+<td>OPENTSDB.META</td>
+<td>用于存储时间序列索引和元数据，默认未开启该特性。</td>
+</tr>
+</tbody></table>
+<h1 id="2-安装"><a href="#2-安装" class="headerlink" title="2 安装"></a>2 安装</h1><h2 id="2-1-运行时要求"><a href="#2-1-运行时要求" class="headerlink" title="2.1 运行时要求"></a>2.1 运行时要求</h2><p>要实际运行OpenTSDB，您需要满足以下条件：</p>
+<ul>
+<li>Linux系统</li>
+<li>Java运行时环境1.6或更高版本</li>
+<li>HBase 0.92 或更高版本</li>
+<li>GnuPlot 4.2 或更高版本</li>
+</ul>
+<h2 id="2-2-手动安装"><a href="#2-2-手动安装" class="headerlink" title="2.2 手动安装"></a>2.2 手动安装</h2><p>当然，如果为了尽快上手，你也可以<code>standalone</code>模式（该模式独立运行zookeeper，hbase数据保存在本地）安装 HBase。(所以如果需要好的性能，整套大数据集群是少不了的)</p>
+<p>opentsdb的安装方式有两种：源码编译安装和RPM包安装。</p>
+<h3 id="2-2-1-源码编译安装"><a href="#2-2-1-源码编译安装" class="headerlink" title="2.2.1 源码编译安装"></a>2.2.1 源码编译安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone git://github.com/OpenTSDB/opentsdb.git</span><br><span class="line">cd opentsdb</span><br><span class="line">./build.sh # 等同于 .configure &amp;&amp; make</span><br><span class="line">./build/tsdb # 等同于 make install</span><br></pre></td></tr></table></figure>
+
+<p>如果要卸载的话，执行 <code>make uninstall</code>。</p>
+<h3 id="2-2-2-RPM-包安装"><a href="#2-2-2-RPM-包安装" class="headerlink" title="2.2.2 RPM 包安装"></a>2.2.2 RPM 包安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 直接从 github 上下载 OpenTSDB 的 release 版本的 RPM 包。</span></span><br><span class="line">yum localinstall opentsdb-2.3.1.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<p>注： 安装时会提示下面两个问题 </p>
+<ul>
+<li><p>gnuplot-4.6.2-3.el7.x86_64: [Errno 256] No more mirrors to try. </p>
+</li>
+<li><p>gnuplot-common-4.6.2-3.el7.x86_64: [Errno 256] No more mirrors to try. </p>
+</li>
+</ul>
+<p>这个是应为CentOS中官方的yum源默认是国外的源，除非挂载VPN，否者不发找到镜像。<br>解决方法： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 先下载阿里源</span> </span><br><span class="line">wget http://mirrors.aliyun.com/repo/Centos-7.repo -O /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后更新源</span></span><br><span class="line">yum makecache </span><br></pre></td></tr></table></figure>
+
+<p>再重新安装OpenTSDB。</p>
+<h3 id="2-2-3-建表"><a href="#2-2-3-建表" class="headerlink" title="2.2.3 建表"></a>2.2.3 建表</h3><p>配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 <code>/usr/share/opentsdb/tools/create_table.sh</code>，设置 COMPRESSION=NONE，并且在文件开始处设置 HBase 所在目录。之后执行该脚本，在 HBase 中创建相应的表，命令如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># COMPRESSION 的值有：NONE, LZO, GZIP or SNAPPY，</span></span><br><span class="line"><span class="comment"># TSDB_TTL: 数据只保存一个月</span></span><br><span class="line">env COMPRESSION=snappy HBASE_HOME=/usr/<span class="built_in">local</span>/hbase TSDB_TTL=1296000 /usr/share/opentsdb/tools/create_table.sh</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lin443514407lin/article/details/80591867">opentsdb调优</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bigdataf/article/details/87350357">opentsdb加kerberos认证</a></p>
+<h3 id="2-2-4-启动"><a href="#2-2-4-启动" class="headerlink" title="2.2.4 启动"></a>2.2.4 启动</h3><p>启动 OpenTSDB，<code>service opentsdb start</code> 或者 <code>nohup tsdb tsd &amp;</code>。</p>
+<p>通过浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:4242/%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F%E3%80%82">http://localhost:4242/查看是否安装成功。</a></p>
+<h2 id="2-3-Docker-安装"><a href="#2-3-Docker-安装" class="headerlink" title="2.3 Docker 安装"></a>2.3 Docker 安装</h2><p>还有一种更快速便捷的方法，就是直接使用 docker 安装。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 4242:4242 --name opentsdb petergrace/opentsdb-docker</span><br></pre></td></tr></table></figure>
+
+<p>-d表示在后台运行，<br>-p绑定主机端口，<br>–name为容器命名为opentsdb</p>
+<p>下次可以直接使用：<br>docker start opentsdb启动<br>docker stop opentsdb停止<br>docker rm opentsdb删除</p>
+<h1 id="3-配置"><a href="#3-配置" class="headerlink" title="3 配置"></a>3 配置</h1><p>OpenTSDB所有的配置都在 <a target="_blank" rel="noopener" href="http://opentsdb.net/docs/build/html/user_guide/configuration.html#data-types">link</a>. 这里列出来的配置基本都有默认值，但是有些需要根据环境和性能做出改变，具体如下表：</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>描述</th>
+<th>修改值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tsd.core.preload_uid_cache</td>
+<td>false</td>
+<td>是否在TSD启动的时候，预热UID缓存数据，为了提升性能，需要开启</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.core.auto_create_metrics</td>
+<td>false</td>
+<td>一个新的metric存入tsdb时，是否自动为其生成UID，如果true,存入成功，反之，失败。(按照最大优化性能的目标来说，应该预先为所有的metric生成UID，但是实际中预先不知道所有的metric,所以这个值需要设置为true)</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.http.cachedir</td>
+<td>无</td>
+<td>tsd写临时文件的目录    根据实际环境设置，比如/tmp/opentsdb</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.http.request.enable_chunked</td>
+<td>false</td>
+<td>Http写入数据时是否支持一次写入大批量的数据</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.http.request.max_chunk</td>
+<td>4096</td>
+<td>写入的批量数据的上限    根据需要增大，比如65535</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.http.staticroot</td>
+<td>无</td>
+<td>opentsdb页面的静态资源文件目录    安装目录下 ./build/staticroot</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.network.port</td>
+<td>无</td>
+<td>tsd读写数据的端口 根据实际配置 比如9099</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.query.timeout</td>
+<td>0</td>
+<td>tsd查询的timeout,如果为0,则不会timeout    合理配置。 比如200</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.storage.enable_appends</td>
+<td>false</td>
+<td>2.2版本，tsd 写数据到HBase有两种方式，一种是每来一条数据append到hbase, 一种是先缓存大量数据到tsd内存，然后进行compaction，一些性写入。推荐Append方式</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.storage.enable_compaction</td>
+<td>true</td>
+<td>append打开，这种就关闭</td>
+<td>false</td>
+</tr>
+<tr>
+<td>tsd.storage.fix_duplicates</td>
+<td>false</td>
+<td>相同时间存储相同metric的时候(重复数据)，最新写入的覆盖前面的值</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.storage.hbase.zk_basedir</td>
+<td>/hbase</td>
+<td>hbase 的zk的目录</td>
+<td>根据实际配置</td>
+</tr>
+<tr>
+<td>tsd.storage.hbase.zk_quorum</td>
+<td>localhost</td>
+<td>hbase 的zk地址</td>
+<td>根据实际配置</td>
+</tr>
+</tbody></table>
+<h1 id="4-OpenTSDB-API简介"><a href="#4-OpenTSDB-API简介" class="headerlink" title="4 OpenTSDB API简介"></a>4 OpenTSDB API简介</h1><p>OpenTSDB提供了基于HTTP或HTTPS的应用程序接口。请求方式是通过向资源对应的路径发送标准的HTTP请求，请求包含GET、POST方法。它的接口与开源OpenTSDB保持一致，请参见<a target="_blank" rel="noopener" href="http://opentsdb.net/docs/build/html/api_http/index.html%E3%80%82">http://opentsdb.net/docs/build/html/api_http/index.html。</a></p>
+<h2 id="4-1-api-put"><a href="#4-1-api-put" class="headerlink" title="4.1 /api/put"></a>4.1 /api/put</h2><h2 id="4-2-api-query"><a href="#4-2-api-query" class="headerlink" title="4.2 /api/query"></a>4.2 /api/query</h2><h2 id="4-3-api-search"><a href="#4-3-api-search" class="headerlink" title="4.3 /api/search"></a>4.3 /api/search</h2><h1 id="5-开发-OpenTSDB-应用"><a href="#5-开发-OpenTSDB-应用" class="headerlink" title="5 开发 OpenTSDB 应用"></a>5 开发 OpenTSDB 应用</h1><h2 id="5-1-示例场景"><a href="#5-1-示例场景" class="headerlink" title="5.1 示例场景"></a>5.1 示例场景</h2>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E4%BA%92%E6%96%A5%E9%94%81ReentrantLock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E4%BA%92%E6%96%A5%E9%94%81ReentrantLock/" class="post-title-link" itemprop="url">Java多线程JUC锁之互斥锁ReentrantLock</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-25 10:11:22" itemprop="dateCreated datePublished" datetime="2021-03-25T10:11:22+08:00">2021-03-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-25 22:27:28" itemprop="dateModified" datetime="2021-04-25T22:27:28+08:00">2021-04-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载自 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3496101.html">https://www.cnblogs.com/skywang12345/p/3496101.html</a></p>
+</blockquote>
+<h1 id="ReentrantLock介绍"><a href="#ReentrantLock介绍" class="headerlink" title="ReentrantLock介绍"></a>ReentrantLock介绍</h1><p>ReentrantLock是一个可重入的互斥锁，又被称为“独占锁”。</p>
+<p>顾名思义，ReentrantLock锁在同一个时间点只能被一个线程锁持有；而可重入的意思是，ReentrantLock锁，可以被单个线程多次获取。<br>ReentrantLock分为“<strong>公平锁</strong>”和“<strong>非公平锁</strong>”。它们的区别体现在获取锁的机制上是否公平。“锁”是为了保护竞争资源，防止多个线程同时操作线程而出错，ReentrantLock在同一个时间点只能被一个线程获取(当某线程获取到“锁”时，其它线程就必须等待)；ReentraantLock是通过一个FIFO的等待队列来管理获取该锁所有线程的。在“公平锁”的机制下，线程依次排队获取锁；而“非公平锁”在锁是可获取状态时，不管自己是不是在队列的开头都会获取锁。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E4%BA%92%E6%96%A5%E9%94%81ReentrantLock/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/24/Spring-Integration-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/24/Spring-Integration-1/" class="post-title-link" itemprop="url">Spring Integration(1)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-24 16:57:18" itemprop="dateCreated datePublished" datetime="2021-03-24T16:57:18+08:00">2021-03-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 22:19:43" itemprop="dateModified" datetime="2021-03-25T22:19:43+08:00">2021-03-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><em>Spring Integration 对 Spring 编程模型进行了扩展，使得后者能够支持著名的“<a target="_blank" rel="noopener" href="https://www.oschina.net/action/GoToLink?url=http://www.eaipatterns.com/">企业集成模式</a>”。通过SI（Spring Integration）可以在基于Spring的应用中引入轻量级的“消息驱动模式”，并且支持“通过声明式的适配器”与外部系统进行集成。这些“适配器”相较于Spring对于“remoting（远程调用）”、“messaging（事件消息）”、“scheduling（任务调度）”方面的支持，提供了更高层次的一种抽象。SI的首要目标是：为“构建企业集成方案、维护系统间通信”提供一种<strong>简单模型</strong>，应用该模型所产出的代码是<strong>可维护、可测试的</strong>。</em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/24/Spring-Integration-1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/" class="post-title-link" itemprop="url">Spring Boot 中如何统一 API 接口响应格式？</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-22 19:30:14" itemprop="dateCreated datePublished" datetime="2021-03-22T19:30:14+08:00">2021-03-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:59:09" itemprop="dateModified" datetime="2021-03-25T21:59:09+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载自<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/8aMz07rOF5LuclnBaI_p5g">https://mp.weixin.qq.com/s/8aMz07rOF5LuclnBaI_p5g</a></p>
+</blockquote>
+<hr>
+<p>今天又要给大家介绍一个 Spring Boot 中的组件–HandlerMethodReturnValueHandler。</p>
+<p>在前面的文章中（<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI1NDY0MTkzNQ==&mid=2247492446&idx=1&sn=d75472fed90752c609a918aefd2796d4&scene=21#wechat_redirect">如何优雅的实现 Spring Boot 接口参数加密解密？</a>），松哥已经和大家介绍过如何对请求/响应数据进行预处理/二次处理，当时我们使用了 ResponseBodyAdvice 和 RequestBodyAdvice。其中 ResponseBodyAdvice 可以实现对响应数据的二次处理，可以在这里对响应数据进行加密/包装等等操作。不过这不是唯一的方案，今天松哥要和大家介绍一种更加灵活的方案–HandlerMethodReturnValueHandler，我们一起来看看下。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -719,496 +1315,6 @@
 
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h1><p>贴一张 生产环境执行后的index的截图，可以看到新的index的每个shard体积只有老index的一半，这样也就分摊了index的压力：</p>
 <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/774.jpg" alt="https://www.xiaohuait.com/wp-content/uploads/2020/09/774.jpg"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/02/18/ES%E9%9B%86%E7%BE%A4%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B9%8B%E9%9B%86%E7%BE%A4%E3%80%81%E5%88%86%E7%89%87%E3%80%81%E5%89%AF%E6%9C%AC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/18/ES%E9%9B%86%E7%BE%A4%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E4%B9%8B%E9%9B%86%E7%BE%A4%E3%80%81%E5%88%86%E7%89%87%E3%80%81%E5%89%AF%E6%9C%AC/" class="post-title-link" itemprop="url">ES集群核心概念之集群、分片、副本</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-02-18 21:31:27" itemprop="dateCreated datePublished" datetime="2021-02-18T21:31:27+08:00">2021-02-18</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="ES集群核心概念"><a href="#ES集群核心概念" class="headerlink" title="ES集群核心概念"></a><strong>ES集群核心概念</strong></h1><h3 id="1）Cluster：集群"><a href="#1）Cluster：集群" class="headerlink" title="1）Cluster：集群"></a><strong>1）Cluster：集群</strong></h3><p>ES可以作为一个独立的单个搜索服务器。不过，为了处理大型数据集，实现容错和高可用性，ES可以运行在许多互相合作的服务器上。这些服务器的集合称为集群，集群内的节点的<code>cluster.name</code>相同。</p>
-<h3 id="2）Node：节点"><a href="#2）Node：节点" class="headerlink" title="2）Node：节点"></a><strong>2）Node：节点</strong></h3><p>形成集群的每个服务器称为节点。</p>
-<p>ES 为分配不同的任务，定义了以下几个节点角色：<code>Master</code>,<code>Data Node</code>,<code>Coordinating Node</code>,<code>Ingest Node</code></p>
-<ul>
-<li><p><strong>Master 节点</strong>：每个 ES 节点启动之前都会有个默认配置 <code>node.master:true</code> ,也就是说每个节点都有可能成为 Master 节点，这些节点被称作 <code>Master-eligible nodes</code> ，就是合格的有资格成为 Master 节点的节点。当然 <strong>Master 只能有一个</strong>，所以会通过选举的方法对这启动的节点选举，被选中的节点才会成为 Master 节点。 Master 节点主要是负责维护集群的状态，像所有节点的信息，所有的索引和它相关的 Mapping 关系，配置信息，分片的路由等。既然 Master 节点维护了这么重要的信息，玩意它挂了怎么办？挂了的话，将会对其他的有资格成为 Master 节点的节点重新选举出另一个 Master 节点，因此这就说明了其他 Master-eligible nodes 也会保存集群信息，但是只有 Master 节点有权限能够修改，试想如果其他节点也能修改的话，这将会导致数据不一致的问题。</p>
-</li>
-<li><p><strong>Data Node 节点</strong>：数据节点，这个节点主要负责数据的存储，在数据扩展上起到了至关重要的作用。也就是说读写数据都会找到相应的 Data Node 节点。</p>
-</li>
-<li><p><strong>Coordinating Node 节点</strong>：协调节点主要负责协调客户端的请求，将接收到的请求分发给合适的节点，并把结果汇集到一起。比如客户端请求查询某个索引的数据，协调节点将会把请求分发给保存相关的数据的 DataNode 节点，找到相应的分片，并把查询到的结果都汇集返回。并且每个节点都默认起到了 Coordinating Node 的职责。</p>
-</li>
-<li><p><strong>Ingest Node节点</strong>: Ingest node 专门对索引的文档做预处理,发生在对真实文档建立索引之前。在建立索引对文档预处理之前，先定义一个管道（pipeline），管道里指定了一系列的处理器。每个处理器能够把文档按照某种特定的方式转换。比如在管道里定义一个从某个文档中移除字段的处理器，紧接着一个重命名字段的处理器。集群的状态也会被存储到配置的管道内。定义一个管道，简单的在索引或者bulk request(一种批量请求方法)操作上定义 pipeline 参数,这样 ingest node 就会知道哪个管道在使用。这个节点在使用过程中用的也不多，所以大概了解一下就行。</p>
-</li>
-<li><p>文档读写原理</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png"></p>
-</li>
-</ul>
-<p><strong>说明：</strong></p>
-<ul>
-<li><strong>一个节点可以充当一个或多个角色，默认三个角色都有。</strong></li>
-<li><strong>协调节点：一个节点只作为接收请求、转发请求到其他节点、汇总各个节点返回数据等功能的节点。就叫协调节点。</strong></li>
-</ul>
-<h3 id="3）Index：索引"><a href="#3）Index：索引" class="headerlink" title="3）Index：索引"></a><strong>3）Index：索引</strong></h3><p>在 ES 中, 索引是一组文档的集合。索引的作用相当于图书的目录，可以根据目录中的页码快速找到所需的内容。当表中有大量记录时，若要对表进行查询，第一种搜索信息方式是全表搜索，是将所有记录一一取出，和查询条件进行一一对比，然后返回满足条件的记录，这样做会消耗大量数据库系统时间，并造成大量磁盘I/O操作；第二种就是在表中建立索引，然后在索引中找到符合查询条件的索引值，最后通过保存在索引中的ROWID（相当于页码）快速找到表中对应的记录。</p>
-<h3 id="4）Shard：分片"><a href="#4）Shard：分片" class="headerlink" title="4）Shard：分片"></a><strong>4）Shard：分片</strong></h3><p>当有大量的文档时，由于内存的限制、磁盘处理能力不足、无法足够快的响应客户端的请求等，一个节点可能不够。</p>
-<p>这种情况下，数据可以分为较小的分片。每个分片放到不同的服务器上。当你查询的索引分布在多个分片上时，ES会把查询发送给每个相关的分片，并将结果组合在一起，而应用程序并不知道分片的存在。即：这个过程对用户来说是透明的。</p>
-<p><strong>说明：</strong></p>
-<ul>
-<li><strong>创建索引的时候就确定好主分片的数量，除非重索引。</strong></li>
-<li><strong>分片对应的存储实体是索引。</strong></li>
-<li><strong>一个分片就是一个 Lucene 实例</strong></li>
-</ul>
-<h3 id="5）路由"><a href="#5）路由" class="headerlink" title="5）路由"></a><strong>5）路由</strong></h3><p>Elasticsearch 如何知道一个文档应该存放到哪个分片中呢？当我们创建文档时，它如何决定这个文档应当被存储在分片 1 还是分片 2 中呢？首先这肯定不会是随机的，否则将来要获取文档的时候我们就不知道从何处寻找了。实际上，这个过程是根据下面这个公式决定的：<code>shard = hash(routing) % number_of_primary_shards</code>， <code>routing</code> 是一个可变值，唯一不可重复，默认是<code>文档的 _id</code> ，也可以设置成一个自定义的值。 <code>routing</code> 通过 <code>hash 函数</code>生成一个数字，然后这个数字再除以 <code>number_of_primary_shards</code> （主分片的数量）后得到余数 。这个分布在 0 到 number_of_primary_shards-1 之间的余数，就是我们所寻求的文档所在分片的位置。这就解释了为什么我们要在创建索引的时候就确定好主分片的数量 并且永远不会改变这个数量：因为如果数量变化了，那么所有之前路由的值都会无效，文档也再也找不到了。所有的文档 API( get 、 index 、 delete 、 bulk 、 update 以及 mget )都接受一个叫做 routing 的路由参数 ，通过这个参数我们可以自定义文档到分片的映射。一个自定义的路由参数可以用来确保所有相关的文档——例如所有属于同一个用户的文档——都被存储到同一个分片中。</p>
-<h3 id="6）Replia：副本"><a href="#6）Replia：副本" class="headerlink" title="6）Replia：副本"></a><strong>6）Replia：副本</strong></h3><p>在创建某个索引之前，需要指定分配这个索引多少个分片？多少个副本？副本就这这个分片的备胎，当分片挂掉了，它的副本就会随时准备上位，因此副本也是个分片只不过不负责主要功能。</p>
-<p>不仅仅如此，ES 如何能够提高数据吞吐量呢？增加副本个数就是个不错的选择，比如说读写分离，读数据的时候从副本上读，写数据的时候只用主分片去写。需要注意的是，主分片的个数实在建立索引之前要确定，建立完索引之后，是不能够进行修改的，除非重新建索引。因此在建索引之前，一定要合理的配置分片个数，副本个数的话后期是可以改动的。</p>
-<p>为提高查询吞吐量或实现高可用性，可以使用分片副本。副本是一个分片的精确复制，每个分片可以有零个或多个副本。ES中可以有许多相同的分片，其中之一被选择更改索引操作，这种特殊的分片称为主分片。当主分片丢失时，如：该分片所在的数据不可用时，集群将副本提升为新的主分片。Elasticsearch 禁止同一个分片的主分片和副本分片在同一个节点上，所以如果是一个节点的集群是不能有副本的。</p>
-<p>它在节点失败的情况下提供高可用性。由于这个原因，需要注意的是，副本分片永远不会分配到与主分片相同的节点上。</p>
-<p><strong>如何设置副本</strong></p>
-<p>启动 2 个 ES 节点，配置分片个数为 3，副本个数为 1（每个分片有一个副本）。如下图，蓝色的代表主分片，绿色的是副本，仔细一点不难发现，分片与其副本不在同一个节点内。这是非常合理的，因为副本本来就是主分片的备胎，当主分片节点挂了，另外一个节点的副本将会充当主分片，如果它们在同一个节点内，副本将发挥不到作用。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png"></p>
-<p><strong>水平扩展原理</strong></p>
-<p>单个节点的容量是有限的，如果后期两个节点的容量不能够支持三个分片，那么另外启动一个节点就可以了，ES 会自动的重新规划分片，如下图：可以看到 A3 节点已经被自动的分配到 Node3 节点里面了，另外副本 B1 从 Node2 移动到 Node3 节点，B3 分片从 Node1 节点被分配到 Node2 节点。这里想一下，如果再启动一个节点呢？是的，再启动一个节点将不会对主分片起到任何作用，因为主分片不可以修改，只有三个，但是副本可以修改，能够起到扩容的作用。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/02/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8BAtomicReference/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/03/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8BAtomicReference/" class="post-title-link" itemprop="url">Java多线程JUC原子类之AtomicReference</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-02-03 13:42:09" itemprop="dateCreated datePublished" datetime="2021-02-03T13:42:09+08:00">2021-02-03</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3514623.html">https://www.cnblogs.com/skywang12345/p/3514623.html</a></p>
-</blockquote>
-<h1 id="AtomicReference介绍和函数列表"><a href="#AtomicReference介绍和函数列表" class="headerlink" title="AtomicReference介绍和函数列表"></a>AtomicReference介绍和函数列表</h1><p>AtomicReference是作用是对”对象”进行原子操作。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 null 初始值创建新的 AtomicReference。</span></span><br><span class="line">AtomicReference()</span><br><span class="line"><span class="comment">// 使用给定的初始值创建新的 AtomicReference。</span></span><br><span class="line">AtomicReference(V initialValue)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(V expect, V update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值。</span></span></span><br><span class="line"><span class="function">V <span class="title">get</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式设置为给定值，并返回旧值。</span></span></span><br><span class="line"><span class="function">V <span class="title">getAndSet</span><span class="params">(V newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 最终设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(V newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(V newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回当前值的字符串表示形式。</span></span></span><br><span class="line"><span class="function">String <span class="title">toString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(V expect, V update)</span></span></span><br></pre></td></tr></table></figure>
-
-<h1 id="源码（JDK1-8-0-202）"><a href="#源码（JDK1-8-0-202）" class="headerlink" title="源码（JDK1.8.0_202）"></a>源码（JDK1.8.0_202）</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * An object reference that may be updated atomically. See the &#123;<span class="doctag">@link</span></span></span><br><span class="line"><span class="comment"> * java.util.concurrent.atomic&#125; package specification for description</span></span><br><span class="line"><span class="comment"> * of the properties of atomic variables.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.5</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Doug Lea</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> &lt;V&gt; The type of object referred to by this reference</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicReference</span>&lt;<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">1848883965231344442L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取Unsafe对象，Unsafe的作用是提供CAS操作</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> valueOffset;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            valueOffset = unsafe.objectFieldOffset</span><br><span class="line">                (AtomicReference.class.getDeclaredField(<span class="string">&quot;value&quot;</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123; <span class="keyword">throw</span> <span class="keyword">new</span> Error(ex); &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// volatile类型</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> V value;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new AtomicReference with the given initial value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> initialValue the initial value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AtomicReference</span><span class="params">(V initialValue)</span> </span>&#123;</span><br><span class="line">        value = initialValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Creates a new AtomicReference with null initial value.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">AtomicReference</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Gets the current value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the current value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Sets to the given value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newValue the new value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">        value = newValue;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Eventually sets to the given value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newValue the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.6</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">        unsafe.putOrderedObject(<span class="keyword">this</span>, valueOffset, newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically sets the value to the given updated value</span></span><br><span class="line"><span class="comment">     * if the current value &#123;<span class="doctag">@code</span> ==&#125; the expected value.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expect the expected value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> update the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if successful. False return indicates that</span></span><br><span class="line"><span class="comment">     * the actual value was not equal to the expected value.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(V expect, V update)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.compareAndSwapObject(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically sets the value to the given updated value</span></span><br><span class="line"><span class="comment">     * if the current value &#123;<span class="doctag">@code</span> ==&#125; the expected value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;&lt;a href=&quot;package-summary.html#weakCompareAndSet&quot;&gt;May fail</span></span><br><span class="line"><span class="comment">     * spuriously and does not provide ordering guarantees&lt;/a&gt;, so is</span></span><br><span class="line"><span class="comment">     * only rarely an appropriate alternative to &#123;<span class="doctag">@code</span> compareAndSet&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expect the expected value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> update the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> &#123;<span class="doctag">@code</span> true&#125; if successful</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(V expect, V update)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.compareAndSwapObject(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically sets to the given value and returns the old value.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newValue the new value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getAndSet</span><span class="params">(V newValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (V)unsafe.getAndSetObject(<span class="keyword">this</span>, valueOffset, newValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function, returning the previous value. The</span></span><br><span class="line"><span class="comment">     * function should be side-effect-free, since it may be re-applied</span></span><br><span class="line"><span class="comment">     * when attempted updates fail due to contention among threads.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> updateFunction a side-effect-free function</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getAndUpdate</span><span class="params">(UnaryOperator&lt;V&gt; updateFunction)</span> </span>&#123;</span><br><span class="line">        V prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = updateFunction.apply(prev);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> prev;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function, returning the updated value. The</span></span><br><span class="line"><span class="comment">     * function should be side-effect-free, since it may be re-applied</span></span><br><span class="line"><span class="comment">     * when attempted updates fail due to contention among threads.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> updateFunction a side-effect-free function</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">updateAndGet</span><span class="params">(UnaryOperator&lt;V&gt; updateFunction)</span> </span>&#123;</span><br><span class="line">        V prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = updateFunction.apply(prev);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function to the current and given values,</span></span><br><span class="line"><span class="comment">     * returning the previous value. The function should be</span></span><br><span class="line"><span class="comment">     * side-effect-free, since it may be re-applied when attempted</span></span><br><span class="line"><span class="comment">     * updates fail due to contention among threads.  The function</span></span><br><span class="line"><span class="comment">     * is applied with the current value as its first argument,</span></span><br><span class="line"><span class="comment">     * and the given update as the second argument.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> x the update value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> accumulatorFunction a side-effect-free function of two arguments</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the previous value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">getAndAccumulate</span><span class="params">(V x,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    BinaryOperator&lt;V&gt; accumulatorFunction)</span> </span>&#123;</span><br><span class="line">        V prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = accumulatorFunction.apply(prev, x);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> prev;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Atomically updates the current value with the results of</span></span><br><span class="line"><span class="comment">     * applying the given function to the current and given values,</span></span><br><span class="line"><span class="comment">     * returning the updated value. The function should be</span></span><br><span class="line"><span class="comment">     * side-effect-free, since it may be re-applied when attempted</span></span><br><span class="line"><span class="comment">     * updates fail due to contention among threads.  The function</span></span><br><span class="line"><span class="comment">     * is applied with the current value as its first argument,</span></span><br><span class="line"><span class="comment">     * and the given update as the second argument.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> x the update value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> accumulatorFunction a side-effect-free function of two arguments</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the updated value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@since</span> 1.8</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">accumulateAndGet</span><span class="params">(V x,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    BinaryOperator&lt;V&gt; accumulatorFunction)</span> </span>&#123;</span><br><span class="line">        V prev, next;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            prev = get();</span><br><span class="line">            next = accumulatorFunction.apply(prev, x);</span><br><span class="line">        &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">        <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the String representation of the current value.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the String representation of the current value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(get());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>说明</strong>：AtomicReference的源码比较简单。它是通过”volatile”和”Unsafe提供的CAS函数实现”原子操作。(01) value是volatile类型。这保证了：当某线程修改value的值时，其他线程看到的value值都是最新的value值，即修改之后的volatile的值。(02) 通过CAS设置value。这保证了：当某线程池通过CAS函数(如compareAndSet函数)设置value时，它的操作是原子的，即线程在操作value时不会被中断。</p>
-<h1 id="AtomicReference示例"><a href="#AtomicReference示例" class="headerlink" title="AtomicReference示例"></a>AtomicReference示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AtomicReferenceTest.java的源码</span></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicReferenceTest</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建两个Person对象，它们的id分别是101和102。</span></span><br><span class="line">        Person p1 = <span class="keyword">new</span> Person(<span class="number">101</span>);</span><br><span class="line">        Person p2 = <span class="keyword">new</span> Person(<span class="number">102</span>);</span><br><span class="line">        <span class="comment">// 新建AtomicReference对象，初始化它的值为p1对象</span></span><br><span class="line">        AtomicReference ar = <span class="keyword">new</span> AtomicReference(p1);</span><br><span class="line">        <span class="comment">// 通过CAS设置ar。如果ar的值为p1的话，则将其设置为p2。</span></span><br><span class="line">        ar.compareAndSet(p1, p2);</span><br><span class="line"></span><br><span class="line">        Person p3 = (Person)ar.get();</span><br><span class="line">        System.out.println(<span class="string">&quot;p3 is &quot;</span>+p3);</span><br><span class="line">        System.out.println(<span class="string">&quot;p3.equals(p1)=&quot;</span>+p3.equals(p1));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">long</span> id;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(<span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;id:&quot;</span>+id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>运行结果</strong>：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">p3 is id:<span class="number">102</span></span><br><span class="line">p3.equals(p1)=<span class="keyword">false</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>结果说明</strong>：新建AtomicReference对象ar时，将它初始化为p1。紧接着，通过CAS函数对它进行设置。如果ar的值为p1的话，则将其设置为p2。最后，获取ar对应的对象，并打印结果。p3.equals(p1)的结果为false，这是因为Person并没有覆盖equals()方法，而是采用继承自Object.java的equals()方法；而Object.java中的equals()实际上是调用”==”去比较两个对象，即比较两个对象的地址是否相等。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/02/02/Kafka/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/02/Kafka/" class="post-title-link" itemprop="url">Kafka核心概念</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-02-02 23:24:14" itemprop="dateCreated datePublished" datetime="2021-02-02T23:24:14+08:00">2021-02-02</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-27 21:40:07" itemprop="dateModified" datetime="2021-04-27T21:40:07+08:00">2021-04-27</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="1-Kafka-核心概念详解"><a href="#1-Kafka-核心概念详解" class="headerlink" title="1 Kafka 核心概念详解"></a>1 Kafka 核心概念详解</h1><h2 id="1-1-Kafka-MQ-的应用场景"><a href="#1-1-Kafka-MQ-的应用场景" class="headerlink" title="1.1 Kafka(MQ) 的应用场景"></a>1.1 Kafka(MQ) 的应用场景</h2><h3 id="1-1-1-Kafka-MQ-之异步化、服务解耦、削峰填谷"><a href="#1-1-1-Kafka-MQ-之异步化、服务解耦、削峰填谷" class="headerlink" title="1.1.1 Kafka(MQ)之异步化、服务解耦、削峰填谷"></a>1.1.1 Kafka(MQ)之异步化、服务解耦、削峰填谷</h3><ul>
-<li><p>异步化</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_1.png" alt="kafka_1_1"></p>
-</li>
-<li><p>服务解耦、削峰填谷</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_2.png" alt="kafka_1_2"></p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/02/02/Kafka/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/27/RabbitMQ%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E5%B0%81%E8%A3%85-24/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/27/RabbitMQ%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E5%B0%81%E8%A3%85-24/" class="post-title-link" itemprop="url">RabbitMQ基础组件封装(24)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-27 22:02:43" itemprop="dateCreated datePublished" datetime="2021-01-27T22:02:43+08:00">2021-01-27</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="1-整体功能概述"><a href="#1-整体功能概述" class="headerlink" title="1. 整体功能概述"></a>1. 整体功能概述</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_24_1.png" alt="rabbitmq_24_1"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_24_2.png" alt="rabbitmq_24_2"></p>
-<h1 id="2-基础组件模块划分"><a href="#2-基础组件模块划分" class="headerlink" title="2. 基础组件模块划分"></a>2. 基础组件模块划分</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rabbit-parent</span><br><span class="line">- rabbit-api           对外提供统一的API接口</span><br><span class="line">- rabbit-commmon       公共包</span><br><span class="line">- rabbit-core-producer 核心包</span><br><span class="line">- rabbit-task          es-job</span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://github.com/littlefxc/foodie.git">Github 地址</a></p>
-<h1 id="3-可靠性消息投递"><a href="#3-可靠性消息投递" class="headerlink" title="3. 可靠性消息投递"></a>3. 可靠性消息投递</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_19_13.png" alt="rabbitmq_19_13"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_24_4.png" alt="rabbitmq_24_4"></p>
-<h1 id="4-思维导图"><a href="#4-思维导图" class="headerlink" title="4. 思维导图"></a>4. 思维导图</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_xmind.png" alt="rabbitmq_xmind.png"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/27/rabbitmq%E6%95%B4%E5%90%88springboot2-x23/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/27/rabbitmq%E6%95%B4%E5%90%88springboot2-x23/" class="post-title-link" itemprop="url">rabbitmq整合springboot2.x(23)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-27 20:18:21" itemprop="dateCreated datePublished" datetime="2021-01-27T20:18:21+08:00">2021-01-27</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_3.png" alt="rabbitmq_23_3"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_4.png" alt="rabbitmq_23_4"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_5.png" alt="rabbitmq_23_5"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_6.png" alt="rabbitmq_23_6"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_8.png" alt="rabbitmq_23_8"></p>
-<h2 id="生产者关键代码"><a href="#生产者关键代码" class="headerlink" title="生产者关键代码"></a>生产者关键代码</h2><h3 id="application-properties"><a href="#application-properties" class="headerlink" title="application.properties"></a>application.properties</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">server.servlet.context-path=/</span><br><span class="line">server.port=<span class="number">8001</span></span><br><span class="line"></span><br><span class="line">spring.rabbitmq.addresses=<span class="number">192.168</span><span class="number">.11</span><span class="number">.71</span>:<span class="number">5672</span>,<span class="number">192.168</span><span class="number">.11</span><span class="number">.72</span>:<span class="number">5672</span>,<span class="number">192.168</span><span class="number">.11</span><span class="number">.71</span>:<span class="number">5673</span></span><br><span class="line">spring.rabbitmq.username=guest</span><br><span class="line">spring.rabbitmq.password=guest</span><br><span class="line">spring.rabbitmq.virtual-host=/</span><br><span class="line">spring.rabbitmq.connection-timeout=<span class="number">15000</span></span><br><span class="line"></span><br><span class="line">##	使用启用消息确认模式</span><br><span class="line">spring.rabbitmq.publisher-confirms=<span class="keyword">true</span></span><br><span class="line"></span><br><span class="line">## 	设置return消息模式，注意要和mandatory一起去配合使用</span><br><span class="line">##spring.rabbitmq.publisher-returns=true</span><br><span class="line">##spring.rabbitmq.template.mandatory=true</span><br><span class="line"></span><br><span class="line">spring.application.name=rabbit-producer</span><br><span class="line">spring.http.encoding.charset=UTF-<span class="number">8</span></span><br><span class="line">spring.jackson.date-format=yyyy-MM-dd HH:mm:ss</span><br><span class="line">spring.jackson.time-zone=GMT+<span class="number">8</span></span><br><span class="line">spring.jackson.<span class="keyword">default</span>-property-inclusion=NON_NULL</span><br></pre></td></tr></table></figure>
-
-<h3 id="RabbitSender"><a href="#RabbitSender" class="headerlink" title="RabbitSender"></a>RabbitSender</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.AmqpException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.core.MessagePostProcessor;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.rabbit.connection.CorrelationData;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.rabbit.core.RabbitTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.amqp.rabbit.core.RabbitTemplate.ConfirmCallback;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.messaging.Message;</span><br><span class="line"><span class="keyword">import</span> org.springframework.messaging.MessageHeaders;</span><br><span class="line"><span class="keyword">import</span> org.springframework.messaging.support.MessageBuilder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitSender</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> RabbitTemplate rabbitTemplate;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 	这里就是确认消息的回调监听接口，用于确认消息是否被broker所收到</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">final</span> ConfirmCallback confirmCallback = <span class="keyword">new</span> RabbitTemplate.ConfirmCallback() &#123;</span><br><span class="line">		<span class="comment">/**</span></span><br><span class="line"><span class="comment">		 * 	<span class="doctag">@param</span> CorrelationData 作为一个唯一的标识</span></span><br><span class="line"><span class="comment">		 * 	<span class="doctag">@param</span> ack broker 是否落盘成功 </span></span><br><span class="line"><span class="comment">		 * 	<span class="doctag">@param</span> cause 失败的一些异常信息</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">confirm</span><span class="params">(CorrelationData correlationData, <span class="keyword">boolean</span> ack, String cause)</span> </span>&#123;</span><br><span class="line">			System.err.println(<span class="string">&quot;消息ACK结果:&quot;</span> + ack + <span class="string">&quot;, correlationData: &quot;</span> + correlationData.getId());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 	对外发送消息的方法</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> message 	具体的消息内容</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> properties	额外的附加属性</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">send</span><span class="params">(Object message, Map&lt;String, Object&gt; properties)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		MessageHeaders mhs = <span class="keyword">new</span> MessageHeaders(properties);</span><br><span class="line">		Message&lt;?&gt; msg = MessageBuilder.createMessage(message, mhs);</span><br><span class="line">		</span><br><span class="line">		rabbitTemplate.setConfirmCallback(confirmCallback);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 	指定业务唯一的iD</span></span><br><span class="line">		CorrelationData correlationData = <span class="keyword">new</span> CorrelationData(UUID.randomUUID().toString());</span><br><span class="line">		</span><br><span class="line">		MessagePostProcessor mpp = <span class="keyword">new</span> MessagePostProcessor() &#123;</span><br><span class="line">			</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="keyword">public</span> org.springframework.amqp.core.<span class="function">Message <span class="title">postProcessMessage</span><span class="params">(org.springframework.amqp.core.Message message)</span></span></span><br><span class="line"><span class="function">					<span class="keyword">throws</span> AmqpException </span>&#123;</span><br><span class="line">				System.err.println(<span class="string">&quot;---&gt; post to do: &quot;</span> + message);</span><br><span class="line">				<span class="keyword">return</span> message;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">		</span><br><span class="line">		rabbitTemplate.convertAndSend(<span class="string">&quot;exchange-1&quot;</span>,</span><br><span class="line">				<span class="string">&quot;springboot.rabbit&quot;</span>, </span><br><span class="line">				msg, mpp, correlationData);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="消费者关键代码"><a href="#消费者关键代码" class="headerlink" title="消费者关键代码"></a>消费者关键代码</h2><h3 id="application-properties-1"><a href="#application-properties-1" class="headerlink" title="application.properties"></a>application.properties</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">server.servlet.context-path=/</span><br><span class="line">server.port=<span class="number">8002</span></span><br><span class="line"></span><br><span class="line">spring.rabbitmq.addresses=<span class="number">192.168</span><span class="number">.11</span><span class="number">.71</span>:<span class="number">5672</span>,<span class="number">192.168</span><span class="number">.11</span><span class="number">.72</span>:<span class="number">5672</span>,<span class="number">192.168</span><span class="number">.11</span><span class="number">.71</span>:<span class="number">5673</span></span><br><span class="line">spring.rabbitmq.username=guest</span><br><span class="line">spring.rabbitmq.password=guest</span><br><span class="line">spring.rabbitmq.virtual-host=/</span><br><span class="line">spring.rabbitmq.connection-timeout=<span class="number">15000</span></span><br><span class="line"></span><br><span class="line">## 	表示消费者消费成功消息以后需要手工的进行签收(ack)，默认为auto</span><br><span class="line">spring.rabbitmq.listener.simple.acknowledge-mode=manual</span><br><span class="line">spring.rabbitmq.listener.simple.concurrency=<span class="number">5</span></span><br><span class="line">spring.rabbitmq.listener.simple.max-concurrency=<span class="number">10</span></span><br><span class="line">spring.rabbitmq.listener.simple.prefetch=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">##	作业：</span><br><span class="line">##	最好不要在代码里写死配置信息，尽量使用这种方式也就是配置文件的方式</span><br><span class="line">##	在代码里使用 	$&#123;&#125;	方式进行设置配置: $&#123;spring.rabbitmq.listener.order.exchange.name&#125;</span><br><span class="line">spring.rabbitmq.listener.order.exchange.name=order-exchange</span><br><span class="line">spring.rabbitmq.listener.order.exchange.durable=<span class="keyword">true</span></span><br><span class="line">spring.rabbitmq.listener.order.exchange.type=topic</span><br><span class="line">spring.rabbitmq.listener.order.exchange.key=order.*</span><br><span class="line"></span><br><span class="line">spring.application.name=rabbit-producer</span><br><span class="line">spring.http.encoding.charset=UTF-<span class="number">8</span></span><br><span class="line">spring.jackson.date-format=yyyy-MM-dd HH:mm:ss</span><br><span class="line">spring.jackson.time-zone=GMT+<span class="number">8</span></span><br><span class="line">spring.jackson.<span class="keyword">default</span>-property-inclusion=NON_NULL</span><br></pre></td></tr></table></figure>
-
-<h3 id="RabbitReceive"><a href="#RabbitReceive" class="headerlink" title="RabbitReceive"></a>RabbitReceive</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RabbitReceive</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 	组合使用监听</span></span><br><span class="line"><span class="comment">	 * 	<span class="doctag">@RabbitListener</span> <span class="doctag">@QueueBinding</span> <span class="doctag">@Queue</span> <span class="doctag">@Exchange</span></span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> message</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> channel</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="meta">@RabbitListener(bindings = @QueueBinding(</span></span><br><span class="line"><span class="meta">					value = @Queue(value = &quot;queue-1&quot;, durable = &quot;true&quot;),</span></span><br><span class="line"><span class="meta">					exchange = @Exchange(name = &quot;exchange-1&quot;,</span></span><br><span class="line"><span class="meta">					durable = &quot;true&quot;,</span></span><br><span class="line"><span class="meta">					type = &quot;topic&quot;,</span></span><br><span class="line"><span class="meta">					ignoreDeclarationExceptions = &quot;true&quot;),</span></span><br><span class="line"><span class="meta">					key = &quot;springboot.*&quot;</span></span><br><span class="line"><span class="meta">				)</span></span><br><span class="line"><span class="meta">			)</span></span><br><span class="line">	<span class="meta">@RabbitHandler</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMessage</span><span class="params">(Message message, Channel channel)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">//	1. 收到消息以后进行业务端消费处理</span></span><br><span class="line">		System.err.println(<span class="string">&quot;-----------------------&quot;</span>);</span><br><span class="line">		System.err.println(<span class="string">&quot;消费消息:&quot;</span> + message.getPayload());</span><br><span class="line"></span><br><span class="line">		<span class="comment">//  2. 处理成功之后 获取deliveryTag 并进行手工的ACK操作, 因为我们配置文件里配置的是 手工签收</span></span><br><span class="line">		<span class="comment">//	spring.rabbitmq.listener.simple.acknowledge-mode=manual</span></span><br><span class="line">		Long deliveryTag = (Long)message.getHeaders().get(AmqpHeaders.DELIVERY_TAG);</span><br><span class="line">		channel.basicAck(deliveryTag, <span class="keyword">false</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 
       
     </div>

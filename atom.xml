@@ -6,7 +6,7 @@
   <link href="http://littlefxc.github.io/atom.xml" rel="self"/>
   
   <link href="http://littlefxc.github.io/"/>
-  <updated>2021-05-11T08:13:49.576Z</updated>
+  <updated>2021-05-20T13:11:58.000Z</updated>
   <id>http://littlefxc.github.io/</id>
   
   <author>
@@ -17,15 +17,165 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>读写分离、分库分表</title>
+    <link href="http://littlefxc.github.io/2021/05/20/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E3%80%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/"/>
+    <id>http://littlefxc.github.io/2021/05/20/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E3%80%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/</id>
+    <published>2021-05-20T13:09:45.000Z</published>
+    <updated>2021-05-20T13:11:58.000Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h2&gt;&lt;p&gt;在当今这个时代，人们对互联网的依赖程度非常高，也因此产生了大量的数据，企业视这些数据为瑰宝。而这些被视为瑰宝的数据为我们的系统带来了很大的烦恼。这些海量数据的存储与访问成为了系统设计与使用的瓶颈，而这些数据往往存储在数据库中，传统的数据库存在着先天的不足，即单机（单库）性能瓶颈，并且扩展起来非常的困难。在当今的这个大数据时代，我们急需解决这个问题。如果单机数据库易于扩展，数据可切分，就可以避免这些问题，但是当前的这些数据库厂商，包括开源的数据库MySQL在内，提供这些服务都是需要收费的，所以我们转向一些第三方的软件，使用这些软件做数据的切分，将原本在一台数据库上的数据，分散到多台数据库当中，降低每一个单体数据库的负载。那么我们如何做数据切分呢？&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="读写分离" scheme="http://littlefxc.github.io/tags/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/"/>
+    
+    <category term="分库分表" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>分布式锁的对比</title>
+    <link href="http://littlefxc.github.io/2021/05/18/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AF%B9%E6%AF%94/"/>
+    <id>http://littlefxc.github.io/2021/05/18/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E5%AF%B9%E6%AF%94/</id>
+    <published>2021-05-18T14:05:12.000Z</published>
+    <updated>2021-05-18T14:17:23.376Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://gitee.com/littlefxc/oss/raw/master/images/6zUNz2.png&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="分布式锁" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Redisson实现分布式锁</title>
+    <link href="http://littlefxc.github.io/2021/05/16/%E5%9F%BA%E4%BA%8ERedisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    <id>http://littlefxc.github.io/2021/05/16/%E5%9F%BA%E4%BA%8ERedisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</id>
+    <published>2021-05-16T05:39:54.000Z</published>
+    <updated>2021-05-18T14:04:10.072Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;Redisson 除了实现了redis基本功能以外，还重新实现了Java并发包里面的内容。&lt;/p&gt;
+&lt;p&gt;如何使用Redisson？Redisson可以说是redis客户端的加强版本，它里面的内容较多，也提供了分布式锁的实现，使用简单只需简单配置和调用即可，步骤如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;引入Redisson的Jar包&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;进行Redisson与Redis的配置&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;使用分布式锁&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过Java API方式引入Redisson&lt;/li&gt;
+&lt;li&gt;Spring项目引入Redisson&lt;/li&gt;
+&lt;li&gt;SpringBoot项目引入Redisson &lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    
+    <category term="redis" scheme="http://littlefxc.github.io/tags/redis/"/>
+    
+    <category term="分布式锁" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Zookeeper的Curator客户端实现分布式锁</title>
+    <link href="http://littlefxc.github.io/2021/05/16/%E5%9F%BA%E4%BA%8EZookeeper%E7%9A%84Curator%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    <id>http://littlefxc.github.io/2021/05/16/%E5%9F%BA%E4%BA%8EZookeeper%E7%9A%84Curator%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</id>
+    <published>2021-05-16T03:54:06.000Z</published>
+    <updated>2021-05-16T04:09:53.755Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;curator 是Java语言实现的增强版zookeeper客户端详情见&lt;a href=&quot;http://curator.apache.org/&quot;&gt;官网&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;curator 的使用步骤：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;引入curator客户端&lt;/li&gt;
+&lt;li&gt;curator 已经实现了分布式锁的方法&lt;/li&gt;
+&lt;li&gt;直接调用即可&lt;/li&gt;
+&lt;/ol&gt;</summary>
+    
+    
+    
+    
+    <category term="分布式锁" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    
+    <category term="zookeeper" scheme="http://littlefxc.github.io/tags/zookeeper/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于Zookeeper的瞬时节点实现分布式锁</title>
+    <link href="http://littlefxc.github.io/2021/05/12/%E5%9F%BA%E4%BA%8EZookeeper%E7%9A%84%E7%9E%AC%E6%97%B6%E8%8A%82%E7%82%B9%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    <id>http://littlefxc.github.io/2021/05/12/%E5%9F%BA%E4%BA%8EZookeeper%E7%9A%84%E7%9E%AC%E6%97%B6%E8%8A%82%E7%82%B9%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</id>
+    <published>2021-05-12T13:32:54.000Z</published>
+    <updated>2021-05-16T03:14:34.560Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;Zookeeper-的数据结构&quot;&gt;&lt;a href=&quot;#Zookeeper-的数据结构&quot; class=&quot;headerlink&quot; title=&quot;Zookeeper 的数据结构&quot;&gt;&lt;/a&gt;Zookeeper 的数据结构&lt;/h1&gt;&lt;p&gt;&lt;img src=&quot;https://gitee.com/littlefxc/oss/raw/master/images/UE5cYm.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;详细内容见官网&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="分布式锁" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
+    
+    <category term="zookeeper" scheme="http://littlefxc.github.io/tags/zookeeper/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL索引底层:B+数详解</title>
+    <link href="http://littlefxc.github.io/2021/05/12/MySQL%E7%B4%A2%E5%BC%95%E5%BA%95%E5%B1%82-B-%E6%95%B0%E8%AF%A6%E8%A7%A3/"/>
+    <id>http://littlefxc.github.io/2021/05/12/MySQL%E7%B4%A2%E5%BC%95%E5%BA%95%E5%B1%82-B-%E6%95%B0%E8%AF%A6%E8%A7%A3/</id>
+    <published>2021-05-12T06:09:55.000Z</published>
+    <updated>2021-05-12T06:13:16.464Z</updated>
+    
+    
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;转载自 &lt;a href=&quot;https://mp.weixin.qq.com/s/JqaN_1GPiqRQzXt2AizmdA&quot;&gt;https://mp.weixin.qq.com/s/JqaN_1GPiqRQzXt2AizmdA&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;当我们发现SQL执行很慢的时候，自然而然想到的就是加索引。对于范围查询，索引的底层结构就是B+树。今天我们一起来学习一下B+树哈~&lt;/p&gt;</summary>
+    
+    
+    
+    
+    <category term="mysql" scheme="http://littlefxc.github.io/tags/mysql/"/>
+    
+    <category term="数据结构" scheme="http://littlefxc.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+  </entry>
+  
+  <entry>
     <title>netty入门示例</title>
     <link href="http://littlefxc.github.io/2021/05/11/netty%E5%85%A5%E9%97%A8%E7%A4%BA%E4%BE%8B/"/>
     <id>http://littlefxc.github.io/2021/05/11/netty%E5%85%A5%E9%97%A8%E7%A4%BA%E4%BE%8B/</id>
     <published>2021-05-11T08:13:49.000Z</published>
-    <updated>2021-05-11T08:13:49.576Z</updated>
+    <updated>2021-05-11T09:28:30.934Z</updated>
+    
+    
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;现在，我们开始编写一个最简单的Netty示例，在这之前我们先熟悉一下最基本的编码实现步骤！&lt;/p&gt;
+&lt;p&gt;Netty实现通信的步骤：（客户端与服务器端基本一致）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;创建两个的NIO线程组，一个专门用于网络事件处理（接受客户端的连接），另一个则进行网络通信读写。&lt;/li&gt;
+&lt;li&gt;创建一个ServerBootstrap对象，配置Netty的一系列参数，例如接受传出数据的缓存大小等等。&lt;/li&gt;
+&lt;li&gt;创建一个实际处理数据的类ChannelInitializer，进行初始化的准备工作，比如设置接受传出数据的字符集、格式、已经实际处理数据的接口。&lt;/li&gt;
+&lt;li&gt;绑定端口，执行同步阻塞方法等待服务器端启动即可。&lt;/li&gt;
+&lt;/ul&gt;</summary>
     
     
     
+    <category term="netty" scheme="http://littlefxc.github.io/categories/netty/"/>
     
+    
+    <category term="netty" scheme="http://littlefxc.github.io/tags/netty/"/>
     
   </entry>
   
@@ -56,7 +206,7 @@
     <link href="http://littlefxc.github.io/2021/05/07/%E5%9F%BA%E4%BA%8ERedis%E7%9A%84setnx%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
     <id>http://littlefxc.github.io/2021/05/07/%E5%9F%BA%E4%BA%8ERedis%E7%9A%84setnx%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</id>
     <published>2021-05-07T14:46:45.000Z</published>
-    <updated>2021-05-10T14:52:02.626Z</updated>
+    <updated>2021-05-12T13:33:21.930Z</updated>
     
     
     <summary type="html">&lt;h1 id=&quot;基于Redis的setnx实现分布式锁&quot;&gt;&lt;a href=&quot;#基于Redis的setnx实现分布式锁&quot; class=&quot;headerlink&quot; title=&quot;基于Redis的setnx实现分布式锁&quot;&gt;&lt;/a&gt;基于Redis的setnx实现分布式锁&lt;/h1&gt;&lt;h2 id=&quot;实现原理&quot;&gt;&lt;a href=&quot;#实现原理&quot; class=&quot;headerlink&quot; title=&quot;实现原理&quot;&gt;&lt;/a&gt;实现原理&lt;/h2&gt;&lt;ul&gt;
@@ -75,6 +225,8 @@
     
     
     
+    
+    <category term="redis" scheme="http://littlefxc.github.io/tags/redis/"/>
     
     <category term="分布式锁" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
     
@@ -95,19 +247,6 @@
     
     
     <category term="分布式锁" scheme="http://littlefxc.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>netty入门</title>
-    <link href="http://littlefxc.github.io/2021/04/29/netty%E5%85%A5%E9%97%A8/"/>
-    <id>http://littlefxc.github.io/2021/04/29/netty%E5%85%A5%E9%97%A8/</id>
-    <published>2021-04-29T04:23:15.000Z</published>
-    <updated>2021-04-29T04:23:15.692Z</updated>
-    
-    
-    
-    
     
   </entry>
   
@@ -343,129 +482,6 @@
     
     
     
-    
-  </entry>
-  
-  <entry>
-    <title>一个 Flink 简单的入门 quickstart</title>
-    <link href="http://littlefxc.github.io/2021/04/06/flink-java-quickstart/"/>
-    <id>http://littlefxc.github.io/2021/04/06/flink-java-quickstart/</id>
-    <published>2021-04-06T12:14:03.000Z</published>
-    <updated>2021-04-06T12:17:27.922Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;[TOC]&lt;/p&gt;
-&lt;h2 id=&quot;Mac-OS-安装-flink&quot;&gt;&lt;a href=&quot;#Mac-OS-安装-flink&quot; class=&quot;headerlink&quot; title=&quot;Mac OS 安装 flink&quot;&gt;&lt;/a&gt;Mac OS 安装 flink&lt;/h2&gt;&lt;figure</summary>
-        
-      
-    
-    
-    
-    <category term="大数据" scheme="http://littlefxc.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-    <category term="java" scheme="http://littlefxc.github.io/tags/java/"/>
-    
-    <category term="flink" scheme="http://littlefxc.github.io/tags/flink/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>opentsdb</title>
-    <link href="http://littlefxc.github.io/2021/03/26/opentsdb/"/>
-    <id>http://littlefxc.github.io/2021/03/26/opentsdb/</id>
-    <published>2021-03-26T03:28:48.000Z</published>
-    <updated>2021-03-31T03:06:18.125Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1 id=&quot;1-OpenTSDB-概述&quot;&gt;&lt;a href=&quot;#1-OpenTSDB-概述&quot; class=&quot;headerlink&quot; title=&quot;1 OpenTSDB 概述&quot;&gt;&lt;/a&gt;1 OpenTSDB 概述&lt;/h1&gt;&lt;p&gt;&lt;a</summary>
-        
-      
-    
-    
-    
-    
-    <category term="hbase" scheme="http://littlefxc.github.io/tags/hbase/"/>
-    
-    <category term="opentsdb" scheme="http://littlefxc.github.io/tags/opentsdb/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java多线程JUC锁之互斥锁ReentrantLock</title>
-    <link href="http://littlefxc.github.io/2021/03/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E4%BA%92%E6%96%A5%E9%94%81ReentrantLock/"/>
-    <id>http://littlefxc.github.io/2021/03/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E4%BA%92%E6%96%A5%E9%94%81ReentrantLock/</id>
-    <published>2021-03-25T02:11:22.000Z</published>
-    <updated>2021-04-25T14:27:28.229Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;转载自 &lt;a href=&quot;https://www.cnblogs.com/skywang12345/p/3496101.html&quot;&gt;https://www.cnblogs.com/skywang12345/p/3496101.html&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&quot;ReentrantLock介绍&quot;&gt;&lt;a href=&quot;#ReentrantLock介绍&quot; class=&quot;headerlink&quot; title=&quot;ReentrantLock介绍&quot;&gt;&lt;/a&gt;ReentrantLock介绍&lt;/h1&gt;&lt;p&gt;ReentrantLock是一个可重入的互斥锁，又被称为“独占锁”。&lt;/p&gt;
-&lt;p&gt;顾名思义，ReentrantLock锁在同一个时间点只能被一个线程锁持有；而可重入的意思是，ReentrantLock锁，可以被单个线程多次获取。&lt;br&gt;ReentrantLock分为“&lt;strong&gt;公平锁&lt;/strong&gt;”和“&lt;strong&gt;非公平锁&lt;/strong&gt;”。它们的区别体现在获取锁的机制上是否公平。“锁”是为了保护竞争资源，防止多个线程同时操作线程而出错，ReentrantLock在同一个时间点只能被一个线程获取(当某线程获取到“锁”时，其它线程就必须等待)；ReentraantLock是通过一个FIFO的等待队列来管理获取该锁所有线程的。在“公平锁”的机制下，线程依次排队获取锁；而“非公平锁”在锁是可获取状态时，不管自己是不是在队列的开头都会获取锁。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Java" scheme="http://littlefxc.github.io/categories/Java/"/>
-    
-    
-    <category term="Java" scheme="http://littlefxc.github.io/tags/Java/"/>
-    
-    <category term="JUC" scheme="http://littlefxc.github.io/tags/JUC/"/>
-    
-    <category term="互斥锁" scheme="http://littlefxc.github.io/tags/%E4%BA%92%E6%96%A5%E9%94%81/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Spring Integration(1)</title>
-    <link href="http://littlefxc.github.io/2021/03/24/Spring-Integration-1/"/>
-    <id>http://littlefxc.github.io/2021/03/24/Spring-Integration-1/</id>
-    <published>2021-03-24T08:57:18.000Z</published>
-    <updated>2021-03-25T14:19:43.075Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;&lt;em&gt;Spring Integration 对 Spring 编程模型进行了扩展，使得后者能够支持著名的“&lt;a href=&quot;https://www.oschina.net/action/GoToLink?url=http://www.eaipatterns.com/&quot;&gt;企业集成模式&lt;/a&gt;”。通过SI（Spring Integration）可以在基于Spring的应用中引入轻量级的“消息驱动模式”，并且支持“通过声明式的适配器”与外部系统进行集成。这些“适配器”相较于Spring对于“remoting（远程调用）”、“messaging（事件消息）”、“scheduling（任务调度）”方面的支持，提供了更高层次的一种抽象。SI的首要目标是：为“构建企业集成方案、维护系统间通信”提供一种&lt;strong&gt;简单模型&lt;/strong&gt;，应用该模型所产出的代码是&lt;strong&gt;可维护、可测试的&lt;/strong&gt;。&lt;/em&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    
-    <category term="spring" scheme="http://littlefxc.github.io/tags/spring/"/>
-    
-    <category term="spring integration" scheme="http://littlefxc.github.io/tags/spring-integration/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Spring Boot 中如何统一 API 接口响应格式？</title>
-    <link href="http://littlefxc.github.io/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/"/>
-    <id>http://littlefxc.github.io/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/</id>
-    <published>2021-03-22T11:30:14.000Z</published>
-    <updated>2021-03-25T13:59:09.470Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;转载自&lt;a href=&quot;https://mp.weixin.qq.com/s/8aMz07rOF5LuclnBaI_p5g&quot;&gt;https://mp.weixin.qq.com/s/8aMz07rOF5LuclnBaI_p5g&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;hr&gt;
-&lt;p&gt;今天又要给大家介绍一个 Spring Boot 中的组件–HandlerMethodReturnValueHandler。&lt;/p&gt;
-&lt;p&gt;在前面的文章中（&lt;a href=&quot;https://mp.weixin.qq.com/s?__biz=MzI1NDY0MTkzNQ==&amp;mid=2247492446&amp;idx=1&amp;sn=d75472fed90752c609a918aefd2796d4&amp;scene=21#wechat_redirect&quot;&gt;如何优雅的实现 Spring Boot 接口参数加密解密？&lt;/a&gt;），松哥已经和大家介绍过如何对请求/响应数据进行预处理/二次处理，当时我们使用了 ResponseBodyAdvice 和 RequestBodyAdvice。其中 ResponseBodyAdvice 可以实现对响应数据的二次处理，可以在这里对响应数据进行加密/包装等等操作。不过这不是唯一的方案，今天松哥要和大家介绍一种更加灵活的方案–HandlerMethodReturnValueHandler，我们一起来看看下。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="spring" scheme="http://littlefxc.github.io/categories/spring/"/>
-    
-    
-    <category term="spring boot" scheme="http://littlefxc.github.io/tags/spring-boot/"/>
     
   </entry>
   
