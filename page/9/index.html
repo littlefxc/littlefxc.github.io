@@ -195,20 +195,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">174</span>
+          <span class="site-state-item-count">177</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">32</span>
+        <span class="site-state-item-count">33</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">108</span>
+        <span class="site-state-item-count">109</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,277 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/Elasticsearch-6-4-3-%E6%95%B4%E5%90%88SpringBoot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/Elasticsearch-6-4-3-%E6%95%B4%E5%90%88SpringBoot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" class="post-title-link" itemprop="url">Elasticsearch 6.4.3 整合SpringBoot - 配置文件</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 21:28:55" itemprop="dateCreated datePublished" datetime="2021-01-13T21:28:55+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="创建工程，引入依赖"><a href="#创建工程，引入依赖" class="headerlink" title="创建工程，引入依赖"></a>创建工程，引入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;version&gt;2.1.5.RELEASE&lt;/version&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="配置yml"><a href="#配置yml" class="headerlink" title="配置yml"></a>配置yml</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">data:</span></span><br><span class="line">    <span class="attr">elasticsearch:</span></span><br><span class="line">      <span class="attr">cluster-name:</span> <span class="string">es6</span></span><br><span class="line">      <span class="attr">cluster-nodes:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.187</span><span class="string">:9300</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="版本协调"><a href="#版本协调" class="headerlink" title="版本协调"></a>版本协调</h1><p>目前springboot-data-elasticsearch中的es版本贴合为es-6.4.3，如此一来版本需要统一，把es进行降级。等springboot升级es版本后可以在对接最新版的7.4。</p>
+<h1 id="Netty-issue-fix"><a href="#Netty-issue-fix" class="headerlink" title="Netty issue fix"></a>Netty issue fix</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解决netty引起的issue</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.setProperty(<span class="string">&quot;es.set.netty.runtime.available.processors&quot;</span>, <span class="string">&quot;false&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="附-elasticsearch6-4-3配置文件"><a href="#附-elasticsearch6-4-3配置文件" class="headerlink" title="附 elasticsearch6.4.3配置文件"></a>附 elasticsearch6.4.3配置文件</h1><p>elasticsearch.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cluster.name:</span> <span class="string">es6</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node0</span></span><br><span class="line"><span class="attr">path.data:</span> <span class="string">/usr/local/elasticsearch-6.4.3/data</span></span><br><span class="line"><span class="attr">path.logs:</span> <span class="string">/usr/local/elasticsearch-6.4.3/logs</span></span><br><span class="line"><span class="attr">network.host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="string">./elasticsearch</span></span><br></pre></td></tr></table></figure>
+
+<p>如果出现如下错误：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg"></p>
+<p>那么需要切换到root用户下去修改配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg"></p>
+<p>别忘记 <code>sysctl -p</code> 刷新一下</p>
+<p>最后再次启动OK</p>
+<h1 id="Don’t-forget"><a href="#Don’t-forget" class="headerlink" title="Don’t forget!"></a>Don’t forget!</h1><p>中文分词器也需要去配置一下噢别忘记！：）中文分词器的版本要记得使用6，而不是之前的7，版本一定要贴合噢~比如目前的所有版本都是统一为es-6.4.3，那么下载地址为：<a target="_blank" rel="noopener" href="https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3">https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/ES%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E7%8E%B0%E8%B1%A1%E6%8E%A2%E8%AE%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/ES%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E7%8E%B0%E8%B1%A1%E6%8E%A2%E8%AE%A8/" class="post-title-link" itemprop="url">ES集群脑裂现象探讨</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 20:07:06" itemprop="dateCreated datePublished" datetime="2021-01-13T20:07:06+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="什么是脑裂"><a href="#什么是脑裂" class="headerlink" title="什么是脑裂"></a>什么是脑裂</h1><p>如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。</p>
+<h1 id="脑裂解决方案"><a href="#脑裂解决方案" class="headerlink" title="脑裂解决方案"></a>脑裂解决方案</h1><p>master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。</p>
+<p>解决实现原理：半数以上的节点同意选举，节点方可成为新的master。</p>
+<ul>
+<li>discovery.zen.minimum_master_nodes=(N/2)+1<ul>
+<li>N为集群的中master节点的数量，也就是那些 <code>node.master=true</code> 设置的那些服务器节点总数。</li>
+</ul>
+</li>
+</ul>
+<h1 id="ES-7-X"><a href="#ES-7-X" class="headerlink" title="ES 7.X"></a>ES 7.X</h1><p>在最新版7.x中，<code>minimum_master_node</code>这个参数已经被移除了，这一块内容完全由es自身去管理，这样就避免了脑裂的问题，选举也会非常快。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/ES%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/ES%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">ES集群配置</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 19:39:32" itemprop="dateCreated datePublished" datetime="2021-01-13T19:39:32+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前置操作"><a href="#前置操作" class="headerlink" title="前置操作"></a>前置操作</h1><p>需要确认其它es节点中的data目录，一定要清空，不能有数据。</p>
+<h1 id="配置集群"><a href="#配置集群" class="headerlink" title="配置集群"></a>配置集群</h1><p>修改<code>elasticsearch.yml</code>这个配置文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置集群名称，保证每个节点的名称相同，如此就能都处于一个集群之内了</span></span><br><span class="line">cluster.name: es-cluster</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一个节点的名称，必须不一样</span></span><br><span class="line">node.name: es-node1</span><br><span class="line"></span><br><span class="line"><span class="comment"># http端口（使用默认即可）</span></span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主节点，作用主要是用于来管理整个集群，负责创建或删除索引，管理其他非master节点（相当于企业老总）</span></span><br><span class="line">node.master: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据节点，用于对文档数据的增删改查</span></span><br><span class="line">node.data: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 集群列表</span></span><br><span class="line">discovery.seed_hosts: [<span class="string">&quot;192.168.1.184&quot;</span>, <span class="string">&quot;192.168.1.185&quot;</span>, <span class="string">&quot;192.168.1.186&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动的时候使用一个master节点</span></span><br><span class="line">cluster.initial_master_nodes: [<span class="string">&quot;es-node1&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>最后可以通过如下命令查看配置文件的内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more elasticsearch.yml | grep ^[^<span class="comment">#]</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1195,357 +1466,6 @@
 <p>在每个数据中心，client和server是混合的。一般建议有3-5台server。这是基于有故障情况下的可用性和性能之间的权衡结果，因为越多的机器加入达成共识越慢。虽然每个节点的服务注册数量是有上限的，但是并不限制client的数量，它们可以很容易的扩展到数千或者数万台。</p>
 <h1 id="5-参考资源"><a href="#5-参考资源" class="headerlink" title="5 参考资源"></a>5 参考资源</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u014635374/article/details/106313858">https://blog.csdn.net/u014635374/article/details/106313858</a></p>
 
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/11/Redis%E7%BC%93%E5%AD%98%E8%BF%87%E6%9C%9F%E6%9C%BA%E5%88%B6%E5%92%8C%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/11/Redis%E7%BC%93%E5%AD%98%E8%BF%87%E6%9C%9F%E6%9C%BA%E5%88%B6%E5%92%8C%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">Redis缓存过期机制和内存淘汰管理机制</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-11 11:51:36" itemprop="dateCreated datePublished" datetime="2021-01-11T11:51:36+08:00">2021-01-11</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BC%93%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">缓存</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>转载自 <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36986015/article/details/106802555">https://blog.csdn.net/qq_36986015/article/details/106802555</a></p>
-<h1 id="1-缓存过期机制"><a href="#1-缓存过期机制" class="headerlink" title="1. 缓存过期机制"></a><strong>1. 缓存过期机制</strong></h1><p>Redis可以通过设置一个过期时间expire来处理缓存，其中处理方式有两种：</p>
-<ol>
-<li><p>（主动）定期删除，Redis会抽查随机的key，默认1秒十次，一旦抽查的key过期了，就会给删除，配置的属性在redis.conf中，hz等于10，表示1秒抽查10次</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hz 10</span><br></pre></td></tr></table></figure></li>
-<li><p>（被动）惰性删除，key到期后不去主动检测，而是请求访问到这个key之后，会检查下是否过期，这样就不会太消耗CPU资源，缺点是一直占用着内存</p>
-</li>
-</ol>
-<h1 id="2-内存淘汰管理机制"><a href="#2-内存淘汰管理机制" class="headerlink" title="2. 内存淘汰管理机制"></a><strong>2. 内存淘汰管理机制</strong></h1><p>因为计算机的内存是有限的，在部署Redis的同时，也可能部署其他的中间件如RabbitMQ、Kafka等等，为了给其他中间件预留内存空间，Redis服务启动可以设置一个最大内存<code>maxmemory</code>，到达阈值后，Redis会清理在内存里永久存在的没有过期时间的key，处理机制如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">maxmemory ：当内存已使用率到达，则开始清理缓存</span><br><span class="line">maxmemory-policy : 清理缓存的策略</span><br></pre></td></tr></table></figure>
-
-<p>清理缓存的策略如下所示：</p>
-<ul>
-<li>noeviction：旧缓存永不过期，新缓存设置不了，返回错误</li>
-<li>allkeys-lru：清除最少用的旧缓存，然后保存新的缓存（推荐使用）</li>
-<li>allkeys-random：在所有的缓存中随机删除（不推荐）</li>
-<li>volatile-lru：在那些设置了expire过期时间的缓存中，清除最少用的旧缓存，然后保存新的缓存</li>
-<li>volatile-random：在那些设置了expire过期时间的缓存中，随机删除缓存</li>
-<li>volatile-ttl：在那些设置了expire过期时间的缓存中，删除即将过期的</li>
-</ul>
-<p>注意：</p>
-<p>LRU 和 LFU 的含义：</p>
-<pre><code>    # LRU means Least Recently Used
-    # LFU means Least Frequently Used
-</code></pre>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/11/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/11/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">Redis集群搭建</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-11 11:50:38" itemprop="dateCreated datePublished" datetime="2021-01-11T11:50:38+08:00">2021-01-11</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BC%93%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">缓存</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="redis-conf-配置"><a href="#redis-conf-配置" class="headerlink" title="redis.conf 配置"></a>redis.conf 配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 开启集群模式</span><br><span class="line">cluster-enabled yes</span><br><span class="line"># 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"># 超时时间，超时则认为master宕机，随后主备切换</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"># 开启AOF</span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动6个redis实例"><a href="#启动6个redis实例" class="headerlink" title="启动6个redis实例"></a>启动6个redis实例</h2><ol>
-<li>启动6台</li>
-<li>如果启动过程出错，把rdb等文件删除清空</li>
-</ol>
-<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#####</span></span><br><span class="line"><span class="comment"># 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="comment"># 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="comment">#####</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli -a 密码 --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
-
-<p><code>slots</code>：槽，用于装数据，主节点有，从节点没有</p>
-<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a>检查集群信息</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check 192.168.25.64:6380</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/09/Elasticsearch-%E7%9A%84-REST-API-%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/09/Elasticsearch-%E7%9A%84-REST-API-%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">Elasticsearch 的 REST API 的使用介绍</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-09 16:41:04" itemprop="dateCreated datePublished" datetime="2021-01-09T16:41:04+08:00">2021-01-09</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="1-集群健康"><a href="#1-集群健康" class="headerlink" title="1 集群健康"></a>1 集群健康</h1><p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/_cluster_health.html">集群健康 | Elasticsearch: 权威指南 | Elastic</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;_cluster&#x2F;health</span><br></pre></td></tr></table></figure>
-
-<h1 id="2-索引相关"><a href="#2-索引相关" class="headerlink" title="2 索引相关"></a>2 索引相关</h1><h2 id="2-1-创建索引"><a href="#2-1-创建索引" class="headerlink" title="2.1 创建索引"></a>2.1 创建索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;2&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>number_of_shards : 分片数</li>
-<li>number_of_replicas : 副本数</li>
-</ul>
-<h2 id="2-2-查看索引"><a href="#2-2-查看索引" class="headerlink" title="2.2 查看索引"></a>2.2 查看索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET _cat&#x2F;indices?v</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-3-删除索引"><a href="#2-3-删除索引" class="headerlink" title="2.3 删除索引"></a>2.3 删除索引</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE &#x2F;index_test</span><br></pre></td></tr></table></figure>
-
-<h1 id="3-mappings-相关"><a href="#3-mappings-相关" class="headerlink" title="3 mappings 相关"></a>3 mappings 相关</h1><h2 id="3-1-创建索引的同时创建mappings"><a href="#3-1-创建索引的同时创建mappings" class="headerlink" title="3.1 创建索引的同时创建mappings"></a>3.1 创建索引的同时创建mappings</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;index_test</span><br><span class="line">&#123;</span><br><span class="line">    &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;index&quot;: &#123;</span><br><span class="line">            &quot;number_of_shards&quot;: &quot;3&quot;,</span><br><span class="line">            &quot;number_of_replicas&quot;: &quot;0&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;mappings&quot;: &#123;</span><br><span class="line">        &quot;properties&quot;: &#123;</span><br><span class="line">            &quot;realname&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">            	&quot;index&quot;: true</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;username&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">            	&quot;index&quot;: false</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;id&quot;: &#123;</span><br><span class="line">        	    &quot;type&quot;: &quot;long&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;age&quot;: &#123;</span><br><span class="line">            	&quot;type&quot;: &quot;integer&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;nickname&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money1&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;float&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;money2&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;double&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;sex&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;byte&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;score&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;short&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;is_teenager&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;boolean&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;birthday&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;date&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;relationship&quot;: &#123;</span><br><span class="line">                &quot;type&quot;: &quot;object&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注意：</p>
-<ul>
-<li><p><strong>number_of_shards</strong> : 分片数</p>
-</li>
-<li><p><strong>number_of_replicas</strong> : 副本数</p>
-</li>
-<li><p><strong>index</strong>：默认true，设置为false的话，那么这个字段就不会被索引(例如密码等敏感信息)</p>
-</li>
-<li><p>某个属性一旦被建立，就不能修改了，但是可以新增额外属性</p>
-</li>
-<li><p>主要数据类型：</p>
-<ul>
-<li>text, keyword, <del>string</del></li>
-<li>long, integer, short, byte</li>
-<li>double, float</li>
-<li>boolean</li>
-<li>date</li>
-<li>object</li>
-<li>数组不能混，类型一致</li>
-</ul>
-</li>
-<li><p><strong>text</strong>：文字类需要被分词被倒排索引的内容，比如<code>商品名称</code>，<code>商品详情</code>，<code>商品介绍</code>，使用text。</p>
-</li>
-<li><p><strong>keyword</strong>：不会被分词，不会被倒排索引，直接匹配搜索，比如<code>订单状态</code>，<code>用户qq</code>，<code>微信号</code>，<code>手机号</code>等，这些精确匹配，无需分词。</p>
-</li>
-</ul>
-<h1 id="4-文档的基本操作"><a href="#4-文档的基本操作" class="headerlink" title="4 文档的基本操作"></a>4 文档的基本操作</h1><h2 id="4-1-添加文档"><a href="#4-1-添加文档" class="headerlink" title="4.1 添加文档"></a>4.1 添加文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;&#123;索引名&#125;&#x2F;_doc&#x2F;&#123;索引ID&#125;（是指索引在es中的id，而不是这条记录的id，比如记录的id从数据库来是1001，并不是这个。如果不写，则自动生成一个字符串。建议和数据id保持一致&gt; ）</span><br><span class="line"></span><br><span class="line">POST &#x2F;user&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;username1&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>查看索引</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;user</span><br></pre></td></tr></table></figure>
-
-<p><strong>结果如下</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;user&quot; : &#123;</span><br><span class="line">    &quot;aliases&quot; : &#123; &#125;,</span><br><span class="line">    &quot;mappings&quot; : &#123;</span><br><span class="line">      &quot;properties&quot; : &#123;</span><br><span class="line">        &quot;create_date&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;date&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;id&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;long&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;password&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;username&quot; : &#123;</span><br><span class="line">          &quot;type&quot; : &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;keyword&quot; : &#123;</span><br><span class="line">              &quot;type&quot; : &quot;keyword&quot;,</span><br><span class="line">              &quot;ignore_above&quot; : 256</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;settings&quot; : &#123;</span><br><span class="line">      &quot;index&quot; : &#123;</span><br><span class="line">        &quot;creation_date&quot; : &quot;1610183188727&quot;,</span><br><span class="line">        &quot;number_of_shards&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;number_of_replicas&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;uuid&quot; : &quot;55w3gLZNTVyJnmdi6hTo5g&quot;,</span><br><span class="line">        &quot;version&quot; : &#123;</span><br><span class="line">          &quot;created&quot; : &quot;7100099&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;provided_name&quot; : &quot;user&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong>：</p>
-<ul>
-<li>如果索引没有手动建立mappings，那么当插入文档数据的时候，会根据文档类型自动设置属性类型。这个就是es的动态映射，帮我们在index索引库中去建立数据结构的相关配置信息。</li>
-<li>“fields”: {“type”: “keyword”}对一个字段设置多种索引模式，使用text类型做全文检索，也可使用keyword类型做聚合和排序</li>
-<li>“ignore_above” : 256设置字段索引和存储的长度最大值，超过则被忽略</li>
-</ul>
-<h2 id="4-2-修改文档"><a href="#4-2-修改文档" class="headerlink" title="4.2 修改文档"></a>4.2 修改文档</h2><h3 id="4-2-1-局部修改"><a href="#4-2-1-局部修改" class="headerlink" title="4.2.1 局部修改"></a>4.2.1 局部修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;user&#x2F;_doc&#x2F;1&#x2F;_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;update1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-2-2-全局修改"><a href="#4-2-2-全局修改" class="headerlink" title="4.2.2 全局修改"></a>4.2.2 全局修改</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;user&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;username&quot;: &quot;update2&quot;,</span><br><span class="line">    &quot;password&quot;: &quot;password1&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2021-01-09&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>同时每次修改后，返回参数中的属性 <code>verison</code> 都会更改</p>
-<h2 id="4-3-删除文档"><a href="#4-3-删除文档" class="headerlink" title="4.3 删除文档"></a>4.3 删除文档</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE &#x2F;user&#x2F;_doc&#x2F;1</span><br></pre></td></tr></table></figure>
-
-<p><strong>注</strong>：文档删除不是立即删除，文档还是保存在磁盘上，索引增长越来越多，才会把那些曾经标识过删除的，进行清理，从磁盘上移出去。</p>
-<h2 id="4-4-查询文档"><a href="#4-4-查询文档" class="headerlink" title="4.4 查询文档"></a>4.4 查询文档</h2><p>常规查询</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1</span><br><span class="line">GET /index_demo/_doc/_search</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-4-1-查询结果"><a href="#4-4-1-查询结果" class="headerlink" title="4.4.1 查询结果"></a>4.4.1 查询结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;_index&quot;</span>: <span class="string">&quot;my_doc&quot;</span>,</span><br><span class="line">    <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>,</span><br><span class="line">    <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2&quot;</span>,</span><br><span class="line">    <span class="string">&quot;_score&quot;</span>: 1.0,</span><br><span class="line">    <span class="string">&quot;_version&quot;</span>: 9,</span><br><span class="line">    <span class="string">&quot;_source&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;id&quot;</span>: 1002,</span><br><span class="line">        <span class="string">&quot;name&quot;</span>: <span class="string">&quot;imooc-2&quot;</span>,</span><br><span class="line">        <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;imooc is fashion&quot;</span>,</span><br><span class="line">        <span class="string">&quot;create_date&quot;</span>: <span class="string">&quot;2019-12-25&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-4-2-元数据"><a href="#4-4-2-元数据" class="headerlink" title="4.4.2 元数据"></a>4.4.2 元数据</h3><ul>
-<li>_index：文档数据所属那个索引，理解为数据库的某张表即可。</li>
-<li>_type：文档数据属于哪个类型，新版本使用<code>_doc</code> 。</li>
-<li>_id：文档数据的唯一标识，类似数据库中某张表的主键。可以自动生成或者手动指定。</li>
-<li>_score：查询相关度，是否契合用户匹配，分数越高用户的搜索体验越高。</li>
-<li>_version：版本号。</li>
-<li>_source：文档数据，json格式。</li>
-</ul>
-<h3 id="4-4-3-定制结果集"><a href="#4-4-3-定制结果集" class="headerlink" title="4.4.3 定制结果集"></a>4.4.3 定制结果集</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1?_source=id,name</span><br><span class="line">GET /index_demo/_doc/_search?_source=id,name</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-4-4-判断文档是否存在"><a href="#4-4-4-判断文档是否存在" class="headerlink" title="4.4.4 判断文档是否存在"></a>4.4.4 判断文档是否存在</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD /index_demo/_doc/1</span><br></pre></td></tr></table></figure>
       
     </div>
 
