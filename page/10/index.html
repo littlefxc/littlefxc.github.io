@@ -195,20 +195,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">178</span>
+          <span class="site-state-item-count">179</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">35</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">109</span>
+        <span class="site-state-item-count">111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,100 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/11/ES%E4%B9%8B%E6%96%87%E6%A1%A3%E4%B9%90%E8%A7%82%E9%94%81%E6%8E%A7%E5%88%B6-if-seq-no%E4%B8%8Eif-primary-term/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/11/ES%E4%B9%8B%E6%96%87%E6%A1%A3%E4%B9%90%E8%A7%82%E9%94%81%E6%8E%A7%E5%88%B6-if-seq-no%E4%B8%8Eif-primary-term/" class="post-title-link" itemprop="url">ES之文档乐观锁控制 if_seq_no与if_primary_term</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-11 20:11:28" itemprop="dateCreated datePublished" datetime="2021-01-11T20:11:28+08:00">2021-01-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="观察操作"><a href="#观察操作" class="headerlink" title="观察操作"></a>观察操作</h1><ul>
+<li><p>插入新数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;my_doc&#x2F;_doc</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1010,</span><br><span class="line">    &quot;name&quot;: &quot;imooc-1010&quot;,</span><br><span class="line">    &quot;desc&quot;: &quot;imoocimooc！&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-24&quot;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 1</span><br></pre></td></tr></table></figure></li>
+<li><p>修改数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    &#x2F;my_doc&#x2F;_doc&#x2F;&#123;_id&#125;&#x2F;_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 2</span><br><span class="line">1234567</span><br></pre></td></tr></table></figure></li>
+<li><p>模拟两个客户端操作同一个文档数据，_version都携带为一样的数值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 操作1</span><br><span class="line">POST    &#x2F;my_doc&#x2F;_doc&#x2F;&#123;_id&#125;&#x2F;_update?if_seq_no&#x3D;&#123;数值&#125;&amp;if_primary_term&#x3D;&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 操作2</span><br><span class="line">POST    &#x2F;my_doc&#x2F;_doc&#x2F;&#123;_id&#125;&#x2F;_update?if_seq_no&#x3D;&#123;数值&#125;&amp;if_primary_term&#x3D;&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课2&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="版本元数据"><a href="#版本元数据" class="headerlink" title="版本元数据"></a>版本元数据</h1><ul>
+<li>_seq_no：文档版本号，作用同_version（相当于学生编号，每个班级的班主任为学生分配编号，效率要比学校教务处分配来的更加高效，管理起来更方便）</li>
+<li>_primary_term：文档所在位置（相当于班级）</li>
+<li>官文地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html</a></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1297,118 +1391,6 @@
 <p>查询所有数据：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> struct_test;</span><br><span class="line">OK</span><br><span class="line">小明	&#123;&quot;course&quot;:&quot;math&quot;,&quot;score&quot;:79&#125;</span><br><span class="line">小红	&#123;&quot;course&quot;:&quot;math&quot;,&quot;score&quot;:80&#125;</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.097</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> name,course.course,course.score <span class="keyword">from</span> struct_test;</span><br><span class="line">OK</span><br><span class="line">小明	math	<span class="number">79</span></span><br><span class="line">小红	math	<span class="number">80</span></span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.213</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br></pre></td></tr></table></figure>
 
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/09/22/Kylin%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/09/22/Kylin%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Kylin 入门</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-09-22 16:56:14" itemprop="dateCreated datePublished" datetime="2020-09-22T16:56:14+08:00">2020-09-22</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>随着移动互联网、物联网等技术的发展，近些年人类所积累的数据正在呈爆炸式的增长，大数据时代已经来临。但是海量数据的收集只是大数据技术的第一步，如何让数据产生价值才是大数据领域的终极目标。Hadoop的出现解决了数据存储问题，但如何对海量数据进行OLAP查询，却一直令人十分头疼。</p>
-<p>企业中的查询大致可分为即席查询和定制查询两种。之前出现的很多OLAP引擎，包括Hive、Presto、SparkSQL等，虽然在很大程度上降低了数据分析的难度，但它们都只适用于即席查询的场景。它们的优点是查询灵活，但是随着数据量和计算复杂度的增长，响应时间不能得到保证。而定制查询多数情况下是对用户的操作做出实时反应，Hive等查询引擎动辄数分钟甚至数十分钟的响应时间显然是不能满足需求的。在很长一段时间里，企业只能对数据仓库中的数据进行提前计算，再将算好后的结果存储在MySQL等关系型数据库中，再提供给用户进行查询。但是当业务复杂度和数据量逐渐升高后，使用这套方案的开发成本和维护成本都显著上升。因此，如何对已经固化下来的查询进行亚秒级返回一直是企业应用中的一个痛点。</p>
-<p>在这种情况下，Apache Kylin应运而生。不同于“大规模并行处理”（Massive Parallel Processing，MPP）架构的Hive、Presto等，Apache Kylin采用“预计算”的模式，用户只需要提前定义好查询维度，Kylin将帮助我们进行计算，并将结果存储到HBase中，为海量数据的查询和分析提供亚秒级返回，是一种典型的“空间换时间”的解决方案。Apache Kylin的出现不仅很好地解决了海量数据快速查询的问题，也避免了手动开发和维护提前计算程序带来的一系列麻烦。</p>
-<p>Apache Kylin™是一个开源的、分布式的分析型数据仓库，提供 Hadoop 之上的 SQL 查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc.开发并贡献至开源社区。</p>
-<h1 id="Kylin-架构"><a href="#Kylin-架构" class="headerlink" title="Kylin 架构"></a>Kylin 架构</h1><p>如果想要知道Kylin是如何实现超大数据集的秒级多维分析查询，那么就得了解Kylin的架构原理。<br>Kylin实现秒级查询的关键点是预计算，对于超大数据集的复杂查询，既然现场计算需要花费较长时间，那么根据空间换时间的原理，我们就可以提前将所有可能的计算结果计算并存储下来，把高复杂度的聚合运算、多表连接等操作转换成对预计算结果的查询，比如把本该进行的Join、Sum、CountDistinct等操作改写成Cube的查询操作。从而实现超大数据集的秒级多维分析查询。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200924112848747.png" alt="image-20200924112848747"></p>
-<ul>
-<li>REST Server:<br>REST Server是一套面向应用程序开发的入口点，旨在实现针对Kylin平台的应用开发工作。 此类应用程序可以提供查询、获取结果、触发cube构建任务、获取元数据以及获取用户权限等等。 另外可以通过Restful接口实现SQL查询。</li>
-<li>查询引擎（Query Engine）:<br>当cube准备就绪后，查询引擎就能够获取并解析用户查询。它随后会与系统中的其它组件进行交互，从而向用户返回对应的结果。<br>在Kylin当中，我们使用一套名为Apache Calcite的开源动态数据管理框架对代码内的SQL以及其它插入内容进行解析。（Calcite最初被命名为Optiq，由Julian Hyde所编写，但如今已经成为Apache孵化器项目之一。）</li>
-<li>Routing<br>负责将解析的SQL生成的执行计划转换成cube缓存的查询，cube是通过预计算缓存在hbase中，这部分查询可以在秒级设置毫秒级完成，而且还有一些操作使用过的查询原始数据（存储在Hadoop的hdfs中通过hive查询）。这部分查询延迟较高。</li>
-<li>元数据管理工具（Metadata Manager）<br>Kylin是一款元数据驱动型应用程序。元数据管理工具是一大关键性组件，用于对保存在Kylin当中的所有元数据进行管理，其中包括最为重要的cube元数据。其它全部组件的正常运作都需以元数据管理工具为基础。 Kylin的元数据存储在hbase中。</li>
-<li>任务引擎（Cube Build Engine）:<br>这套引擎的设计目的在于处理所有离线任务，其中包括shell脚本、Java API以及Map Reduce任务等等。任务引擎对Kylin当中的全部任务加以管理与协调，从而确保每一项任务都能得到切实执行并解决其间出现的故障。</li>
-<li>存储引擎（Storage Engine）<br>这套引擎负责管理底层存储——特别是cuboid，其以键-值对的形式进行保存。存储引擎使用的是HBase——这是目前Hadoop生态系统当中最理想的键-值系统使用方案。Kylin还能够通过扩展实现对其它键-值系统的支持，例如Redis。</li>
-</ul>
-<p><strong>预计算大概流程</strong>就是：将数据源中的数据按照指定的维度和指标，由计算引擎MapReduce离线计算出所有可能的查询结果(即Cube)存储到HBase中。HBase中每行记录的Rowkey由维度组成，度量会保存在 column family中。为了减小存储代价，这里会对维度和度量进行编码。查询阶段，利用HBase列存储的特性就可以保证Kylin有良好的快速响应和高并发。</p>
-<p>需要注意的是：Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着推广和使用的深入，渐渐有用户发现它们均存在不足之处。比如，实时分析可能会希望从Kafka导入数据而不是从Hive；而Spark的迅速崛起，又使我们不得不考虑将MapReduce替换为Spark，以期大幅提高Cube的构建速度；至于HBase，它的读性能可能还不如Cassandra或Kudu等。因此Kylin1.5版本的系统架构进行了重构，将数据源、构建引擎、存储引擎三大依赖抽象为接口，而Hive、MapReduce、HBase只是默认实现。深度用户可以根据自己的需要做二次开发，将其中的一个或多个替换为更适合的技术。</p>
-<h1 id="安装Kylin"><a href="#安装Kylin" class="headerlink" title="安装Kylin"></a>安装Kylin</h1><h2 id="单节点安装"><a href="#单节点安装" class="headerlink" title="单节点安装"></a>单节点安装</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /opt/apache-kylin-3.1.0-bin-hbase1x /usr/local/kylin</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">KYLIN_HOME=/usr/<span class="built_in">local</span>/kylin</span><br><span class="line"><span class="built_in">export</span> KYLIN_HOME</span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$KYLIN_HOME</span>/bin</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source /etc/proifle</span><br></pre></td></tr></table></figure>
-
-<h3 id="macOS遇到的问题"><a href="#macOS遇到的问题" class="headerlink" title="macOS遇到的问题"></a>macOS遇到的问题</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/check-env.sh</span><br></pre></td></tr></table></figure>
-
-<p>此处mac有坑，因为检查脚本使用的是gnu的一些命令，和mac上的命令不同。所以需要安装gnu命令:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install gnu-sed</span><br><span class="line">brew install findutils</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 检查环境</span></span><br><span class="line">/usr/local/kylin/bin/check-env.sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动</span></span><br><span class="line">/usr/local/kylin/bin/kylin.sh start</span><br><span class="line"><span class="meta">#</span><span class="bash"> 样例</span></span><br><span class="line">/usr/local/kylin/bin/sample.sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> 重启</span></span><br><span class="line">/usr/local/kylin/bin/kylin.sh restart</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200924103518462.png" alt="image-20200924103518462"></p>
-<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><h2 id="数据仓库"><a href="#数据仓库" class="headerlink" title="数据仓库"></a>数据仓库</h2><h2 id="OLAP"><a href="#OLAP" class="headerlink" title="OLAP"></a>OLAP</h2><h2 id="维度和度量"><a href="#维度和度量" class="headerlink" title="维度和度量"></a>维度和度量</h2><h2 id="Cube和Cuboid"><a href="#Cube和Cuboid" class="headerlink" title="Cube和Cuboid"></a>Cube和Cuboid</h2><h2 id="事实表和维度表"><a href="#事实表和维度表" class="headerlink" title="事实表和维度表"></a>事实表和维度表</h2><h2 id="星形模型"><a href="#星形模型" class="headerlink" title="星形模型"></a>星形模型</h2>
       
     </div>
 

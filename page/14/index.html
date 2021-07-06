@@ -195,20 +195,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">178</span>
+          <span class="site-state-item-count">179</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">35</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">109</span>
+        <span class="site-state-item-count">111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,101 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/08/22/Spring-Cloud-Consul%E5%BA%94%E7%94%A8%E4%B8%8B%E7%BA%BF%E5%90%8E%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%E8%87%AA%E5%8A%A8%E5%88%A0%E9%99%A4%E6%97%A0%E6%95%88%E6%9C%8D%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/08/22/Spring-Cloud-Consul%E5%BA%94%E7%94%A8%E4%B8%8B%E7%BA%BF%E5%90%8E%EF%BC%8C%E5%81%A5%E5%BA%B7%E6%A3%80%E6%9F%A5%E8%87%AA%E5%8A%A8%E5%88%A0%E9%99%A4%E6%97%A0%E6%95%88%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">Spring Cloud Consul应用下线后，健康检查自动删除无效服务</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-22 09:19:24" itemprop="dateCreated datePublished" datetime="2019-08-22T09:19:24+08:00">2019-08-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/spring-cloud/" itemprop="url" rel="index"><span itemprop="name">spring-cloud</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">consul:</span></span><br><span class="line">      <span class="attr">discovery:</span></span><br><span class="line">        <span class="comment"># 健康检查失败多长时间后，取消注册</span></span><br><span class="line">        <span class="attr">health-check-critical-timeout:</span> <span class="string">30s</span></span><br></pre></td></tr></table></figure>
+
+<p>在配置文件中如上配置后可以使得服务下线后自动删除无效服务，而不必像很多的博客中写的那样专门写一个删除失效服务。</p>
+<p>其它的配置属性解析：</p>
+<ul>
+<li>spring.cloud.consul.host：配置consul地址</li>
+<li>spring.cloud.consul.port：配置consul端口</li>
+<li>spring.cloud.consul.discovery.enabled：启用服务发现</li>
+<li>spring.cloud.consul.discovery.register：启用服务注册</li>
+<li>spring.cloud.consul.discovery.deregister：服务停止时取消注册</li>
+<li>spring.cloud.consul.discovery.prefer-ip-address：表示注册时使用IP而不是hostname</li>
+<li>spring.cloud.consul.discovery.health-check-interval：健康检查频率</li>
+<li>spring.cloud.consul.discovery.health-check-path：健康检查路径</li>
+<li>spring.cloud.consul.discovery.health-check-critical-timeout：健康检查失败多长时间后，取消注册</li>
+<li>spring.cloud.consul.discovery.instance-id：服务注册标识</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1400,100 +1495,6 @@
 
 <p>返回结果和日志符合期望结果</p>
 <h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a target="_blank" rel="noopener" href="http://www.spring4all.com/article/422">http://www.spring4all.com/article/422</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/06/26/Spring-Security-Oauth2%E4%BB%A4%E7%89%8C%E5%A2%9E%E5%8A%A0%E9%A2%9D%E5%A4%96%E4%BF%A1%E6%81%AF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/06/26/Spring-Security-Oauth2%E4%BB%A4%E7%89%8C%E5%A2%9E%E5%8A%A0%E9%A2%9D%E5%A4%96%E4%BF%A1%E6%81%AF/" class="post-title-link" itemprop="url">Spring-Security-Oauth2令牌增加额外信息</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-06-26 11:13:38" itemprop="dateCreated datePublished" datetime="2019-06-26T11:13:38+08:00">2019-06-26</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/oauth2/" itemprop="url" rel="index"><span itemprop="name">oauth2</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在实现了 Oauth2 后，我想要在令牌增加中额外信息，那么该怎么做？</p>
-<p>下面是我的做法，首先实现 <code>org.springframework.security.oauth2.provider.token.TokenEnhancer</code> 接口：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.common.OAuth2AccessToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.OAuth2Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenEnhancer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * token 额外信息</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/5/16</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomTokenEnhancer</span> <span class="keyword">implements</span> <span class="title">TokenEnhancer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2AccessToken <span class="title">enhance</span><span class="params">(OAuth2AccessToken accessToken, OAuth2Authentication authentication)</span> </span>&#123;</span><br><span class="line">        Map&lt;String, Object&gt; additionalInfo = <span class="keyword">new</span> HashMap&lt;String, Object&gt;();</span><br><span class="line">        additionalInfo.put(<span class="string">&quot;organization&quot;</span>, authentication.getName() + randomAlphabetic(<span class="number">4</span>));</span><br><span class="line">        ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);</span><br><span class="line">        <span class="keyword">return</span> accessToken;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然后在 <code>AuthorizationServerConfigurerAdapter</code> 认证服务代码中配置：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthorizationServerConfigInJwt</span> <span class="keyword">extends</span> <span class="title">AuthorizationServerConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthorizationServerEndpointsConfigurer endpoints)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// token 携带额外信息</span></span><br><span class="line">        TokenEnhancerChain tokenEnhancerChain = <span class="keyword">new</span> TokenEnhancerChain();</span><br><span class="line">        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), jwtTokenEnhancer()));</span><br><span class="line">        endpoints</span><br><span class="line">                .tokenStore(tokenStore())</span><br><span class="line">                .tokenEnhancer(tokenEnhancerChain)</span><br><span class="line">                .userDetailsService(userDetailsService)</span><br><span class="line">                .authenticationManager(authenticationManager)</span><br><span class="line">                .setClientDetailsService(clientDetailsService);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Token 额外信息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TokenEnhancer <span class="title">tokenEnhancer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> CustomTokenEnhancer();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * jwt token：使用了非对称密钥对来签署令牌:</span></span><br><span class="line"><span class="comment">     * 1.生成 JKS Java KeyStore 文件：keytool -genkeypair -alias jwt_rsa -keyalg RSA -keypass 123456 -keystore jwt_rsa.jks -storepass 123456</span></span><br><span class="line"><span class="comment">     * 2.导出公钥：keytool -list -rfc --keystore jwt_rsa.jks | openssl x509 -inform pem -pubkey</span></span><br><span class="line"><span class="comment">     * 3.将 PUBLIC KEY 保存至 public.txt</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> JwtAccessTokenConverter <span class="title">jwtTokenEnhancer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        JwtAccessTokenConverter converter = <span class="keyword">new</span> JwtAccessTokenConverter();</span><br><span class="line">        converter.setKeyPair(<span class="keyword">new</span> KeyStoreKeyFactory(resource, keyStorePass.toCharArray()).getKeyPair(keyPairAlias));</span><br><span class="line">        <span class="comment">// 使用对称密钥来签署令牌</span></span><br><span class="line">        <span class="comment">// converter.setSigningKey(&quot;fengxuechao.littlefxc&quot;);</span></span><br><span class="line">        <span class="keyword">return</span> converter;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>或者 <code>tokenServices.setTokenEnhancer(tokenEnhancer);</code></p>
-<p>最后演示一下最终效果：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;4aae3856-bc33-4e4d-86bc-eb475fc45569&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;fe2ed35d-5c53-4610-abb7-c1053cba6803&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">119</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;read&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;organization&quot;</span>: <span class="string">&quot;userAKqz&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>jwt </p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ1c2VyIiwic2NvcGUiOlsicmVhZCJdLCJvcmdhbml6YXRpb24iOiJ1c2VyZWx2ayIsImV4cCI6MTU2MDQ4NDI0OCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjliNTU2ZTBiLTZlZmQtNDkwZC05OGMwLWIzYzYwNjM2ZDczMCIsImNsaWVudF9pZCI6ImNsaWVudCJ9.oaqlviXcQPCLAZP8cV7v-WA75AoiodiG6d2WR9yqJhOFCg7LDsnCjk63J59sq434CZHRIOkCgMi2hVJHOc4MTIFce61Kk046G3-yK313CtMy5LWeVXdKbAHH0gcuoDO3OCJ7u7GzngPtA6bVfxjJFNJ6MmFxEnFPjB5dos9Bb8zYduE2ELMH2aTCS-67R_aQ0BCZaYo5NMH1_jqz9d1hI_kpBx3auR_d2Vh1eJiC_f9Z-rTmRvXdwQefhwgXZ1UCWjV0NuoCqFO3KicEhjGOkqXZ5eh0vGR5zKwKJfCys1lNgXjXVVntHYkXt96ymQ9477pCAWCONZsbkM7244500Q&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ1c2VyIiwic2NvcGUiOlsicmVhZCJdLCJvcmdhbml6YXRpb24iOiJ1c2VyZWx2ayIsImF0aSI6IjliNTU2ZTBiLTZlZmQtNDkwZC05OGMwLWIzYzYwNjM2ZDczMCIsImV4cCI6MTU2MDQ4NzcyOCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjJhNTUxOWJjLWUzYTAtNGJjOC1hNTRkLTlmMDNiMjYwNjZkNCIsImNsaWVudF9pZCI6ImNsaWVudCJ9.BgY6N0kzxVApFD-C7UVMDmczSoMY9tglnKzTkybfneoeAAs8ljftIwA5sPWua28Xhl-MNAQ9HL6Q6ou-EbgFlcHC2uPPbJ5silnPLPdTnvVko9l-8w-3WLPk96YbODdQemqFZHSrR1lPmXHB5sR7QjncxGxvuSYZEtPXxZz39lJbyQLSflXADqlk4ZV3BxS-M7d8FcTJEM1uTgwUBSns2N6AZnTkd2FnGskadaV2qhky5TznJjQqRETVS8xCiZCFYwCq5sAMHOj-_BrwlmCeoPfcy38ofbql-qVWfQJiAeU7yWLlAu_hd-zRIIbv-dqRmSF9T9rCxVPv84ptddO1Hw&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">119</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;read&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;organization&quot;</span>: <span class="string">&quot;userelvk&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;9b556e0b-6efd-490d-98c0-b3c60636d730&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>最终返回的 Token 信息中多了一个属性 <code>organization</code>，结果符合期望结果。</p>
 
       
     </div>
