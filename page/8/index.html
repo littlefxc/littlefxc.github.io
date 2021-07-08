@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">181</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -237,106 +237,6 @@
 
 
     <div class="main-inner index posts-expand">
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8BAtomicLongArray%E5%8E%9F%E5%AD%90%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8BAtomicLongArray%E5%8E%9F%E5%AD%90%E7%B1%BB/" class="post-title-link" itemprop="url">Java多线程JUC原子类之AtomicLongArray原子类</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-25 17:04:06" itemprop="dateCreated datePublished" datetime="2021-01-25T17:04:06+08:00">2021-01-25</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3514604.html">https://www.cnblogs.com/skywang12345/p/3514604.html</a></p>
-</blockquote>
-<p>在”Java多线程系列–“ <a target="_blank" rel="noopener" href="https://www.notion.so/Java-JUC-AtomicLong-842f5bea464847abbfee4d03a18ca99f">Java多线程JUC原子类之 AtomicLong原子类</a> “中介绍过，AtomicLong是作用是对长整形进行原子操作。而AtomicLongArray的作用则是对”长整形数组”进行原子操作。</p>
-<h1 id="AtomicLongArray函数列表"><a href="#AtomicLongArray函数列表" class="headerlink" title="AtomicLongArray函数列表"></a>AtomicLongArray函数列表</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建给定长度的新 AtomicLongArray。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">int</span> length)</span><br><span class="line"><span class="comment">// 创建与给定数组具有相同长度的新 AtomicLongArray，并从给定数组复制其所有元素。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">long</span>[] array)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以原子方式将给定值添加到索引 i 的元素。</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 获取位置 i 的当前值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将给定值与索引 i 的元素相加。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将位置 i 的元素设置为给定值，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 最终将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回该数组的长度。</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回数组当前值的字符串表示形式。</span></span></span><br><span class="line"><span class="function">String <span class="title">toString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
-
-<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>AtomicLongArray的代码很简单，下面仅以incrementAndGet()为例，对AtomicLong的原理进行说明。</p>
-<h2 id="incrementAndGet-源码如下："><a href="#incrementAndGet-源码如下：" class="headerlink" title="incrementAndGet()源码如下："></a>incrementAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> addAndGet(i, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>说明：incrementAndGet()的作用是以原子方式将long数组的索引 i 的元素加1，并返回加1之后的值。</p>
-<h2 id="addAndGet-源码如下："><a href="#addAndGet-源码如下：" class="headerlink" title="addAndGet()源码如下："></a>addAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查数组是否越界</span></span><br><span class="line">    <span class="keyword">long</span> offset = checkedByteOffset(i);</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 获取long型数组的索引 offset 的原始值</span></span><br><span class="line">        <span class="keyword">long</span> current = getRaw(offset);</span><br><span class="line">        <span class="comment">// 修改long型值</span></span><br><span class="line">        <span class="keyword">long</span> next = current + delta;</span><br><span class="line">        <span class="comment">// 通过CAS更新long型数组的索引 offset的值。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetRaw(offset, current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>说明：addAndGet()首先检查数组是否越界。如果没有越界的话，则先获取数组索引i的值；然后通过CAS函数更新i的值。</p>
-<h2 id="getRaw-源码如下："><a href="#getRaw-源码如下：" class="headerlink" title="getRaw()源码如下："></a>getRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getRaw</span><span class="params">(<span class="keyword">long</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getLongVolatile(array, offset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>说明：unsafe是通过Unsafe.getUnsafe()返回的一个Unsafe对象。通过Unsafe的CAS函数对long型数组的元素进行原子操作。如compareAndSetRaw()就是调用Unsafe的CAS函数，它的源码如下：</p>
-<h2 id="compareAndSetRaw-源码如下："><a href="#compareAndSetRaw-源码如下：" class="headerlink" title="compareAndSetRaw()源码如下："></a>compareAndSetRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">compareAndSetRaw</span><span class="params">(<span class="keyword">long</span> offset, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(array, offset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAtomicArrayLong</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 新建AtomicLongArray对象</span></span><br><span class="line">        <span class="keyword">long</span>[] arrLong = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        AtomicLongArray ala = <span class="keyword">new</span> AtomicLongArray(arrLong);</span><br><span class="line"></span><br><span class="line">        ala.set(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>, len=ala.length(); i&lt;len; i++)</span><br><span class="line">            System.out.printf(<span class="string">&quot;get(%d) : %s\n&quot;</span>, i, ala.get(i));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;getAndDecrement(0)&quot;</span>, ala.getAndDecrement(<span class="number">0</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;decrementAndGet(1)&quot;</span>, ala.decrementAndGet(<span class="number">1</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;getAndIncrement(2)&quot;</span>, ala.getAndIncrement(<span class="number">2</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;incrementAndGet(3)&quot;</span>, ala.incrementAndGet(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;addAndGet(100)&quot;</span>, ala.addAndGet(<span class="number">0</span>, <span class="number">100</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;getAndAdd(100)&quot;</span>, ala.getAndAdd(<span class="number">1</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;compareAndSet()&quot;</span>, ala.compareAndSet(<span class="number">2</span>, <span class="number">31</span>, <span class="number">1000</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;get(2)&quot;</span>, ala.get(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>结果如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
 
     
 
@@ -1243,6 +1143,93 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E6%A6%82%E5%BF%B5%E6%A2%B3%E7%90%86-2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/" class="post-title-link" itemprop="url">分布式文件系统-概述(1)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-20 15:06:53" itemprop="dateCreated datePublished" datetime="2021-01-20T15:06:53+08:00">2021-01-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_1_1.png"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
