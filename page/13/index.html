@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">181</span>
+          <span class="site-state-item-count">182</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -237,6 +237,86 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-SpringBoot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-SpringBoot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">源码分析:SpringBoot启动流程分析原理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-26 20:51:54" itemprop="dateCreated datePublished" datetime="2020-02-26T20:51:54+08:00">2020-02-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>我们都知道SpringBoot自问世以来，一直有一个响亮的口号”约定优于配置”，其实一种按约定编程的软件设计范式，目的在于减少软件开发人员在工作中的各种繁琐的配置，我们都知道传统的SSM框架的组合，会伴随着大量的繁琐的配置；稍有不慎，就可能各种bug，被人发现还以为我们技术很菜。而SpringBoot的出现不仅大大提高的开发人员的效率，还能避免由于”手抖”带来的配置错误。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/26/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-SpringBoot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%E5%8E%9F%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1235,94 +1315,6 @@ ribbon.MaxAutoRetriesNextServer=1
 
 <h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Cacheable(prefix = &quot;&#x27;token:&#x27;&quot;, key = &quot;#authRequest.appId+&#x27;:&#x27;+#authRequest.secret&quot;)</span></span><br><span class="line"><span class="comment">//@Cacheable(value = &quot;token&quot;, key = &quot;#p0.appId+&#x27;:&#x27;+#p0.secret&quot;)</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> AccessToken <span class="title">getAccessToken</span><span class="params">(AuthenticationRequest authRequest)</span> </span>&#123;</span><br><span class="line">    String tokenUrl = authRequest.getTokenUrl();</span><br><span class="line">    ParameterizedTypeReference typeReference = <span class="keyword">new</span> ParameterizedTypeReference&lt;ResultBean&lt;AccessToken&gt;&gt;()&#123;&#125;;</span><br><span class="line">    ResponseEntity&lt;ResultBean&lt;AccessToken&gt;&gt; entity = restTemplate.exchange(tokenUrl, HttpMethod.GET, <span class="keyword">null</span>, typeReference);</span><br><span class="line">    <span class="keyword">return</span> entity.getBody().getData();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/08/28/Java8-LocalDateTime%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/08/28/Java8-LocalDateTime%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">Java8-LocalDateTime记录</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-08-28 09:38:13" itemprop="dateCreated datePublished" datetime="2019-08-28T09:38:13+08:00">2019-08-28</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="Java8-LocalDateTime记录"><a href="#Java8-LocalDateTime记录" class="headerlink" title="Java8-LocalDateTime记录"></a>Java8-LocalDateTime记录</h1><p>文中都使用的时区都是东8区，也就是北京时间。这是为了防止服务器设置时区错误时导致时间不对，如果您是其他时区，请自行修改。</p>
-<h2 id="关键类介绍"><a href="#关键类介绍" class="headerlink" title="关键类介绍"></a>关键类介绍</h2><p>– Instant:它代表的是时间戳<br>– LocalDate:不包含具体时间的日期，比如2019-08-28。它可以用来存储生日，周年纪念日，入职日期等。<br>– LocalTime:它代表的是不含日期的时间<br>– LocalDateTime:它包含了日期及时间，不过还是没有偏移信息或者说时区。<br>– ZonedDateTime:这是一个包含时区的完整的日期时间，偏移量是以UTC/格林威治时间为基准的。</p>
-<h2 id="Java8新增的DateTimeFormatter与SimpleDateFormat的区别"><a href="#Java8新增的DateTimeFormatter与SimpleDateFormat的区别" class="headerlink" title="Java8新增的DateTimeFormatter与SimpleDateFormat的区别"></a>Java8新增的DateTimeFormatter与SimpleDateFormat的区别</h2><p>两者最大的区别是，Java8的DateTimeFormatter是线程安全的，而SimpleDateFormat并不是线程安全。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.text.DateFormat;</span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDate;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"><span class="keyword">import</span> java.time.format.DateTimeFormatter;</span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//解析日期</span></span><br><span class="line">        String dateStr= <span class="string">&quot;2016年10月25日&quot;</span>;</span><br><span class="line">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy年MM月dd日&quot;</span>);</span><br><span class="line">        LocalDate date= LocalDate.parse(dateStr, formatter);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//日期转换为字符串</span></span><br><span class="line">        LocalDateTime now = LocalDateTime.now();</span><br><span class="line">        DateTimeFormatter format = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy年MM月dd日 hh:mm a&quot;</span>);</span><br><span class="line">        String nowStr = now .format(format);</span><br><span class="line">        System.out.println(nowStr);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//ThreadLocal来限制SimpleDateFormat</span></span><br><span class="line">        System.out.println(format(<span class="keyword">new</span> Date()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//要在高并发环境下能有比较好的体验，可以使用ThreadLocal来限制SimpleDateFormat只能在线程内共享，这样就避免了多线程导致的线程安全问题。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ThreadLocal&lt;DateFormat&gt; threadLocal = <span class="keyword">new</span> ThreadLocal&lt;DateFormat&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> DateFormat <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">format</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> threadLocal.get().format(date);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="LocalDateTime获取毫秒数"><a href="#LocalDateTime获取毫秒数" class="headerlink" title="LocalDateTime获取毫秒数"></a>LocalDateTime获取毫秒数</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取秒数</span></span><br><span class="line">Long second = LocalDateTime.now().toEpochSecond(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>));</span><br><span class="line"><span class="comment">//获取毫秒数</span></span><br><span class="line">Long milliSecond = LocalDateTime.now().toInstant(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)).toEpochMilli();</span><br></pre></td></tr></table></figure>
-
-<h2 id="LocalDateTime与String互转"><a href="#LocalDateTime与String互转" class="headerlink" title="LocalDateTime与String互转"></a>LocalDateTime与String互转</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//时间转字符串格式化</span></span><br><span class="line"> DateTimeFormatter formatter = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyyMMddHHmmssSSS&quot;</span>);</span><br><span class="line"> String dateTime = LocalDateTime.now(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)).format(formatter);</span><br><span class="line"></span><br><span class="line"><span class="comment">//字符串转时间</span></span><br><span class="line">String dateTimeStr = <span class="string">&quot;2018-07-28 14:11:15&quot;</span>;</span><br><span class="line">DateTimeFormatter df = DateTimeFormatter.ofPattern(<span class="string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span>);</span><br><span class="line">LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, df);</span><br></pre></td></tr></table></figure>
-
-<h2 id="Date与LocalDateTime互转"><a href="#Date与LocalDateTime互转" class="headerlink" title="Date与LocalDateTime互转"></a>Date与LocalDateTime互转</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将java.util.Date 转换为java8 的java.time.LocalDateTime,默认时区为东8区</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalDateTime <span class="title">dateConvertToLocalDateTime</span><span class="params">(Date date)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> date.toInstant().atOffset(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)).toLocalDateTime();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将java8 的 java.time.LocalDateTime 转换为 java.util.Date，默认时区为东8区</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Date <span class="title">localDateTimeConvertToDate</span><span class="params">(LocalDateTime localDateTime)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Date.from(localDateTime.toInstant(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 测试转换是否正确</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testDateConvertToLocalDateTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Date date = DateUtils.parseDate(<span class="string">&quot;2018-08-01 21:22:22&quot;</span>, DateUtils.DATE_YMDHMS);</span><br><span class="line">    LocalDateTime localDateTime = DateUtils.dateConvertToLocalDateTime(date);</span><br><span class="line">    Long localDateTimeSecond = localDateTime.toEpochSecond(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>));</span><br><span class="line">    Long dateSecond = date.toInstant().atOffset(ZoneOffset.of(<span class="string">&quot;+8&quot;</span>)).toEpochSecond();</span><br><span class="line">    Assert.assertTrue(dateSecond.equals(localDateTimeSecond));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
