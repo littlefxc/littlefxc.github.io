@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">184</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">112</span>
+        <span class="site-state-item-count">115</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,291 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/Consul-Watches%E7%9B%91%E6%8E%A7%E4%B8%BB%E5%8A%A8%E9%80%9A%E7%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/Consul-Watches%E7%9B%91%E6%8E%A7%E4%B8%BB%E5%8A%A8%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">Consul - Watches监控主动通知</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 10:04:09" itemprop="dateCreated datePublished" datetime="2021-01-13T10:04:09+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1 概念"></a>1 概念</h1><p>当Consul中注册的服务信息发生变化的时候，我们除了定时通过接口去查询最新的服务信息之外，consul还提供了watch机制，通过监控consul数据的变化，主动通知。</p>
+<p>目前conusl watch支持两种通知方式：<strong>可执行程序</strong>和<strong>Http接口</strong>。</p>
+<p>consul watch支持监控的数据类型：</p>
+<ul>
+<li>services - 监控指定列表服务的可用性</li>
+<li>service - 监控指定服务的实例</li>
+<li>nodes - 监控节点</li>
+<li>key - 监控特定的键值对</li>
+<li>keyprefix - 监控consul配置中心的前缀</li>
+<li>checks - 监控健康检查的值</li>
+<li>event - 监控自定义用户事件</li>
+</ul>
+<p>也就是说，consul支持监控服务、键值数据、节点信息，只要发生变化，就通知我们。</p>
+<h1 id="2-基本用法"><a href="#2-基本用法" class="headerlink" title="2 基本用法"></a>2 基本用法</h1><p>我们以监控键值数据的变化为例子，介绍watch机制的用法。</p>
+<p>watch监控的配置信息是跟consul的配置文件放在一起的，通过配置文件中的watches字段，设置监控信息。</p>
+<p>说明：watches的配置，大致用法就是通过type，配置监控数据的类型，然后根据不同数据类型配置不同的参数，最后选择一种通知方式进行配置。</p>
+<h2 id="2-1-通过可执行程序通知"><a href="#2-1-通过可执行程序通知" class="headerlink" title="2.1 通过可执行程序通知"></a>2.1 通过可执行程序通知</h2><p>当我们监控的数据发生变化，consul agent会调用我们配置的可执行程序（命令、脚本等等），并且通过标准输入，以Json格式传入通知的参数， 我们只要在程序中根据参数处理业务即可。</p>
+<p>例子：</p>
+<p>下面是我们consul agent的配置，文件名是 <code>/etc/consul/watches.json</code> 。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;datacenter&quot;</span>: <span class="string">&quot;dc1&quot;</span>, </span><br><span class="line">	<span class="attr">&quot;data_dir&quot;</span>: <span class="string">&quot;/var/consul&quot;</span>, </span><br><span class="line">	<span class="attr">&quot;ui&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">&quot;watches&quot;</span>: [&#123;</span><br><span class="line">		<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;key&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;key&quot;</span>: <span class="string">&quot;foo/bar/baz&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;handler_type&quot;</span>: <span class="string">&quot;script&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;args&quot;</span>: [<span class="string">&quot;/usr/bin/my-service-handler.sh&quot;</span>, <span class="string">&quot;-redis&quot;</span>]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子的意思，监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令。</p>
+<p>参数说明：</p>
+<ul>
+<li><p>datacenter - 数据中心的名字</p>
+</li>
+<li><p>data_dir - consul数据存放目录</p>
+</li>
+<li><p>ui - 开启consul ui</p>
+</li>
+<li><p>watches - 配置监控信息，如果监控的数据发生变化，则根据配置执行通知。</p>
+<p>watches参数说明：</p>
+<ul>
+<li>type - 监控的数据类型</li>
+<li>key - 监控的键值数据的Key</li>
+<li>handler_type - 通知类型，支持script和http</li>
+<li>args - 配置通知类型为script的，执行命令，是一个数组，第一个元素是命令，后面第2个到第N个元素是命令的参数。</li>
+</ul>
+</li>
+</ul>
+<p>例子的<code>watches</code>配置的意思就是：</p>
+<p>监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令， 这个命令可以通过标准输入，接收变化的数据。</p>
+<p>启动consul，就会加载watches配置。</p>
+<h2 id="2-2-通过Http接口通知"><a href="#2-2-通过Http接口通知" class="headerlink" title="2.2 通过Http接口通知"></a>2.2 通过Http接口通知</h2><p>通过http接口通知数据变化，大体上配置跟上面一样，区别是多了一些http接口的配置参数。</p>
+<p>例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;datacenter&quot;</span>: <span class="string">&quot;dc1&quot;</span>,</span><br><span class="line">	<span class="attr">&quot;data_dir&quot;</span>: <span class="string">&quot;/Users/jogin/Documents/work/local/consul/data&quot;</span>,</span><br><span class="line">	<span class="attr">&quot;ui&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">&quot;watches&quot;</span>: [&#123;</span><br><span class="line">		<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;key&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;key&quot;</span>: <span class="string">&quot;foo/bar/baz&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;handler_type&quot;</span>: <span class="string">&quot;http&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;http_handler_config&quot;</span>: &#123;</span><br><span class="line">			<span class="attr">&quot;path&quot;</span>: <span class="string">&quot;&lt;https://localhost:8000/watch&gt;&quot;</span>,</span><br><span class="line">			<span class="attr">&quot;method&quot;</span>: <span class="string">&quot;POST&quot;</span>,</span><br><span class="line">			<span class="attr">&quot;header&quot;</span>: &#123;</span><br><span class="line">				<span class="attr">&quot;x-foo&quot;</span>: [<span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>]</span><br><span class="line">			&#125;,</span><br><span class="line">			<span class="attr">&quot;timeout&quot;</span>: <span class="string">&quot;10s&quot;</span>,</span><br><span class="line">			<span class="attr">&quot;tls_skip_verify&quot;</span>: <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子的意思，就是当<code>key=foo/bar/baz</code>的键值数据发生变化，就通过<code>https://localhost:8000/watch</code>通知我们。</p>
+<p>我们关注<code>watches</code>字段的配置信息，下面是参数说明：</p>
+<ul>
+<li><p>type - watch监控类型是key</p>
+</li>
+<li><p>key - 监控foo/bar/baz这个key</p>
+</li>
+<li><p>handler_type - 通知类型, http</p>
+</li>
+<li><p>http_handler_config - 配置http通知信息。</p>
+<p>http_handler_config参数说明：</p>
+<ul>
+<li>path - 通知Url</li>
+<li>method - http请求方法</li>
+<li>header - 自定义Http请求头，没有可以忽略</li>
+<li>timeout - 超时时间，10秒</li>
+<li>tls_skip_verify - 是否跳过tls验证</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-监控服务"><a href="#3-监控服务" class="headerlink" title="3 监控服务"></a>3 监控服务</h1><p>上面介绍了watch的基本用法，我们也可以监控服务信息的变化，例如当有人注册新的服务或者服务不可用的时候，通知我们。</p>
+<p>我们忽略掉，consul agent的配置，单独看watches的配置。</p>
+<p>监控所有的服务的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;services&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>监控单个服务的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;service&quot;,</span><br><span class="line">                &quot;service&quot;: &quot;要监控的服务名&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-监控键值数据"><a href="#4-监控键值数据" class="headerlink" title="4 监控键值数据"></a>4 监控键值数据</h1><p>前面介绍过基本Key的监控，其实我们还可以通过key的前缀，批量监控一批key，只要key的前缀相同，这些Key下面的数据发生变化，都会发送通知。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;keyprefix&quot;,</span><br><span class="line">		&quot;prefix&quot;: &quot;foo&#x2F;&quot;,</span><br><span class="line">		&quot;args&quot;: [&quot;&#x2F;usr&#x2F;bin&#x2F;my-service-handler.sh&quot;, &quot;-redis&quot;]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>监控类型为：keyprefix</p>
+<p>通过prefix字段，配置key的前缀。</p>
+<p>这个配置的意思就是：以foo/开头的Key, 数据发生变化，都会执行args参数，配置的命令。</p>
+<h1 id="5-监控节点"><a href="#5-监控节点" class="headerlink" title="5 监控节点"></a>5 监控节点</h1><p>我们也可以监控consul集群节点的变化信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;nodes&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>没有其他额外的参数，type=nodes即可，当节点信息发生变化，会根据配置的方式通知。</p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a target="_blank" rel="noopener" href="https://www.consul.io/docs/dynamic-app-config/watches">Consul by HashiCorp</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ExMan/p/11907491.html">ExplorerMan</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tizi365.com/archives/535.html">Consul Watches监控服务变化</a></p>
+<p><a target="_blank" rel="noopener" href="https://toutiao.io/posts/zeu435/preview">开发者头条</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.notion.so/Consul-6982c01eb1594549ab0a6dd463f16cfd">Consul 单机集群搭建</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/12/ES-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/12/ES-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk/" class="post-title-link" itemprop="url">ES 批量操作 bulk</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-12 22:50:04" itemprop="dateCreated datePublished" datetime="2021-01-12T22:50:04+08:00">2021-01-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><p>bulk操作和以往的普通请求格式有区别。不要格式化json，不然就不在同一行了，这个需要注意。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">action</span>: &#123; metadata &#125;&#125;\\n</span><br><span class="line">&#123; request body        &#125;\\n</span><br><span class="line">&#123; <span class="attr">action</span>: &#123; metadata &#125;&#125;\\n</span><br><span class="line">&#123; request body        &#125;\\n</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>&#123; action: &#123; metadata &#125;&#125;</code>代表批量操作的类型，可以是新增、删除或修改</li>
+<li><code>\\n</code>是每行结尾必须填写的一个规范，每一行包括最后一行都要写，用于es的解析</li>
+<li><code>&#123; request body &#125;</code>是请求body，增加和修改操作需要，删除操作则不需要</li>
+</ul>
+<h1 id="批量操作的类型"><a href="#批量操作的类型" class="headerlink" title="批量操作的类型"></a>批量操作的类型</h1><p>action 必须是以下选项之一:</p>
+<ul>
+<li>create：如果文档不存在，那么就创建它。存在会报错。发生异常报错不会影响其他操作。</li>
+<li>index：创建一个新文档或者替换一个现有的文档。</li>
+<li>update：部分更新一个文档。</li>
+<li>delete：删除一个文档。</li>
+</ul>
+<p>metadata 中需要指定要操作的文档的<code>_index 、 _type 和 _id</code>，<code>_index 、 _type</code>也可以在url中指定</p>
+<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><h2 id="create"><a href="#create" class="headerlink" title="create"></a>create</h2><ul>
+<li><p>create新增文档数据，在metadata中指定index以及type</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2001&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2002&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2002&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2002&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line"><span class="number">1234567</span></span><br></pre></td></tr></table></figure></li>
+<li><p>create创建已有id文档，在url中指定index和type</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2005&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2005&quot;</span>&#125;</span><br><span class="line"><span class="number">1234567</span></span><br></pre></td></tr></table></figure></li>
+<li><p>index创建，已有文档id会被覆盖，不存在的id则新增</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;index2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2007&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2007&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2008&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2008&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2008&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="number">12345678</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="update"><a href="#update" class="headerlink" title="update"></a>update</h2><ul>
+<li><p>update跟新部分文档数据</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;id&quot;</span>: <span class="string">&quot;3004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;nameupdate&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h2><ul>
+<li><p>delete批量删除</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="复合操作"><a href="#复合操作" class="headerlink" title="复合操作"></a>复合操作</h2><ul>
+<li><p>综合批量各种操作</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;8001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;8001&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name8001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;id&quot;</span>: <span class="string">&quot;20010&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p>官文：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/bulk.html">https://www.elastic.co/guide/cn/elasticsearch/guide/current/bulk.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1261,207 +1546,6 @@
 <h3 id="4-4-3-定制结果集"><a href="#4-4-3-定制结果集" class="headerlink" title="4.4.3 定制结果集"></a>4.4.3 定制结果集</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /index_demo/_doc/1?_source=id,name</span><br><span class="line">GET /index_demo/_doc/_search?_source=id,name</span><br></pre></td></tr></table></figure>
 
 <h3 id="4-4-4-判断文档是否存在"><a href="#4-4-4-判断文档是否存在" class="headerlink" title="4.4.4 判断文档是否存在"></a>4.4.4 判断文档是否存在</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD /index_demo/_doc/1</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/09/%E4%BB%80%E4%B9%88%E6%98%AF%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/09/%E4%BB%80%E4%B9%88%E6%98%AF%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">什么是倒排索引?</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-09 15:41:57" itemprop="dateCreated datePublished" datetime="2021-01-09T15:41:57+08:00">2021-01-09</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在学习 ES 的过程中，简单的介绍下倒排索引是怎么回事，对倒排索引有一个宏观的感受。</p>
-<h1 id="正排索引"><a href="#正排索引" class="headerlink" title="正排索引"></a>正排索引</h1><p>在讲述倒排索引之前先介绍下正排索引。正排索引就是如下表形式：</p>
-<table>
-<thead>
-<tr>
-<th>文档id</th>
-<th align="left">文档内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td align="left">什么是正排索引</td>
-</tr>
-<tr>
-<td>2</td>
-<td align="left">什么是倒排索引</td>
-</tr>
-<tr>
-<td>3</td>
-<td align="left">正排索引和倒排索引</td>
-</tr>
-</tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/01/09/%E4%BB%80%E4%B9%88%E6%98%AF%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/" class="post-title-link" itemprop="url">理解Redis的持久化机制:RDB&AOF</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-12-24 11:33:37" itemprop="dateCreated datePublished" datetime="2020-12-24T11:33:37+08:00">2020-12-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903874927525902#heading-21">https://juejin.cn/post/6844903874927525902#heading-21</a></p>
-</blockquote>
-<h1 id="什么是Redis持久化"><a href="#什么是Redis持久化" class="headerlink" title="什么是Redis持久化?"></a>什么是Redis持久化?</h1><hr>
-<p><code>Redis</code>作为一个键值对内存数据库(<code>NoSQL</code>)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg"></p>
-<p>这样做有什么问题呢？</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 

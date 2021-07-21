@@ -11847,4 +11847,109 @@ end
         <tag>JVM</tag>
       </tags>
   </entry>
+  <entry>
+    <title>基于Sharding-Jdbc的读写分离和分库分表</title>
+    <url>/2021/07/11/%E5%9F%BA%E4%BA%8ESharding-Jdbc%E7%9A%84%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E5%92%8C%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/</url>
+    <content><![CDATA[<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><ul>
+<li>是一个开源的分布式的关系型数据库的中间件</li>
+<li>已于2020年4月16日成为 Apache 软件基金会的顶级项目</li>
+<li>客户端代理模式</li>
+<li>定位为轻量级的Java框架，以 jar 包提供服务</li>
+<li>可以理解为增强版的 jdbc 驱动</li>
+<li>完全兼容各种 ORM 框架</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h2><p><img src="https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc-brief.png" alt="ShardingSphere-JDBC Architecture"></p>
+<h2 id="配置方式"><a href="#配置方式" class="headerlink" title="配置方式"></a>配置方式</h2><ul>
+<li>Java API</li>
+<li>Yaml</li>
+<li>Spring Boot</li>
+<li>Spring</li>
+</ul>
+<h2 id="与-Mycat-的区别"><a href="#与-Mycat-的区别" class="headerlink" title="与 Mycat 的区别"></a>与 Mycat 的区别</h2><ul>
+<li><p>MyCat 是服务端的代理，Sharding-Jdbc 是客户端代理</p>
+</li>
+<li><p>MyCat 不支持同一库内的水平切分，Sharding-Jdbc 支持</p>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>读写分离</tag>
+        <tag>分库分表</tag>
+        <tag>sharing-jdbc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>分布式全局ID</title>
+    <url>/2021/07/18/%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%A8%E5%B1%80ID/</url>
+    <content><![CDATA[<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><p>在分库分表的过程中，因为拆分的实体表的ID有可能是重复的，正式由于这个问题才会有分布式全局ID这个方案的出现。</p>
+<span id="more"></span>
+
+<h1 id="2-概要"><a href="#2-概要" class="headerlink" title="2 概要"></a>2 概要</h1><ul>
+<li><p>分库分表的系统中，由于id引发的问题</p>
+<p>它是由于什么原因导致的？它会对业务系统引发什么问题？</p>
+</li>
+<li><p>分布式ID的解决方案</p>
+<ol>
+<li>使用UUID作为id实现主键全局ID唯一性保证</li>
+<li>通过统一ID序列表，实现全局ID</li>
+<li>雪花算法作为全局ID</li>
+<li>多种方案的比较</li>
+</ol>
+</li>
+</ul>
+<h1 id="3-分库分表的系统中，由于id引发的问题"><a href="#3-分库分表的系统中，由于id引发的问题" class="headerlink" title="3 分库分表的系统中，由于id引发的问题"></a>3 分库分表的系统中，由于id引发的问题</h1><p>它是由于什么原因导致的？它会对业务系统引发什么问题？</p>
+<ul>
+<li>每个表通常都会有唯一标识，通常使用id</li>
+<li>ID通常采用自增的方式</li>
+<li>在分库分表的情况下，每张表的id都是从0开始自增的</li>
+<li>两个分片表中存在相同的 id</li>
+<li>从而导致业务混乱</li>
+</ul>
+<h1 id="4-分布式ID的解决方案"><a href="#4-分布式ID的解决方案" class="headerlink" title="4 分布式ID的解决方案"></a>4 分布式ID的解决方案</h1><h2 id="4-1-UUID"><a href="#4-1-UUID" class="headerlink" title="4.1 UUID"></a>4.1 UUID</h2><ul>
+<li><p>UUID 通用唯一识别码（Universally Unique Identifier）。</p>
+</li>
+<li><p>使用 UUID，保证每一条的记录id都是不同的。</p>
+</li>
+<li><p>缺点1：只是单纯的一个id，没有实际意义。长度32位，太长。</p>
+</li>
+<li><p>mycat不支持UUID的方式。</p>
+</li>
+<li><p>sharding-Jdbc支持UUID的方式。</p>
+</li>
+</ul>
+<h2 id="4-2-统一ID序列"><a href="#4-2-统一ID序列" class="headerlink" title="4.2 统一ID序列"></a>4.2 统一ID序列</h2><ul>
+<li><p>ID 的值统一的从一个集中的ID序列生成器中获取</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/bH5oQj-20210718211022587.png"></p>
+</li>
+<li><p>ID序列生成器MyCat支持，Sharding-Jdbc不支持</p>
+</li>
+<li><p>MyCat中有两种方式：本地文件方式、数据库方式</p>
+</li>
+<li><p>本地文件方式用于测试、数据库方式用于生产</p>
+</li>
+<li><p>优点：ID集中管理，避免重复</p>
+</li>
+<li><p>缺点：并发量大时，ID生成器压力较大</p>
+</li>
+</ul>
+<h2 id="4-3-雪花算法"><a href="#4-3-雪花算法" class="headerlink" title="4.3 雪花算法"></a>4.3 雪花算法</h2><ul>
+<li>SnowFlake是由Twitter提出的分布式ID算法</li>
+<li>一个64 bit 的 long 型的数字（是二进制数，在程序中会转化为10进制数）</li>
+<li>引入了时间戳，保持自增</li>
+</ul>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/ZvQWuo.png"></p>
+<ul>
+<li>基本保持全局唯一，毫秒内并发最大 4096 个ID</li>
+<li>时间回调，可能引起ID重复</li>
+<li>MyCat 和 Sharding-Jdbc 均支持雪花算法</li>
+<li>Sharding-Jdbc 可设置最大容忍回调时间</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>分布式</tag>
+        <tag>分布式全局ID</tag>
+      </tags>
+  </entry>
 </search>
