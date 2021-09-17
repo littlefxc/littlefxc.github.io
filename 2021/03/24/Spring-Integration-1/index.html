@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="Spring Integration 对 Spring 编程模型进行了扩展，使得后者能够支持著名的“企业集成模式”。通过SI（Spring Integration）可以在基于Spring的应用中引入轻量级的“消息驱动模式”，并且支持“通过声明式的适配器”与外部系统进行集成。这些“适配器”相较于Spring对于“remoting（远程调用）”、“messaging（事件消息）”、“schedulin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Integration(1)">
+<meta property="og:url" content="http://littlefxc.github.io/2021/03/24/Spring-Integration-1/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="Spring Integration 对 Spring 编程模型进行了扩展，使得后者能够支持著名的“企业集成模式”。通过SI（Spring Integration）可以在基于Spring的应用中引入轻量级的“消息驱动模式”，并且支持“通过声明式的适配器”与外部系统进行集成。这些“适配器”相较于Spring对于“remoting（远程调用）”、“messaging（事件消息）”、“schedulin">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://static.oschina.net/uploads/space/2015/0322/223850_R9Qy_2321188.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/space/2015/0322/223916_9OKQ_2321188.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/space/2015/0323/172825_iYGd_2321188.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/space/2015/0323/173009_YRjT_2321188.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/space/2015/0323/173045_17jf_2321188.jpg">
+<meta property="og:image" content="http://static.oschina.net/uploads/space/2015/0323/173125_WtFa_2321188.jpg">
+<meta property="article:published_time" content="2021-03-24T08:57:18.000Z">
+<meta property="article:modified_time" content="2021-03-25T14:19:43.075Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="spring">
+<meta property="article:tag" content="spring integration">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://static.oschina.net/uploads/space/2015/0322/223850_R9Qy_2321188.jpg">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/03/24/Spring-Integration-1/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Spring Integration(1) | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Spring-Integration-%E6%A6%82%E8%A7%88"><span class="nav-text">2. Spring Integration 概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-1-%E8%83%8C%E6%99%AF"><span class="nav-text">2.1 背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-2-%E7%9B%AE%E6%A0%87%E4%B8%8E%E5%8E%9F%E5%88%99"><span class="nav-text">2.2 目标与原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-3-%E4%B8%BB%E8%A6%81%E7%BB%84%E4%BB%B6"><span class="nav-text">2.3 主要组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-%E6%B6%88%E6%81%AF"><span class="nav-text">2.3.1 消息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E6%B6%88%E6%81%AF%E9%80%9A%E9%81%93"><span class="nav-text">2.3.2 消息通道</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E6%B6%88%E6%81%AF%E7%BB%88%E7%AB%AF"><span class="nav-text">2.3.2 消息终端</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-4-%E5%90%84%E7%A7%8D%E6%B6%88%E6%81%AF%E7%BB%88%E7%AB%AF%E7%AE%80%E4%BB%8B"><span class="nav-text">2.4 各种消息终端简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-%E8%BD%AC%E6%8D%A2%E5%99%A8%EF%BC%88Transformer%EF%BC%89"><span class="nav-text">2.4.1 转换器（Transformer）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-%E8%BF%87%E6%BB%A4%E5%99%A8%EF%BC%88Filter%EF%BC%89"><span class="nav-text">2.4.2 过滤器（Filter）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-3-%E8%B7%AF%E7%94%B1%E5%99%A8%EF%BC%88Router%EF%BC%89"><span class="nav-text">2.4.3 路由器（Router）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-4-%E6%B6%88%E6%81%AF%E5%88%86%E8%A7%A3%E5%99%A8%EF%BC%88Splitter%EF%BC%89"><span class="nav-text">2.4.4 消息分解器（Splitter）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-5-%E6%B6%88%E6%81%AF%E8%81%9A%E5%90%88%E5%99%A8%EF%BC%88Aggregator%EF%BC%89"><span class="nav-text">2.4.5 消息聚合器（Aggregator）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-6-%E6%9C%8D%E5%8A%A1%E6%BF%80%E6%B4%BB%E5%99%A8%EF%BC%88Service-Activitor%EF%BC%89"><span class="nav-text">2.4.6 服务激活器（Service Activitor）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-7-%E9%80%9A%E9%81%93%E9%80%82%E9%85%8D%E5%99%A8%EF%BC%88Channel-Adapter%EF%BC%89"><span class="nav-text">2.4.7 通道适配器（Channel Adapter）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-5-%E5%85%B3%E4%BA%8E%E9%85%8D%E7%BD%AE"><span class="nav-text">2.5 关于配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-6-%E7%BC%96%E7%A8%8B%E5%AE%9E%E8%B7%B5"><span class="nav-text">2.6 编程实践</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/24/Spring-Integration-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring Integration(1)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-24 16:57:18" itemprop="dateCreated datePublished" datetime="2021-03-24T16:57:18+08:00">2021-03-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 22:19:43" itemprop="dateModified" datetime="2021-03-25T22:19:43+08:00">2021-03-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><em>Spring Integration 对 Spring 编程模型进行了扩展，使得后者能够支持著名的“<a target="_blank" rel="noopener" href="https://www.oschina.net/action/GoToLink?url=http://www.eaipatterns.com/">企业集成模式</a>”。通过SI（Spring Integration）可以在基于Spring的应用中引入轻量级的“消息驱动模式”，并且支持“通过声明式的适配器”与外部系统进行集成。这些“适配器”相较于Spring对于“remoting（远程调用）”、“messaging（事件消息）”、“scheduling（任务调度）”方面的支持，提供了更高层次的一种抽象。SI的首要目标是：为“构建企业集成方案、维护系统间通信”提供一种<strong>简单模型</strong>，应用该模型所产出的代码是<strong>可维护、可测试的</strong>。</em></p>
+<span id="more"></span>
+
+<h1 id="2-Spring-Integration-概览"><a href="#2-Spring-Integration-概览" class="headerlink" title="2. Spring Integration 概览"></a><strong>2. Spring Integration 概览</strong></h1><h1 id="2-1-背景"><a href="#2-1-背景" class="headerlink" title="2.1 背景"></a><strong>2.1 背景</strong></h1><p>IoC——“控制反转”，是Spring Framework的一个关键特性。这种IoC，从广义上来说，意味着Spring Framework将负责代表被其上下文所管理的各种组件，而组件本身却由于被减轻了部分职责而简单化了。例如：“依赖注入”使得组件摆脱了定位与创建自身依赖的职责。再比如：“面向切面编程”则通过可复用切面的透明织入，使得业务与横切交叉点解耦，使得业务组件避免了被普遍的耦合横切，做到了更好的模块化。在上述各种情况下，最终结果都是：系统更容易被测试、理解、维护和扩展。</p>
+<p>此外，Spring Framework及相关工具包为构建企业应用提供了一个无所不包的编程模型。开发者受益于这个模型的一致性。尤其是该模型以公认的最佳实践为基础，使得开发者受益匪浅，比如“面向接口编程”，“尽量使用聚合而不是继承”等等。来自Spring的简化抽象与强大类库，不仅增强了系统的可测试性和可移植性，同时也大大提高了开发者的生产力。</p>
+<p>Spring Integration秉承了与前文所述相同的目标和原则。它将Spring的编程模型拓展到了消息领域，在Spring现有的企业集成支持基础上构建了更高次的抽象。在它所支持的消息驱动架构中，“控制反转”被应用于运行期的关键连接处，例如：在何时特定的业务逻辑应该执行，以及响应结果应该被发送到何处。它提供了消息路由和消息转换方面的支持，所以不同的传输协议和不同的数据格式都能在不影响易测试性的前提下被集成。换句话说，消息和集成点都被框架所处理，所以业务组件能很好地与基础设施隔离，从而使得开发者能够从复杂的集成工作中解脱出来。</p>
+<p>作为Spring编程模型的扩展，Spring Integration提供了多种配置方式可供选择，包括注解、基于命名空间的XML、通用Bean元素的XML，当然也可以直接使用底层API。底层的API都均是基于“精心定义的策略接口”与“保证了非侵入性的代理适配器”。Spring Integration的设计启发于“Spring中的普遍模式”与“企业集成模式”间强烈的共鸣。“企业集成模式”是由Gregor Hohpe和Bobby Woolf在《企业集成模式》一书中提出的，该书由Addison Wesley出版社于2004年出版。读过此书的开发者应该能更快地适应Spring Integration的概念和术语。</p>
+<h1 id="2-2-目标与原则"><a href="#2-2-目标与原则" class="headerlink" title="2.2 目标与原则"></a><strong>2.2 目标与原则</strong></h1><p>Spring Integration 面向如下目标：</p>
+<ul>
+<li>提供一个简单的模型来实现复杂的企业集成解决方案</li>
+<li>为基于Spring的应用提供异步、消息驱动方面的基础支持</li>
+<li>让现有的Spring用户可以更容易、直观的掌握，并让更多的用户去使用</li>
+</ul>
+<p>Spring Integration 遵循以下原则：</p>
+<ul>
+<li>组件间应该是模块化、松耦合的，且可测试的</li>
+<li>框架应该保证分离“业务逻辑”和“集成逻辑”</li>
+<li>扩展点本质上应该是抽象的，而且限定在一个清晰的边界内，进而提升可复用性和可移植性</li>
+</ul>
+<h1 id="2-3-主要组件"><a href="#2-3-主要组件" class="headerlink" title="2.3 主要组件"></a><strong>2.3 主要组件</strong></h1><p>从垂直的视角来看，“分层架构”会更有利于关键点的剥离，各层间通过基于接口的契约来确保松耦合。基于Spring的应用就是如此设计的典型。Spring Framework与相关工具包从全栈范围为企业应用提供了一个遵从最佳实践强大基础。“消息驱动架构”则为我们带来了一个“横向的视角”。正如“分层架构”是一种极通用、极抽象的范式一样，消息系统非常符合同样抽象的“管道-过滤器”模型。“过滤器”代表任何能够产出和（或）消费消息的组件。“管道”则负责在过滤器间传输消息。所以在管道的作用下，各“过滤器”组件间保持松耦合。有必要指出的是，这两个高级范式（分层架构与消息驱动架构）并非互斥。支持“管道”的消息基础设施应当被封装在相应的垂直“层”中，且该层对外的契约被定义为接口。同样地，“过滤器”往往被安排于“应用服务层”之上的（业务）层中进行管理，并且与底层服务的交互方式与它类无异。</p>
+<h3 id="2-3-1-消息"><a href="#2-3-1-消息" class="headerlink" title="2.3.1 消息"></a><strong>2.3.1 消息</strong></h3><p>在Spring Integration中，“消息”是对任何Java对象的一种通用包装，这种包装将会给Java对象附着一些元信息以供消息框架处理。一条“消息”由“消息体”（payload）和“消息头”（header）组成。消息体可以是任何类型，消息头一般用于保存一些必要信息，比如id、时间戳、过期时间和返回地址等。消息头也可以用来在不同的传输协议之间传递参数。比如，当需要包装一个文件来创建一个消息时，可以将文件名保存于消息头中，以供下游的消息组件读取使用。再比如，如果一个消息的内容会最终被Mail适配器发出，那么各种属性值（to、from、cc、subject等）可被上游的消息组件保存在消息头中。开发者可以利用消息头来保存任意的键值对。</p>
+<p><img src="http://static.oschina.net/uploads/space/2015/0322/223850_R9Qy_2321188.jpg" alt="http://static.oschina.net/uploads/space/2015/0322/223850_R9Qy_2321188.jpg"></p>
+<h3 id="2-3-2-消息通道"><a href="#2-3-2-消息通道" class="headerlink" title="2.3.2 消息通道"></a><strong>2.3.2 消息通道</strong></h3><p>“消息通道”对应着“管道-过滤器”架构中的“管道角色”。消息生产者发送消息到通道，消息消费者从通道接收消息。从而，消息通道解耦了消息组件，同时也为消息拦截和监控提供了便利的切入点。</p>
+<p><img src="http://static.oschina.net/uploads/space/2015/0322/223916_9OKQ_2321188.jpg" alt="http://static.oschina.net/uploads/space/2015/0322/223916_9OKQ_2321188.jpg"></p>
+<p>一个消息通道可以是“点对点”意义的，或者也可以是“发布-订阅”意义的。</p>
+<ul>
+<li>如果是点对点模式的通道，发布到通道中的每个消息，最多只有一个消费者可以接收。</li>
+<li>如果是发布-订阅模式的通道，则会尝试广播消息给其所有的订阅者。</li>
+</ul>
+<p>Spring Integration对这两种模式均提供支持。</p>
+<p>鉴于“点对点模式”和“发布订阅模式”提供了两种关于“最终有多少消息消费者接收消息”的选择，此处还有另外一项重要考虑：通道是否应该缓存消息？在Spring Integration中，轮询通道（Pollable Channels）具备缓存消息能力。缓存的优势在于它能够调节接入消息流量，从而避免消息消费者负荷过载。然而，正如其名称所示，这也会引入了一些复杂性，只有配置了轮询器后，消息消费者才能从这个通道中接收消息。而另一方面，订阅通道（Subscribable Channel）要求连接它的消费者依从简单的消息驱动模式。Spring Integration中还有多种通道的可用实现，将在第3.2章节“消息通道实现”中详细讨论。</p>
+<h3 id="2-3-2-消息终端"><a href="#2-3-2-消息终端" class="headerlink" title="2.3.2 消息终端"></a><strong>2.3.2 消息终端</strong></h3><p>Spring Integration的主要目标之一是通过“控制反转”来简化企业集成解决方案的开发。这意味着你应该不需要直接实现消息消费者和生产者，更不需要构建消息或者在消息通道上调用发送与接收操作。相反地，你只需要关注于你基于普通对象（POJO）实现的特定领域模型。然后，通过声明式配置，你可以“连接”业务领域代码到Spring Integration提供的消息基础设施。而负责这些连接的组件就是“消息终端”。这并不是说你必须直接性地连接现有应用。任何真实的企业集成解决方案，都需要一些用于集成相关的逻辑代码，例如路由选择和协议转换。其中暗含的要点就是：实现集成逻辑和业务逻辑的分离。类比来说，作为Web应用中的MVC模式，其目标应该是提供一个简单而专用的层，转换接入的请求到服务层调用，然后再转换服务层响应到请求端。下一节将概述处理这些响应的各种消息终端类型，且在以后的章节中，将为你展示如何使用Spring Integration的声明式配置来保证非侵入性的效果。</p>
+<h1 id="2-4-各种消息终端简介"><a href="#2-4-各种消息终端简介" class="headerlink" title="2.4 各种消息终端简介"></a><strong>2.4 各种消息终端简介</strong></h1><p>“消息终端”对应着“管道-过滤器”架构中的“过滤器”角色。就像前文提到的，消息终端的的主要作用在于“连接”业务领域代码到Spring Integration提供的消息基础设施，当然前提是使用非侵入的方式。换句话说，应用代码应该完全不会知晓消息对象或者消息通道的存在。这类似于MVC模式中控制器角色的处理范式，例如：</p>
+<ul>
+<li>“消息端点处理消息”就像“控制器处理HTTP请求”。</li>
+<li>“消息终端被映射到消息通道”就像“控制器被映射到URL Pattern”</li>
+</ul>
+<p>上述两个例子中存在相同的目标：隔离“业务应用代码”与“基础设置”。《企业应用集成》一书中详细地讨论了这其中涉及的各种概念与模式。本文只概括地描述Spring Integration支持的主要消息终端类型和作用。本章节内的详细描述将提供代码与配置样例。</p>
+<h3 id="2-4-1-转换器（Transformer）"><a href="#2-4-1-转换器（Transformer）" class="headerlink" title="2.4.1 转换器（Transformer）"></a><strong>2.4.1 转换器（Transformer）</strong></h3><p>“消息转换器”的作用在于“转换消息的内容或结构，返回翻转换后的消息”。可能最为常见的转换器应用方式就是将消息体（Message Payload）从一种格式转换为另一种格式（例如从XML文档转换成java.lang.String字符串）。同样地，转换器也可以被用于添加、删除和修改消息头（Message Header）中的值。</p>
+<h3 id="2-4-2-过滤器（Filter）"><a href="#2-4-2-过滤器（Filter）" class="headerlink" title="2.4.2 过滤器（Filter）"></a><strong>2.4.2 过滤器（Filter）</strong></h3><p>“消息过滤器”可用来限定消息能否被传送到输出通道上。这里仅需要依据一个布尔测试来做判定。该布尔测试检查的范围诸如：“消息是否包含特定类型的消息体”，“检查消息中的某个属性值”，“消息是否包含某个消息头”，等等。如果消息通过检查就会被发送到输出通道，否则，消息将被丢弃（或者更加严格地说，应当抛出异常）。消息过滤器通常结合“发布-订阅通道”一起使用，“发布-订阅通道”会使得多个消费者接收到同样的消息，而基于一定的过滤条件设置过滤器则可以减少所需处理的消息数量。</p>
+<blockquote>
+<p>注意：前段提到的“消息过滤器”与“管道-过滤器”架构中的‘过滤器’并非一致的概念。“消息过滤器”是指限制消息通过的消息处理装置，而“管道-过滤器”中的‘过滤器’是泛指所有处理消息的消息处理装置。</p>
+</blockquote>
+<h3 id="2-4-3-路由器（Router）"><a href="#2-4-3-路由器（Router）" class="headerlink" title="2.4.3 路由器（Router）"></a><strong>2.4.3 路由器（Router）</strong></h3><p>“消息路由器”负责确定消息的下一步传送将由哪些通道接收。通常，路由决策都是基于消息内容和（或）消息头中可用的元数据来完成的。消息路由常常代替静态的配置，作为一种动态地、运行时确定输出通道的装置，接入到“服务激活器”或者其他能够响应消息的装置。另外，针对前文所述的消息多播的场景，相对于被动的“消息过滤器”，“消息路由器”提供了一种主动的控制方式，来确定多个消息订阅者中的消息接收范围。</p>
+<p><img src="http://static.oschina.net/uploads/space/2015/0323/172825_iYGd_2321188.jpg" alt="http://static.oschina.net/uploads/space/2015/0323/172825_iYGd_2321188.jpg"></p>
+<h3 id="2-4-4-消息分解器（Splitter）"><a href="#2-4-4-消息分解器（Splitter）" class="headerlink" title="2.4.4 消息分解器（Splitter）"></a><strong>2.4.4 消息分解器（Splitter）</strong></h3><p>“消息分解器”是另外一种类型的消息终端，它从对应输入通道中接收消息，然后把接收到的一个消息分解成多个消息，最终把它们发送到对应输出通道上。典型应用场景就是把一个“复合消息”分解成包含原消息各子部分的一组“子消息”。</p>
+<h3 id="2-4-5-消息聚合器（Aggregator）"><a href="#2-4-5-消息聚合器（Aggregator）" class="headerlink" title="2.4.5 消息聚合器（Aggregator）"></a><strong>2.4.5 消息聚合器（Aggregator）</strong></h3><p>“消息聚合器”基本上就是“消息分解器”的反模式。它也是一种消息终端类型，接收多条消息，然后把他们合并成一条消息。事实上，聚合器通常出现在消息管道线路中的下游位置，且相对该组件的上游位置往往会存在“消息分解器”。从技术上来说，聚合器往往比分解器更复杂，因为它需要维护状态（也就是维护正被聚合的消息），确定被聚合的整组消息何时可用，以及必要地话，还要处理超时的状况。更进一步地，在超时的情况下，聚合器还要明确是仍然发送残缺消息，或是丢弃它们。对此，Spring Integration提供了可配置的超时处理策略。</p>
+<h3 id="2-4-6-服务激活器（Service-Activitor）"><a href="#2-4-6-服务激活器（Service-Activitor）" class="headerlink" title="2.4.6 服务激活器（Service Activitor）"></a><strong>2.4.6 服务激活器（Service Activitor）</strong></h3><p>“服务激活器”是一种将“服务实例”连接到“消息系统”的通用终端。对于该类型的终端，配置输入通道是必须的。而且，若被调用的服务方法具有返回值，那么此情况下或需要配置输出通道。</p>
+<blockquote>
+<p>注意：输出通道的配置是可选的。因为每则消息在消息头中可能会提供它自身的“返回地址”(Return Address)信息。这个规则同样适用于其他的消费终端。</p>
+</blockquote>
+<p>服务激活器会调用指定服务对象上的操作，来处理请求消息。该过程中会抽取请求消息的消息体并作必要的转换（若方法参数非消息类型参数）。每当服务方法产生返回值，这个返回值同样地会作出必要的转换，而成为一条响应消息（若方法返回值非消息类型）。响应消息将会被发送到输出通道上；若没有配置输出通道，且消息的“返回地址”可用，那么该响应将会被发送到返回地址指定的通道上。</p>
+<p><img src="http://static.oschina.net/uploads/space/2015/0323/173009_YRjT_2321188.jpg" alt="http://static.oschina.net/uploads/space/2015/0323/173009_YRjT_2321188.jpg"></p>
+<h3 id="2-4-7-通道适配器（Channel-Adapter）"><a href="#2-4-7-通道适配器（Channel-Adapter）" class="headerlink" title="2.4.7 通道适配器（Channel Adapter）"></a><strong>2.4.7 通道适配器（Channel Adapter）</strong></h3><p>“通道适配器”是一种连接消息通道到“其他系统”或是“传输端口”的消息终端。通道适配器分为“接入”或者“接出”两种。通常通道适配器被用来映射消息到其他任何发送/接收系统所需的对象或资源上（比如：文件、HTTP请求，JMS消息等等）。依赖于传输端口的情况下，通道适配器也可以填充或是抽取消息头中的值。Spring Integration提供了一些通道适配器，以后的章节中会讲述它们。</p>
+<p><img src="http://static.oschina.net/uploads/space/2015/0323/173045_17jf_2321188.jpg" alt="http://static.oschina.net/uploads/space/2015/0323/173045_17jf_2321188.jpg"></p>
+<p><em>接入型通道适配器连接源系统到消息系统中</em></p>
+<p><img src="http://static.oschina.net/uploads/space/2015/0323/173125_WtFa_2321188.jpg" alt="http://static.oschina.net/uploads/space/2015/0323/173125_WtFa_2321188.jpg"></p>
+<p><em>接出型通道适配器连接消息系统到目标系统中</em></p>
+<h1 id="2-5-关于配置"><a href="#2-5-关于配置" class="headerlink" title="2.5 关于配置"></a><strong>2.5 关于配置</strong></h1><p>贯穿本篇文档，都利用了XML命名空间的支持，来声明Spring Integration消息流中的各种元素。这背后由一系列命名空间解析器给予支撑，这些解析器自动生成了实现了特定组件功能的Bean定义。</p>
+<p>当Spring Integration的名字空间元素被第一次解析时，框架将会自动声明若干bean，这些bean会被用来支撑运行时环境（比如：任务调度器、隐式通道构造器，等等）。</p>
+<p>从4.0版本开始，当使用注解类，添加@EnableIntegration注解时，以上这些支撑bean也同样被创建。这样会利于使用纯Java配置来声明一个简单的Spring Integration消息流。另外，当存一个“父上下文”和多个“子上下文”时@EnableIntegration注解可以使得Spring Integration组件仅需声明一次。</p>
+<h1 id="2-6-编程实践"><a href="#2-6-编程实践" class="headerlink" title="2.6 编程实践"></a><strong>2.6 编程实践</strong></h1><p>通常的建议是：务必使用POJOs（plain old java objects），不到万不得已之时不要在自己的代码中引入框架依赖。</p>
+<p>如果你确实已经在自己的类中引用了框架，那么下面的建议可供参考：</p>
+<ul>
+<li>如果实现了“ApplicationContextAware”接口，那么不要在setApplicationContext()方法中使用ApplicationContext对象；在这个方法里仅保存该引用，延迟对该对象的使用。</li>
+<li>如果实现了“InitializingBean”接口或者使用@PostConstruct注解了方法，那么不要从这种初始化方法中发送任何消息出去，因为这些方法执行时应用上下文尚没有完成初始化，此时发送消息很可能会失败。如果需要在启动时刻发送消息，那么实现“ApplicationListener”接口，等待“ContextRefreshedEvent”事件发生时即可。或者，另外一种方式是，实现“SmartLifecycle”接口，将bean置于晚期阶段，然后在send()方法中发送消息。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/spring/" rel="tag"># spring</a>
+              <a href="/tags/spring-integration/" rel="tag"># spring integration</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/" rel="prev" title="Spring Boot 中如何统一 API 接口响应格式？">
+                  <i class="fa fa-chevron-left"></i> Spring Boot 中如何统一 API 接口响应格式？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/26/opentsdb/" rel="next" title="opentsdb">
+                  opentsdb <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

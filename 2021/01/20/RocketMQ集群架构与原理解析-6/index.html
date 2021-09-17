@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="初识 RocketMQRocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自主研发的一款适用于高并发、高可靠性、海量数据场景的消息中间件。早期开源2.x版本名为MetaQ；15年迭代3.x版本，更名为RocketMQ，16年开始贡献到Apache，经过1年多的孵化，最终成为Apache顶级的开源项目，更新非常频繁，社区活跃度也非常高；目前最新版本为4.5.1-release版本（2019">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ集群架构与原理解析(6)">
+<meta property="og:url" content="http://littlefxc.github.io/2021/01/20/RocketMQ%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90-6/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="初识 RocketMQRocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自主研发的一款适用于高并发、高可靠性、海量数据场景的消息中间件。早期开源2.x版本名为MetaQ；15年迭代3.x版本，更名为RocketMQ，16年开始贡献到Apache，经过1年多的孵化，最终成为Apache顶级的开源项目，更新非常频繁，社区活跃度也非常高；目前最新版本为4.5.1-release版本（2019">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5df8404409bd481303400274.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5df8407b0950a18b08540381.png">
+<meta property="article:published_time" content="2021-01-20T12:30:21.000Z">
+<meta property="article:modified_time" content="2021-03-25T13:15:49.000Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="mq">
+<meta property="article:tag" content="rocketmq">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/01/20/RocketMQ%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90-6/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>RocketMQ集群架构与原理解析(6) | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E8%AF%86-RocketMQ"><span class="nav-text">初识 RocketMQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E7%A7%80%E7%9A%84%E8%83%BD%E5%8A%9B%E4%B8%8E%E6%94%AF%E6%8C%81"><span class="nav-text">优秀的能力与支持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%93%E4%B8%9A%E6%9C%AF%E8%AF%AD"><span class="nav-text">专业术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RocketMQ%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E5%8C%85%E5%8F%8A%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E"><span class="nav-text">RocketMQ核心源码包及功能说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="nav-text">集群架构模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E6%80%9D%E8%80%83"><span class="nav-text">集群架构思考</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%AC%E8%8A%82%E7%9F%A5%E8%AF%86%E7%82%B9%E5%9B%9E%E9%A1%BE"><span class="nav-text">本节知识点回顾</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A5%E5%85%85%E8%AF%BE%E5%A4%96%E8%B5%84%E6%96%99"><span class="nav-text">补充课外资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/RocketMQ%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RocketMQ集群架构与原理解析(6)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-20 20:30:21" itemprop="dateCreated datePublished" datetime="2021-01-20T20:30:21+08:00">2021-01-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="初识-RocketMQ"><a href="#初识-RocketMQ" class="headerlink" title="初识 RocketMQ"></a>初识 RocketMQ</h1><p>RocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自主研发的一款适用于高并发、高可靠性、海量数据场景的消息中间件。早期开源2.x版本名为MetaQ；15年迭代3.x版本，更名为RocketMQ，16年开始贡献到Apache，经过1年多的孵化，最终成为Apache顶级的开源项目，更新非常频繁，社区活跃度也非常高；目前最新版本为4.5.1-release版本（2019-7-20日前）。RocketMQ参考借鉴了优秀的开源消息中间件Apache Kafka（这也是我们后面课程中重点要讲解的内容哦），其消息的路由、存储、集群划分都借鉴了Kafka优秀的设计思路，并结合自身的 “双十一” 场景进行了合理的扩展和API丰富。</p>
+<h1 id="优秀的能力与支持"><a href="#优秀的能力与支持" class="headerlink" title="优秀的能力与支持"></a>优秀的能力与支持</h1><p>接下来我们一起来看一下RocketMQ优秀的能力吧 ~</p>
+<ul>
+<li>支持集群模型、负载均衡、水平扩展能力</li>
+<li>亿级别的消息堆积能力</li>
+<li>采用零拷贝的原理、顺序写盘、随机读（索引文件）</li>
+<li>丰富的API使用</li>
+<li>代码优秀，底层通信框架采用Netty NIO框架</li>
+<li>NameServer 代替 Zookeeper</li>
+<li>强调集群无单点，可扩展，任意一点高可用，水平可扩展</li>
+<li>消息失败重试机制、消息可查询</li>
+<li>开源社区活跃度、是否足够成熟（经过双十一考验）</li>
+</ul>
+<h1 id="专业术语"><a href="#专业术语" class="headerlink" title="专业术语"></a>专业术语</h1><p>任何一种技术框架，都有 “她” 的专有名词，在你刚开始接触 “她” 的时候，一定要了解 “她” 的专业术语，这样能够更快速、更高效的和 “她” 愉快的玩耍…</p>
+<ul>
+<li>Producer：消息生产者，负责产生消息，一般由业务系统负责产生消息。</li>
+<li>Consumer：消息消费者，负责消费消息，一般是后台系统负责异步消费。</li>
+<li>Push Consumer：Consumer的一种，需要向Consumer对象注册监听。</li>
+<li>Pull Consumer：Consumer的一种，需要主动请求Broker拉取消息。</li>
+<li>Producer Group：生产者集合，一般用于发送一类消息。</li>
+<li>Consumer Group：消费者集合，一般用于接受一类消息进行消费。</li>
+<li>Broker ： MQ消息服务（中转角色，用于消息存储与生产消费转发）。</li>
+</ul>
+<h1 id="RocketMQ核心源码包及功能说明"><a href="#RocketMQ核心源码包及功能说明" class="headerlink" title="RocketMQ核心源码包及功能说明"></a>RocketMQ核心源码包及功能说明</h1><p>如下图所示，我们要带小伙伴们一起来看看RocketMQ源码包的组成，这样更方便我们日后对他有一个深入的学习。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png" alt="https://climg.mukewang.com/5df8401d0919472f03410264.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8404409bd481303400274.png" alt="https://climg.mukewang.com/5df8404409bd481303400274.png"></p>
+<ul>
+<li>rocketmq-broker 主要的业务逻辑，消息收发，主从同步, pagecache</li>
+<li>rocketmq-client 客户端接口，比如生产者和消费者</li>
+<li>rocketmq-common 公用数据结构等等</li>
+<li>rocketmq-distribution 编译模块，编译输出等</li>
+<li>rocketmq-example 示例，比如生产者和消费者</li>
+<li>rocketmq-fliter 进行Broker过滤的不感兴趣的消息传输，减小带宽压力</li>
+<li>rocketmq-logappender、rocketmq-logging日志相关</li>
+<li>rocketmq-namesrv Namesrv服务，用于服务协调</li>
+<li>rocketmq-openmessaging 对外提供服务</li>
+<li>rocketmq-remoting 远程调用接口，封装Netty底层通信</li>
+<li>rocketmq-srvutil 提供一些公用的工具方法，比如解析命令行参数</li>
+<li>rocketmq-store 消息存储核心包</li>
+<li>rocketmq-test 提供一些测试代码包</li>
+<li>rocketmq-tools 管理工具，比如有名的mqadmin工具</li>
+</ul>
+<h1 id="集群架构模型"><a href="#集群架构模型" class="headerlink" title="集群架构模型"></a>集群架构模型</h1><p>RocketMQ为我们提供了丰富的集群架构模型，包括单点模式、主从模式、双主模式、以及生产上使用最多的双主双从模式（或者说多主多从模式），在这里我们仅介绍一下经典的双主双从集群模型，如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8407b0950a18b08540381.png" alt="https://climg.mukewang.com/5df8407b0950a18b08540381.png"></p>
+<ul>
+<li>Producer集群就是生产者集群（他们在同一个生产者组 Producer Group）</li>
+<li>Consumer集群就是消费者集群（他们在同一个消费者组 Consumer Group）</li>
+<li>NameServer集群作为超轻量级的配置中心，只做集群元数据存储和心跳工作，不必保障节点间数据强一致性，也就是说NameServer集群是一个多机热备的概念。</li>
+<li>对于Broker而言，通常Master与Slave为一组服务，他们互为主从节点，通过NameServer与外部的Client端暴露统一的集群入口。Broker就是消息存储的核心MQ服务了。</li>
+</ul>
+<h1 id="集群架构思考"><a href="#集群架构思考" class="headerlink" title="集群架构思考"></a>集群架构思考</h1><p>RocketMQ作为国内顶级的消息中间件，其性能主要依赖于天然的分布式Topic/Queue，并且其内存与磁盘都会存储消息数据，借鉴了Kafka的 “空中接力” 概念（这个我们后面学习Kafka的时候会详细的说明），所谓 “空中接力” 就是指数据不一定要落地，RocketMQ提供了同步/异步双写、同步/异步复制的特性。在真正的生产环境中应该选择符合自己业务的配置。下面针对于RocketMQ的高性能及其瓶颈在这里加以说明：</p>
+<ul>
+<li>架构思考：<ul>
+<li>RocketMQ目前本人在公司内部实际生产环境采用8M-8S的集群架构（8主8从）硬件单点Master为32C，96G内存，500G的SSD</li>
+<li>其主要瓶颈最终会落在IOPS上面，当高峰期来临的时候，磁盘读写能力是主要的性能瓶颈，每秒收发消息IOPS达到10W+ 消息，这也是公司内部主要的可靠性消息中间件</li>
+<li>在很多时候，我们的业务会有一些非核心的消息投递，后续会进行消息中间件的业务拆分，把不重要的消息（可以允许消息丢失、非可靠性投递的消息）采用Kafka的异步发送机制，借助Kafka强大的吞吐量和消息堆积能力来做业务的分流（当然RocketMQ的性能也足够好）。</li>
+<li>为什么瓶颈在IOPS? 根本原因还是因为云环境导致的问题，云环境的SSD物理存储显然和自建机房SSD会有不小的差距，这一点我们无论是从数据库的磁盘性能、还是搜索服务（ElasticSearch）的磁盘性能，都能给出准确的瓶颈点，单机IOPS达到1万左右就是云存储SSD的性能瓶颈，这个也解释了 “木桶短板原理” 的效应，在真正的生产中，CPU的工作主要在等待IO操作，高并发下 CPU资源接近极限，但是IOPS还是达不到我们想要的效果。</li>
+</ul>
+</li>
+</ul>
+<h1 id="本节知识点回顾"><a href="#本节知识点回顾" class="headerlink" title="本节知识点回顾"></a>本节知识点回顾</h1><p>Hi，小伙伴们，本节课我们通过简要的图文学习，带大家快速的过了一下RocketMQ，那么小伙伴们记住一定要在脑海里建立知识的结构体系，并串联起来！无论是现在，还是说未来，本神都希望小伙伴要按照下面的步骤进行回忆和复习：</p>
+<ol>
+<li>RocketMQ的前世今生 ？</li>
+<li>RocketMQ的专业术语？</li>
+<li>RocketMQ源码包的组成？</li>
+<li>RocketMQ的集群架构模型</li>
+<li>RocketMQ在真正生产环境中面临的瓶颈点以及解决方案</li>
+</ol>
+<h1 id="补充课外资料"><a href="#补充课外资料" class="headerlink" title="补充课外资料"></a>补充课外资料</h1><p>为了方便爱学习的小伙伴们，本神特意加餐一波，提供RocketMQ的官方文档和相关软件包，以及对应的代码示例，辅助小伙伴们更好掌握RocketMQ。另外本神还在慕课网上的一门课程详细的讲解了RocketMQ的各个知识点以及实战应用，有想深入学习的小伙伴可以学习共勉。</p>
+<ol>
+<li>官方文档</li>
+<li>RocketMQ4.3.0版本（Linux平台）</li>
+<li>RocketMQ代码示例</li>
+<li>慕课网实战课程《RocketMQ核心技术精讲与高并发抗压实战》传送门：<a target="_blank" rel="noopener" href="https://coding.imooc.com/class/292.html">https://coding.imooc.com/class/292.html</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mq/" rel="tag"># mq</a>
+              <a href="/tags/rocketmq/" rel="tag"># rocketmq</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E4%B8%8ENginx%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8-6/" rel="prev" title="分布式文件系统-FastDFS与Nginx实现文件服务器(6)">
+                  <i class="fa fa-chevron-left"></i> 分布式文件系统-FastDFS与Nginx实现文件服务器(6)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/01/21/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-AtomicLongArray/" rel="next" title="JUC原子类-AtomicLongArray">
+                  JUC原子类-AtomicLongArray <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

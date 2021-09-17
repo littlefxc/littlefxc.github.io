@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM之对象的创建过程">
+<meta property="og:url" content="http://littlefxc.github.io/2021/07/09/JVM%E4%B9%8B%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/isn4Ur.png">
+<meta property="article:published_time" content="2021-07-09T09:11:23.000Z">
+<meta property="article:modified_time" content="2021-07-10T04:10:56.860Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/isn4Ur.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/07/09/JVM%E4%B9%8B%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>JVM之对象的创建过程 | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%89%8D%E8%A8%80"><span class="nav-text">1 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%B8%B8%E9%87%8F%E6%B1%A0%E4%B8%AD%E5%AE%9A%E4%BD%8D%E7%B1%BB%E7%9A%84%E7%AC%A6%E5%8F%B7%E5%BC%95%E7%94%A8"><span class="nav-text">2 常量池中定位类的符号引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%B8%BA%E6%96%B0%E7%94%9F%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E5%86%85%E5%AD%98"><span class="nav-text">3 为新生对象分配内存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F"><span class="nav-text">3.1 内存的分配方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-%E6%8C%87%E9%92%88%E7%A2%B0%E6%92%9E"><span class="nav-text">3.1.1 指针碰撞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-%E7%A9%BA%E9%97%B2%E5%88%97%E8%A1%A8"><span class="nav-text">3.1.2 空闲列表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E5%88%86%E9%85%8D%E5%86%85%E5%AD%98%E7%9A%84%E5%B9%B6%E5%8F%91%E4%BF%9D%E8%AF%81"><span class="nav-text">3.2 分配内存的并发保证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-CAS-%E5%A4%B1%E8%B4%A5%E9%87%8D%E8%AF%95"><span class="nav-text">3.2.1 CAS + 失败重试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-%E6%9C%AC%E5%9C%B0%E7%BA%BF%E7%A8%8B%E5%88%86%E9%85%8D%E7%BC%93%E5%86%B2"><span class="nav-text">3.2.2 本地线程分配缓冲</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%BA%E9%9B%B6%E5%80%BC-%E5%8F%AF%E4%BB%A5%E4%B8%8D%E8%B5%8B%E5%B0%B1%E7%9B%B4%E6%8E%A5%E4%BD%BF%E7%94%A8"><span class="nav-text">4 初始化为零值 - 可以不赋就直接使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E8%AE%BE%E7%BD%AE%E5%AF%B9%E8%B1%A1%E5%A4%B4%E4%BF%A1%E6%81%AF"><span class="nav-text">5 设置对象头信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E6%89%A7%E8%A1%8C%E5%AF%B9%E8%B1%A1-lt-init-gt-%E6%96%B9%E6%B3%95-%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-text">6 执行对象&lt;init&gt;方法 - 构造方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-HotSpot-%E8%A7%A3%E9%87%8A%E5%99%A8%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5"><span class="nav-text">7 HotSpot 解释器代码片段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-%E5%8F%82%E8%80%83%E8%B5%84%E6%BA%90"><span class="nav-text">8 参考资源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/07/09/JVM%E4%B9%8B%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM之对象的创建过程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-07-09 17:11:23" itemprop="dateCreated datePublished" datetime="2021-07-09T17:11:23+08:00">2021-07-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-10 12:10:56" itemprop="dateModified" datetime="2021-07-10T12:10:56+08:00">2021-07-10</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/isn4Ur.png" alt="image-20210709171519463"></p>
+<span id="more"></span>
+
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><p>Java是一门面向对象的编程语言,Java程序运行过程中无时无刻都有对象被创建出来。在语言层面上,创建对象通常(例外:复制、反序列化)仅仅是一个new关键字而已,而在虚拟机中,对象(文中讨论的对象限于普通Java对象,不包括数组和Class对象等)的创建又是怎样一个过程呢?</p>
+<ol>
+<li><p>常量池中定位类的符号引用</p>
+</li>
+<li><p>检查符号引用所代表的类是否已被加载，解析和初始化过。如果没有,那必须先执行相应的类加载过程</p>
+</li>
+<li><p>为新生对象分配内存</p>
+</li>
+<li><p>初始化为零值 - 可以不赋就直接使用</p>
+</li>
+<li><p>设置对象头信息</p>
+</li>
+<li><p>执行对象<init>方法 - 构造方法</p>
+</li>
+</ol>
+<h1 id="2-常量池中定位类的符号引用"><a href="#2-常量池中定位类的符号引用" class="headerlink" title="2 常量池中定位类的符号引用"></a>2 常量池中定位类的符号引用</h1><p>当Java虚拟机遇到一条字节码new指令时,首先将去检查这个指令的参数是否能在常量池中定位到一个类的符号引用,并且检查这个符号引用代表的类是否已被加载、解析和初始化过。如果没有,那必须先执行相应的类加载过程。</p>
+<h1 id="3-为新生对象分配内存"><a href="#3-为新生对象分配内存" class="headerlink" title="3 为新生对象分配内存"></a>3 为新生对象分配内存</h1><p>在类加载检查通过后,接下来虚拟机将为新生对象分配内存。对象所需内存的大小在类加载完成后便可完全确定，为对象分配空间的任务实际上便等同于把一块确定大小的内存块从Java堆中划分出来。</p>
+<h2 id="3-1-内存的分配方式"><a href="#3-1-内存的分配方式" class="headerlink" title="3.1 内存的分配方式"></a>3.1 内存的分配方式</h2><p>选择哪种分配方式由Java堆是否规整决定,而Java堆是否规整又由所采用的垃圾收集器是否带有空间压缩整理(Compact)的能力决定。</p>
+<p>Serial、ParNew等带压缩整理过程的收集器对应的是指针碰撞。</p>
+<p>CMS这种基于清除(Sweep)算法的收集器对应的是空闲列表。</p>
+<h3 id="3-1-1-指针碰撞"><a href="#3-1-1-指针碰撞" class="headerlink" title="3.1.1 指针碰撞"></a>3.1.1 指针碰撞</h3><p>假设Java堆中内存是绝对规整的,所有被使用过的内存都被放在一边,空闲的内存被放在另一边,中间放着一个指针作为分界点的指示器,那所分配内存就仅仅是把那个指针向空闲空间方向挪动一段与对象大小相等的距离,这种分配方式称为“指针碰撞”(Bump The Pointer)。</p>
+<h3 id="3-1-2-空闲列表"><a href="#3-1-2-空闲列表" class="headerlink" title="3.1.2 空闲列表"></a>3.1.2 空闲列表</h3><p> 如果Java堆中的内存并不是规整的,已被使用的内存和空闲的内存相互交错在一起,那就没有办法简单地进行指针碰撞了,虚拟机就必须维护一个列表,记录上哪些内存块是可用的,在分配的时候从列表中找到一块足够大的空间划分给对象实例,并更新列表上的记录,这种分配方式称为“空闲列表”(Free List)。</p>
+<p>使用CMS这种基于清除(Sweep)算法的收集器。</p>
+<h2 id="3-2-分配内存的并发保证"><a href="#3-2-分配内存的并发保证" class="headerlink" title="3.2 分配内存的并发保证"></a>3.2 分配内存的并发保证</h2><p>除划分空间外还需要考虑一个问题：</p>
+<p>对象创建在虚拟机中是非常频繁的行为,即使仅仅修改一个指针所指向的位置,在并发情况下也并不是线程安全的,可能出现正在给对象A分配内存,指针还没来得及修改,对象B又同时使用了原来的指针来分配内存的情况。</p>
+<p>解决方法</p>
+<h3 id="3-2-1-CAS-失败重试"><a href="#3-2-1-CAS-失败重试" class="headerlink" title="3.2.1 CAS + 失败重试"></a>3.2.1 CAS + 失败重试</h3><p>是对分配内存空间的动作进行同步处理——实际上虚拟机是采用CAS配上失败重试的方式保证更新操作的原子性。</p>
+<h3 id="3-2-2-本地线程分配缓冲"><a href="#3-2-2-本地线程分配缓冲" class="headerlink" title="3.2.2 本地线程分配缓冲"></a>3.2.2 本地线程分配缓冲</h3><p>是把内存分配的动作按照线程划分在不同的空间之中进行,即每个线程在Java堆中预先分配一小块内存,称为本地线程分配缓冲(Thread Local Allocation Buffer,TLAB),哪个线程要分配内存,就在哪个线程的本地缓冲区中分配,只有本地缓冲区用完了,分配新的缓存区时才需要同步锁定。</p>
+<p>虚拟机是否使用TLAB,可以通过-XX:+/-UseTLAB参数来设定。</p>
+<h1 id="4-初始化为零值-可以不赋就直接使用"><a href="#4-初始化为零值-可以不赋就直接使用" class="headerlink" title="4 初始化为零值 - 可以不赋就直接使用"></a>4 初始化为零值 - 可以不赋就直接使用</h1><p>内存分配完成之后,虚拟机必须将分配到的内存空间(但不包括对象头)都初始化为零值,如果使用了TLAB的话,这一项工作也可以提前至TLAB分配时顺便进行。</p>
+<p>这步操作保证了对象的实例字段在Java代码中可以不赋初始值就直接使用,使程序能访问到这些字段的数据类型所对应的零值。</p>
+<h1 id="5-设置对象头信息"><a href="#5-设置对象头信息" class="headerlink" title="5 设置对象头信息"></a>5 设置对象头信息</h1><p>Java虚拟机还要对对象进行必要的设置,例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码(实际上对象的哈希码会延后到真正调用<code>Object::hashCode()</code>方法时才计算)、对象的GC分代年龄等信息。这些信息存放在对象的对象头(Object Header)之中。</p>
+<p>根据虚拟机当前运行状态的不同,如是否启用偏向锁等,对象头会有不同的设置方式。</p>
+<p>这一步中从虚拟机的角度来说对象已经创建好了，但从程序的角度来说因为还没有执行构造方法，对象的创建才刚刚开始。</p>
+<h1 id="6-执行对象-lt-init-gt-方法-构造方法"><a href="#6-执行对象-lt-init-gt-方法-构造方法" class="headerlink" title="6 执行对象&lt;init&gt;方法 - 构造方法"></a>6 执行对象<code>&lt;init&gt;</code>方法 - 构造方法</h1><p>在上面工作都完成之后,从虚拟机的视角来看,一个新的对象已经产生了。但是从Java程序的视角看来,对象创建才刚刚开始——构造函数,即Class文件中的<init>()方法还没有执行,所有的字段都为默认的零值,对象需要的其他资源和状态信息也还没有按照预定的意图构造好。</p>
+<p>一般来说(由字节码流中new指令后面是否跟随<code>invokespecial</code>指令所决定,Java编译器会在遇到new关键字的地方同时生成这两条字节码指令,但如果直接通过其他方式产生的则不一定如此),<code>new</code>指令之后会接着执行<code>&lt;init&gt; ()</code>方法,按照程序员的意愿对对象进行初始化,这样一个真正可用的对象才算完全被构造出来。</p>
+<h1 id="7-HotSpot-解释器代码片段"><a href="#7-HotSpot-解释器代码片段" class="headerlink" title="7 HotSpot 解释器代码片段"></a>7 HotSpot 解释器代码片段</h1><p>下面是HotSpot虚拟机字节码解释器(bytecodeInterpreter.cpp)中的代码片段。这个解释器实现很少有机会实际使用,大部分平台上都使用模板解释器;当代码通过即时编译器执行时差异就更大了。不过这段代码(以及笔者添加的注释)用于了解HotSpot的运作过程是没有什么问题的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 确保常量池中存放的是已解释的类</span></span><br><span class="line"><span class="keyword">if</span> (!constants-&gt;<span class="built_in">tag_at</span>(index).<span class="built_in">is_unresolved_klass</span>()) &#123;     </span><br><span class="line">    <span class="comment">// 断言确保是klassOop和instanceKlassOop(这部分下一节介绍)     </span></span><br><span class="line">    oop entry = (klassOop) *constants-&gt;<span class="built_in">obj_at_addr</span>(index);     </span><br><span class="line">    <span class="built_in">assert</span>(entry-&gt;<span class="built_in">is_klass</span>(), <span class="string">&quot;Should be resolved klass&quot;</span>);     </span><br><span class="line">    klassOop k_entry = (klassOop) entry;     </span><br><span class="line">    <span class="built_in">assert</span>(k_entry-&gt;<span class="built_in">klass_part</span>()-&gt;<span class="built_in">oop_is_instance</span>(), <span class="string">&quot;Should be instanceKlass&quot;</span>);          </span><br><span class="line">    instanceKlass* ik = (instanceKlass*) k_entry-&gt;<span class="built_in">klass_part</span>();     </span><br><span class="line">    <span class="comment">// 确保对象所属类型已经经过初始化阶段    </span></span><br><span class="line">    <span class="keyword">if</span> ( ik-&gt;<span class="built_in">is_initialized</span>() &amp;&amp; ik-&gt;<span class="built_in">can_be_fastpath_allocated</span>() ) &#123;         </span><br><span class="line">      <span class="comment">// 取对象长度        </span></span><br><span class="line">      <span class="keyword">size_t</span> obj_size = ik-&gt;<span class="built_in">size_helper</span>();         </span><br><span class="line">      oop result = <span class="literal">NULL</span>;         </span><br><span class="line">      <span class="comment">// 记录是否需要将对象所有字段置零值        </span></span><br><span class="line">      <span class="keyword">bool</span> need_zero = !ZeroTLAB;         </span><br><span class="line">      <span class="comment">// 是否在TLAB中分配对象        </span></span><br><span class="line">      <span class="keyword">if</span> (UseTLAB) &#123;             </span><br><span class="line">        result = (oop) THREAD-&gt;<span class="built_in">tlab</span>().<span class="built_in">allocate</span>(obj_size);         </span><br><span class="line">      &#125;         </span><br><span class="line">      <span class="keyword">if</span> (result == <span class="literal">NULL</span>) &#123;             </span><br><span class="line">        need_zero = <span class="literal">true</span>;             </span><br><span class="line">        <span class="comment">// 直接在eden中分配对象retry:             </span></span><br><span class="line">        HeapWord* compare_to = *Universe::<span class="built_in">heap</span>()-&gt;<span class="built_in">top_addr</span>();             </span><br><span class="line">        HeapWord* new_top = compare_to + obj_size;             </span><br><span class="line">        <span class="comment">// cmpxchg是x86中的CAS指令,这里是一个C++方法,通过CAS方式分配空间,并发失败的               话,转到retry中重试直至成功分配为止            </span></span><br><span class="line">        <span class="keyword">if</span> (new_top &lt;= *Universe::<span class="built_in">heap</span>()-&gt;<span class="built_in">end_addr</span>()) &#123;                 </span><br><span class="line">          <span class="keyword">if</span> (Atomic::<span class="built_in">cmpxchg_ptr</span>(new_top, Universe::<span class="built_in">heap</span>()-&gt;<span class="built_in">top_addr</span>(), compare_to) != compare_to) &#123;                     </span><br><span class="line">            <span class="keyword">goto</span> retry;                 </span><br><span class="line">          &#125;                 </span><br><span class="line">          result = (oop) compare_to;           </span><br><span class="line">        &#125;         </span><br><span class="line">      &#125;        </span><br><span class="line">      <span class="keyword">if</span> (result != <span class="literal">NULL</span>) &#123;             </span><br><span class="line">        <span class="comment">// 如果需要,为对象初始化零值            </span></span><br><span class="line">        <span class="keyword">if</span> (need_zero ) &#123;                 </span><br><span class="line">          HeapWord* to_zero = (HeapWord*) result + <span class="built_in"><span class="keyword">sizeof</span></span>(oopDesc) / oopSize;                 </span><br><span class="line">          obj_size -= <span class="built_in"><span class="keyword">sizeof</span></span>(oopDesc) / oopSize;                 </span><br><span class="line">          <span class="keyword">if</span> (obj_size &gt; <span class="number">0</span> ) &#123;                    </span><br><span class="line">            <span class="built_in">memset</span>(to_zero, <span class="number">0</span>, obj_size * HeapWordSize);                 </span><br><span class="line">          &#125;          </span><br><span class="line">        &#125;             </span><br><span class="line">        <span class="comment">// 根据是否启用偏向锁,设置对象头信息            </span></span><br><span class="line">        <span class="keyword">if</span> (UseBiasedLocking) &#123;                 </span><br><span class="line">          result-&gt;<span class="built_in">set_mark</span>(ik-&gt;<span class="built_in">prototype_header</span>());            </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;               </span><br><span class="line">          result-&gt;<span class="built_in">set_mark</span>(markOopDesc::<span class="built_in">prototype</span>());     </span><br><span class="line">        &#125;         </span><br><span class="line">        result-&gt;<span class="built_in">set_klass_gap</span>(<span class="number">0</span>);          </span><br><span class="line">        result-&gt;<span class="built_in">set_klass</span>(k_entry);          </span><br><span class="line">        <span class="comment">// 将对象引用入栈,继续执行下一条指令          </span></span><br><span class="line">        <span class="built_in">SET_STACK_OBJECT</span>(result, <span class="number">0</span>);             </span><br><span class="line">        <span class="built_in">UPDATE_PC_AND_TOS_AND_CONTINUE</span>(<span class="number">3</span>, <span class="number">1</span>);         </span><br><span class="line">      &#125;   </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="8-参考资源"><a href="#8-参考资源" class="headerlink" title="8 参考资源"></a>8 参考资源</h1><p>《深入理解Java虚拟机：JVM高级特性与最佳特性（第三版）》</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/08/Keepalived%E5%8E%9F%E7%90%86%E5%92%8C%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" rel="prev" title="Keepalived原理和配置详解">
+                  <i class="fa fa-chevron-left"></i> Keepalived原理和配置详解
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/11/%E5%9F%BA%E4%BA%8ESharding-Jdbc%E7%9A%84%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E5%92%8C%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" rel="next" title="基于Sharding-Jdbc的读写分离和分库分表">
+                  基于Sharding-Jdbc的读写分离和分库分表 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

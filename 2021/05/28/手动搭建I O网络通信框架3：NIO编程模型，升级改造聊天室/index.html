@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室 转载自 https:&#x2F;&#x2F;www.cnblogs.com&#x2F;lbhym&#x2F;p&#x2F;12698309.html  手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室在“手动搭建I&#x2F;O网络通信框架2：BIO编程模型实现群聊”中用BIO编程模型，简单的实现了一个聊天室。但是其最大的问题在解释BIO时就已经说了：ServerSocket接收请求">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室">
+<meta property="og:url" content="http://littlefxc.github.io/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室 转载自 https:&#x2F;&#x2F;www.cnblogs.com&#x2F;lbhym&#x2F;p&#x2F;12698309.html  手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室在“手动搭建I&#x2F;O网络通信框架2：BIO编程模型实现群聊”中用BIO编程模型，简单的实现了一个聊天室。但是其最大的问题在解释BIO时就已经说了：ServerSocket接收请求">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414150122707-1475260423.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152051636-927905062.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152100412-1057042302.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152130678-206345317.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152204091-2069873206.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152412715-1986061599.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152438453-1030565064.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152450583-1807958534.png">
+<meta property="article:published_time" content="2021-05-28T11:39:32.000Z">
+<meta property="article:modified_time" content="2021-05-28T01:45:12.024Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="netty">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414150122707-1475260423.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室 | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI-O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4"><span class="nav-text">手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI-O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4-1"><span class="nav-text">手动搭建I&#x2F;O网络通信框架3：NIO编程模型，升级改造聊天室</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer"><span class="nav-text">Buffer:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Channel"><span class="nav-text">Channel:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Selector"><span class="nav-text">Selector</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-text">NIO编程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ChatServer"><span class="nav-text">ChatServer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChatClient"><span class="nav-text">ChatClient</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UserInputHandler"><span class="nav-text">UserInputHandler</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-05-28 19:39:32 / 修改时间：09:45:12" itemprop="dateCreated datePublished" datetime="2021-05-28T19:39:32+08:00">2021-05-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室"><a href="#手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室" class="headerlink" title="手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室"></a>手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室</h1><blockquote>
+<p>转载自 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/lbhym/p/12698309.html">https://www.cnblogs.com/lbhym/p/12698309.html</a></p>
+</blockquote>
+<h1 id="手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室-1"><a href="#手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室-1" class="headerlink" title="手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室"></a><strong>手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室</strong></h1><p>在“手动搭建I/O网络通信框架2：BIO编程模型实现群聊”中用BIO编程模型，简单的实现了一个聊天室。但是其最大的问题在解释BIO时就已经说了：ServerSocket接收请求时（accept()方法）、InputStream、OutputStream（输入输出流的读和写）都是阻塞的。还有一个问题就是线程池，线程多了，服务器性能耗不起。线程少了，在聊天室这种场景下，让用户等待连接肯定不可取。今天要说到的NIO编程模型就很好的解决了这几个问题。有两个主要的替换地方：</p>
+<ol>
+<li>用Channel代替Stream。</li>
+<li>使用Selector监控多条Channel，起到类似线程池的作用，但是它只需一条线程。</li>
+</ol>
+<p>既然要用NIO编程模型，那就要说说它的三个主要核心：Selector、Channel、Buffer。它们的关系是：一个Selector管理多个Channel，一个Channel可以往Buffer中写入和读取数据。Buffer名叫缓冲区，底层其实是一个数组，会提供一些方法往数组写入读取数据。</p>
+<h2 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer:"></a><strong>Buffer:</strong></h2><p>不太了解Buffer的可以看看这个：<a target="_blank" rel="noopener" href="https://blog.csdn.net/czx2018/article/details/89502699">https://blog.csdn.net/czx2018/article/details/89502699</a></p>
+<p><strong>常用API：</strong></p>
+<ul>
+<li>allocate() - 初始化一块缓冲区</li>
+<li>put() - 向缓冲区写入数据</li>
+<li>get() - 向缓冲区读数据</li>
+<li>filp() - 将缓冲区的读写模式转换</li>
+<li>clear() - 这个并不是把缓冲区里的数据清除，而是利用后来写入的数据来覆盖原来写入的数据，以达到类似清除了老的数据的效果</li>
+<li>compact() - 从读数据切换到写模式，数据不会被清空，会将所有未读的数据copy到缓冲区头部，后续写数据不会覆盖，而是在这些数据之后写数据</li>
+<li>mark() - 对position做出标记，配合reset使用</li>
+<li>reset() - 将position置为标记值</li>
+</ul>
+<p><em>简单地说</em>：Buffer实质上是个数组，有两个关键的指针，一个position代表当前数据写入到哪了、一个limit代表限制。初始化时设置了数组长度，这limit就是数组的长度。如：设置<code>intBuffer.allocate(10)</code>，最大存储10个int数据，写入5五个数据后，需要读取数据了。用filp()转换读写模式后，limit=position，position=0。也就是说从0开始读，只能读到第五个。读完后这个缓冲区就需要clear()了，实际上并没有真的去清空数据，而是position和limit两个指针又回到了初始化的位置，接着又可以写入数据了，反正数组下标相同重新写入数据会覆盖，就没必要真的去清空了。</p>
+<h2 id="Channel"><a href="#Channel" class="headerlink" title="Channel:"></a><strong>Channel:</strong></h2><p>Channel(通道)主要用于传输数据，然后从Buffer中写入或读取。它们两个结合起来虽然和流有些相似，但主要有以下几点区别：　　</p>
+<ol>
+<li>流是单向的，可以发现Stream的输入流和输出流是独立的，它们只能输入或输出。而通道既可以读也可以写。　　</li>
+<li>通道本身不能存放数据，只能借助Buffer。　　</li>
+<li>Channel支持异步。　　</li>
+</ol>
+<p>Channel有如下三个常用的类：FileChannel、SocketChannel、ServerSocketChannel。从名字也可以看出区别，第一个是对文件数据的读写，后面两个则是针对Socket和ServerSocket，这里我们只是用后面两个。更详细的用法可以看：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/snailclimb/p/9086335.html%EF%BC%8C%E4%B8%8B%E9%9D%A2%E7%9A%84%E4%BB%A3%E7%A0%81%E4%B8%AD%E4%B9%9F%E4%BC%9A%E7%94%A8%E5%88%B0%EF%BC%8C%E4%BC%9A%E6%9C%89%E8%AF%A6%E7%BB%86%E7%9A%84%E6%B3%A8%E9%87%8A%E3%80%82">https://www.cnblogs.com/snailclimb/p/9086335.html，下面的代码中也会用到，会有详细的注释。</a></p>
+<h2 id="Selector"><a href="#Selector" class="headerlink" title="Selector"></a><strong>Selector</strong></h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414150122707-1475260423.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414150122707-1475260423.png"></p>
+<p>多个Channel可以注册到Selector，就可以直接通过一个Selector管理多个通道。Channel在不同的时间或者不同的事件下有不同的状态，Selector会通过轮询来达到监视的效果，如果查到Channel的状态正好是我们注册时声明的所要监视的状态，我们就可以查出这些通道，然后做相应的处理。这些状态如下：　　1.客户端的SocketChannel和服务器端建立连接，SocketChannel状态就是<strong>Connect</strong>。　　2.服务器端的ServerSocketChannel接收了客户端的请求，ServerSocketChannel状态就是<strong>Accept</strong>。　　3.当SocketChannel有数据可读，那么它们的状态就是<strong>Read</strong>。　　4.当我们需要向Channel中写数据时，那么它们的状态就是<strong>Write</strong>。　　</p>
+<p>具体的使用见下面代码注释或看 <a href="Java%20NIO%E4%B9%8BSelector%EF%BC%88%E9%80%89%E6%8B%A9%E5%99%A8%EF%BC%89%20608ea119b60443d6a6233f32004d92ec.md">Java NIO之Selector（选择器）</a> </p>
+<h2 id="NIO编程模型"><a href="#NIO编程模型" class="headerlink" title="NIO编程模型"></a><strong>NIO编程模型</strong></h2><p>NIO编程模型工作流程：　　</p>
+<ol>
+<li>首先会创建一个Selector，用来监视管理各个不同的Channel，也就是不同的客户端。相当于取代了原来BIO的线程池，但是它只需一个线程就可以处理多个Channel，没有了线程上下文切换带来的消耗，很好的优化了性能。　　</li>
+<li>创建一个ServerSocketChannel监听通信端口，并注册到Selector，让Seletor监视这个通道的Accept状态，也就是接收客户端请求的状态。</li>
+<li>此时客户端ClientA请求服务器，那么Selector就知道了有客户端请求进来。这时候我们可以得到客户端的SocketChannel，并为这个通道注册Read状态，也就是Selector会监听ClientA发来的消息。　　</li>
+<li>一旦接收到ClientA的消息，就会用其他客户端的SocketChannel的Write状态，向它们转发ClientA的消息。</li>
+</ol>
+<p>上代码之前，还是先说说各个类的作用：</p>
+<p>相比较BIO的代码，NIO的代码还少了一个类，那就是服务器端的工作线程类。没了线程池，自然也不需要一个单独的线程去服务客户端。客户端还是需要一个单独的线程去等待用户输入，因为用户随时都可能输入信息，这个没法预见，只能阻塞式的等待。</p>
+<ul>
+<li>ChatServer:服务器端的唯一的类，作用就是通过Selector监听Read和Accept事件，并针对这些事件的类型，进行不同的处理，如连接、转发。</li>
+<li>ChatClient:客户端，通过Selector监听Read和Connect事件。Read事件就是获取服务器转发的消息然后显示出来；Connect事件就是和服务器建立连接，建立成功后就可以发送消息。</li>
+<li>UserInputHandler:专门等待用户输入的线程，和BIO没区别。</li>
+</ul>
+<h3 id="ChatServer"><a href="#ChatServer" class="headerlink" title="ChatServer"></a><strong>ChatServer</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatServer</span> </span>&#123;</span><br><span class="line">    <span class="comment">//设置缓冲区的大小，这里设置为1024个字节</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER = <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Channel都要配合缓冲区进行读写，所以这里创建一个读缓冲区和一个写缓冲区</span></span><br><span class="line">    <span class="comment">//allocate()静态方法就是设置缓存区大小的方法</span></span><br><span class="line">    <span class="keyword">private</span> ByteBuffer read_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer write_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//为了监听端口更灵活，再不写死了，用一个构造函数设置需要监听的端口号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ChatServer</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.port = port;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建ServerSocketChannel和Selector并打开</span></span><br><span class="line">        <span class="keyword">try</span> (ServerSocketChannel server = ServerSocketChannel.open(); Selector selector = Selector.open()) &#123;</span><br><span class="line">            <span class="comment">//【重点,实现NIO编程模型的关键】configureBlocking设置ServerSocketChannel为非阻塞式调用,Channel默认的是阻塞的调用方式</span></span><br><span class="line">            server.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//绑定监听端口,这里不是给ServerSocketChannel绑定，而是给ServerSocket绑定，socket()就是获取通道原生的ServerSocket或Socket</span></span><br><span class="line">            server.socket().bind(<span class="keyword">new</span> InetSocketAddress(port));</span><br><span class="line"></span><br><span class="line">            <span class="comment">//把server注册到Selector并监听Accept事件</span></span><br><span class="line">            server.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line">            System.out.println(<span class="string">&quot;启动服务器，监听端口:&quot;</span> + port);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">//select()会返回此时触发了多少个Selector监听的事件</span></span><br><span class="line">                <span class="keyword">if</span>(selector.select()&gt;<span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="comment">//获取这些已经触发的事件,selectedKeys()返回的是触发事件的所有信息</span></span><br><span class="line">                    Set&lt;SelectionKey&gt; selectionKeys = selector.selectedKeys();</span><br><span class="line">                    <span class="comment">//循环处理这些事件</span></span><br><span class="line">                    <span class="keyword">for</span> (SelectionKey key : selectionKeys) &#123;</span><br><span class="line">                        handles(key, selector);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">//处理完后清空selectedKeys，避免重复处理</span></span><br><span class="line">                    selectionKeys.clear();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//处理事件的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handles</span><span class="params">(SelectionKey key, Selector selector)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//当触发了Accept事件，也就是有客户端请求进来</span></span><br><span class="line">        <span class="keyword">if</span> (key.isAcceptable()) &#123;</span><br><span class="line">            <span class="comment">//获取ServerSocketChannel</span></span><br><span class="line">            ServerSocketChannel server = (ServerSocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//然后通过accept()方法接收客户端的请求，这个方法会返回客户端的SocketChannel，这一步和原生的ServerSocket类似</span></span><br><span class="line">            SocketChannel client = server.accept();</span><br><span class="line">            client.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//把客户端的SocketChannel注册到Selector，并监听Read事件</span></span><br><span class="line">            client.register(selector, SelectionKey.OP_READ);</span><br><span class="line">            System.out.println(<span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]上线啦！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//当触发了Read事件，也就是客户端发来了消息</span></span><br><span class="line">        <span class="keyword">if</span> (key.isReadable()) &#123;</span><br><span class="line">            SocketChannel client = (SocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//获取消息</span></span><br><span class="line">            String msg = receive(client);</span><br><span class="line">            System.out.println(<span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]:&quot;</span> + msg);</span><br><span class="line">            <span class="comment">//把消息转发给其他客户端</span></span><br><span class="line">            sendMessage(client, msg, selector);</span><br><span class="line">            <span class="comment">//判断用户是否退出</span></span><br><span class="line">            <span class="keyword">if</span> (msg.equals(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//解除该事件的监听</span></span><br><span class="line">                key.cancel();</span><br><span class="line">                <span class="comment">//更新Selector</span></span><br><span class="line">                selector.wakeup();</span><br><span class="line">                System.out.println(<span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]下线了！&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//编码方式设置为utf-8，下面字符和字符串互转时用得到</span></span><br><span class="line">    <span class="keyword">private</span> Charset charset = Charset.forName(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//接收消息的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">receive</span><span class="params">(SocketChannel client)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//用缓冲区之前先清空一下,避免之前的信息残留</span></span><br><span class="line">        read_buffer.clear();</span><br><span class="line">        <span class="comment">//把通道里的信息读取到缓冲区，用while循环一直读取，直到读完所有消息。因为没有明确的类似\n这样的结尾，所以要一直读到没有字节为止</span></span><br><span class="line">        <span class="keyword">while</span> (client.read(read_buffer) &gt; <span class="number">0</span>) ;</span><br><span class="line">        <span class="comment">//把消息读取到缓冲区后，需要转换buffer的读写状态，不明白的看看前面的Buffer的讲解</span></span><br><span class="line">        read_buffer.flip();</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(charset.decode(read_buffer));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//转发消息的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(SocketChannel client, String msg, Selector selector)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        msg = <span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]:&quot;</span> + msg;</span><br><span class="line">        <span class="comment">//获取所有客户端,keys()与前面的selectedKeys不同，这个是获取所有已经注册的信息，而selectedKeys获取的是触发了的事件的信息</span></span><br><span class="line">        <span class="keyword">for</span> (SelectionKey key : selector.keys()) &#123;</span><br><span class="line">            <span class="comment">//排除服务器和本客户端并且保证key是有效的，isValid()会判断Selector监听是否正常、对应的通道是保持连接的状态等</span></span><br><span class="line">            <span class="keyword">if</span> (!(key.channel() <span class="keyword">instanceof</span> ServerSocketChannel) &amp;&amp; !client.equals(key.channel()) &amp;&amp; key.isValid()) &#123;</span><br><span class="line">                SocketChannel otherClient = (SocketChannel) key.channel();</span><br><span class="line">                write_buffer.clear();</span><br><span class="line">                write_buffer.put(charset.encode(msg));</span><br><span class="line">                write_buffer.flip();</span><br><span class="line">                <span class="comment">//把消息写入到缓冲区后，再把缓冲区的内容写到客户端对应的通道中</span></span><br><span class="line">                <span class="keyword">while</span> (write_buffer.hasRemaining()) &#123;</span><br><span class="line">                    otherClient.write(write_buffer);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> ChatServer(<span class="number">8888</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ChatClient"><a href="#ChatClient" class="headerlink" title="ChatClient"></a><strong>ChatClient</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatClient</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER = <span class="number">1024</span>;</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer read_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer write_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line">    <span class="comment">//声明成全局变量是为了方便下面一些工具方法的调用，就不用try with resource了</span></span><br><span class="line">    <span class="keyword">private</span> SocketChannel client;</span><br><span class="line">    <span class="keyword">private</span> Selector selector;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Charset charset = Charset.forName(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span>  &#123;</span><br><span class="line">            client=SocketChannel.open();</span><br><span class="line">            selector=Selector.open();</span><br><span class="line">            client.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//注册channel，并监听SocketChannel的Connect事件</span></span><br><span class="line">            client.register(selector, SelectionKey.OP_CONNECT);</span><br><span class="line">            <span class="comment">//请求服务器建立连接</span></span><br><span class="line">            client.connect(<span class="keyword">new</span> InetSocketAddress(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8888</span>));</span><br><span class="line">            <span class="comment">//和服务器一样，不停的获取触发事件，并做相应的处理</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                selector.select();</span><br><span class="line">                Set&lt;SelectionKey&gt; selectionKeys = selector.selectedKeys();</span><br><span class="line">                <span class="keyword">for</span> (SelectionKey key : selectionKeys) &#123;</span><br><span class="line">                    handle(key);</span><br><span class="line">                &#125;</span><br><span class="line">                selectionKeys.clear();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">catch</span> (ClosedSelectorException e)&#123;</span><br><span class="line">            <span class="comment">//当用户输入quit时，在send()方法中，selector会被关闭，而在上面的无限while循环中，可能会使用到已经关闭了的selector。</span></span><br><span class="line">            <span class="comment">//所以这里捕捉一下异常，做正常退出处理就行了。不会对服务器造成影响</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(SelectionKey key)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//当触发connect事件，也就是服务器和客户端建立连接</span></span><br><span class="line">        <span class="keyword">if</span> (key.isConnectable()) &#123;</span><br><span class="line">            SocketChannel client = (SocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//finishConnect()返回true，说明和服务器已经建立连接。如果是false，说明还在连接中，还没完全连接完成</span></span><br><span class="line">            <span class="keyword">if</span>(client.finishConnect())&#123;</span><br><span class="line">                <span class="comment">//新建一个新线程去等待用户输入</span></span><br><span class="line">                <span class="keyword">new</span> Thread(<span class="keyword">new</span> UserInputHandler(<span class="keyword">this</span>)).start();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//连接建立完成后，注册read事件，开始监听服务器转发的消息</span></span><br><span class="line">            client.register(selector,SelectionKey.OP_READ);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//当触发read事件，也就是获取到服务器的转发消息</span></span><br><span class="line">        <span class="keyword">if</span>(key.isReadable())&#123;</span><br><span class="line">            SocketChannel client = (SocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//获取消息</span></span><br><span class="line">            String msg = receive(client);</span><br><span class="line">            System.out.println(msg);</span><br><span class="line">            <span class="comment">//判断用户是否退出</span></span><br><span class="line">            <span class="keyword">if</span> (msg.equals(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//解除该事件的监听</span></span><br><span class="line">                key.cancel();</span><br><span class="line">                <span class="comment">//更新Selector</span></span><br><span class="line">                selector.wakeup();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取消息</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">receive</span><span class="params">(SocketChannel client)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        read_buffer.clear();</span><br><span class="line">        <span class="keyword">while</span> (client.read(read_buffer)&gt;<span class="number">0</span>);</span><br><span class="line">        read_buffer.flip();</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(charset.decode(read_buffer));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//发送消息</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">send</span><span class="params">(String msg)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!msg.isEmpty())&#123;</span><br><span class="line">            write_buffer.clear();</span><br><span class="line">            write_buffer.put(charset.encode(msg));</span><br><span class="line">            write_buffer.flip();</span><br><span class="line">            <span class="keyword">while</span> (write_buffer.hasRemaining())&#123;</span><br><span class="line">                client.write(write_buffer);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(msg.equals(<span class="string">&quot;quit&quot;</span>))&#123;</span><br><span class="line">                selector.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> ChatClient().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="UserInputHandler"><a href="#UserInputHandler" class="headerlink" title="UserInputHandler"></a><strong>UserInputHandler</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserInputHandler</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    ChatClient client;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserInputHandler</span><span class="params">(ChatClient chatClient)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.client=chatClient;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        BufferedReader read=<span class="keyword">new</span> BufferedReader(</span><br><span class="line">                <span class="keyword">new</span> InputStreamReader(System.in)</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                String input=read.readLine();</span><br><span class="line">                client.send(input);</span><br><span class="line">                <span class="keyword">if</span>(input.equals(<span class="string">&quot;quit&quot;</span>))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试运行：之前用的是win10的终端运行的，以后直接用IDEA运行，方便些。不过一个类同时运行多个，以实现多个客户端的场景，需要先做以下设置</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152051636-927905062.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152051636-927905062.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152100412-1057042302.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152100412-1057042302.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152130678-206345317.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152130678-206345317.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152204091-2069873206.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152204091-2069873206.png"></p>
+<p>设置完后，就可以同时运行两个ChatClient了，上图中得Unnamed就是第二个ChatClient，选中后点击右边运行按钮就行了。效果如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152412715-1986061599.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152412715-1986061599.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152438453-1030565064.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152438453-1030565064.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152450583-1807958534.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152450583-1807958534.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/netty/" rel="tag"># netty</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B64%EF%BC%9AAIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E8%81%8A%E5%A4%A9%E5%AE%A4%E7%BB%88%E6%9E%81%E6%94%B9/" rel="prev" title="手动搭建I/O网络通信框架4：AIO编程模型，聊天室终极改造">
+                  <i class="fa fa-chevron-left"></i> 手动搭建I/O网络通信框架4：AIO编程模型，聊天室终极改造
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B62%EF%BC%9ABIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E7%BE%A4%E8%81%8A/" rel="next" title="手动搭建I/O网络通信框架2：BIO编程模型实现群聊">
+                  手动搭建I/O网络通信框架2：BIO编程模型实现群聊 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

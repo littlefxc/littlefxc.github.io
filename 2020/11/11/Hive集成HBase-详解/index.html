@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="[TOC] 1 前言1.1 为什么要集成Hive和HBase?Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着调研和使用的深入，渐渐有用户发现它们均存在不足之处。 比如 Hive 不应该用来进行实时的查询，因为它需要很长时间才可以返回结果。同时想要将数据实时的插入hive中则完全没有可操作性。 至于 HBase虽然非常适用于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive集成HBase 详解">
+<meta property="og:url" content="http://littlefxc.github.io/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="[TOC] 1 前言1.1 为什么要集成Hive和HBase?Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着调研和使用的深入，渐渐有用户发现它们均存在不足之处。 比如 Hive 不应该用来进行实时的查询，因为它需要很长时间才可以返回结果。同时想要将数据实时的插入hive中则完全没有可操作性。 至于 HBase虽然非常适用于">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png">
+<meta property="article:published_time" content="2020-11-11T08:31:29.000Z">
+<meta property="article:modified_time" content="2021-03-25T13:15:48.000Z">
+<meta property="article:author" content="一年春又来">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Hive集成HBase 详解 | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%89%8D%E8%A8%80"><span class="nav-text">1 前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%9B%86%E6%88%90Hive%E5%92%8CHBase"><span class="nav-text">1.1 为什么要集成Hive和HBase?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Hive%E9%9B%86%E6%88%90HBase%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-text">2 Hive集成HBase的原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">3 使用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%95%B4%E5%90%88"><span class="nav-text">4 整合</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E7%A4%BA%E4%BE%8B"><span class="nav-text">4.1 示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E5%AD%97%E6%AE%B5%E6%98%A0%E5%B0%84"><span class="nav-text">4.2 字段映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E6%B5%8B%E8%AF%95"><span class="nav-text">4.3 数据同步测试</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%BA%90"><span class="nav-text">参考资源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hive集成HBase 详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-11 16:31:29" itemprop="dateCreated datePublished" datetime="2020-11-11T16:31:29+08:00">2020-11-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>[TOC]</p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><h2 id="1-1-为什么要集成Hive和HBase"><a href="#1-1-为什么要集成Hive和HBase" class="headerlink" title="1.1 为什么要集成Hive和HBase?"></a>1.1 为什么要集成Hive和HBase?</h2><p>Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着调研和使用的深入，渐渐有用户发现它们均存在不足之处。</p>
+<p>比如 Hive 不应该用来进行实时的查询，因为它需要很长时间才可以返回结果。同时想要将数据实时的插入hive中则完全没有可操作性。</p>
+<p>至于 HBase虽然非常适用于海量明细数据（十亿、百亿）的随机实时查询但只提供了简单的基于 Key 值的快速查询能力—，没法进行大量的条件查询，对于数据分析来说，不太友好。</p>
+<p>在大数据架构中，Hive和HBase是协作关系，Hive方便地提供了Hive QL的接口来简化MapReduce的使用， 而HBase提供了低延迟的数据库访问。如果两者结合，可以利用MapReduce的优势针对HBase存储的大量内容进行离线的计算和分析。</p>
+<h1 id="2-Hive集成HBase的原理"><a href="#2-Hive集成HBase的原理" class="headerlink" title="2 Hive集成HBase的原理"></a>2 Hive集成HBase的原理</h1><p>Hive 整合 hbase 为用户提供一种 sqlOnHbase 的方法。Hive 与 HBase 整合的实现是利用两者本身对外的 API 接口互相通信来完成的，其具体工作交由 Hive 的 lib 目录中的 <code>hive-hbase-handler-xxx.jar</code> 工具类来实现对 HBase 数据的读取。</p>
+<p>通过HBaseStorageHandler，Hive可以获取到Hive表所对应的HBase表名，列簇和列，InputFormat、OutputFormat类，创建和删除HBase表等。</p>
+<p>Hive访问HBase中HTable的数据，实质上是通过MR读取HBase的数据，而MR是使用HiveHBaseTableInputFormat完成对表的切分，获取RecordReader对象来读取数据的。</p>
+<p>对HBase表的切分原则是一个Region切分成一个Split,即表中有多少个Regions,MR中就有多少个Map；</p>
+<p>读取HBase表数据都是通过构建Scanner，对表进行全表扫描，如果有过滤条件，则转化为Filter。当过滤条件为rowkey时，则转化为对rowkey的过滤；Scanner通过RPC调用RegionServer的next()来获取数据。</p>
+<h1 id="3-使用场景"><a href="#3-使用场景" class="headerlink" title="3 使用场景"></a>3 使用场景</h1><h1 id="4-整合"><a href="#4-整合" class="headerlink" title="4 整合"></a>4 整合</h1><p>因为Hive与HBase集成是利用两者本身对外的API接口互相通信来完成的，其具体工作交由Hive的lib目录中的hive-hbase-handler-.jar工具类来实现。所以只需要将hive的 <code>hive-hbase-handler-.jar</code> 复制到<code>hbase/lib</code>中就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp &#x2F;usr&#x2F;local&#x2F;hive&#x2F;lib&#x2F;hive-hbase-handler-2.3.7.jar &#x2F;usr&#x2F;local&#x2F;hbase&#x2F;lib&#x2F;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注</strong>: 如果在hive整合hbase中，出现版本之类的问题，那么以hbase的版本为主，将hbase中的jar包覆盖hive的jar包。</p>
+<h2 id="4-1-示例"><a href="#4-1-示例" class="headerlink" title="4.1 示例"></a>4.1 示例</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># Hive 语句</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_employee(id <span class="type">int</span>,name string) </span><br><span class="line">stored <span class="keyword">by</span> <span class="string">&#x27;org.apache.hadoop.hive.hbase.HBaseStorageHandler&#x27;</span> </span><br><span class="line"><span class="keyword">with</span> serdeproperties(&quot;hbase.columns.mapping&quot;<span class="operator">=</span>&quot;:key,st1:name&quot;) </span><br><span class="line">tblproperties(&quot;hbase.table.name&quot;<span class="operator">=</span>&quot;t_employee&quot;,&quot;hbase.mapred.output.outputtable&quot; <span class="operator">=</span> &quot;t_employee&quot;);</span><br><span class="line"></span><br><span class="line"># hbase 语句</span><br><span class="line">list</span><br><span class="line"><span class="keyword">describe</span> <span class="string">&#x27;t_employee&#x27;</span></span><br><span class="line"># 返回结果</span><br><span class="line"><span class="keyword">Table</span> t_employee <span class="keyword">is</span> ENABLED</span><br><span class="line">t_employee</span><br><span class="line"><span class="keyword">COLUMN</span> FAMILIES DESCRIPTION</span><br><span class="line">&#123;NAME =&gt; &#x27;st1&#x27;, BLOOMFILTER =&gt; &#x27;ROW&#x27;, VERSIONS =&gt; &#x27;1&#x27;, IN_MEMORY =&gt; &#x27;false&#x27;, KEEP_DELETED_CELLS =&gt; &#x27;FALSE&#x27;, DATA_BLOCK_ENCODING =&gt; &#x27;NONE&#x27;, TTL =&gt; &#x27;FOREVER&#x27;, COMPRESSION =&gt; &#x27;NONE&#x27;</span><br><span class="line">, MIN_VERSIONS =&gt; &#x27;0&#x27;, BLOCKCACHE =&gt; &#x27;true&#x27;, BLOCKSIZE =&gt; &#x27;65536&#x27;, REPLICATION_SCOPE =&gt; &#x27;0&#x27;&#125;</span><br><span class="line"><span class="number">1</span> <span class="type">row</span>(s) <span class="keyword">in</span> <span class="number">0.0260</span> seconds</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<ol>
+<li><p>这里面出现了三个t_employee表名，第一个t_employee 是hive表中的名称，(id int,name string) 是hive表结构。</p>
+<p>在tblproperties 语句中还出现了2个t_employee表，”hbase.table.name”定义的是在hbase中的表名 ，这个属性是可选的，仅当你想在Hive和Hbase中使用不同名字的表名时才需要填写，如果使用相同的名字则可以省略；</p>
+<p>“hbase.mapred.output.outputtable”定义的第三个t_employee是存储数据表的名称，指定插入数据时写入的表，如果以后需要往该表插入数据就需要指定该值，这个可以不要，表数据就存储在第二个表中了 。</p>
+</li>
+<li><p>stored by ‘org.apache.hadoop.hive.hbase.HBaseStorageHandler’ ：是指定处理的存储器，就是hive-hbase-handler-*.jar包，要做hive和hbase的集成必须要加上这一句；</p>
+</li>
+<li><p>“hbase.columns.mapping” 是定义在hive表中的字段怎么与hbase的列族进行映射。</p>
+<p>   例如:st1就是列族，name就是列。它们之间通过“：”连接。</p>
+<p>   在hive中创建的t_employee表，包括两个字段（int型的id和string型的name），映射为hbase中的表t_employee，其中：key对应hbase的rowkey，value对应hbase的st1:name列。</p>
+</li>
+</ol>
+<h2 id="4-2-字段映射"><a href="#4-2-字段映射" class="headerlink" title="4.2 字段映射"></a>4.2 字段映射</h2><p>控制HBase字段和Hive之间的映射有两种<code>SERDEPROPERTIES</code>:</p>
+<ul>
+<li>hbase.columns.mapping</li>
+<li>hbase.table.default.storage.type，可以是string(default)或binary中的任一个，指定这个选项只有在Hive 0.9之后可使用.</li>
+</ul>
+<p>目前所支持的字段映射多少是有些难处理或存在约束的：</p>
+<ul>
+<li>对于每一个Hive字段，表的创建者必须用逗号分隔的字符串（<code>hbase.columns.mapping</code>）指定对应的入口（Hive表有n个字段，则该字符串得指定n个入口），在各个入口之间不能由空格（因为空格会被解析成字段名中的一部分）。</li>
+<li>映射入口必须是以下两者之一：<strong>行健</strong>或**’列族名:[列名][#(binary|string)]’**<ul>
+<li>如果没有指定类型，则直接使用<code>hbase.table.default.storage.type</code>的值</li>
+<li>合法值的的前缀也是合法的（例如#b表示#binary）</li>
+<li>如果指定某字段为binary，则对应的HBase中的单元格则应该是HBase的Bytes类的内容组成</li>
+</ul>
+</li>
+<li>必须要有确切的行健映射</li>
+<li>如果没有指定列名，则默认使用Hive的字段名作为HBase中的列名</li>
+</ul>
+<h2 id="4-3-数据同步测试"><a href="#4-3-数据同步测试" class="headerlink" title="4.3 数据同步测试"></a>4.3 数据同步测试</h2><p>进入hbase之后，在t_employee中添加两条数据 然后查询该表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">put <span class="string">&#x27;t_employee&#x27;</span>,<span class="string">&#x27;1001&#x27;</span>,<span class="string">&#x27;st1:name&#x27;</span>,<span class="string">&#x27;zhaoqian&#x27;</span></span><br><span class="line">put <span class="string">&#x27;t_employee&#x27;</span>,<span class="string">&#x27;1002&#x27;</span>,<span class="string">&#x27;st1:name&#x27;</span>,<span class="string">&#x27;sunli&#x27;</span></span><br><span class="line">scan <span class="string">&#x27;t_employee&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>查询结果：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled.png"></p>
+<p>然后切换到hive中查询该表</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled%201.png"></p>
+<p>至此，hive 集成hbase 就到此告一段落。</p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/74041611">如何整合hive和hbase</a></p>
+<p><a target="_blank" rel="noopener" href="https://ask.hellobi.com/blog/marsj/4002">Hive与HBase的集成实践</a></p>
+<p>[[hbase-1-4-13-安装部署]]</p>
+<p>[[hive2-3-7安装]]</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/02/Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" rel="prev" title="Hive注释中文乱码">
+                  <i class="fa fa-chevron-left"></i> Hive注释中文乱码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/" rel="next" title="理解Redis的持久化机制:RDB&AOF">
+                  理解Redis的持久化机制:RDB&AOF <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

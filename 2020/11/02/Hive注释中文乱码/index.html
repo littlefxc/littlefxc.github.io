@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="[TOC] 1. Hive注释中文乱码创建表的时候，comment说明字段包含中文，表成功创建成功之后，中文说明显示乱码 12345678create table if not exists capacity_stats_live_access (  id bigint comment &amp;#x27;主键&amp;#x27;,  device_num varchar(100) COMMENT &amp;#x27;设">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive注释中文乱码">
+<meta property="og:url" content="http://littlefxc.github.io/2020/11/02/Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="[TOC] 1. Hive注释中文乱码创建表的时候，comment说明字段包含中文，表成功创建成功之后，中文说明显示乱码 12345678create table if not exists capacity_stats_live_access (  id bigint comment &amp;#x27;主键&amp;#x27;,  device_num varchar(100) COMMENT &amp;#x27;设">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive%E4%B8%AD%E6%96%87%E6%B3%A8%E9%87%8A%E4%B9%B1%E7%A0%81.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%201-20201102170449594.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%202-20201102170449708.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%203-20201102170449863.png">
+<meta property="article:published_time" content="2020-11-02T08:44:32.000Z">
+<meta property="article:modified_time" content="2021-03-25T13:15:48.952Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="大数据,hive">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/hive%E4%B8%AD%E6%96%87%E6%B3%A8%E9%87%8A%E4%B9%B1%E7%A0%81.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2020/11/02/Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Hive注释中文乱码 | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81"><span class="nav-text">1. Hive注释中文乱码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E9%92%88%E5%AF%B9%E5%85%83%E6%95%B0%E6%8D%AE%E5%BA%93metastore%E4%B8%AD%E7%9A%84%E8%A1%A8-%E5%88%86%E5%8C%BA-%E8%A7%86%E5%9B%BE%E7%9A%84%E7%BC%96%E7%A0%81%E8%AE%BE%E7%BD%AE"><span class="nav-text">2. 针对元数据库metastore中的表,分区,视图的编码设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%BF%9B%E5%85%A5%E6%95%B0%E6%8D%AE%E5%BA%93-Metastore-%E4%B8%AD%E6%89%A7%E8%A1%8C%E4%BB%A5%E4%B8%8B-5-%E6%9D%A1-SQL-%E8%AF%AD%E5%8F%A5"><span class="nav-text">2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E4%BF%AE%E6%94%B9-metastore-%E7%9A%84%E8%BF%9E%E6%8E%A5-URL"><span class="nav-text">2.2. 修改 metastore 的连接 URL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E9%AA%8C%E8%AF%81"><span class="nav-text">2.3. 验证</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/11/02/Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hive注释中文乱码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-02 16:44:32" itemprop="dateCreated datePublished" datetime="2020-11-02T16:44:32+08:00">2020-11-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>[TOC]</p>
+<h1 id="1-Hive注释中文乱码"><a href="#1-Hive注释中文乱码" class="headerlink" title="1. Hive注释中文乱码"></a>1. Hive注释中文乱码</h1><p>创建表的时候，comment说明字段包含中文，表成功创建成功之后，中文说明显示乱码</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> if <span class="keyword">not</span> <span class="keyword">exists</span> capacity_stats_live_access (</span><br><span class="line">  id <span class="type">bigint</span> comment <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  device_num <span class="type">varchar</span>(<span class="number">100</span>) COMMENT <span class="string">&#x27;设备号&#x27;</span>,</span><br><span class="line">  start_time <span class="type">timestamp</span> COMMENT <span class="string">&#x27;调阅开始时间&#x27;</span>,</span><br><span class="line">  finish_time <span class="type">timestamp</span> COMMENT <span class="string">&#x27;调阅结束时间&#x27;</span>,</span><br><span class="line">  duration <span class="type">int</span> COMMENT <span class="string">&#x27;耗时，单位秒&#x27;</span>,</span><br><span class="line">  response <span class="type">int</span> COMMENT <span class="string">&#x27;调用结果 1.成功 0.失败&#x27;</span></span><br><span class="line">) COMMENT <span class="string">&#x27;直播调阅日志统计&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive%E4%B8%AD%E6%96%87%E6%B3%A8%E9%87%8A%E4%B9%B1%E7%A0%81.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled.png"></p>
+<p>这是因为在MySQL中的元数据出现乱码</p>
+<h1 id="2-针对元数据库metastore中的表-分区-视图的编码设置"><a href="#2-针对元数据库metastore中的表-分区-视图的编码设置" class="headerlink" title="2. 针对元数据库metastore中的表,分区,视图的编码设置"></a>2. 针对元数据库metastore中的表,分区,视图的编码设置</h1><p>因为我们知道 metastore 支持数据库级别，表级别的字符集是 <code>latin1</code> 。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%201-20201102170449594.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%201.png"></p>
+<p>那么我们只需要把相应注释的地方的字符集由 latin1 改成 utf-8，就可以了。用到注释的就三个地方，表、分区、视图。如下修改分为两个步骤：</p>
+<h2 id="2-1-进入数据库-Metastore-中执行以下-5-条-SQL-语句"><a href="#2-1-进入数据库-Metastore-中执行以下-5-条-SQL-语句" class="headerlink" title="2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句"></a>2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句</h2><p>修改表字段注解和表注解 <code>COLUMNS_V2</code>，<code>TABLE_PARAMS</code> </p>
+<p>修改分区字段注解 <code>PARTITION_PARAMS</code>，<code>PARTITION_KEYS</code> </p>
+<p>修改索引注解<code>INDEX_PARAMS</code> </p>
+<h2 id="2-2-修改-metastore-的连接-URL"><a href="#2-2-修改-metastore-的连接-URL" class="headerlink" title="2.2. 修改 metastore 的连接 URL"></a>2.2. 修改 metastore 的连接 URL</h2><p>修改hive-site.xml配置文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionURL<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>jdbc:mysql://IP:3306/db_name?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=UTF-8<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>JDBC connect string for a JDBC metastore<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-验证"><a href="#2-3-验证" class="headerlink" title="2.3. 验证"></a>2.3. 验证</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%202-20201102170449708.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%202.png"></p>
+<p>发现注释还是乱码。</p>
+<p>把表删除然后重新创建。效果如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%203-20201102170449863.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%203.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE-hive/" rel="tag"># 大数据,hive</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/24/Hive-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/" rel="prev" title="Hive 数据类型和存储格式">
+                  <i class="fa fa-chevron-left"></i> Hive 数据类型和存储格式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/" rel="next" title="Hive集成HBase 详解">
+                  Hive集成HBase 详解 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

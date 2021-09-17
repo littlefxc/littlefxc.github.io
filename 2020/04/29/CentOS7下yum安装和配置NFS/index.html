@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。 根据官网说明 Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS7下yum安装和配置NFS">
+<meta property="og:url" content="http://littlefxc.github.io/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。 根据官网说明 Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-29T06:54:31.000Z">
+<meta property="article:modified_time" content="2021-03-25T13:15:48.939Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="nfs">
+<meta property="article:tag" content="centos">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>CentOS7下yum安装和配置NFS | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-NFS-%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8"><span class="nav-text">设置 NFS 服务开机启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8-NFS-%E6%9C%8D%E5%8A%A1"><span class="nav-text">启动 NFS 服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E5%90%84%E4%B8%AA%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-text">在各个服务器上关闭防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%85%B1%E4%BA%AB%E7%9B%AE%E5%BD%95"><span class="nav-text">配置共享目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%AE%89%E8%A3%85"><span class="nav-text">Linux 客户端安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE"><span class="nav-text">Linux 客户端配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%BF%9E%E6%8E%A5-NFS"><span class="nav-text">客户端连接 NFS</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CentOS7下yum安装和配置NFS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-04-29 14:54:31" itemprop="dateCreated datePublished" datetime="2020-04-29T14:54:31+08:00">2020-04-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。</p>
+<p>根据官网说明 <a target="_blank" rel="noopener" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/ch-nfs">Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4</a> 以后，支持 NFS v4.2 不需要 rpcbind 了，但是如果客户端只支持 NFC v3 则需要 rpcbind 这个服务。</p>
+<span id="more"></span>
+
+<p>本例演示环境：</p>
+<table>
+<thead>
+<tr>
+<th>hostname</th>
+<th>IP Address</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>k8s-master-1</td>
+<td>192.168.200.19</td>
+<td>服务端</td>
+</tr>
+<tr>
+<td>ip-192-168-154-14</td>
+<td>192.168.154.14</td>
+<td>客户端</td>
+</tr>
+<tr>
+<td>ip-192-168-154-15</td>
+<td>192.168.154.15</td>
+<td>客户端</td>
+</tr>
+<tr>
+<td>ip-192-168-154-16</td>
+<td>192.168.154.16</td>
+<td>客户端</td>
+</tr>
+</tbody></table>
+<p><code>sudo yum install nfs-utils</code>, 只安装 nfs-utils 即可，rpcbind 属于它的依赖，也会安装上。</p>
+<h2 id="设置-NFS-服务开机启动"><a href="#设置-NFS-服务开机启动" class="headerlink" title="设置 NFS 服务开机启动"></a>设置 NFS 服务开机启动</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> rpcbind</span><br><span class="line">$ sudo systemctl <span class="built_in">enable</span> nfs</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动-NFS-服务"><a href="#启动-NFS-服务" class="headerlink" title="启动 NFS 服务"></a>启动 NFS 服务</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl start rpcbind</span><br><span class="line">$ sudo systemctl start nfs</span><br></pre></td></tr></table></figure>
+
+<h2 id="在各个服务器上关闭防火墙"><a href="#在各个服务器上关闭防火墙" class="headerlink" title="在各个服务器上关闭防火墙"></a>在各个服务器上关闭防火墙</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop firewalld.service            <span class="comment">#停止firewall</span></span><br><span class="line">$ systemctl <span class="built_in">disable</span> firewalld.service         <span class="comment">#禁止firewall开机启动</span></span><br><span class="line">$ systemctl stop iptables.service             <span class="comment">#停止iptables</span></span><br><span class="line">$ systemctl <span class="built_in">disable</span> iptables.service          <span class="comment">#禁止iptables开机启动l</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置共享目录"><a href="#配置共享目录" class="headerlink" title="配置共享目录"></a>配置共享目录</h2><p>服务启动之后，我们在服务端配置一个共享目录</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mkdir /home/k8s-projects/k8s-nfs</span><br><span class="line">$ sudo chmod 755 /home/k8s-projects/k8s-nfs</span><br></pre></td></tr></table></figure>
+
+<p>根据这个目录，相应配置导出目录</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi /etc/exports</span><br></pre></td></tr></table></figure>
+
+<p>添加如下配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;home&#x2F;k8s-projects&#x2F;k8s-nfs *(rw,sync,no_root_squash,no_all_squash)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>/data</code>: 共享目录位置。</li>
+<li><code>192.168.0.0/24</code>: 客户端 IP 范围，<code>*</code> 代表所有，即没有限制。</li>
+<li><code>rw</code>: 权限设置，可读可写。</li>
+<li><code>sync</code>: 同步共享目录。</li>
+<li><code>no_root_squash</code>: 可以使用 root 授权。</li>
+<li><code>no_all_squash</code>: 可以使用普通用户授权。</li>
+</ol>
+<p><code>:wq</code> 保存设置之后，重启 NFS 服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo exportfs -r //让上面的配置生效或者重启服务</span><br><span class="line">$ sudo systemctl restart nfs</span><br></pre></td></tr></table></figure>
+
+<p>可以检查一下本地的共享目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ showmount -e localhost</span><br><span class="line">Export list <span class="keyword">for</span> localhost:</span><br><span class="line">/home/k8s-projects/k8s-nfs *</span><br></pre></td></tr></table></figure>
+
+<p>这样，服务端就配置好了，接下来配置客户端，连接服务端，使用共享目录。</p>
+<h2 id="Linux-客户端安装"><a href="#Linux-客户端安装" class="headerlink" title="Linux 客户端安装"></a>Linux 客户端安装</h2><p>与服务端类似</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install nfs-utils</span><br></pre></td></tr></table></figure>
+
+<h2 id="Linux-客户端配置"><a href="#Linux-客户端配置" class="headerlink" title="Linux 客户端配置"></a>Linux 客户端配置</h2><p>设置 rpcbind 服务的开机启动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> rpcbind</span><br></pre></td></tr></table></figure>
+
+<p>启动 NFS 服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemctl start rpcbind</span><br></pre></td></tr></table></figure>
+
+<p><em><code>注意</code></em></p>
+<blockquote>
+<p>客户端不需要打开防火墙，因为客户端时发出请求方，网络能连接到服务端即可。客户端也不需要开启 NFS 服务，因为不共享目录。</p>
+</blockquote>
+<h2 id="客户端连接-NFS"><a href="#客户端连接-NFS" class="headerlink" title="客户端连接 NFS"></a>客户端连接 NFS</h2><p>挂载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo mount -t nfs 192.168.200.19:/home/k8s-projects/k8s-nfs /mnt/k8s-nf</span><br></pre></td></tr></table></figure>
+
+<p>挂载之后，可以使用 <code>mount</code> 命令查看一下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ showmount -e 192.168.200.19</span><br><span class="line">Export list <span class="keyword">for</span> 192.168.200.19:</span><br><span class="line">/home/k8s-projects/k8s-nfs *</span><br><span class="line">/root/data/nfs-pic</span><br></pre></td></tr></table></figure>
+
+<p>这说明已经挂载成功了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nfs/" rel="tag"># nfs</a>
+              <a href="/tags/centos/" rel="tag"># centos</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04/28/%E5%9F%BA%E4%BA%8EJenkins%E3%80%81SVN%E3%80%81Harbor%E3%80%81Helm%E5%92%8CKubernetes%E7%9A%84%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/" rel="prev" title="基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成">
+                  <i class="fa fa-chevron-left"></i> 基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/05/28/apt-get%E5%9C%A8%E5%9F%BA%E4%BA%8EUbuntu%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8FDockerfile%E4%B8%AD%E7%9A%84%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95/" rel="next" title="apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法">
+                  apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

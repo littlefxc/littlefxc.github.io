@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="前言线程就是一个放线程的池子。 使用线程池的好处：  重用已存在的线程，从而减少对象创建和销毁的开销。 控制并发，从而提高资源利用率，有效避免过多的资源竞争，提升性能 功能强大，有定时执行、定期执行、单线程执行、并发控制等等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程池ThreadPoolExecutor">
+<meta property="og:url" content="http://littlefxc.github.io/2021/08/04/%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="前言线程就是一个放线程的池子。 使用线程池的好处：  重用已存在的线程，从而减少对象创建和销毁的开销。 控制并发，从而提高资源利用率，有效避免过多的资源竞争，提升性能 功能强大，有定时执行、定期执行、单线程执行、并发控制等等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804224722984.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804230153040.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804230529147.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210805230140225.png">
+<meta property="article:published_time" content="2021-08-04T14:01:38.000Z">
+<meta property="article:modified_time" content="2021-08-05T15:30:59.555Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="多线程">
+<meta property="article:tag" content="线程池">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804224722984.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/08/04/%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>线程池ThreadPoolExecutor | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">线程池的创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83API-%E6%93%8D%E4%BD%9C%E7%B1%BB"><span class="nav-text">核心API - 操作类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83API-%E7%9B%91%E6%8E%A7%E7%B1%BB"><span class="nav-text">核心API- 监控类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%8A%B6%E6%80%81"><span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%88%E7%90%86%E7%9A%84%E9%85%8D%E7%BD%AE%E7%BA%BF%E7%A8%8B%E6%B1%A0"><span class="nav-text">合理的配置线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%A4%BA%E4%BE%8B-%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E%E8%A7%81threading-stories-about-robust-thread-%EF%BC%9A"><span class="nav-text">工具类示例(详细说明见threading-stories-about-robust-thread)：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BlockQueue%E8%AF%A6%E8%A7%A3%E3%80%81%E9%80%89%E6%8B%A9%E4%B8%8E%E8%B0%83%E4%BC%98"><span class="nav-text">BlockQueue详解、选择与调优</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BlockQueue%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">BlockQueue是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BlockQueue%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-text">BlockQueue的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BlockQueue-%E6%A0%B8%E5%BF%83API"><span class="nav-text">BlockQueue 核心API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8BlockQueue"><span class="nav-text">常用BlockQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E4%BC%98%E6%8A%80%E5%B7%A7"><span class="nav-text">调优技巧</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Executors-%E5%B7%A5%E5%85%B7API"><span class="nav-text">Executors 工具API</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/04/%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线程池ThreadPoolExecutor
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-08-04 22:01:38" itemprop="dateCreated datePublished" datetime="2021-08-04T22:01:38+08:00">2021-08-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-08-05 23:30:59" itemprop="dateModified" datetime="2021-08-05T23:30:59+08:00">2021-08-05</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>线程就是一个放线程的池子。</p>
+<p>使用线程池的好处：</p>
+<ul>
+<li>重用已存在的线程，从而减少对象创建和销毁的开销。</li>
+<li>控制并发，从而提高资源利用率，有效避免过多的资源竞争，提升性能</li>
+<li>功能强大，有定时执行、定期执行、单线程执行、并发控制等等</li>
+</ul>
+<span id="more"></span>
+
+<p>从某种意义上讲，线程池是<strong>特殊的对象池</strong>。</p>
+<p>这篇文章<a target="_blank" rel="noopener" href="https://blog.csdn.net/hit100410628/article/details/72934353">commons-pool对象池（2）—实现一个线程池</a>就介绍了怎么用 commons-pool2 实现线程池。</p>
+<h1 id="线程池的创建"><a href="#线程池的创建" class="headerlink" title="线程池的创建"></a>线程池的创建</h1><p>我们可以通过 <code>ThreadPoolExecutor</code> 来创建一个线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>构造方法中的字段含义如下：</p>
+<ul>
+<li><p><strong>corePoolSize</strong>：核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：</p>
+<ol>
+<li>如果运行的线程少于 corePoolSize，则创建新线程来处理任务，即使线程池中的其他线程是空闲的；</li>
+<li>如果线程池中的线程数量大于等于 corePoolSize 且小于 maximumPoolSize，则只有当workQueue满时才创建新的线程去处理任务；</li>
+<li>如果设置的corePoolSize 和 maximumPoolSize相同，则创建的线程池的大小是固定的，这时如果有新任务提交，若workQueue未满，则将请求放入workQueue中，等待有空闲的线程去从workQueue中取任务并处理；</li>
+<li>如果运行的线程数量大于等于maximumPoolSize，这时如果workQueue已经满了，则通过handler所指定的策略来处理任务；</li>
+</ol>
+<p>所以，任务提交时，判断的顺序为 corePoolSize –&gt; workQueue –&gt; maximumPoolSize。</p>
+</li>
+<li><p><strong>maximumPoolSize</strong>：最大线程数量；</p>
+</li>
+<li><p><strong>workQueue</strong>：用于保存等待执行的任务的阻塞队列。当任务提交时，如果线程池中的线程数量大于等于corePoolSize的时候，把该任务封装成一个Worker对象放入队列中。可以选择以下几个阻塞队列。</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/leesf456/p/5533770.html">ArrayBlockingQueue</a>：是一个基于数组结构的<strong>有界</strong>阻塞队列，此队列按 FIFO 原则对元素进行排序。</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_36553913/article/details/79533606">LinkedBlockingQueue</a>：一个基于链表结构的<strong>无界</strong>阻塞队列，此队列按 FIFO 排序元素，吞吐量通常高于 ArrayBlockingQueue。静态工厂方法 <code>Executors.newFixedThreadPool()</code> 使用了这个队列。</li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5ae754c7f265da0ba76f8534">SynchronousQueue</a>：一个不存储元素的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量通常要高于 LinkedBlockingQueue，静态工厂方法 <code>Executors.newCachedThreadPool()</code> 使用了这个队列。</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/duanxz/archive/2012/10/22/2733947.html">PriorityBlockingQueue</a>：一个具有优先级的无限阻塞队列。</li>
+<li><a target="_blank" rel="noopener" href="https://juejin.im/post/5ae7561b6fb9a07aab29a2b2">LinkedTransferQueue</a>：是一个基于链表结构的无界阻塞队列，是 SynchronousQueue 和 LinkedBlockingQueue 的合体，性能比 LinkedBlockingQueue 更高（没有锁操作），比 SynchronousQueue能存储更多的元素。</li>
+</ol>
+</li>
+<li><p><strong>keepAliveTime</strong>：线程池维护线程所允许的空闲时间。当线程池中的线程数量大于corePoolSize的时候，如果这时没有新的任务提交，核心线程外的线程不会立即销毁，而是会等待，直到等待的时间超过了keepAliveTime。所以如果任务很多，并且每个任务执行的时间比较短，可以调大时间，提高线程的利用率。</p>
+<blockquote>
+<p>PS: executor.allowCoreThreadTimeOut(true)// 核心线程超过空闲时间也会被回收</p>
+</blockquote>
+</li>
+<li><p><strong>threadFactory</strong>：它是 ThreadFactory 类型的变量，用来创建新线程。默认使用<code>Executors.defaultThreadFactory()</code> 来创建线程。使用默认的 ThreadFactory 来创建线程时，会使新创建的线程具有相同的<code>Thread.NORM_PRIORITY</code>优先级并且是非守护线程，同时也设置了线程的名称。使用开源框架 guava 提供的 ThreadFactoryBuilder 可以快速给线程池里的线程设置有意义的名字</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> ThreadFactoryBuilder().setNameFormat(<span class="string">&quot;XX-task-%d&quot;</span>).build();</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>handler</strong>：它是 RejectedExecutionHandler 类型的变量，表示线程池的<strong>饱和策略</strong>。如果队列和线程池都满了，线程池处于饱和状态，这时如果继续提交任务，就需要采取一种策略处理该任务。线程池提供了4种策略：</p>
+<ol>
+<li>AbortPolicy：直接抛出异常，这是默认策略；</li>
+<li>CallerRunsPolicy：用调用者所在的线程来执行任务；</li>
+<li>DiscardOldestPolicy：丢弃阻塞队列中靠最前的任务，并执行当前任务；</li>
+<li>DiscardPolicy：直接丢弃任务；</li>
+</ol>
+<p>当然也可以根据应用场景需要自定义实现 RejectedExecutionHandler 接口自定义策略。</p>
+</li>
+</ul>
+<h1 id="核心API-操作类"><a href="#核心API-操作类" class="headerlink" title="核心API - 操作类"></a>核心API - 操作类</h1><ul>
+<li>execute() : 提交任务，交给线程池运行</li>
+<li>submit(): 提交任务，能够返回结果</li>
+<li>shutdown():关闭线程池，等待任务都执行</li>
+<li>shutdownNow():关闭线程池，不等任务执行完（很少使用）</li>
+</ul>
+<h1 id="核心API-监控类"><a href="#核心API-监控类" class="headerlink" title="核心API- 监控类"></a>核心API- 监控类</h1><p>通过线程池提供的参数进行监控。线程池里有一些属性在监控线程池的时候可以使用以下方法</p>
+<ul>
+<li><strong>getTaskCount</strong>：线程池已经执行的和未执行的任务总数；</li>
+<li><strong>getCompletedTaskCount</strong>：线程池已完成的任务数量，该值小于等于taskCount；</li>
+<li><strong>getLargestPoolSize</strong>：线程池曾经创建过的最大线程数量。通过这个数据可以知道线程池是否满过，也就是达到了maximumPoolSize；</li>
+<li><strong>getPoolSize</strong>：线程池当前的线程数量；</li>
+<li><strong>getActiveCount</strong>：当前线程池中正在执行任务的线程数量。</li>
+</ul>
+<p>通过这些方法，可以对线程池进行监控，在ThreadPoolExecutor类中提供了几个空方法，如beforeExecute方法，afterExecute方法和terminated方法，可以扩展这些方法在执行前或执行后增加一些新的操作，例如统计线程池的执行任务的时间等，可以继承自ThreadPoolExecutor来进行扩展。这几个方法在线程池里是空方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeExecute</span><span class="params">(Thread t, Runnable r)</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="线程池状态"><a href="#线程池状态" class="headerlink" title="线程池状态"></a>线程池状态</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804224722984.png" alt="image-20210804224722984"></p>
+<h1 id="合理的配置线程池"><a href="#合理的配置线程池" class="headerlink" title="合理的配置线程池"></a>合理的配置线程池</h1><p>任务一般可分为：CPU密集型、IO密集型、混合型，对于不同类型的任务需要分配不同大小的线程池。</p>
+<ul>
+<li><p>CPU密集型任务 尽量使用较小的线程池，一般为CPU核心数+1。 因为CPU密集型任务使得CPU使用率很高，若开过多的线程数，只能增加上下文切换的次数，因此会带来额外的开销。</p>
+</li>
+<li><p>IO密集型任务 可以使用稍大的线程池，一般为2*CPU核心数。 IO密集型任务CPU使用率并不高，因此可以让CPU在等待IO的时候去处理别的任务，充分利用CPU时间。</p>
+</li>
+<li><p>混合型任务 可以将任务分成IO密集型和CPU密集型任务，然后分别用不同的线程池去处理。 只要分完之后两个任务的执行时间相差不大，那么就会比串行执行来的高效。 因为如果划分之后两个任务执行时间相差甚远，那么先执行完的任务就要等后执行完的任务，最终的时间仍然取决于后执行完的任务，而且还要加上任务拆分与合并的开销，得不偿失。</p>
+<p>估算的经验公式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">N * U * (1 + WT&#x2F;ST)</span><br><span class="line"></span><br><span class="line">N: CPU 核心数</span><br><span class="line">U: 目标 CPU 利用率</span><br><span class="line">WT: 线程等待时间</span><br><span class="line">ST: 线程运行时间</span><br></pre></td></tr></table></figure>
+
+<h2 id="工具类示例-详细说明见threading-stories-about-robust-thread-："><a href="#工具类示例-详细说明见threading-stories-about-robust-thread-：" class="headerlink" title="工具类示例(详细说明见threading-stories-about-robust-thread)："></a>工具类示例(详细说明见<a target="_blank" rel="noopener" href="https://www.javacodegeeks.com/2012/03/threading-stories-about-robust-thread.html">threading-stories-about-robust-thread</a>)：</h2><p>主要是继承下面这个抽象类实现方法就可以了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * A class that calculates the optimal thread pool boundaries. It takes the desired target utilization and the desired</span></span><br><span class="line"><span class="comment"> * work queue memory consumption as input and retuns thread count and work queue capacity.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Niklas Schlimm</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PoolSizeCalculator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The sample queue size to calculate the size of a single &#123;<span class="doctag">@link</span> Runnable&#125; element.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> SAMPLE_QUEUE_SIZE = <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Accuracy of test run. It must finish within 20ms of the testTime otherwise we retry the test. This could be</span></span><br><span class="line"><span class="comment">     * configurable.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> EPSYLON = <span class="number">20</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Time (millis) of the test run in the CPU time calculation.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> testtime = <span class="number">3000</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Control variable for the CPU time investigation.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> expired;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Calculates the boundaries of a thread pool for a given &#123;<span class="doctag">@link</span> Runnable&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> targetUtilization    the desired utilization of the CPUs (0 &lt;= targetUtilization &lt;= 1)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> targetQueueSizeBytes the desired maximum work queue size of the thread pool (bytes)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">calculateBoundaries</span><span class="params">(BigDecimal targetUtilization, BigDecimal targetQueueSizeBytes)</span> </span>&#123;</span><br><span class="line">        calculateOptimalCapacity(targetQueueSizeBytes);</span><br><span class="line">        Runnable task = creatTask();</span><br><span class="line">        start(task);</span><br><span class="line">        start(task); <span class="comment">// warm up phase</span></span><br><span class="line">        <span class="keyword">long</span> cputime = getCurrentThreadCPUTime();</span><br><span class="line">        start(task); <span class="comment">// test intervall</span></span><br><span class="line">        cputime = getCurrentThreadCPUTime() - cputime;</span><br><span class="line">        <span class="keyword">long</span> waittime = (testtime * <span class="number">1000000</span>) - cputime;</span><br><span class="line">        calculateOptimalThreadCount(cputime, waittime, targetUtilization);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">calculateOptimalCapacity</span><span class="params">(BigDecimal targetQueueSizeBytes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> mem = calculateMemoryUsage();</span><br><span class="line">        BigDecimal queueCapacity = targetQueueSizeBytes.divide(<span class="keyword">new</span> BigDecimal(mem), RoundingMode.HALF_UP);</span><br><span class="line">        System.out.println(<span class="string">&quot;Target queue memory usage (bytes): &quot;</span> + targetQueueSizeBytes);</span><br><span class="line">        System.out.println(<span class="string">&quot;createTask() produced &quot;</span> + creatTask().getClass().getName() + <span class="string">&quot; which took &quot;</span> + mem</span><br><span class="line">                + <span class="string">&quot; bytes in a queue&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Formula: &quot;</span> + targetQueueSizeBytes + <span class="string">&quot; / &quot;</span> + mem);</span><br><span class="line">        System.out.println(<span class="string">&quot;* Recommended queue capacity (bytes): &quot;</span> + queueCapacity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Brian Goetz&#x27; optimal thread count formula, see &#x27;Java Concurrency in Practice&#x27; (chapter 8.2)</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> cpu               cpu time consumed by considered task</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> wait              wait time of considered task</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> targetUtilization target utilization of the system</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">calculateOptimalThreadCount</span><span class="params">(<span class="keyword">long</span> cpu, <span class="keyword">long</span> wait, BigDecimal targetUtilization)</span> </span>&#123;</span><br><span class="line">        BigDecimal waitTime = <span class="keyword">new</span> BigDecimal(wait);</span><br><span class="line">        BigDecimal computeTime = <span class="keyword">new</span> BigDecimal(cpu);</span><br><span class="line">        BigDecimal numberOfCPU = <span class="keyword">new</span> BigDecimal(Runtime.getRuntime().availableProcessors());</span><br><span class="line">        BigDecimal optimalthreadcount = numberOfCPU.multiply(targetUtilization).multiply(</span><br><span class="line">                <span class="keyword">new</span> BigDecimal(<span class="number">1</span>).add(waitTime.divide(computeTime, RoundingMode.HALF_UP)));</span><br><span class="line">        System.out.println(<span class="string">&quot;Number of CPU: &quot;</span> + numberOfCPU);</span><br><span class="line">        System.out.println(<span class="string">&quot;Target utilization: &quot;</span> + targetUtilization);</span><br><span class="line">        System.out.println(<span class="string">&quot;Elapsed time (nanos): &quot;</span> + (testtime * <span class="number">1000000</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;Compute time (nanos): &quot;</span> + cpu);</span><br><span class="line">        System.out.println(<span class="string">&quot;Wait time (nanos): &quot;</span> + wait);</span><br><span class="line">        System.out.println(<span class="string">&quot;Formula: &quot;</span> + numberOfCPU + <span class="string">&quot; * &quot;</span> + targetUtilization + <span class="string">&quot; * (1 + &quot;</span> + waitTime + <span class="string">&quot; / &quot;</span></span><br><span class="line">                + computeTime + <span class="string">&quot;)&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;* Optimal thread count: &quot;</span> + optimalthreadcount);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Runs the &#123;<span class="doctag">@link</span> Runnable&#125; over a period defined in &#123;<span class="doctag">@link</span> #testtime&#125;. Based on Heinz Kabbutz&#x27; ideas</span></span><br><span class="line"><span class="comment">     * (http://www.javaspecialists.eu/archive/Issue124.html).</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> task the runnable under investigation</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(Runnable task)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span> runs = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (++runs &gt; <span class="number">5</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Test not accurate&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            expired = <span class="keyword">false</span>;</span><br><span class="line">            start = System.currentTimeMillis();</span><br><span class="line">            Timer timer = <span class="keyword">new</span> Timer();</span><br><span class="line">            timer.schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    expired = <span class="keyword">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;, testtime);</span><br><span class="line">            <span class="keyword">while</span> (!expired) &#123;</span><br><span class="line">                task.run();</span><br><span class="line">            &#125;</span><br><span class="line">            start = System.currentTimeMillis() - start;</span><br><span class="line">            timer.cancel();</span><br><span class="line">        &#125; <span class="keyword">while</span> (Math.abs(start - testtime) &gt; EPSYLON);</span><br><span class="line">        collectGarbage(<span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">collectGarbage</span><span class="params">(<span class="keyword">int</span> times)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; times; i++) &#123;</span><br><span class="line">            System.gc();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">10</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                Thread.currentThread().interrupt();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Calculates the memory usage of a single element in a work queue. Based on Heinz Kabbutz&#x27; ideas</span></span><br><span class="line"><span class="comment">     * (http://www.javaspecialists.eu/archive/Issue029.html).</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> memory usage of a single &#123;<span class="doctag">@link</span> Runnable&#125; element in the thread pools work queue</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">calculateMemoryUsage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        BlockingQueue&lt;Runnable&gt; queue = createWorkQueue();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; SAMPLE_QUEUE_SIZE; i++) &#123;</span><br><span class="line">            queue.add(creatTask());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> mem0 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();</span><br><span class="line">        <span class="keyword">long</span> mem1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();</span><br><span class="line">        queue = <span class="keyword">null</span>;</span><br><span class="line">        collectGarbage(<span class="number">15</span>);</span><br><span class="line">        mem0 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();</span><br><span class="line">        queue = createWorkQueue();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; SAMPLE_QUEUE_SIZE; i++) &#123;</span><br><span class="line">            queue.add(creatTask());</span><br><span class="line">        &#125;</span><br><span class="line">        collectGarbage(<span class="number">15</span>);</span><br><span class="line">        mem1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();</span><br><span class="line">        <span class="keyword">return</span> (mem1 - mem0) / SAMPLE_QUEUE_SIZE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Create your runnable task here.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> an instance of your runnable task under investigation</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> Runnable <span class="title">creatTask</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Return an instance of the queue used in the thread pool.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> queue instance</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> BlockingQueue&lt;Runnable&gt; <span class="title">createWorkQueue</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Calculate current cpu time. Various frameworks may be used here, depending on the operating system in use. (e.g.</span></span><br><span class="line"><span class="comment">     * http://www.hyperic.com/products/sigar). The more accurate the CPU time measurement, the more accurate the results</span></span><br><span class="line"><span class="comment">     * for thread count boundaries.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> current cpu time of current thread</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">getCurrentThreadCPUTime</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>下面是示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 如何合理设置线程池的大小</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPoolSizeCalculator</span> <span class="keyword">extends</span> <span class="title">PoolSizeCalculator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MyPoolSizeCalculator calculator = <span class="keyword">new</span> MyPoolSizeCalculator();</span><br><span class="line">        calculator.calculateBoundaries(</span><br><span class="line">                <span class="comment">// CPU目标利用率</span></span><br><span class="line">                <span class="keyword">new</span> BigDecimal(<span class="number">1.0</span>),</span><br><span class="line">                <span class="comment">// blockingqueue占用的内存大小，byte</span></span><br><span class="line">                <span class="keyword">new</span> BigDecimal(<span class="number">100000</span>));</span><br><span class="line"></span><br><span class="line">        ThreadPoolExecutor executor =</span><br><span class="line">                <span class="keyword">new</span> ThreadPoolExecutor(</span><br><span class="line">                        <span class="number">8</span>,</span><br><span class="line">                        <span class="number">8</span>,</span><br><span class="line">                        <span class="comment">// 默认情况下指的是非核心线程的空闲时间</span></span><br><span class="line">                        <span class="comment">// 如果allowCoreThreadTimeOut=true：核心线程/非核心线程允许的空闲时间</span></span><br><span class="line">                        <span class="number">10L</span>,</span><br><span class="line">                        TimeUnit.SECONDS,</span><br><span class="line">                        <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">2500</span>),</span><br><span class="line">                        Executors.defaultThreadFactory(),</span><br><span class="line">                        <span class="keyword">new</span> ThreadPoolExecutor.AbortPolicy()</span><br><span class="line">                );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">long</span> <span class="title">getCurrentThreadCPUTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 当前线程占用的总时间</span></span><br><span class="line">        <span class="keyword">return</span> ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Runnable <span class="title">creatTask</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> AsynchronousTask();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> BlockingQueue <span class="title">createWorkQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AsynchronousTask</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// System.out.println(Thread.currentThread().getName());</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="BlockQueue详解、选择与调优"><a href="#BlockQueue详解、选择与调优" class="headerlink" title="BlockQueue详解、选择与调优"></a>BlockQueue详解、选择与调优</h1><ul>
+<li>BlockQueue该怎么使用？</li>
+<li>不同的BlockQueue对线程池的影响是什么？</li>
+<li>几点线程池的调优技巧</li>
+</ul>
+<h2 id="BlockQueue是什么"><a href="#BlockQueue是什么" class="headerlink" title="BlockQueue是什么"></a>BlockQueue是什么</h2><ul>
+<li>BlockQueue 是阻塞队列</li>
+<li>当队列为空时，获取对象会阻塞；当队列满时，放入对象会阻塞。</li>
+</ul>
+<h2 id="BlockQueue的作用"><a href="#BlockQueue的作用" class="headerlink" title="BlockQueue的作用"></a>BlockQueue的作用</h2><ul>
+<li>实现队列的基本功能</li>
+<li>多线程环境下自动管理线程的等待与唤醒</li>
+</ul>
+<h2 id="BlockQueue-核心API"><a href="#BlockQueue-核心API" class="headerlink" title="BlockQueue 核心API"></a>BlockQueue 核心API</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804230153040.png" alt="image-20210804230153040"></p>
+<h2 id="常用BlockQueue"><a href="#常用BlockQueue" class="headerlink" title="常用BlockQueue"></a>常用BlockQueue</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210804230529147.png" alt="image-20210804230529147"></p>
+<h2 id="调优技巧"><a href="#调优技巧" class="headerlink" title="调优技巧"></a>调优技巧</h2><ul>
+<li>合理设置corePoolSize、maximumPoolSize、workQueue的容量</li>
+</ul>
+<p>比如我门想降低系统资源的消耗，</p>
+<p>例如CPU的使用率，操作系统资源的消耗，上下文切换的开销，那么我门可以设置比较大的队列容量和一个比较小的线程池容量，例如：corePoolSize=5，maximumPoolSize=10，workQueue=LinkedBlockQueue(100)。</p>
+<p>假如任务经常发生阻塞，任务队列经常满，那么可以重设maximumPoolSize。</p>
+<h1 id="Executors-工具API"><a href="#Executors-工具API" class="headerlink" title="Executors 工具API"></a>Executors 工具API</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210805230140225.png" alt="image-20210805230140225"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag"># 多线程</a>
+              <a href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="tag"># 线程池</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/02/ab%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/" rel="prev" title="ab使用教程">
+                  <i class="fa fa-chevron-left"></i> ab使用教程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/05/jstat/" rel="next" title="内置监控工具 - jstat">
+                  内置监控工具 - jstat <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="1 OpenTSDB 概述官网概述 源码 OpenTSDB是基于HBase的分布式、可伸缩的时间序列数据库。它存储的是时间序列数据，时间序列数据是指在不同时间点上收集到的数据，这类数据反映了一个对象随时间的变化状态或程度。 1.1 架构OpenTSDB由时间序列守护进程（TSD）和一组命令行实用程序组成。与OpenTSDB的交互主要通过运行一个或多个TSD来实现。每个TSD都是独立的。没有主服务器">
+<meta property="og:type" content="article">
+<meta property="og:title" content="opentsdb">
+<meta property="og:url" content="http://littlefxc.github.io/2021/03/26/opentsdb/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="1 OpenTSDB 概述官网概述 源码 OpenTSDB是基于HBase的分布式、可伸缩的时间序列数据库。它存储的是时间序列数据，时间序列数据是指在不同时间点上收集到的数据，这类数据反映了一个对象随时间的变化状态或程度。 1.1 架构OpenTSDB由时间序列守护进程（TSD）和一组命令行实用程序组成。与OpenTSDB的交互主要通过运行一个或多个TSD来实现。每个TSD都是独立的。没有主服务器">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://opentsdb.net/img/tsdb-architecture.png">
+<meta property="article:published_time" content="2021-03-26T03:28:48.000Z">
+<meta property="article:modified_time" content="2021-03-31T03:06:18.125Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="hbase">
+<meta property="article:tag" content="opentsdb">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://opentsdb.net/img/tsdb-architecture.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/03/26/opentsdb/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>opentsdb | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-OpenTSDB-%E6%A6%82%E8%BF%B0"><span class="nav-text">1 OpenTSDB 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E6%9E%B6%E6%9E%84"><span class="nav-text">1.1 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">1.2 基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-OpenTSDB%E7%B3%BB%E7%BB%9F%E8%A1%A8%E7%AE%80%E4%BB%8B"><span class="nav-text">1.3 OpenTSDB系统表简介</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85"><span class="nav-text">2 安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E8%BF%90%E8%A1%8C%E6%97%B6%E8%A6%81%E6%B1%82"><span class="nav-text">2.1 运行时要求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="nav-text">2.2 手动安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85"><span class="nav-text">2.2.1 源码编译安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-RPM-%E5%8C%85%E5%AE%89%E8%A3%85"><span class="nav-text">2.2.2 RPM 包安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-%E5%BB%BA%E8%A1%A8"><span class="nav-text">2.2.3 建表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-%E5%90%AF%E5%8A%A8"><span class="nav-text">2.2.4 启动</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Docker-%E5%AE%89%E8%A3%85"><span class="nav-text">2.3 Docker 安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE"><span class="nav-text">3 配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-OpenTSDB-API%E7%AE%80%E4%BB%8B"><span class="nav-text">4 OpenTSDB API简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-api-put"><span class="nav-text">4.1 &#x2F;api&#x2F;put</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-api-query"><span class="nav-text">4.2 &#x2F;api&#x2F;query</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-api-search"><span class="nav-text">4.3 &#x2F;api&#x2F;search</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%BC%80%E5%8F%91-OpenTSDB-%E5%BA%94%E7%94%A8"><span class="nav-text">5 开发 OpenTSDB 应用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E7%A4%BA%E4%BE%8B%E5%9C%BA%E6%99%AF"><span class="nav-text">5.1 示例场景</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/26/opentsdb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          opentsdb
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-26 11:28:48" itemprop="dateCreated datePublished" datetime="2021-03-26T11:28:48+08:00">2021-03-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-31 11:06:18" itemprop="dateModified" datetime="2021-03-31T11:06:18+08:00">2021-03-31</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="1-OpenTSDB-概述"><a href="#1-OpenTSDB-概述" class="headerlink" title="1 OpenTSDB 概述"></a>1 OpenTSDB 概述</h1><p><a target="_blank" rel="noopener" href="http://opentsdb.net/overview.html">官网概述</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/OpenTSDB/opentsdb">源码</a></p>
+<p>OpenTSDB是基于HBase的分布式、可伸缩的时间序列数据库。它存储的是时间序列数据，时间序列数据是指在不同时间点上收集到的数据，这类数据反映了一个对象随时间的变化状态或程度。</p>
+<h2 id="1-1-架构"><a href="#1-1-架构" class="headerlink" title="1.1 架构"></a>1.1 架构</h2><p>OpenTSDB由时间序列守护进程（TSD）和一组命令行实用程序组成。与OpenTSDB的交互主要通过运行一个或多个TSD来实现。每个TSD都是独立的。没有主服务器，没有共享状态，因此您可以根据需要运行任意数量的TSD来处理您向其投入的任何负载。每个TSD使用CloudTable集群中的HBase来存储和检索时间序列数据。数据模式经过高度优化，可快速聚合相似的时间序列，从而最大限度地减少存储空间。TSD的用户不需要直接访问底层存储。您可以通过HTTP API与TSD进行通信。所有通信都发生在同一个端口上（TSD通过查看它收到的前几个字节来确定客户端的协议）。</p>
+<p><img src="http://opentsdb.net/img/tsdb-architecture.png" alt="tsdb-architecture"></p>
+<h2 id="1-2-基本概念"><a href="#1-2-基本概念" class="headerlink" title="1.2 基本概念"></a>1.2 基本概念</h2><ul>
+<li><p><strong>data point</strong>：时间序列数据点，包括metric、timestamp、value和tag。表示某个metric在某个时间点的数值。</p>
+</li>
+<li><p><strong>metric</strong>：指标项。例如，在系统监控中的CPU使用率、内存、IO等指标。</p>
+</li>
+<li><p><strong>timestamp</strong>：UNIX时间戳（自Epoch以来的秒或毫秒），即value产生的时间。</p>
+</li>
+<li><p><strong>value</strong>：某个metric的值，是JSON格式的事件或直方图/摘要。</p>
+</li>
+<li><p>tag：标签，是由Tagk和Tagv组成的键值对。用于描述该点所属的时间序列。</p>
+<p>标签允许您从不同的源或相关实体中分离出类似的数据点，因此您可以轻松地单独或成组地绘制它们。标签的一个常见用法是使用生成数据点的机器名称以及机器所属的集群或池的名称来注释数据点。这使您可以轻松地制作显示每个服务器的服务状态的仪表盘，以及显示跨逻辑服务器池的聚合状态的仪表盘。</p>
+</li>
+</ul>
+<h2 id="1-3-OpenTSDB系统表简介"><a href="#1-3-OpenTSDB系统表简介" class="headerlink" title="1.3 OpenTSDB系统表简介"></a>1.3 OpenTSDB系统表简介</h2><p>OpenTSDB是基于HBase存储时序列数据的，在集群中开启OpenTSDB后，系统会在集群中创建4张HBase表。OpenTSDB系统表如下表所示。</p>
+<blockquote>
+<p>请不要人为去修改这4张HBase表，因为这可能会导致OpenTSDB不可用。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>表名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OPENTSDB.DATA</td>
+<td>用于存储数据点，OpenTSDB的所有数据都存储在这个表中。OpenTSDB按照salt进行分区，默认20个region，暂不支持设置。</td>
+</tr>
+<tr>
+<td>OPENTSDB.UID</td>
+<td>用于存储UID映射，数据点中的每个metric，tag都会映射成UID，同时每个UID反向映射为metric，tag，这些映射关系存储在这个表中。</td>
+</tr>
+<tr>
+<td>OPENTSDB.TREE</td>
+<td>用于存储metric的结构信息，默认未开启该特性。</td>
+</tr>
+<tr>
+<td>OPENTSDB.META</td>
+<td>用于存储时间序列索引和元数据，默认未开启该特性。</td>
+</tr>
+</tbody></table>
+<h1 id="2-安装"><a href="#2-安装" class="headerlink" title="2 安装"></a>2 安装</h1><h2 id="2-1-运行时要求"><a href="#2-1-运行时要求" class="headerlink" title="2.1 运行时要求"></a>2.1 运行时要求</h2><p>要实际运行OpenTSDB，您需要满足以下条件：</p>
+<ul>
+<li>Linux系统</li>
+<li>Java运行时环境1.6或更高版本</li>
+<li>HBase 0.92 或更高版本</li>
+<li>GnuPlot 4.2 或更高版本</li>
+</ul>
+<h2 id="2-2-手动安装"><a href="#2-2-手动安装" class="headerlink" title="2.2 手动安装"></a>2.2 手动安装</h2><p>当然，如果为了尽快上手，你也可以<code>standalone</code>模式（该模式独立运行zookeeper，hbase数据保存在本地）安装 HBase。(所以如果需要好的性能，整套大数据集群是少不了的)</p>
+<p>opentsdb的安装方式有两种：源码编译安装和RPM包安装。</p>
+<h3 id="2-2-1-源码编译安装"><a href="#2-2-1-源码编译安装" class="headerlink" title="2.2.1 源码编译安装"></a>2.2.1 源码编译安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone git://github.com/OpenTSDB/opentsdb.git</span><br><span class="line">cd opentsdb</span><br><span class="line">./build.sh # 等同于 .configure &amp;&amp; make</span><br><span class="line">./build/tsdb # 等同于 make install</span><br></pre></td></tr></table></figure>
+
+<p>如果要卸载的话，执行 <code>make uninstall</code>。</p>
+<h3 id="2-2-2-RPM-包安装"><a href="#2-2-2-RPM-包安装" class="headerlink" title="2.2.2 RPM 包安装"></a>2.2.2 RPM 包安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 直接从 github 上下载 OpenTSDB 的 release 版本的 RPM 包。</span></span><br><span class="line">yum localinstall opentsdb-2.3.1.noarch.rpm</span><br></pre></td></tr></table></figure>
+
+<p>注： 安装时会提示下面两个问题 </p>
+<ul>
+<li><p>gnuplot-4.6.2-3.el7.x86_64: [Errno 256] No more mirrors to try. </p>
+</li>
+<li><p>gnuplot-common-4.6.2-3.el7.x86_64: [Errno 256] No more mirrors to try. </p>
+</li>
+</ul>
+<p>这个是应为CentOS中官方的yum源默认是国外的源，除非挂载VPN，否者不发找到镜像。<br>解决方法： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 先下载阿里源</span> </span><br><span class="line">wget http://mirrors.aliyun.com/repo/Centos-7.repo -O /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后更新源</span></span><br><span class="line">yum makecache </span><br></pre></td></tr></table></figure>
+
+<p>再重新安装OpenTSDB。</p>
+<h3 id="2-2-3-建表"><a href="#2-2-3-建表" class="headerlink" title="2.2.3 建表"></a>2.2.3 建表</h3><p>配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 <code>/usr/share/opentsdb/tools/create_table.sh</code>，设置 COMPRESSION=NONE，并且在文件开始处设置 HBase 所在目录。之后执行该脚本，在 HBase 中创建相应的表，命令如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># COMPRESSION 的值有：NONE, LZO, GZIP or SNAPPY，</span></span><br><span class="line"><span class="comment"># TSDB_TTL: 数据只保存一个月</span></span><br><span class="line">env COMPRESSION=snappy HBASE_HOME=/usr/<span class="built_in">local</span>/hbase TSDB_TTL=1296000 /usr/share/opentsdb/tools/create_table.sh</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lin443514407lin/article/details/80591867">opentsdb调优</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bigdataf/article/details/87350357">opentsdb加kerberos认证</a></p>
+<h3 id="2-2-4-启动"><a href="#2-2-4-启动" class="headerlink" title="2.2.4 启动"></a>2.2.4 启动</h3><p>启动 OpenTSDB，<code>service opentsdb start</code> 或者 <code>nohup tsdb tsd &amp;</code>。</p>
+<p>通过浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:4242/%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F%E3%80%82">http://localhost:4242/查看是否安装成功。</a></p>
+<h2 id="2-3-Docker-安装"><a href="#2-3-Docker-安装" class="headerlink" title="2.3 Docker 安装"></a>2.3 Docker 安装</h2><p>还有一种更快速便捷的方法，就是直接使用 docker 安装。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 4242:4242 --name opentsdb petergrace/opentsdb-docker</span><br></pre></td></tr></table></figure>
+
+<p>-d表示在后台运行，<br>-p绑定主机端口，<br>–name为容器命名为opentsdb</p>
+<p>下次可以直接使用：<br>docker start opentsdb启动<br>docker stop opentsdb停止<br>docker rm opentsdb删除</p>
+<h1 id="3-配置"><a href="#3-配置" class="headerlink" title="3 配置"></a>3 配置</h1><p>OpenTSDB所有的配置都在 <a target="_blank" rel="noopener" href="http://opentsdb.net/docs/build/html/user_guide/configuration.html#data-types">link</a>. 这里列出来的配置基本都有默认值，但是有些需要根据环境和性能做出改变，具体如下表：</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>默认值</th>
+<th>描述</th>
+<th>修改值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>tsd.core.preload_uid_cache</td>
+<td>false</td>
+<td>是否在TSD启动的时候，预热UID缓存数据，为了提升性能，需要开启</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.core.auto_create_metrics</td>
+<td>false</td>
+<td>一个新的metric存入tsdb时，是否自动为其生成UID，如果true,存入成功，反之，失败。(按照最大优化性能的目标来说，应该预先为所有的metric生成UID，但是实际中预先不知道所有的metric,所以这个值需要设置为true)</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.http.cachedir</td>
+<td>无</td>
+<td>tsd写临时文件的目录    根据实际环境设置，比如/tmp/opentsdb</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.http.request.enable_chunked</td>
+<td>false</td>
+<td>Http写入数据时是否支持一次写入大批量的数据</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.http.request.max_chunk</td>
+<td>4096</td>
+<td>写入的批量数据的上限    根据需要增大，比如65535</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.http.staticroot</td>
+<td>无</td>
+<td>opentsdb页面的静态资源文件目录    安装目录下 ./build/staticroot</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.network.port</td>
+<td>无</td>
+<td>tsd读写数据的端口 根据实际配置 比如9099</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.query.timeout</td>
+<td>0</td>
+<td>tsd查询的timeout,如果为0,则不会timeout    合理配置。 比如200</td>
+<td></td>
+</tr>
+<tr>
+<td>tsd.storage.enable_appends</td>
+<td>false</td>
+<td>2.2版本，tsd 写数据到HBase有两种方式，一种是每来一条数据append到hbase, 一种是先缓存大量数据到tsd内存，然后进行compaction，一些性写入。推荐Append方式</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.storage.enable_compaction</td>
+<td>true</td>
+<td>append打开，这种就关闭</td>
+<td>false</td>
+</tr>
+<tr>
+<td>tsd.storage.fix_duplicates</td>
+<td>false</td>
+<td>相同时间存储相同metric的时候(重复数据)，最新写入的覆盖前面的值</td>
+<td>true</td>
+</tr>
+<tr>
+<td>tsd.storage.hbase.zk_basedir</td>
+<td>/hbase</td>
+<td>hbase 的zk的目录</td>
+<td>根据实际配置</td>
+</tr>
+<tr>
+<td>tsd.storage.hbase.zk_quorum</td>
+<td>localhost</td>
+<td>hbase 的zk地址</td>
+<td>根据实际配置</td>
+</tr>
+</tbody></table>
+<h1 id="4-OpenTSDB-API简介"><a href="#4-OpenTSDB-API简介" class="headerlink" title="4 OpenTSDB API简介"></a>4 OpenTSDB API简介</h1><p>OpenTSDB提供了基于HTTP或HTTPS的应用程序接口。请求方式是通过向资源对应的路径发送标准的HTTP请求，请求包含GET、POST方法。它的接口与开源OpenTSDB保持一致，请参见<a target="_blank" rel="noopener" href="http://opentsdb.net/docs/build/html/api_http/index.html%E3%80%82">http://opentsdb.net/docs/build/html/api_http/index.html。</a></p>
+<h2 id="4-1-api-put"><a href="#4-1-api-put" class="headerlink" title="4.1 /api/put"></a>4.1 /api/put</h2><h2 id="4-2-api-query"><a href="#4-2-api-query" class="headerlink" title="4.2 /api/query"></a>4.2 /api/query</h2><h2 id="4-3-api-search"><a href="#4-3-api-search" class="headerlink" title="4.3 /api/search"></a>4.3 /api/search</h2><h1 id="5-开发-OpenTSDB-应用"><a href="#5-开发-OpenTSDB-应用" class="headerlink" title="5 开发 OpenTSDB 应用"></a>5 开发 OpenTSDB 应用</h1><h2 id="5-1-示例场景"><a href="#5-1-示例场景" class="headerlink" title="5.1 示例场景"></a>5.1 示例场景</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/hbase/" rel="tag"># hbase</a>
+              <a href="/tags/opentsdb/" rel="tag"># opentsdb</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/24/Spring-Integration-1/" rel="prev" title="Spring Integration(1)">
+                  <i class="fa fa-chevron-left"></i> Spring Integration(1)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/06/flink-java-quickstart/" rel="next" title="一个 Flink 简单的入门 quickstart">
+                  一个 Flink 简单的入门 quickstart <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

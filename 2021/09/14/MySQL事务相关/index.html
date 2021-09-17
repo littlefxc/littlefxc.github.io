@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="1. 概述本文重新梳理一些关于 MySQL 事务相关的概念，主要包括：事务隔离引发的问题和事务隔离的级别。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL事务相关">
+<meta property="og:url" content="http://littlefxc.github.io/2021/09/14/MySQL%E4%BA%8B%E5%8A%A1%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="1. 概述本文重新梳理一些关于 MySQL 事务相关的概念，主要包括：事务隔离引发的问题和事务隔离的级别。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210914160820416.png">
+<meta property="article:published_time" content="2021-09-14T06:34:47.000Z">
+<meta property="article:modified_time" content="2021-09-16T09:27:57.011Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210914160820416.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/09/14/MySQL%E4%BA%8B%E5%8A%A1%E7%9B%B8%E5%85%B3/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>MySQL事务相关 | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%EF%BC%9F"><span class="nav-text">2 什么是数据库事务？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%BA%8B%E5%8A%A1%E7%9A%84-ACID-%E5%8E%9F%E5%88%99-%EF%BC%9F"><span class="nav-text">3 事务的 ACID 原则 ？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E5%BC%95%E5%8F%91%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-text">4 事务隔离引发的问题？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E4%BB%80%E4%B9%88%E6%98%AF%E8%84%8F%E8%AF%BB%EF%BC%88Read-Uncommitted%EF%BC%89%EF%BC%9F"><span class="nav-text">4.1 什么是脏读（Read Uncommitted）？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3%EF%BC%9F"><span class="nav-text">怎么解决？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%EF%BC%88Non-repeatable-Read%EF%BC%89"><span class="nav-text">4.2 什么是不可重复读（Non-repeatable Read）?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3%EF%BC%9F-1"><span class="nav-text">怎么解决？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E8%84%8F%E8%AF%BB%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">与脏读的区别？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E4%BB%80%E4%B9%88%E6%98%AF%E5%B9%BB%E8%AF%BB%EF%BC%88Phantom-Read%EF%BC%89%EF%BC%9F"><span class="nav-text">4.3 什么是幻读（Phantom Read）？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3%EF%BC%9F-2"><span class="nav-text">怎么解决？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-text">5 事务的隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E5%A6%82%E4%BD%95%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8DMySQL-%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%EF%BC%9F"><span class="nav-text">5.1 如何查看当前MySQL 的隔离级别？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%9C%BA%E5%88%B6%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%9F"><span class="nav-text">6 事务的隔离机制的实现？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-MVCC-%E6%A6%82%E5%BF%B5%E4%BB%8B%E7%BB%8D"><span class="nav-text">6.1 MVCC 概念介绍</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/09/14/MySQL%E4%BA%8B%E5%8A%A1%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL事务相关
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-14 14:34:47" itemprop="dateCreated datePublished" datetime="2021-09-14T14:34:47+08:00">2021-09-14</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-16 17:27:57" itemprop="dateModified" datetime="2021-09-16T17:27:57+08:00">2021-09-16</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>本文重新梳理一些关于 MySQL 事务相关的概念，主要包括：事务隔离引发的问题和事务隔离的级别。</p>
+<span id="more"></span>
+
+<h1 id="2-什么是数据库事务？"><a href="#2-什么是数据库事务？" class="headerlink" title="2 什么是数据库事务？"></a>2 什么是数据库事务？</h1><p>我觉得首先在讨论事务隔离之前，首先复习一下事务的基本概念。</p>
+<p>数据库事务( transaction)是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作单位。事务由事务开始与事务结束之间执行的全部数据库操作组成。 ——<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/9744607">百度百科</a></p>
+<p>简单来说，假如你有2条sql要执行，如果放到一个事务里，要么2个sql都执行成功，要么都失败。都执行成功了就提交事务，有一个失败了就回滚，（在一个事务里）不存在一个成功一个失败。</p>
+<h1 id="3-事务的-ACID-原则-？"><a href="#3-事务的-ACID-原则-？" class="headerlink" title="3 事务的 ACID 原则 ？"></a>3 事务的 ACID 原则 ？</h1><ul>
+<li>原子性：事务的所有操作要么全部成功，要么全部回滚。</li>
+<li>一致性：总是从一个一致性的状态转换到另一个一致性的状态。</li>
+<li>持久性：已被提交的事务对数据库的修改应该永久保存在数据库中。</li>
+<li>隔离性：多个事务并发执行时，一个事务的执行不应影响其他事务的执行</li>
+</ul>
+<h1 id="4-事务隔离引发的问题？"><a href="#4-事务隔离引发的问题？" class="headerlink" title="4 事务隔离引发的问题？"></a>4 事务隔离引发的问题？</h1><ul>
+<li>脏读</li>
+<li>不可重复读</li>
+<li>幻读</li>
+</ul>
+<p>以上三个场景都是出现在多个事务同时执行时的场景。</p>
+<h2 id="4-1-什么是脏读（Read-Uncommitted）？"><a href="#4-1-什么是脏读（Read-Uncommitted）？" class="headerlink" title="4.1 什么是脏读（Read Uncommitted）？"></a>4.1 什么是脏读（Read Uncommitted）？</h2><p>通俗的讲，<strong>一个事务在处理过程中读取了另外一个事务未提交的数据</strong>，万一你没提交数据就回滚了，我读到的这个数据你说脏不脏。</p>
+<p>举例：</p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">事务1： A给B转账500，但是事务未提交。</span><br><span class="line">事务2： B查看了账户，发现A转过来500，本来只转300过来就好，发现多转了200，心里美滋滋。。。</span><br><span class="line">事务1： A及时发现多转了200，修改了转300，提交事务。</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="怎么解决？"><a href="#怎么解决？" class="headerlink" title="怎么解决？"></a><strong>怎么解决？</strong></h3><p>设置隔离级别为 <code>Read Committed</code></p>
+<h2 id="4-2-什么是不可重复读（Non-repeatable-Read）"><a href="#4-2-什么是不可重复读（Non-repeatable-Read）" class="headerlink" title="4.2 什么是不可重复读（Non-repeatable Read）?"></a>4.2 什么是不可重复读（Non-repeatable Read）?</h2><p>通俗的讲，<strong>一个事务范围内，多次查询某个数据，却得到不同的结果</strong>。</p>
+<p>举例：</p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">事务1：B去买东西，卡里有500块钱，消费100，还没提交事务。</span><br><span class="line">事务2：B的老婆把B的500块钱转出去了，已提交事务。</span><br><span class="line">事务1：B此时提交事务，支付不了。再次读取发现卡里没钱支付。</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="怎么解决？-1"><a href="#怎么解决？-1" class="headerlink" title="怎么解决？"></a><strong>怎么解决？</strong></h3><p>设置隔离级别为 <code>Repeatable read</code></p>
+<h3 id="与脏读的区别？"><a href="#与脏读的区别？" class="headerlink" title="与脏读的区别？"></a><strong>与脏读的区别？</strong></h3><p>脏读是读到未提交的数据，而不可重复读读到的却是已经提交的数据，这实际上是违反了事务的一致性原则</p>
+<h2 id="4-3-什么是幻读（Phantom-Read）？"><a href="#4-3-什么是幻读（Phantom-Read）？" class="headerlink" title="4.3 什么是幻读（Phantom Read）？"></a>4.3 什么是幻读（Phantom Read）？</h2><p>一个事务按相同的查询条件重新读取以前检索过的数据，却发现其他事务插入了满足其查询条件的新数据，这种现象就称为幻读。</p>
+<p>在Repeatable Read隔离级别下，一个事务可能会遇到幻读(Phantom Read)的问题。<br>事务A读取与搜索条件相匹配的若干行。事务B以插入或删除行等方式来修改事务A的结果集，然后再提交。</p>
+<p>举例：</p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">事务1：B的老婆查看B的卡消费记录，目前共消费了500元。</span><br><span class="line">事务2：B此时刚在外面请朋友吃完饭，付款了100，事务已提交。</span><br><span class="line">B的老婆决定把账单打印出来，晚上跟B对账，却发现打印出来的消费为600元。她刚才明明看到是500，怎么是600，难道是幻觉？</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="怎么解决？-2"><a href="#怎么解决？-2" class="headerlink" title="怎么解决？"></a>怎么解决？</h3><p>可以将隔离级别设置为最高级的<code>Serializable</code>，这时候事务都是按照顺序执行的，脏读、幻读、不可重复度都可以避免，但是性能很差。</p>
+<h1 id="5-事务的隔离级别"><a href="#5-事务的隔离级别" class="headerlink" title="5 事务的隔离级别"></a>5 事务的隔离级别</h1><p>为了解决以上的问题，主流的关系型数据库都会提供四种事务的隔离级别。事务隔离级别从低到高分别是：<code>读未提交</code>、<code>读已提交</code>、<code>可重复读</code>、<code>串行化</code>。事务隔离级别等级越高，越能保证数据的一致性和完整性，但是执行效率也越低。</p>
+<ul>
+<li><p>**READ-UNCOMMITTED(读取未提交)**： </p>
+<p>最低的隔离级别，允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读。</p>
+</li>
+<li><p>**READ-COMMITTED(读取已提交)**： </p>
+<p>允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读仍有可能发生。</p>
+</li>
+<li><p>**REPEATABLE-READ(可重复读)**：</p>
+<p>对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生。</p>
+</li>
+<li><p>**SERIALIZABLE(可串行化)**： </p>
+<p>最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。</p>
+</li>
+</ul>
+<p>所以在设置数据库的事务隔离级别时需要做一下权衡，<strong>MySQL默认是<code>REPEATABLE-READ</code>的级别，Oracle 默认采用的 <code>READ-COMMITTED</code>隔离级别</strong>。</p>
+<h2 id="5-1-如何查看当前MySQL-的隔离级别？"><a href="#5-1-如何查看当前MySQL-的隔离级别？" class="headerlink" title="5.1 如何查看当前MySQL 的隔离级别？"></a>5.1 如何查看当前MySQL 的隔离级别？</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@transaction</span>_isolation;</span><br><span class="line">或</span><br><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;transaction_isolation&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210914160820416.png" alt="image-20210914160820416"></p>
+<h1 id="6-事务的隔离机制的实现？"><a href="#6-事务的隔离机制的实现？" class="headerlink" title="6 事务的隔离机制的实现？"></a>6 事务的隔离机制的实现？</h1><h2 id="6-1-MVCC-概念介绍"><a href="#6-1-MVCC-概念介绍" class="headerlink" title="6.1 MVCC 概念介绍"></a>6.1 MVCC 概念介绍</h2><p>前面讲了这么多的事务隔离相关的东西，但还是不懂事务隔离的原理？</p>
+<p>直到我查看了《高性能 MySQL》的这一章节：</p>
+<blockquote>
+<p>1.4 多版本并发控制</p>
+<p>MySQL 的大多数事务型存储引擎实现的都不是简单的行级锁。基于提升并发性能的考虑，它们一般都同时实现了多版本并发控制（MVCC）。不仅是MySQL，包括 Oracle、PostgreSQL 等其它数据库系统也都实现了MVCC，但各自的实现机制不尽相同，因为 MVCC 没有一个统一的实现标准。</p>
+<p>**<font color=red>可以认为 MVCC 是行级锁的一个变种，但是它在很多情况下避免了加锁操作，因此开销更低。虽然实现机制有所不同，但大都实现了非阻塞的读操作，写操作也只锁定必要的行</font>**。</p>
+<p>MVCC 的实现，是通过保存数据在某个时间得按的快照来实现的。也就是说，不管需要执行多长时间，每个事务看到的数据都是一致的。根据事务开始的时间不同，每个事务对同一张表，同一时刻看到的数据可能是不一样的。</p>
+<p>InnoDB 的 MVCC，是通过在每行记录后面保存两个隐藏的列来实现的。这两个列，一个保存了行的创建时间，一个保存了行的过期时间（或删除时间）。当然存储的并不是实际的时间值，而是系统版本号（system version number）。每开始一个新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询到的每行记录的版本号进行比较。下面看一下在 <code>REPEATABLE READ</code> 隔离级别下，MVCC 具体是如何操作的。</p>
+<p>SELECT </p>
+<p>​         InnoDB 会根据以下两个条件检查版本号：</p>
+<p>​                a. InnoDB 只查找版本早于当前事务版本的数据行（也就是说，行的系统版本号小于或等于事务的系统版本号），这样可以确保事务读取行，要么是事务开始前已经存在的，要么是事务自身插入或者修改过的。</p>
+<p>​                b. 行的删除版本要么未定义，要么大于当前事务版本号。这可以确保事务读取到的行，在事务开始之前未被删除。</p>
+<p>​        只有符合上述两个条件的记录，才能返回作为查询结果。</p>
+<p>​        INSERT</p>
+<p>​                InnoDB 为新插入的每一行保存当前系统版本号作为行版本号。</p>
+<p>​        DELETE</p>
+<p>​                InnoDB 为删除的每一行保存当前系统版本号座位行删除标识</p>
+<p>​        UPDATE</p>
+<p>​                InnoDB 为插入一行新纪录，保存当前系统版本号作为行版本号，同时保存当前系统版本号到原来的行到原来的行作为删除标识</p>
+<p>保存这两个额外系统版本号，使大多数读操作都可以不用加锁。这样设计使得读数据操作很简单，性能很好，并且也能保证只会读取到符合标准的行。不足之处是每行记录都需要额外的存储空间，需要做更多的行检查工作，以及一些额外的维护工作。</p>
+<p>MVCC 只在 REPEATABLE READ 和 READ COMMITTED 两个隔离级别下工作。其他两个隔离级别都和 MVCC 不兼容，因为 READ UNCOMMITTED 总是读取最新的数据行，而不是符合当前事务版本的数据行。而 SERIALIZABLE 则会对所有读取的行都加锁。 </p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/30/Go-%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/" rel="prev" title="Go 语言学习">
+                  <i class="fa fa-chevron-left"></i> Go 语言学习
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
