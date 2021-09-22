@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-count">119</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,141 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/02/19/ES-7-X-%E4%B8%8B%E5%8A%A8%E6%80%81%E5%A2%9E%E5%8A%A0%E5%88%86%E7%89%87%E6%95%B0%E9%87%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/19/ES-7-X-%E4%B8%8B%E5%8A%A8%E6%80%81%E5%A2%9E%E5%8A%A0%E5%88%86%E7%89%87%E6%95%B0%E9%87%8F/" class="post-title-link" itemprop="url">ES 7.X 下动态增加分片数量</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-19 21:54:09" itemprop="dateCreated datePublished" datetime="2021-02-19T21:54:09+08:00">2021-02-19</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1 背景"></a>1 <strong>背景</strong></h1><p>在老版本的ES（例如2.3版本）中， index的shard数量定好后，就不能再修改，除非重建数据才能实现。</p>
+<p>从ES6.1开始，ES 支持可以在线操作扩大shard的数量（注意：操作期间也需要对index锁写）</p>
+<p>从ES7.0开始，split时候，不再需要加参数 index.number_of_routing_shards</p>
+<p><strong>具体参考官方文档：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-split-index.html">https://www.elastic.co/guide/en/elasticsearch/reference/7.5/indices-split-index.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/6.1/indices-split-index.html">https://www.elastic.co/guide/en/elasticsearch/reference/6.1/indices-split-index.html</a></p>
+<h1 id="2-split的过程："><a href="#2-split的过程：" class="headerlink" title="2 split的过程："></a>2 <strong>split的过程：</strong></h1><p>1、创建一个新的目标index，其定义与源index相同，但是具有更多的primary shard。</p>
+<p>2、将segment从源index硬链接到目标index。（如果文件系统不支持硬链接，则将所有segment都复制到新索引中，这是一个非常耗时的过程。）</p>
+<p>3、创建低级文件后，再次对所有文档进行哈希处理，以删除属于不同shard的documents</p>
+<p>4、恢复目标索引，就像它是刚刚重新打开的封闭索引一样。</p>
+<h1 id="3-为啥ES不支持增量resharding？"><a href="#3-为啥ES不支持增量resharding？" class="headerlink" title="3 为啥ES不支持增量resharding？"></a>3 <strong>为啥ES不支持增量resharding？</strong></h1><p>从N个分片到N + 1个分片。增量重新分片确实是许多键值存储支持的功能。仅添加一个新的分片并将新的数据推入该新的分片是不可行的：这可能是一个索引瓶颈，并根据给定的_id来确定文档所属的分片，这对于获取，删除和更新请求是必需的，会变得很复杂。这意味着我们需要使用其他哈希方案重新平衡现有数据。</p>
+<p>键值存储有效执行此操作的最常见方式是使用一致的哈希。当分片的数量从N增加到N + 1时，一致的哈希仅需要重定位键的1 / N。但是，Elasticsearch的存储单位（碎片）是Lucene索引。由于它们以搜索为导向的数据结构，仅占Lucene索引的很大一部分，即仅占5％的文档，将其删除并在另一个分片上建立索引通常比键值存储要高得多的成本。如上节所述，当通过增加乘数来增加分片数量时，此成本保持合理：这允许Elasticsearch在本地执行拆分，这又允许在索引级别执行拆分，而不是为需要重新索引的文档重新编制索引移动，以及使用硬链接进行有效的文件复制。</p>
+<p>对于仅追加数据，可以通过创建新索引并将新数据推送到其中，同时添加一个别名来覆盖读取操作的新旧索引，从而获得更大的灵活性。假设旧索引和新索引分别具有M和N个分片，与搜索具有M + N个分片的索引相比，这没有开销。</p>
+<h1 id="4-索引能进行split的前提条件："><a href="#4-索引能进行split的前提条件：" class="headerlink" title="4 索引能进行split的前提条件："></a>4 <strong>索引能进行split的前提条件：</strong></h1><p>1、目标索引不能存在。</p>
+<p>2、源索引必须比目标索引具有更少的primary shard。</p>
+<p>3、目标索引中主shard的数量必须是源索引中主shard的数量的倍数。</p>
+<p>4、处理拆分过程的节点必须具有足够的可用磁盘空间，以容纳现有索引的第二个副本。</p>
+<h1 id="5-操作"><a href="#5-操作" class="headerlink" title="5 操作"></a>5 <strong>操作</strong></h1><p><strong>下面是具体的实验部分：</strong></p>
+<blockquote>
+<p>tips：实验机器有限，索引的replica都设置为0，生产上至少replica&gt;=1</p>
+</blockquote>
+<h2 id="5-1-创建一个索引，2个主shard，没有副本"><a href="#5-1-创建一个索引，2个主shard，没有副本" class="headerlink" title="5.1 创建一个索引，2个主shard，没有副本"></a>5.1 <strong>创建一个索引，2个主shard，没有副本</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “&lt;http://localhost:9200/twitter?pretty”&gt; -H ‘Content-Type: application/json’ -d’ &#123; “settings”: &#123; “index.number_of_shards”: 2, “index.number_of_replicas”: 0 &#125;, “aliases”: &#123; “my_search_indices”: &#123;&#125; &#125; &#125;’ </span><br><span class="line"><span class="comment"># index.number_of_shards：主分片设定个数 </span></span><br><span class="line"><span class="comment"># index.number_of_replicas：副本分片设定个数，一个副本就等于把整个索引备份1份 </span></span><br><span class="line"><span class="comment"># aliases：设定索引别名”my_search_indices”</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="写入几条测试数据"><a href="#写入几条测试数据" class="headerlink" title="写入几条测试数据"></a><strong>写入几条测试数据</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “&lt;http://localhost:9200/my_search_indices/_doc/11?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 11, “name”:“lee”, “age”:“23” &#125;’ </span><br><span class="line"></span><br><span class="line">curl -s –X PUT “&lt;http://localhost:9200/my_search_indices/_doc/22?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 22, “name”:“amd”, “age”:“22” &#125;’</span><br></pre></td></tr></table></figure>
+
+<h3 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a><strong>查询数据</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -XGET “&lt;http://localhost:9200/my_search_indices/_search”&gt; | jq .</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-对索引锁写，以便下面执行split操作"><a href="#5-2-对索引锁写，以便下面执行split操作" class="headerlink" title="5.2 对索引锁写，以便下面执行split操作"></a>5.2 <strong>对索引锁写，以便下面执行split操作</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “&lt;http://localhost:9200/twitter/_settings?pretty”&gt; -H ‘Content-Type: application/json’ -d ‘&#123; “settings”: &#123; “index.blocks.write”: <span class="literal">true</span> &#125; &#125;’ </span><br><span class="line"><span class="comment"># index.blocks.write：写入锁定，只能读，不能写</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="写数据测试，确保锁写生效"><a href="#写数据测试，确保锁写生效" class="headerlink" title="写数据测试，确保锁写生效"></a><strong>写数据测试，确保锁写生效</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “&lt;http://localhost:9200/twitter/_doc/33?pretty”&gt; -H ‘Content-Type: application/json’ -d ‘&#123; “id”: 33, “name”:“amd”, “age”:“33” &#125;’ </span><br><span class="line"><span class="comment"># 测试写入失败</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="取消-twitter-索引的alias"><a href="#取消-twitter-索引的alias" class="headerlink" title="取消 twitter 索引的alias"></a><strong>取消 twitter 索引的alias</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X POST “&lt;http://localhost:9200/_aliases?pretty”&gt; -H ‘Content-Type: application/json’ -d ‘&#123; “actions” : [ &#123; “remove” : &#123; “index” : “twitter”, “<span class="built_in">alias</span>” : “my_search_indices” &#125; &#125; ] &#125;‘ </span><br><span class="line"></span><br><span class="line">curl -s -X GET “&lt;http://localhost:9200/_cat/aliases”&gt;</span><br></pre></td></tr></table></figure>
+
+<p>第二种方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取消索引别名 </span></span><br><span class="line">curl -s -X DELETE “&lt;http://localhost:9200/twitter/_alias/my_search_indices”&gt; </span><br><span class="line">curl -s -X GET“&lt;http://localhost:9200/_cat/aliases”&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-3-开始执行-split-切分索引的操作，调整后索引名称为new-twitter，且主shard数量为8"><a href="#5-3-开始执行-split-切分索引的操作，调整后索引名称为new-twitter，且主shard数量为8" class="headerlink" title="5.3 开始执行 split 切分索引的操作，调整后索引名称为new_twitter，且主shard数量为8"></a>5.3 <strong>开始执行 split 切分索引的操作，调整后索引名称为new_twitter，且主shard数量为8</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X POST “&lt;http://localhost:9200/twitter/_split/new_twitter?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “settings”: &#123; “index.number_of_shards”: 8, “index.number_of_replicas”: 0 &#125; &#125;’</span><br></pre></td></tr></table></figure>
+
+<h3 id="对新的index添加alias"><a href="#对新的index添加alias" class="headerlink" title="对新的index添加alias"></a><strong>对新的index添加alias</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X POST “&lt;http://localhost:9200/_aliases?pretty”&gt; –H ‘Content–Type: application/json’ -d ‘&#123; “actions” : [ &#123; “add” : &#123; “index” : “new_twitter”, “<span class="built_in">alias</span>” : “my_search_indices” &#125; &#125; ] &#125;’</span><br></pre></td></tr></table></figure>
+
+<p>第二种方式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新建索引别名 </span></span><br><span class="line">curl -s -X PUT “&lt;http://localhost:9200/new_twitter/_alias/my_search_indices”&gt;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">	<span class="attr">&quot;acknowledged&quot;</span> : <span class="literal">true</span>, </span><br><span class="line">  <span class="attr">&quot;shards_acknowledged” : true, </span></span><br><span class="line">  &quot;index&quot; : &quot;new_twitter&quot; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>补充：</strong></p>
+<p><strong>查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。</strong></p>
+<h2 id="5-4-查看新索引的数据，能正常查看"><a href="#5-4-查看新索引的数据，能正常查看" class="headerlink" title="5.4 查看新索引的数据，能正常查看"></a>5.4 <strong>查看新索引的数据，能正常查看</strong></h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -XGET “&lt;http://localhost:9200/my_search_indices/_search”&gt; | jq .</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看split的进度，可以使用-cat-recovery-这个api，-或者在-cerebro-界面上查看。"><a href="#查看split的进度，可以使用-cat-recovery-这个api，-或者在-cerebro-界面上查看。" class="headerlink" title="查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。"></a><strong>查看split的进度，可以使用 _cat/recovery 这个api， 或者在 cerebro 界面上查看。</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X GET “&lt;http://localhost:9200/_cat/recovery”&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="对新索引写数据测试-可以看到失败的"><a href="#对新索引写数据测试-可以看到失败的" class="headerlink" title="对新索引写数据测试,可以看到失败的"></a><strong>对新索引写数据测试,可以看到失败的</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X PUT “localhost:9200/my_search_indices/_doc/33?pretty” -H ‘Content-Type: application/json’ -d ‘&#123; “id”: 33, “name”:“amd”, “age”:“33” &#125;’ <span class="comment"># 写入失败</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="打开索引的写功能"><a href="#打开索引的写功能" class="headerlink" title="打开索引的写功能"></a><strong>打开索引的写功能</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_settings?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “settings”: &#123; “index.blocks.write”: <span class="literal">false</span> &#125; &#125;’</span><br></pre></td></tr></table></figure>
+
+<h3 id="再次对新索引写数据测试-可以看到此时，写入是成功的"><a href="#再次对新索引写数据测试-可以看到此时，写入是成功的" class="headerlink" title="再次对新索引写数据测试,可以看到此时，写入是成功的"></a><strong>再次对新索引写数据测试,可以看到此时，写入是成功的</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_doc/33?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 33, “name”:“amd”, “age”:“33” &#125;’ </span><br><span class="line"></span><br><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_doc/44?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 44, “name”:“intel”, “age”:“4” &#125;’</span><br></pre></td></tr></table></figure>
+
+<p>此时，老的那个索引还是只读的，我们确保新索引OK后，就可以考虑关闭或者删除老的 twitter索引了。</p>
+<h3 id="测试将新数据写入别名"><a href="#测试将新数据写入别名" class="headerlink" title="测试将新数据写入别名"></a><strong>测试将新数据写入别名</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -s –X PUT “localhost:9200/my_search_indices/_doc/44?pretty” –H ‘Content–Type: application/json’ -d ‘&#123; “id”: 44, “name”:“amd”, “age”:“44” &#125;’ </span><br><span class="line"><span class="comment"># 写入也是ok 的</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a><strong>删除索引</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -s -X DELETE “&lt;http://localhost:9200/new_twitter”&gt;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h1><p>贴一张 生产环境执行后的index的截图，可以看到新的index的每个shard体积只有老index的一半，这样也就分摊了index的压力：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/774.jpg" alt="https://www.xiaohuait.com/wp-content/uploads/2020/09/774.jpg"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1048,152 +1183,6 @@
 <h2 id="epoll机制"><a href="#epoll机制" class="headerlink" title="epoll机制"></a><strong>epoll机制</strong></h2><p><strong>基本原理：</strong>没有fd个数限制，用户态拷贝到内核态只需要一次，使用时间通知机制来触发。通过epoll_ctl注册fd，一旦fd就绪就会通过callback回调机制来激活对应fd，进行相关的io操作。epoll之所以高性能是得益于它的三个函数　1)epoll_create()系统启动时，在Linux内核里面申请一个B+树结构文件系统，返回epoll对象，也是一个fd　2)epoll_ctl() 每新建一个连接，都通过该函数操作epoll对象，在这个对象里面修改添加删除对应的链接fd, 绑定一个callback函数　3)epoll_wait() 轮训所有的callback集合，并完成对应的IO操作</p>
 <p><strong>优点：</strong>没fd这个限制，所支持的FD上限是操作系统的最大文件句柄数，1G内存大概支持10万个句柄　效率提高，使用回调通知而不是轮询的方式，不会随着FD数目的增加效率下降　内核和用户空间mmap同一块内存实现(mmap是一种内存映射文件的方法，即将一个文件或者其它对象映射到进程的地址空间)</p>
 <p>例子：100万个连接，里面有1万个连接是活跃，我们可以对比 select、poll、epoll 的性能表现　select：不修改宏定义默认是1024,l则需要100w/1024=977个进程才可以支持 100万连接，会使得CPU性能特别的差。　poll： 没有最大文件描述符限制,100万个链接则需要100w个fd，遍历都响应不过来了，还有空间的拷贝消耗大量的资源。　epoll: 请求进来时就创建fd并绑定一个callback，主需要遍历1w个活跃连接的callback即可，即高效又不用内存拷贝。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/26/Redis%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/26/Redis%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">Redis的线程模型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-26 20:56:29" itemprop="dateCreated datePublished" datetime="2021-01-26T20:56:29+08:00">2021-01-26</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BC%93%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">缓存</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_thread_model1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_thread_model1.png"></p>
-<h2 id="Redis线程模型的组成"><a href="#Redis线程模型的组成" class="headerlink" title="Redis线程模型的组成"></a><strong>Redis线程模型的组成</strong></h2><hr>
-<ol>
-<li><em>多个socket</em></li>
-<li><em>IO多路复用程序</em></li>
-<li><em>scocket队列</em></li>
-<li><em>文件事件分配器</em></li>
-<li><em>事件处理器（连接应答处理器，命令请求处理器，命令回复处理器）</em></li>
-</ol>
-<p>多个 socket 可能会并发产生不同的操作，每个操作对应不同的文件事件，但是 IO 多路复用程序会监听多个 socket，会将 socket 产生的事件放入队列中排队，事件分派器每次从队列中取出一个事件，把该事件交给对应的事件处理器进行处理。</p>
-<h1 id="流程及原理"><a href="#流程及原理" class="headerlink" title="流程及原理"></a>流程及原理</h1><hr>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_thread_model.png" alt="redis_thread_model"></p>
-<ol>
-<li><p>客户端socket01请求redis的server scoket建立连接，此时server socket生成<code>AE_READABLE</code>事件，<a target="_blank" rel="noopener" href="https://www.notion.so/IO-3896961f1af045ba8a7d2f184f87748d">IO多路复用程序</a>监听到server socket产生的事件，并将该事件压入队列。</p>
-<p>文件事件分派器从队列中拉取事件交给连接应答处理器，处理器同时生成一个与客户端通信的socket01,并将该scoket01的AE_READABLE事件与命令请求处理器关联</p>
-</li>
-<li><p>此时客户端scoket01发送一个”set key value“的请求，redis的scoket01接收到AE_READABLE事件，IO多路复用程序监听到事件，将事件压入队列，文件分派器取到事件，由于scoket01已经</p>
-<p>和命令请求处理器关联，所以命令请求处理器开始”set key value”,完毕后会将redis的scoket01的<code>AE_WRITABLE</code>事件关联到命令回复处理器</p>
-</li>
-<li><p>如果此时客户端准备好接收返回结果了，向redis中的socket01发起询问请求，那么 redis 中的 socket01 会产生一个 <code>AE_WRITABLE</code> 事件，同样压入队列中，事件分派器找到相关联的命令回复处理器，由命令回复处理器对 socket01 输入本次操作的一个结果，比如 <code>ok</code>，之后解除 socket01 的 <code>AE_WRITABLE</code> 事件与命令回复处理器的关联。</p>
-</li>
-</ol>
-<p>这样便完成了redis的一次通信。</p>
-<h1 id="文件事件分配器"><a href="#文件事件分配器" class="headerlink" title="文件事件分配器"></a>文件事件分配器</h1><hr>
-<ol>
-<li>Redis 基于 Reactor 模式开发了自己的网络事件处理器： 这个处理器被称为文件事件处理器（file event handler）</li>
-<li>文件事件处理器使用 I/O 多路复用（multiplexing）程序来同时监听多个套接字， 并根据套接字目前执行的任务来为套接字关联不同的事件处理器。</li>
-<li>当被监听的套接字准备好执行连接应答（accept）、读取（read）、写入（write）、关闭（close）等操作时， 与操作相对应的文件事件就会产生， 这时文件事件处理器就会调用套接字之前关联好的事件处理器来处理这些事件。</li>
-<li>文件事件处理器以单线程方式运行， 但通过使用 I/O 多路复用程序来监听多个套接字， 文件事件处理器既实现了高性能的网络通信模型， 又可以很好地与 redis 服务器中其他同样以单线程方式运行的模块进行对接， 这保持了 Redis 内部单线程设计的简单性</li>
-</ol>
-<h1 id="为什么redis使用单线程模型还能保证高性能？"><a href="#为什么redis使用单线程模型还能保证高性能？" class="headerlink" title="为什么redis使用单线程模型还能保证高性能？"></a>为什么redis使用单线程模型还能保证高性能？</h1><hr>
-<h2 id="纯内存访问"><a href="#纯内存访问" class="headerlink" title="纯内存访问"></a>纯内存访问</h2><p>redis 将所有数据放在内存中，内存的响应时长大约为 100 纳秒，这是 redis 的 QPS 过万的重要基础。</p>
-<h2 id="非阻塞式IO"><a href="#非阻塞式IO" class="headerlink" title="非阻塞式IO"></a>非阻塞式IO</h2><ul>
-<li><p>什么是阻塞式 IO</p>
-<p>当我们调用 Scoket 的读写方法，默认它们是阻塞的。</p>
-<p>read() 方法要传递进去一个参数 n，表示读取这么多字节后再返回，如果没有读够 n 字节线程就会阻塞，直到新的数据到来或者连接关闭了， read 方法才可以返回，线程才能继续处理。</p>
-<p>write() 方法会首先把数据写到系统内核为 Scoket 分配的写缓冲区中，当写缓存区满溢，即写缓存区中的数据还没有写入到磁盘，就有新的数据要写道写缓存区时，write() 方法就会阻塞，直到写缓存区中有空闲空间。</p>
-</li>
-<li><p>什么是非阻塞式 IO</p>
-<p>非阻塞 IO 在 Scoket 对象上提供了一个选项<code>Non_Blocking</code> ，当这个选项打开时，读写方法不会阻塞，而是能读多少读多少，能写多少写多少。</p>
-<p>能读多少取决于内核为 Scoket 分配的读缓冲区的大小，能写多少取决于内核为 Scoket 分配的写缓冲区的剩余空间大小。读方法和写方法都会通过返回值来告知程序实际读写了多少字节数据。</p>
-<p>有了非阻塞 IO 意味着线程在读写 IO 时可以不必再阻塞了，读写可以瞬间完成然后线程可以继续干别的事了。</p>
-</li>
-</ul>
-<h2 id="IO多路复用技术"><a href="#IO多路复用技术" class="headerlink" title="IO多路复用技术"></a>IO多路复用技术</h2><p><a target="_blank" rel="noopener" href="https://www.notion.so/IO-3896961f1af045ba8a7d2f184f87748d">IO多路复用技术</a></p>
-<ul>
-<li><p>白话举例:模拟一个tcp服务器处理30个客户socket</p>
-<p>假设你是一个老师，让30个学生解答一道题目，然后检查学生做的是否正确，你有下面几个选择：</p>
-<ol>
-<li>第一种选择：按顺序逐个检查，先检查A，然后是B，之后是C、D。。。这中间如果有一个学生卡主，全班都会被耽误。这种模式就好比，你用循环挨个处理socket，根本不具有并发能力。</li>
-<li>第二种选择：你创建30个分身，每个分身检查一个学生的答案是否正确。 这种类似于为每一个用户创建一个进程或者线程处理连接。</li>
-<li>第三种选择，你站在讲台上等，谁解答完谁举手。这时C、D举手，表示他们解答问题完毕，你下去依次检查C、D的答案，然后继续回到讲台上等。此时E、A又举手，然后去处理E和A。。。 这种就是IO复用模型（Linux下的select、poll和epoll就是干这个的。将用户socket对应的fd注册进epoll，然后epoll帮你监听哪些socket上有消息到达，这样就避免了大量的无用操作。此时的socket应该采用非阻塞模式。这样，整个过程只在调用select、poll、epoll这些调用的时候才会阻塞，收发客户消息是不会阻塞的，整个进程或者线程就被充分利用起来，这就是事件驱动，所谓的reactor模式。）</li>
-</ol>
-</li>
-</ul>
-<h2 id="单线程避免了线程切换和竞态产生的消耗"><a href="#单线程避免了线程切换和竞态产生的消耗" class="headerlink" title="单线程避免了线程切换和竞态产生的消耗"></a>单线程避免了线程切换和竞态产生的消耗</h2><p>单线程能带来几个好处：</p>
-<ul>
-<li>第一，单线程可以简化数据结构和算法的实现。并发数据结构实现不但困难而且开发测试比较麻烦</li>
-<li>第二，单线程避免了线程切换和竞态产生的消耗，对于服务端开发来说，锁和线程切换通常是性能杀手。</li>
-</ul>
-<p><strong>单线程的问题</strong>：对于每个命令的执行时间是有要求的。如果某个命令执行过长，会造成其他命令的阻塞，所以 redis 适用于那些需要快速执行的场景。</p>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><hr>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/volare/p/12283355.html">Redis线程模型</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/8f2fb61097b8">Redis线程模型</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37524661/article/details/87086267">Redis 线程模型_好记性不如烂笔头-CSDN博客</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1403767">Redis 单线程模型介绍</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lm970585581/p/13220299.html">了解redis的单线程模型工作原理？一篇文章就够了</a></p>
 
       
     </div>

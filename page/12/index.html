@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">195</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">118</span>
+        <span class="site-state-item-count">119</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,95 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/11/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/11/Redis%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">Redis集群搭建</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-11 11:50:38" itemprop="dateCreated datePublished" datetime="2021-01-11T11:50:38+08:00">2021-01-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BC%93%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">缓存</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="redis-conf-配置"><a href="#redis-conf-配置" class="headerlink" title="redis.conf 配置"></a>redis.conf 配置</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 开启集群模式</span><br><span class="line">cluster-enabled yes</span><br><span class="line"># 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"># 超时时间，超时则认为master宕机，随后主备切换</span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"># 开启AOF</span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动6个redis实例"><a href="#启动6个redis实例" class="headerlink" title="启动6个redis实例"></a>启动6个redis实例</h2><ol>
+<li>启动6台</li>
+<li>如果启动过程出错，把rdb等文件删除清空</li>
+</ol>
+<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#####</span></span><br><span class="line"><span class="comment"># 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="comment"># 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="comment">#####</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli -a 密码 --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<p><code>slots</code>：槽，用于装数据，主节点有，从节点没有</p>
+<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a>检查集群信息</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check 192.168.25.64:6380</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1391,164 +1480,6 @@
 <h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><ul>
 <li><a target="_blank" rel="noopener" href="https://juejin.im/post/6844903797655863309#heading-21">https://juejin.im/post/6844903797655863309#heading-21</a></li>
 </ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/09/15/Zookeeper-3-4-14-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/09/15/Zookeeper-3-4-14-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/" class="post-title-link" itemprop="url">Zookeeper 3.4.14 安装部署</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-09-15 20:09:07" itemprop="dateCreated datePublished" datetime="2020-09-15T20:09:07+08:00">2020-09-15</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><blockquote>
-<p>下载地址：<a target="_blank" rel="noopener" href="http://zookeeper.apache.org/">http://zookeeper.apache.org/</a></p>
-</blockquote>
-<p>下载过程就不说了，我们下载了最新的<code>zookeeper-3.4.14</code>。</p>
-<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><p><strong>1、上传安装包</strong></p>
-<p>把下载的最新的包（如：zookeeper-3.4.14.tar.gz）上传到服务器，上传的方式也不多说了。</p>
-<p><strong>2、解压</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tar zxvf zookeeper-3.4.14.tar.gz</span><br></pre></td></tr></table></figure>
-
-<p><strong>3、移动到/usr/local目录下</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s zookeeper-3.4.14 /usr/<span class="built_in">local</span>/zookeeper</span><br></pre></td></tr></table></figure>
-
-<h3 id="服务器分配"><a href="#服务器分配" class="headerlink" title="服务器分配"></a>服务器分配</h3><table>
-<thead>
-<tr>
-<th>主机名</th>
-<th>IP</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>centos-node1</td>
-<td>192.168.99.101</td>
-</tr>
-<tr>
-<td>centos-node2</td>
-<td>192.168.99.102</td>
-</tr>
-<tr>
-<td>centos-node3</td>
-<td>192.168.99.103</td>
-</tr>
-</tbody></table>
-<h4 id="集群配置"><a href="#集群配置" class="headerlink" title="集群配置"></a>集群配置</h4><p>Zookeeper集群原则上需要2n+1个实例才能保证集群有效性，所以集群规模至少是3台。</p>
-<p>下面演示如何创建3台的Zookeeper集群，N台也是如此。</p>
-<p><strong>1、创建数据文件存储目录</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line">$ mkdir data</span><br></pre></td></tr></table></figure>
-
-<p><strong>2、添加主配置文件</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> conf</span><br><span class="line">$ cp zoo_sample.cfg zoo.cfg</span><br></pre></td></tr></table></figure>
-
-<p><strong>3、修改配置</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi zoo.cfg</span><br></pre></td></tr></table></figure>
-
-<p>先把<code>dataDir=/tmp/zookeeper</code>注释掉，然后添加以下核心配置。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dataDir=/usr/<span class="built_in">local</span>/zookeeper/data</span><br><span class="line">server.1=centos-node1:2888:3888</span><br><span class="line">server.2=centos-node2:2888:3888</span><br><span class="line">server.3=centos-node3:2888:3888</span><br></pre></td></tr></table></figure>
-
-<p><strong>4、创建myid文件</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> ../data</span><br><span class="line">$ touch myid</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">&quot;1&quot;</span>&gt;&gt;myid</span><br></pre></td></tr></table></figure>
-
-<p>每台机器的myid里面的值对应server.后面的数字x。</p>
-<p><strong>5、开放3个端口</strong></p>
-<p>使用 iptables</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /sbin/iptables -I INPUT -p tcp --dport 2181 -j ACCEPT</span><br><span class="line">$ sudo /sbin/iptables -I INPUT -p tcp --dport 2888 -j ACCEPT</span><br><span class="line">$ sudo /sbin/iptables -I INPUT -p tcp --dport 3888 -j ACCEPT</span><br><span class="line"></span><br><span class="line">$ sudo /etc/rc.d/init.d/iptables save</span><br><span class="line">$ sudo /etc/init.d/iptables restart</span><br><span class="line"></span><br><span class="line">$ sudo /sbin/iptables -L -n</span><br><span class="line">Chain INPUT (policy ACCEPT)</span><br><span class="line">target     prot opt <span class="built_in">source</span>               destination         </span><br><span class="line">ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:3888 </span><br><span class="line">ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:2888 </span><br><span class="line">ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:2181</span><br></pre></td></tr></table></figure>
-
-<p>或者 firewalld</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前区域</span></span><br><span class="line">$ firewall-cmd --get-active-zones</span><br><span class="line"><span class="comment"># 新建一个自定义服务</span></span><br><span class="line">$ firewall-cmd --new-service=zookeeper --permanent</span><br><span class="line">$ firewall-cmd --service=zookeeper --add-port 2181/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=zookeeper --add-port 2888/tcp --permanent</span><br><span class="line">$ firewall-cmd --service=zookeeper --add-port 3888/tcp --permanent</span><br><span class="line"><span class="comment"># 不中断服务的重新加载</span></span><br><span class="line">$ firewall-cmd --reload</span><br><span class="line">$ firewall-cmd --add-service=zookeeper</span><br><span class="line"><span class="comment"># 将当前防火墙的规则永久保存；</span></span><br><span class="line">$ firewall-cmd --runtime-to-permanent</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>6、配置集群其他机器</strong></p>
-<p>把配置好的Zookeeper目录复制到其他两台机器上，重复上面4-5步。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /usr/<span class="built_in">local</span>/zookeeper centos-node2:/usr/<span class="built_in">local</span>/</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vi /etc/profile </span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/<span class="built_in">local</span>/java/</span><br><span class="line">JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br><span class="line">HADOOP_HOME=/usr/<span class="built_in">local</span>/hadoop</span><br><span class="line">CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar:<span class="variable">$JRE_HOME</span>/lib</span><br><span class="line">ZOOKEEPER_HOME=/usr/<span class="built_in">local</span>/zookeeper</span><br><span class="line"></span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$JRE_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$ZOOKEEPER_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME JRE_HOME PATH CLASSPATH HADOOP_HOME HBASE_HOME</span><br></pre></td></tr></table></figure>
-
-<p><strong>7、重启集群</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/<span class="built_in">local</span>/zookeeper/bin/zkServer.sh start</span><br></pre></td></tr></table></figure>
-
-<p>3个Zookeeper都要启动。</p>
-<p><strong>8、查看集群状态</strong></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/<span class="built_in">local</span>/zookeeper/bin/zkServer.sh status </span><br><span class="line">ZooKeeper JMX enabled by default</span><br><span class="line">Using config: /usr/<span class="built_in">local</span>/zookeeper/bin/../conf/zoo.cfg</span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
-
-<h4 id="客户端连接"><a href="#客户端连接" class="headerlink" title="客户端连接"></a>客户端连接</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./zkCli.sh -server 192.168.99.101:2181</span><br></pre></td></tr></table></figure>
-
-<p>连接本机的不用带-server。</p>
-<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><p>如果是在单机创建的多个Zookeeper伪集群，需要对应修改配置中的端口、日志文件、数据文件位置等配置信息。</p>
 
       
     </div>
