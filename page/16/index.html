@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">198</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">121</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,186 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/08/22/%E5%9C%A8SpringBoot1-5-x%E4%B8%8B%E5%A6%82%E4%BD%95%E4%BD%BFRedisTokenStore%E9%9B%86%E7%BE%A4%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/08/22/%E5%9C%A8SpringBoot1-5-x%E4%B8%8B%E5%A6%82%E4%BD%95%E4%BD%BFRedisTokenStore%E9%9B%86%E7%BE%A4%E5%8C%96/" class="post-title-link" itemprop="url">在SpringBoot1.5.x下如何使RedisTokenStore集群化</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-22 09:16:53" itemprop="dateCreated datePublished" datetime="2019-08-22T09:16:53+08:00">2019-08-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/oauth2/" itemprop="url" rel="index"><span itemprop="name">oauth2</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="在SpringBoot1-5-x下如何使RedisTokenStore集群化"><a href="#在SpringBoot1-5-x下如何使RedisTokenStore集群化" class="headerlink" title="在SpringBoot1.5.x下如何使RedisTokenStore集群化"></a>在SpringBoot1.5.x下如何使RedisTokenStore集群化</h1><p>在 spring boot 1.5.x 下 <code>spring-boot-starter-data-redis</code> 默认使用 jedis 作为客户端。</p>
+<p>因为 <code>JedisCluster</code> 不支持集群的管道操作(pipleline)，但是项目中又要用到 Redis 集群，这时候该怎么办呢？</p>
+<p>现在，提供两种解决办法：</p>
+<ol>
+<li>重写 RedisTokenStore, 用 RedisTemplateTokenStore</li>
+<li>将 jedis 换掉，使用 spring boot 2.x 中默认的 redis 客户端 lettuce 来支持 Redis 集群（推荐）</li>
+</ol>
+<h2 id="解决办法-1：重写-RedisTokenStore"><a href="#解决办法-1：重写-RedisTokenStore" class="headerlink" title="解决办法 1：重写 RedisTokenStore"></a>解决办法 1：重写 RedisTokenStore</h2><p>因为 JedisCluster 不支持管道操作:（源码）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JedisClusterConnection</span> <span class="keyword">implements</span> <span class="title">RedisClusterConnection</span> </span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * (non-Javadoc)</span></span><br><span class="line"><span class="comment">     * @see org.springframework.data.redis.connection.RedisConnection#openPipeline()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">openPipeline</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    	<span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;Pipeline is currently not supported for JedisClusterConnection.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * (non-Javadoc)</span></span><br><span class="line"><span class="comment">     * @see org.springframework.data.redis.connection.RedisConnection#closePipeline()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Object&gt; <span class="title">closePipeline</span><span class="params">()</span> <span class="keyword">throws</span> RedisPipelineException </span>&#123;</span><br><span class="line">    	<span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;Pipeline is currently not supported for JedisClusterConnection.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此可以使用 RedisTemplate 重写 RedisTokenStore，虽然会导致性能的损失，但至少能用不是吗</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.provider.token.store;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.core.RedisTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.common.OAuth2AccessToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.common.OAuth2RefreshToken;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.OAuth2Authentication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.AuthenticationKeyGenerator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.DefaultAuthenticationKeyGenerator;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.oauth2.provider.token.TokenStore;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.TimeUnit;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/6/21</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisTemplateTokenStore</span> <span class="keyword">implements</span> <span class="title">TokenStore</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACCESS = <span class="string">&quot;access:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String AUTH_TO_ACCESS = <span class="string">&quot;auth_to_access:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String AUTH = <span class="string">&quot;auth:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String REFRESH_AUTH = <span class="string">&quot;refresh_auth:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACCESS_TO_REFRESH = <span class="string">&quot;access_to_refresh:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String REFRESH = <span class="string">&quot;refresh:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String REFRESH_TO_ACCESS = <span class="string">&quot;refresh_to_access:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CLIENT_ID_TO_ACCESS = <span class="string">&quot;client_id_to_access:&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String UNAME_TO_ACCESS = <span class="string">&quot;uname_to_access:&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate&lt;String,Object&gt; redisTemplate ;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisTemplate&lt;String,Object&gt; <span class="title">getRedisTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRedisTemplate</span><span class="params">(RedisTemplate&lt;String,Object&gt; redisTemplate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate = redisTemplate;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AuthenticationKeyGenerator authenticationKeyGenerator = <span class="keyword">new</span> DefaultAuthenticationKeyGenerator();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAuthenticationKeyGenerator</span><span class="params">(AuthenticationKeyGenerator authenticationKeyGenerator)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.authenticationKeyGenerator = authenticationKeyGenerator;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2AccessToken <span class="title">getAccessToken</span><span class="params">(OAuth2Authentication authentication)</span> </span>&#123;</span><br><span class="line">        String key = authenticationKeyGenerator.extractKey(authentication);</span><br><span class="line">        OAuth2AccessToken accessToken = (OAuth2AccessToken) redisTemplate.opsForValue().get(AUTH_TO_ACCESS+key);</span><br><span class="line">        <span class="keyword">if</span> (accessToken != <span class="keyword">null</span></span><br><span class="line">                &amp;&amp; !key.equals(authenticationKeyGenerator.extractKey(readAuthentication(accessToken.getValue())))) &#123;</span><br><span class="line">            <span class="comment">// Keep the stores consistent (maybe the same user is represented by this authentication but the details</span></span><br><span class="line">            <span class="comment">// have changed)</span></span><br><span class="line">            storeAccessToken(accessToken, authentication);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> accessToken;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2Authentication <span class="title">readAuthentication</span><span class="params">(OAuth2AccessToken token)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> readAuthentication(token.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2Authentication <span class="title">readAuthentication</span><span class="params">(String token)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (OAuth2Authentication) <span class="keyword">this</span>.redisTemplate.opsForValue().get(AUTH +  token);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2Authentication <span class="title">readAuthenticationForRefreshToken</span><span class="params">(OAuth2RefreshToken token)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> readAuthenticationForRefreshToken(token.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2Authentication <span class="title">readAuthenticationForRefreshToken</span><span class="params">(String token)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (OAuth2Authentication) <span class="keyword">this</span>.redisTemplate.opsForValue().get( REFRESH_AUTH+token);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">storeAccessToken</span><span class="params">(OAuth2AccessToken token, OAuth2Authentication authentication)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.opsForValue().set(ACCESS+ token.getValue(), token);</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.opsForValue().set(AUTH +token.getValue(), authentication);</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.opsForValue().set(AUTH_TO_ACCESS+authenticationKeyGenerator.extractKey(authentication), token);</span><br><span class="line">        <span class="keyword">if</span> (!authentication.isClientOnly()) &#123;</span><br><span class="line">            redisTemplate.opsForList().rightPush(UNAME_TO_ACCESS+getApprovalKey(authentication), token) ;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        redisTemplate.opsForList().rightPush(CLIENT_ID_TO_ACCESS+authentication.getOAuth2Request().getClientId(), token) ;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (token.getExpiration() != <span class="keyword">null</span>) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">int</span> seconds = token.getExpiresIn();</span><br><span class="line">            redisTemplate.expire(ACCESS+ token.getValue(), seconds, TimeUnit.SECONDS) ;</span><br><span class="line">            redisTemplate.expire(AUTH+ token.getValue(), seconds, TimeUnit.SECONDS) ;</span><br><span class="line"></span><br><span class="line">            redisTemplate.expire(AUTH_TO_ACCESS+ authenticationKeyGenerator.extractKey(authentication), seconds, TimeUnit.SECONDS) ;</span><br><span class="line">            redisTemplate.expire(CLIENT_ID_TO_ACCESS+authentication.getOAuth2Request().getClientId(), seconds, TimeUnit.SECONDS) ;</span><br><span class="line">            redisTemplate.expire(UNAME_TO_ACCESS+ getApprovalKey(authentication), seconds, TimeUnit.SECONDS) ;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (token.getRefreshToken() != <span class="keyword">null</span> &amp;&amp; token.getRefreshToken().getValue() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.redisTemplate.opsForValue().set( REFRESH_TO_ACCESS+   token.getRefreshToken().getValue(), token.getValue());</span><br><span class="line">            <span class="keyword">this</span>.redisTemplate.opsForValue().set(ACCESS_TO_REFRESH+token.getValue(), token.getRefreshToken().getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getApprovalKey</span><span class="params">(OAuth2Authentication authentication)</span> </span>&#123;</span><br><span class="line">        String userName = authentication.getUserAuthentication() == <span class="keyword">null</span> ? <span class="string">&quot;&quot;</span> : authentication.getUserAuthentication()</span><br><span class="line">                .getName();</span><br><span class="line">        <span class="keyword">return</span> getApprovalKey(authentication.getOAuth2Request().getClientId(), userName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getApprovalKey</span><span class="params">(String clientId, String userName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> clientId + (userName==<span class="keyword">null</span> ? <span class="string">&quot;&quot;</span> : <span class="string">&quot;:&quot;</span> + userName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeAccessToken</span><span class="params">(OAuth2AccessToken accessToken)</span> </span>&#123;</span><br><span class="line">        removeAccessToken(accessToken.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2AccessToken <span class="title">readAccessToken</span><span class="params">(String tokenValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (OAuth2AccessToken) <span class="keyword">this</span>.redisTemplate.opsForValue().get(ACCESS+tokenValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeAccessToken</span><span class="params">(String tokenValue)</span> </span>&#123;</span><br><span class="line">        OAuth2AccessToken removed = (OAuth2AccessToken) redisTemplate.opsForValue().get(ACCESS+tokenValue);</span><br><span class="line">        <span class="comment">// Don&#x27;t remove the refresh token - it&#x27;s up to the caller to do that</span></span><br><span class="line">        OAuth2Authentication authentication = (OAuth2Authentication) <span class="keyword">this</span>.redisTemplate.opsForValue().get(AUTH+tokenValue);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.delete(AUTH+tokenValue);</span><br><span class="line">        redisTemplate.delete(ACCESS+tokenValue);</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.delete(ACCESS_TO_REFRESH +tokenValue);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (authentication != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">this</span>.redisTemplate.delete(AUTH_TO_ACCESS+authenticationKeyGenerator.extractKey(authentication));</span><br><span class="line"></span><br><span class="line">            String clientId = authentication.getOAuth2Request().getClientId();</span><br><span class="line"><span class="comment">//             redisTemplate.opsForList().rightPush(&quot;UNAME_TO_ACCESS:&quot;+getApprovalKey(authentication), token) ;</span></span><br><span class="line">            redisTemplate.opsForList().leftPop(UNAME_TO_ACCESS+getApprovalKey(clientId, authentication.getName()));</span><br><span class="line">            redisTemplate.opsForList().leftPop(CLIENT_ID_TO_ACCESS+clientId);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">this</span>.redisTemplate.delete(AUTH_TO_ACCESS+authenticationKeyGenerator.extractKey(authentication));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">storeRefreshToken</span><span class="params">(OAuth2RefreshToken refreshToken, OAuth2Authentication authentication)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.opsForValue().set(REFRESH+refreshToken.getValue(), refreshToken);</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.opsForValue().set( REFRESH_AUTH + refreshToken.getValue(), authentication);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> OAuth2RefreshToken <span class="title">readRefreshToken</span><span class="params">(String tokenValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (OAuth2RefreshToken) <span class="keyword">this</span>.redisTemplate.opsForValue().get(REFRESH+tokenValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeRefreshToken</span><span class="params">(OAuth2RefreshToken refreshToken)</span> </span>&#123;</span><br><span class="line">        removeRefreshToken(refreshToken.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeRefreshToken</span><span class="params">(String tokenValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.delete( REFRESH + tokenValue);</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.delete( REFRESH_AUTH + tokenValue);</span><br><span class="line">        <span class="keyword">this</span>.redisTemplate.delete(REFRESH_TO_ACCESS +tokenValue);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeAccessTokenUsingRefreshToken</span><span class="params">(OAuth2RefreshToken refreshToken)</span> </span>&#123;</span><br><span class="line">        removeAccessTokenUsingRefreshToken(refreshToken.getValue());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">removeAccessTokenUsingRefreshToken</span><span class="params">(String refreshToken)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String token = (String) <span class="keyword">this</span>.redisTemplate.opsForValue().get( REFRESH_TO_ACCESS  +refreshToken) ;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (token != <span class="keyword">null</span>) &#123;</span><br><span class="line">            redisTemplate.delete(ACCESS+ token);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Collection&lt;OAuth2AccessToken&gt; <span class="title">findTokensByClientIdAndUserName</span><span class="params">(String clientId, String userName)</span> </span>&#123;</span><br><span class="line">        List&lt;Object&gt; result =    redisTemplate.opsForList().range(UNAME_TO_ACCESS+ getApprovalKey(clientId, userName), <span class="number">0</span>, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (result == <span class="keyword">null</span> || result.size() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> Collections.&lt;OAuth2AccessToken&gt; emptySet();</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;OAuth2AccessToken&gt; accessTokens = <span class="keyword">new</span> ArrayList&lt;OAuth2AccessToken&gt;(result.size());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(Iterator&lt;Object&gt; it = result.iterator(); it.hasNext();)&#123;</span><br><span class="line">            OAuth2AccessToken accessToken = (OAuth2AccessToken) it.next();</span><br><span class="line">            accessTokens.add(accessToken);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Collections.&lt;OAuth2AccessToken&gt; unmodifiableCollection(accessTokens);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Collection&lt;OAuth2AccessToken&gt; <span class="title">findTokensByClientId</span><span class="params">(String clientId)</span> </span>&#123;</span><br><span class="line">        List&lt;Object&gt; result =    redisTemplate.opsForList().range((CLIENT_ID_TO_ACCESS+clientId), <span class="number">0</span>, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (result == <span class="keyword">null</span> || result.size() == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> Collections.&lt;OAuth2AccessToken&gt; emptySet();</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;OAuth2AccessToken&gt; accessTokens = <span class="keyword">new</span> ArrayList&lt;OAuth2AccessToken&gt;(result.size());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(Iterator&lt;Object&gt; it = result.iterator();it.hasNext();)&#123;</span><br><span class="line">            OAuth2AccessToken accessToken = (OAuth2AccessToken) it.next();</span><br><span class="line">            accessTokens.add(accessToken);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Collections.&lt;OAuth2AccessToken&gt; unmodifiableCollection(accessTokens);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决办法-2：使用-lettuce-替换-jedis"><a href="#解决办法-2：使用-lettuce-替换-jedis" class="headerlink" title="解决办法 2：使用 lettuce 替换 jedis"></a>解决办法 2：使用 lettuce 替换 jedis</h2><p>我们可以使用 Lettuce 来替代 jedis，况且 lettuce 也是 spring boot 2.x 中默认的 redis 客户端。</p>
+<h3 id="POM"><a href="#POM" class="headerlink" title="POM"></a>POM</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-data-redis&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;exclusions&gt;</span><br><span class="line">        &lt;exclusion&gt;</span><br><span class="line">            &lt;artifactId&gt;jedis&lt;&#x2F;artifactId&gt;</span><br><span class="line">            &lt;groupId&gt;redis.clients&lt;&#x2F;groupId&gt;</span><br><span class="line">        &lt;&#x2F;exclusion&gt;</span><br><span class="line">    &lt;&#x2F;exclusions&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br><span class="line">&lt;!-- lettuce 客户端 --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;io.lettuce&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;lettuce-core&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;5.0.5.RELEASE&lt;&#x2F;version&gt;</span><br><span class="line">    &lt;scope&gt;compile&lt;&#x2F;scope&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br><span class="line">&lt;!-- lettuce 客户端 --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;biz.paluch.redis&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;lettuce&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;4.5.0.Final&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br><span class="line">&lt;!-- lettuce 连接池 --&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.commons&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;commons-pool2&lt;&#x2F;artifactId&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置文件-application-yml"><a href="#配置文件-application-yml" class="headerlink" title="配置文件 application.yml"></a>配置文件 application.yml</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">cluster:</span></span><br><span class="line">      <span class="attr">nodes:</span> <span class="number">192.168</span><span class="number">.213</span><span class="number">.13</span><span class="string">:7001,192.168.213.14:7003,192.168.213.21:7006</span></span><br><span class="line">      <span class="attr">max-redirects:</span> <span class="number">5</span></span><br><span class="line"><span class="attr">logging:</span></span><br><span class="line">  <span class="attr">level:</span></span><br><span class="line">    <span class="attr">root:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">com.fengxuechao.examples.auth:</span> <span class="string">debug</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="配置-LettuceConnectionFactory-和-RedisTokenStore"><a href="#配置-LettuceConnectionFactory-和-RedisTokenStore" class="headerlink" title="配置 LettuceConnectionFactory 和 RedisTokenStore"></a>配置 LettuceConnectionFactory 和 RedisTokenStore</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.examples.auth.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.data.redis.RedisProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.EnableConfigurationProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.connection.RedisClusterConfiguration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Redis 配置</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> 0.1</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/6/24</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@EnableConfigurationProperties(RedisProperties.class)</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用 lettuce 作为 redis 的连接池</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> configuration</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LettuceConnectionFactory <span class="title">lettuceConnectionFactory</span><span class="params">(RedisClusterConfiguration configuration)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> LettuceConnectionFactory(configuration);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * lettuce 集群配置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RedisClusterConfiguration <span class="title">getClusterConfiguration</span><span class="params">(RedisProperties redisProperties)</span> </span>&#123;</span><br><span class="line">        RedisProperties.Cluster clusterProperties = redisProperties.getCluster();</span><br><span class="line">        RedisClusterConfiguration config = <span class="keyword">new</span> RedisClusterConfiguration(clusterProperties.getNodes());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (clusterProperties.getMaxRedirects() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            config.setMaxRedirects(clusterProperties.getMaxRedirects());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> config;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TokenStore <span class="title">tokenStore</span><span class="params">(LettuceConnectionFactory lettuceConnectionFactory)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RedisTokenStore(lettuceConnectionFactory);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/08/07/elasticsearch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/08/07/elasticsearch/" class="post-title-link" itemprop="url">elasticsearch</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-07 19:41:34" itemprop="dateCreated datePublished" datetime="2019-08-07T19:41:34+08:00">2019-08-07</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="解决Elasticsearch-head插件链接不上服务"><a href="#解决Elasticsearch-head插件链接不上服务" class="headerlink" title="解决Elasticsearch-head插件链接不上服务"></a>解决Elasticsearch-head插件链接不上服务</h2><p>修改elasticsearch.yml文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">vim</span> <span class="string">$ES_HOME$/config/elasticsearch.yml</span></span><br><span class="line"><span class="comment"># 增加如下字段</span></span><br><span class="line"><span class="attr">http.cors.enabled:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">http.cors.allow-origin:</span> <span class="string">&quot;*&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>重启ES</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1314,378 +1494,6 @@
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;access_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ1c2VyIiwic2NvcGUiOlsicmVhZCJdLCJvcmdhbml6YXRpb24iOiJ1c2VyZWx2ayIsImV4cCI6MTU2MDQ4NDI0OCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjliNTU2ZTBiLTZlZmQtNDkwZC05OGMwLWIzYzYwNjM2ZDczMCIsImNsaWVudF9pZCI6ImNsaWVudCJ9.oaqlviXcQPCLAZP8cV7v-WA75AoiodiG6d2WR9yqJhOFCg7LDsnCjk63J59sq434CZHRIOkCgMi2hVJHOc4MTIFce61Kk046G3-yK313CtMy5LWeVXdKbAHH0gcuoDO3OCJ7u7GzngPtA6bVfxjJFNJ6MmFxEnFPjB5dos9Bb8zYduE2ELMH2aTCS-67R_aQ0BCZaYo5NMH1_jqz9d1hI_kpBx3auR_d2Vh1eJiC_f9Z-rTmRvXdwQefhwgXZ1UCWjV0NuoCqFO3KicEhjGOkqXZ5eh0vGR5zKwKJfCys1lNgXjXVVntHYkXt96ymQ9477pCAWCONZsbkM7244500Q&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;token_type&quot;</span>: <span class="string">&quot;bearer&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;refresh_token&quot;</span>: <span class="string">&quot;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ1c2VyIiwic2NvcGUiOlsicmVhZCJdLCJvcmdhbml6YXRpb24iOiJ1c2VyZWx2ayIsImF0aSI6IjliNTU2ZTBiLTZlZmQtNDkwZC05OGMwLWIzYzYwNjM2ZDczMCIsImV4cCI6MTU2MDQ4NzcyOCwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjJhNTUxOWJjLWUzYTAtNGJjOC1hNTRkLTlmMDNiMjYwNjZkNCIsImNsaWVudF9pZCI6ImNsaWVudCJ9.BgY6N0kzxVApFD-C7UVMDmczSoMY9tglnKzTkybfneoeAAs8ljftIwA5sPWua28Xhl-MNAQ9HL6Q6ou-EbgFlcHC2uPPbJ5silnPLPdTnvVko9l-8w-3WLPk96YbODdQemqFZHSrR1lPmXHB5sR7QjncxGxvuSYZEtPXxZz39lJbyQLSflXADqlk4ZV3BxS-M7d8FcTJEM1uTgwUBSns2N6AZnTkd2FnGskadaV2qhky5TznJjQqRETVS8xCiZCFYwCq5sAMHOj-_BrwlmCeoPfcy38ofbql-qVWfQJiAeU7yWLlAu_hd-zRIIbv-dqRmSF9T9rCxVPv84ptddO1Hw&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;expires_in&quot;</span>: <span class="number">119</span>,</span><br><span class="line">  <span class="attr">&quot;scope&quot;</span>: <span class="string">&quot;read&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;organization&quot;</span>: <span class="string">&quot;userelvk&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;jti&quot;</span>: <span class="string">&quot;9b556e0b-6efd-490d-98c0-b3c60636d730&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>最终返回的 Token 信息中多了一个属性 <code>organization</code>，结果符合期望结果。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/06/26/Springboot%E4%BD%BF%E7%94%A8-JsonView%E8%BF%87%E6%BB%A4%E5%AF%B9%E8%B1%A1%E5%B1%9E%E6%80%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/06/26/Springboot%E4%BD%BF%E7%94%A8-JsonView%E8%BF%87%E6%BB%A4%E5%AF%B9%E8%B1%A1%E5%B1%9E%E6%80%A7/" class="post-title-link" itemprop="url">Springboot使用@JsonView过滤对象属性</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-06-26 08:47:15" itemprop="dateCreated datePublished" datetime="2019-06-26T08:47:15+08:00">2019-06-26</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/springboot/" itemprop="url" rel="index"><span itemprop="name">springboot</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>@JsonView是Jackson的一个注解，可以用来过滤序列化对象的字段属性，是你可以选择序列化对象哪些属性，哪些过滤掉。</p>
-<h2 id="使用步骤"><a href="#使用步骤" class="headerlink" title="使用步骤"></a>使用步骤</h2><ol>
-<li><p>使用接口来声明多个视图</p>
-</li>
-<li><p>在值对象的get方法上指定视图</p>
-</li>
-<li><p>在Controller方法上指定视图</p>
-</li>
-</ol>
-<h2 id="步骤-1：使用接口来声明多个视图"><a href="#步骤-1：使用接口来声明多个视图" class="headerlink" title="步骤 1：使用接口来声明多个视图"></a>步骤 1：使用接口来声明多个视图</h2><p>使用同一个对象，面对不同的场景，去声明多个视图。</p>
-<p>例如：</p>
-<p>有一个 User 对象，里面有id、username、password、birthday等属性</p>
-<ul>
-<li><p>场景1：获得对象的用户名、密码</p>
-</li>
-<li><p>场景2：获得对象的全部属性</p>
-</li>
-</ul>
-<p>为了测试，创建一个User实体对象，加入两个接口 UserSimpleView，UserDetailView</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserSimpleView</span> </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDetailView</span> <span class="keyword">extends</span> <span class="title">UserSimpleView</span> </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank(message = &quot;密码不能为空&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Past(message = &quot;生日必须是过去的时间&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Date birthday;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUsername</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPassword</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPassword</span><span class="params">(String password)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.password = password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">getBirthday</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> birthday;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBirthday</span><span class="params">(Date birthday)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.birthday = birthday;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="步骤-2：在值对象的get方法上指定视图"><a href="#步骤-2：在值对象的get方法上指定视图" class="headerlink" title="步骤 2：在值对象的get方法上指定视图"></a>步骤 2：在值对象的get方法上指定视图</h2><p>在实体类 User 里的 get 方法上面加上 @JsonView 注解，并将它绑定到一个指定接口</p>
-<p>分两类</p>
-<ul>
-<li><p>@JsonView(UserSimpleView.class)：绑定 id、username、birthday属性</p>
-</li>
-<li><p>@JsonView(UserDetailView.class)：绑定 password 属性，继承 UserSimpleView 接口（相当于绑了 UserSimpleView 绑定的属性）</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserSimpleView</span> </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDetailView</span> <span class="keyword">extends</span> <span class="title">UserSimpleView</span> </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotBlank(message = &quot;密码不能为空&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Past(message = &quot;生日必须是过去的时间&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Date birthday;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUsername</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPassword</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPassword</span><span class="params">(String password)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.password = password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@JsonView(UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Date <span class="title">getBirthday</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> birthday;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBirthday</span><span class="params">(Date birthday)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.birthday = birthday;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="步骤-3：在Controller方法上指定视图"><a href="#步骤-3：在Controller方法上指定视图" class="headerlink" title="步骤 3：在Controller方法上指定视图"></a>步骤 3：在Controller方法上指定视图</h2><p>在controller中俩个方法分别加上@JsonView注解，在分配上不同场景的接口</p>
-<ul>
-<li><p>user1：输出视图1</p>
-</li>
-<li><p>user2：输出视图2</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="meta">@JsonView(User.UserSimpleView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;User&gt; <span class="title">query</span><span class="params">(UserQueryCondition condition)</span> </span>&#123;</span><br><span class="line">        System.out.println(ReflectionToStringBuilder.toString(condition, ToStringStyle.MULTI_LINE_STYLE));</span><br><span class="line"></span><br><span class="line">        List&lt;User&gt; users = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        users.add(<span class="keyword">new</span> User());</span><br><span class="line">        users.add(<span class="keyword">new</span> User());</span><br><span class="line">        users.add(<span class="keyword">new</span> User());</span><br><span class="line">        <span class="keyword">return</span> users;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#123;id:\d+&#125;:正则表示只接受数字</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;&#123;id:\\d+&#125;&quot;)</span></span><br><span class="line">    <span class="meta">@JsonView(User.UserDetailView.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> User <span class="title">getInfo</span><span class="params">(<span class="meta">@PathVariable</span> String id)</span> </span>&#123;</span><br><span class="line">        User user = <span class="keyword">new</span> User();</span><br><span class="line">        user.setId(id);</span><br><span class="line">        user.setUsername(<span class="string">&quot;tom&quot;</span>);</span><br><span class="line">        user.setPassword(<span class="string">&quot;tom&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><figure class="highlight"><figcaption><span>request</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">GET http://localhost:8080/user</span><br><span class="line"></span><br><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> </span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Transfer-Encoding</span><span class="punctuation">: </span>chunked</span><br><span class="line"><span class="attribute">Date</span><span class="punctuation">: </span>Wed, 26 Jun 2019 00:41:03 GMT</span><br><span class="line"></span><br><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;id&quot;: null,</span><br><span class="line">    &quot;username&quot;: null,</span><br><span class="line">    &quot;birthday&quot;: null</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;id&quot;: null,</span><br><span class="line">    &quot;username&quot;: null,</span><br><span class="line">    &quot;birthday&quot;: null</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;id&quot;: null,</span><br><span class="line">    &quot;username&quot;: null,</span><br><span class="line">    &quot;birthday&quot;: null</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-
-<p>返回结果中没有密码属性</p>
-<figure class="highlight"><figcaption><span>request</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">GET http://localhost:8080/user/1</span><br><span class="line"></span><br><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> </span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Transfer-Encoding</span><span class="punctuation">: </span>chunked</span><br><span class="line"><span class="attribute">Date</span><span class="punctuation">: </span>Wed, 26 Jun 2019 00:41:56 GMT</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;id&quot;: &quot;1&quot;,</span><br><span class="line">  &quot;username&quot;: &quot;tom&quot;,</span><br><span class="line">  &quot;password&quot;: &quot;tom&quot;,</span><br><span class="line">  &quot;birthday&quot;: null</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>返回结果中包含了密码字段。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>说明 @OneView 只会序列化 username、password 属性，TwoView 会序列化username、password、realName、sex属性。</p>
-<p>因此想设置不同接口的不同场景,可以用 @JsonView 达到某些目的。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/06/20/MySQL%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/06/20/MySQL%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="post-title-link" itemprop="url">MySQL数据类型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-06-20 16:23:37" itemprop="dateCreated datePublished" datetime="2019-06-20T16:23:37+08:00">2019-06-20</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/RDBMS/" itemprop="url" rel="index"><span itemprop="name">RDBMS</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="MySQL数据类型"><a href="#MySQL数据类型" class="headerlink" title="MySQL数据类型"></a>MySQL数据类型</h1><ul>
-<li>数字类型<ul>
-<li>整数: tinyint、smallint、mediumint、int、bigint</li>
-<li>浮点数: float、double、real、decimal</li>
-</ul>
-</li>
-<li>日期和时间: date、time、datetime、timestamp、year</li>
-<li>字符串类型<ul>
-<li>字符串: char、varchar</li>
-<li>文本: tinytext、text、mediumtext、longtext</li>
-</ul>
-</li>
-<li>二进制(可用来存储图片、音乐等): tinyblob、blob、mediumblob、longblob</li>
-</ul>
-<h2 id="数字类型"><a href="#数字类型" class="headerlink" title="数字类型"></a>数字类型</h2><h3 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h3><table>
-<thead>
-<tr>
-<th>type</th>
-<th>Storage(Bytes)</th>
-<th>Signed Range</th>
-<th>Unsigned Range</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>TINYINT</td>
-<td>1</td>
-<td>-128-127</td>
-<td>0-255</td>
-</tr>
-<tr>
-<td>SMALLINT</td>
-<td>2</td>
-<td>-32768-32767</td>
-<td>0-65535</td>
-</tr>
-<tr>
-<td>MEDIUMINT</td>
-<td>3</td>
-<td>-8388608-8388607</td>
-<td>0-16777215</td>
-</tr>
-<tr>
-<td>INT</td>
-<td>4</td>
-<td>-2147483648-2147483647</td>
-<td>0-4294967295</td>
-</tr>
-<tr>
-<td>BIGINT</td>
-<td>8</td>
-<td>-9223372036854775808-9223372036854775807</td>
-<td>0-18446744073709551615</td>
-</tr>
-</tbody></table>
-<h3 id="浮点型"><a href="#浮点型" class="headerlink" title="浮点型"></a>浮点型</h3><table>
-<thead>
-<tr>
-<th>属性</th>
-<th>存储空间</th>
-<th>精度</th>
-<th>精确性</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>FLOAT(M, D)</td>
-<td>4 bytes</td>
-<td>单精度</td>
-<td>非精确</td>
-<td>单精度浮点型，m总个数，d小数位</td>
-</tr>
-<tr>
-<td>DOUBLE(M, D)</td>
-<td>8 bytes</td>
-<td>双精度</td>
-<td>比Float精度高</td>
-<td>双精度浮点型，m总个数，d小数位</td>
-</tr>
-</tbody></table>
-<ul>
-<li>FLOAT容易造成精度丢失</li>
-</ul>
-<h3 id="定点数DECIMAL"><a href="#定点数DECIMAL" class="headerlink" title="定点数DECIMAL"></a>定点数DECIMAL</h3><ul>
-<li>高精度的数据类型，常用来存储交易相关的数据</li>
-<li>DECIMAL(M,N).M代表总精度，N代表小数点右侧的位数（标度）</li>
-<li>1 &lt; M &lt; 254, 0 &lt; N &lt; 60;</li>
-<li>存储空间变长</li>
-</ul>
-<h2 id="时间类型"><a href="#时间类型" class="headerlink" title="时间类型"></a>时间类型</h2><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>字节</th>
-<th>例</th>
-<th>精确性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>DATE</td>
-<td>三字节</td>
-<td>2015-05-01</td>
-<td>精确到年月日</td>
-</tr>
-<tr>
-<td>TIME</td>
-<td>三字节</td>
-<td>11:12:00</td>
-<td>精确到时分秒</td>
-</tr>
-<tr>
-<td>DATETIME</td>
-<td>八字节</td>
-<td>2015-05-01 11::12:00</td>
-<td>精确到年月日时分秒</td>
-</tr>
-<tr>
-<td>TIMESTAMP</td>
-<td></td>
-<td>2015-05-01 11::12:00</td>
-<td>精确到年月日时分秒</td>
-</tr>
-</tbody></table>
-<ul>
-<li>MySQL在<code>5.6.4</code>版本之后，<code>TIMESTAMP</code>和<code>DATETIME</code>支持到微秒。</li>
-<li><code>TIMESTAMP</code>会根据系统时区进行转换，<code>DATETIME</code>则不会</li>
-<li>存储范围的区别  <ul>
-<li><code>TIMESTAMP</code>存储范围：1970-01-01 00::00:01 to 2038-01-19 03:14:07</li>
-<li><code>DATETIME</code>的存储范围：1000-01-01 00:00:00 to 9999-12-31 23:59:59</li>
-</ul>
-</li>
-<li>一般使用<code>TIMESTAMP</code>国际化</li>
-<li>如存时间戳使用数字类型<code>BIGINT</code></li>
-</ul>
-<h2 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h2><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>单位</th>
-<th>最大</th>
-<th>特性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>CHAR</td>
-<td>字符</td>
-<td>最大为255字符</td>
-<td>存储定长，容易造成空间的浪费</td>
-</tr>
-<tr>
-<td>VARCHAR</td>
-<td>字符</td>
-<td>可以超过255个字符</td>
-<td>存储变长，节省存储空间</td>
-</tr>
-<tr>
-<td>TEXT</td>
-<td>字节</td>
-<td>总大小为65535字节，约为64KB</td>
-<td>-</td>
-</tr>
-</tbody></table>
-<ul>
-<li>TEXT在MySQL内部大多存储格式为溢出页，效率不如CHAR</li>
-<li>Mysql默认为utf-8，那么在英文模式下1个字符=1个字节，在中文模式下1个字符=3个字节。</li>
-</ul>
-<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><code>SERIAL</code> 是 <code>BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE</code> 的别名。</p>
 
       
     </div>

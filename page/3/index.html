@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">198</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">121</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,367 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/06/20/MySQL%E4%B8%BB%E4%BB%8E%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/06/20/MySQL%E4%B8%BB%E4%BB%8E%E6%90%AD%E5%BB%BA/" class="post-title-link" itemprop="url">MySQL主从搭建</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-06-20 16:45:19 / 修改时间：17:30:29" itemprop="dateCreated datePublished" datetime="2021-06-20T16:45:19+08:00">2021-06-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h1><ul>
+<li><p>主配置 log-bin，指定文件的名字</p>
+</li>
+<li><p>主配置 server-id，默认为1</p>
+</li>
+<li><p>从 server-id 与主不能重复</p>
+</li>
+<li><p>主数据库创建备份账户并授权 <code>REPLICATION SLAVE</code></p>
+</li>
+<li><p>主数据库锁表 <code>FLUSH TABLES WITH READ LOCK</code></p>
+</li>
+<li><p>主数据库找到 <code>log-bin</code> 的位置 <code>SHOW MASTER STATUS</code></p>
+</li>
+<li><p>备份主数据库数据 <code>mysqldump -all-datables --master-data &gt; dbduump.db</code></p>
+</li>
+<li><p>主数据库解锁 <code>unlock tables</code></p>
+</li>
+<li><p>从数据库导入 dump的数据</p>
+</li>
+<li><p>在从数据库上设置主数据库的配置</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> CHANGE MASTER <span class="keyword">TO</span></span><br><span class="line">	<span class="operator">-</span><span class="operator">&gt;</span> MASTER_HOST<span class="operator">=</span><span class="string">&#x27;master_host_name&#x27;</span>, 	</span><br><span class="line">	<span class="operator">-</span><span class="operator">&gt;</span> MASTER_PORT<span class="operator">=</span>port_num </span><br><span class="line">	<span class="operator">-</span><span class="operator">&gt;</span> MASTER_USER<span class="operator">=</span><span class="string">&#x27;replication_user_name&#x27;</span>, </span><br><span class="line">	<span class="operator">-</span><span class="operator">&gt;</span> MASTER_PASSWORD<span class="operator">=</span><span class="string">&#x27;replication_password&#x27;</span>, 			        </span><br><span class="line">	<span class="operator">-</span><span class="operator">&gt;</span> MASTER_LOG_FILE<span class="operator">=</span><span class="string">&#x27;recorded_log_file_name&#x27;</span>,			   </span><br><span class="line">  <span class="operator">-</span><span class="operator">&gt;</span> MASTER_LOG_POS<span class="operator">=</span>recorded_log_position;                                                       </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>master_host_name : MySQL主的地址</li>
+<li>port_num : MySQL主的端口（数字型）</li>
+<li>replication_user_name : 备份账户的用户名</li>
+<li>replication_password : 备份账户的密码</li>
+<li>recorded_log_file_name ：bin-log的文件名</li>
+<li>recorded_log_position : bin-log的位置（数字型）</li>
+<li>bin-log的文件名和位置 是 从 <code>show master status</code> 得到的。</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/20/MySQL%E4%B8%BB%E4%BB%8E%E6%90%AD%E5%BB%BA/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/06/09/%E6%90%AD%E5%BB%BAMycat/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/06/09/%E6%90%AD%E5%BB%BAMycat/" class="post-title-link" itemprop="url">搭建Mycat</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-09 20:51:05" itemprop="dateCreated datePublished" datetime="2021-06-09T20:51:05+08:00">2021-06-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-08 15:54:25" itemprop="dateModified" datetime="2021-07-08T15:54:25+08:00">2021-07-08</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mycat/" itemprop="url" rel="index"><span itemprop="name">mycat</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="1-环境搭建"><a href="#1-环境搭建" class="headerlink" title="1 环境搭建"></a>1 环境搭建</h1><ol>
+<li><p>3台服务器</p>
+</li>
+<li><p>centos 7</p>
+</li>
+<li><p>采用 yum 方式，在其中两台安装 mysql</p>
+</li>
+<li><p>检查mysql 安装是否正确</p>
+</li>
+<li><p>下载 Mycat 软件包</p>
+</li>
+<li><p>在第3台机器上安装mycat，并修改配置文件</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210609210635587.png" alt="image-20210609210635587"></p>
+</li>
+<li><p>连接mycat，体验数据的增删改查</p>
+</li>
+</ol>
+<h1 id="2-mysql-安装教程"><a href="#2-mysql-安装教程" class="headerlink" title="2 mysql 安装教程"></a>2 mysql 安装教程</h1><h2 id="2-1-查询是否安装了mysql"><a href="#2-1-查询是否安装了mysql" class="headerlink" title="2.1 查询是否安装了mysql**"></a>2.1 查询是否安装了mysql**</h2>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa|grep mysql                                                      </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-卸载mysql-（下面是卸载mysql的库，防止产生冲突，mysql也是类似卸载方式）"><a href="#2-2-卸载mysql-（下面是卸载mysql的库，防止产生冲突，mysql也是类似卸载方式）" class="headerlink" title="2.2 卸载mysql （下面是卸载mysql的库，防止产生冲突，mysql也是类似卸载方式）**"></a>2.2 卸载mysql （下面是卸载mysql的库，防止产生冲突，mysql也是类似卸载方式）**</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -e --nodeps mysql-libs-5.1.*</span><br><span class="line">卸载之后，记得：</span><br><span class="line">find &#x2F; -name mysql</span><br><span class="line">删除查询出来的所有东西</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-安装mysql"><a href="#2-3-安装mysql" class="headerlink" title="2.3 安装mysql"></a>2.3 安装mysql</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install mysql-server                                                    </span><br></pre></td></tr></table></figure>
+
+<p>注意: centos 7这样安装不行, 详见文档底部</p>
+<h2 id="2-4-启动mysql"><a href="#2-4-启动mysql" class="headerlink" title="2.4 启动mysql"></a>2.4 启动mysql</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">启动方式1：service mysql start</span><br><span class="line">启动方式2：&#x2F;etc&#x2F;init.d&#x2F;mysql start</span><br><span class="line">启动方式3：service mysqld start</span><br><span class="line">启动方式4：&#x2F;etc&#x2F;init.d&#x2F;mysqld start                                               </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-5-root账户默认是没有密码的，修改root密码："><a href="#2-5-root账户默认是没有密码的，修改root密码：" class="headerlink" title="2.5 root账户默认是没有密码的，修改root密码："></a>2.5 root账户默认是没有密码的，修改root密码：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;bin&#x2F;mysqladmin -u root password 密码 </span><br><span class="line">例如：</span><br><span class="line">&#x2F;usr&#x2F;bin&#x2F;mysqladmin -u root password pwd    这样就将root密码设置成pwd了       </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-6-重置root密码（忘记root密码找回）"><a href="#2-6-重置root密码（忘记root密码找回）" class="headerlink" title="2.6 重置root密码（忘记root密码找回）"></a>2.6 重置root密码（忘记root密码找回）</h2><h3 id="2-6-1-停止MySQL服务命令"><a href="#2-6-1-停止MySQL服务命令" class="headerlink" title="2.6.1 停止MySQL服务命令:"></a>2.6.1 停止MySQL服务命令:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;etc&#x2F;init.d&#x2F;mysqld stop </span><br><span class="line">&#x2F;etc&#x2F;init.d&#x2F;mysql stop                                                        </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-2-输入绕过密码认证命令："><a href="#2-6-2-输入绕过密码认证命令：" class="headerlink" title="2.6.2 输入绕过密码认证命令："></a>2.6.2 输入绕过密码认证命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld_safe --user&#x3D;mysql --skip-grant-tables --skip-networking &amp;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-6-3-输入登录用户命令："><a href="#1-6-3-输入登录用户命令：" class="headerlink" title="1.6.3 输入登录用户命令："></a>1.6.3 输入登录用户命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root mysql                                                        </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-4-输入修改root密码SQL语句："><a href="#2-6-4-输入修改root密码SQL语句：" class="headerlink" title="2.6.4 输入修改root密码SQL语句："></a>2.6.4 输入修改root密码SQL语句：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update user set Password&#x3D;password (&#39;123456&#39;) where user&#x3D;&#39;root&#39;;          </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-5-输入数据刷新命令："><a href="#2-6-5-输入数据刷新命令：" class="headerlink" title="2.6.5 输入数据刷新命令："></a>2.6.5 输入数据刷新命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FLUSH PRIVILEGES;                                                   </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-6-6-退出MySQL命令："><a href="#2-6-6-退出MySQL命令：" class="headerlink" title="2.6.6 退出MySQL命令："></a>2.6.6 退出MySQL命令：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">quit;                                                              </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-7-设置允许远程连接"><a href="#2-7-设置允许远程连接" class="headerlink" title="2.7 设置允许远程连接"></a>2.7 设置允许远程连接</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges on *.* to root@&#39;%&#39; identified by &#39;123456789&#39; with grant option;  </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-8-开放端口3306，否则依然无法过远程"><a href="#2-8-开放端口3306，否则依然无法过远程" class="headerlink" title="2.8 开放端口3306，否则依然无法过远程"></a>2.8 开放端口3306，否则依然无法过远程</h2><h3 id="2-8-1-打开防火墙配置文件："><a href="#2-8-1-打开防火墙配置文件：" class="headerlink" title="2.8.1 打开防火墙配置文件："></a>2.8.1 打开防火墙配置文件：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi &#x2F;etc&#x2F;sysconfig&#x2F;iptables                                                   </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-8-2-添加下面一行："><a href="#2-8-2-添加下面一行：" class="headerlink" title="2.8.2 添加下面一行："></a>2.8.2 添加下面一行：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-A INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p>注意：开通3306 端口的行必须在icmp-host-prohibited前，否则无效：以下为配置结果图：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e81a3ba087c42ce05540189.jpg" alt="图片描述"></p>
+<h3 id="2-8-3-重启防火墙，使配置生效："><a href="#2-8-3-重启防火墙，使配置生效：" class="headerlink" title="2.8.3 重启防火墙，使配置生效："></a>2.8.3 重启防火墙，使配置生效：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;etc&#x2F;init.d&#x2F;iptables restart                                                </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-9-设置开机启动mysql："><a href="#2-9-设置开机启动mysql：" class="headerlink" title="2.9 设置开机启动mysql："></a>2.9 设置开机启动mysql：</h2><h3 id="2-9-1-查看MySQL服务是否自动开启命令"><a href="#2-9-1-查看MySQL服务是否自动开启命令" class="headerlink" title="2.9.1 查看MySQL服务是否自动开启命令"></a>2.9.1 查看MySQL服务是否自动开启命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --list | grep mysqld</span><br><span class="line">chkconfig --list | grep mysql                                            </span><br></pre></td></tr></table></figure>
+
+<h3 id="2-9-2-开启MySQL服务自动开启命令"><a href="#2-9-2-开启MySQL服务自动开启命令" class="headerlink" title="2.9.2 开启MySQL服务自动开启命令"></a>2.9.2 开启MySQL服务自动开启命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">chkconfig mysqld on</span><br><span class="line">chkconfig mysql on                                              </span><br></pre></td></tr></table></figure>
+
+<h2 id="2-10-将mysql默认引擎设置为InnoDB"><a href="#2-10-将mysql默认引擎设置为InnoDB" class="headerlink" title="2.10 将mysql默认引擎设置为InnoDB"></a>2.10 将mysql默认引擎设置为InnoDB</h2><p>修改MySQL配置文件my.cnf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;etc</span><br><span class="line">vi my.cnf                                                         </span><br></pre></td></tr></table></figure>
+
+<p>在[mysqld]一段加入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">default-storage-engine&#x3D;InnoDB                                            </span><br></pre></td></tr></table></figure>
+
+<p>删除ib_logfile0、ib_logfile1两个文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;var&#x2F;lib&#x2F;mysql</span><br><span class="line">rm -rf ib_logfile*                                                   </span><br></pre></td></tr></table></figure>
+
+<p>重启mysql</p>
+<h2 id="2-11-开启mysql的日志-监控执行的sql语句"><a href="#2-11-开启mysql的日志-监控执行的sql语句" class="headerlink" title="2.11 开启mysql的日志(监控执行的sql语句)"></a>2.11 开启mysql的日志(监控执行的sql语句)</h2><p>命令: <code>show global variables like ‘%general%’;</code> 该语句可以查看是否开启, 以及生成的位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set global general_log &#x3D; on; &#x2F;&#x2F; 打开  </span><br><span class="line">set global general_log &#x3D; off; &#x2F;&#x2F; 关闭      </span><br></pre></td></tr></table></figure>
+
+<p>参考文档:</p>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/fdipzone/article/details/16995303">http://blog.csdn.net/fdipzone/article/details/16995303</a></p>
+<h2 id="2-12-centos7安装mysql"><a href="#2-12-centos7安装mysql" class="headerlink" title="2.12 centos7安装mysql"></a>2.12 centos7安装mysql</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">wget http:&#x2F;&#x2F;dev.mysql.com&#x2F;get&#x2F;mysql-community-release-el7-5.noarch.rpm</span><br><span class="line">#rpm -ivh mysql-community-release-el7-5.noarch.rpm</span><br><span class="line">#yum install mysql-community-server</span><br><span class="line">成功安装之后重启mysql服务</span><br><span class="line">#service mysqld restart</span><br><span class="line">初次安装mysql是root账户是没有密码的</span><br><span class="line">设置密码的方法</span><br><span class="line">#mysql -uroot</span><br><span class="line">mysql&gt; set password for ‘root’@‘localhost’ &#x3D; password(&#39;mypasswd&#39;);</span><br><span class="line">mysql&gt; exit</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-Mycat-安装教程"><a href="#3-Mycat-安装教程" class="headerlink" title="3 Mycat 安装教程"></a>3 Mycat 安装教程</h1><p><a target="_blank" rel="noopener" href="http://www.mycat.org.cn/">mycat官网</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.yuque.com/ccazhw/tuacvk">mycat1权威指南</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.yuque.com/ccazhw/ml3nkf">mycat2权威指南</a></p>
+<h2 id="3-1-安装-Mycat"><a href="#3-1-安装-Mycat" class="headerlink" title="3.1 安装 Mycat"></a>3.1 安装 Mycat</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf Mycat-server-1.6.7.1-release-20200209222254-mac.tar</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-启动和验证"><a href="#3-2-启动和验证" class="headerlink" title="3.2 启动和验证"></a>3.2 启动和验证</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/mycat start</span><br></pre></td></tr></table></figure>
+
+<p>启动后，验证一些基本操作，如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210610162658349.png" alt="image-20210610162658349"></p>
+<p>可以看到，我们成功连上了 mycat 服务器，MyCat 服务器默认定义了一个名为 TESTDB 的逻辑数据库，并且也在该逻辑数据库中定义了一些逻辑表。</p>
+<p>但当我们尝试做一些 select 操作的时候，控制台会提示报错，这是因为 MyCat 配置错误导致的。</p>
+<p>所以我们需要进行配置。</p>
+<h2 id="3-3-配置"><a href="#3-3-配置" class="headerlink" title="3.3 配置"></a>3.3 配置</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210610163531656.png" alt="image-20210610163531656"></p>
+<p>其中 ,</p>
+<ul>
+<li>bin 目录是 MyCat 的启动目录，</li>
+<li>conf 目录是 MyCat 的配置文件目录，</li>
+<li>lib 目录是 MyCat 自身的 Jar 包以及所依赖 Jar 包的目录，</li>
+<li>logs 目录是日志目录。</li>
+</ul>
+<p>在 conf 目录下有 3 个重要的配置文件：</p>
+<ul>
+<li>schema.xml</li>
+<li>Server.xml</li>
+<li>Rule.xml</li>
+</ul>
+<p>下面就来简单说明这 3 个配置文件的关键配置</p>
+<h3 id="3-3-1-schema-xml"><a href="#3-3-1-schema-xml" class="headerlink" title="3.3.1 schema.xml"></a>3.3.1 schema.xml</h3><p>schema.xml 文件定义了 MyCat 到底连接那个数据库实例，连接这个数据库实例的哪个数据库。MyCat 一共有几个逻辑数据库，MyCat 一共有几个逻辑表。</p>
+<p>schema.xml 文件一共有四个配置节点：<code>DataHost</code>、<code>DataNode</code>、<code>Schema</code>、<code>Table</code>。</p>
+<ul>
+<li><p>DataHost：定义数据库实例</p>
+<ul>
+<li><p>balance：负载均衡类型</p>
+<ul>
+<li>balance=”0”, 不开启读写分离机制，所有读操作都发送到当前可用的writeHost上。</li>
+<li>balance=”1”，全部的readHost与stand by writeHost参与select语句的负载均衡，简单的说，当双主双从模式(M1-&gt;S1，M2-&gt;S2，并且M1与 M2互为主备)，正常情况下，M2,S1,S2都参与select语句的负载均衡。</li>
+<li>balance=”2”，所有读操作都随机的在writeHost、readhost上分发。</li>
+<li>balance=”3”，所有读请求随机的分发到wiriterHost对应的readhost执行，writerHost不负担读压力，注意balance=3只在1.4及其以后版本有，1.3没有。</li>
+</ul>
+</li>
+<li><p>writeType：写请求类型，0落在第一个writeHost上；1随机；</p>
+</li>
+</ul>
+</li>
+<li><p>DataNode：定义数据库名称</p>
+</li>
+<li><p>Schema：定义逻辑库</p>
+<ul>
+<li><p>checkSQLschema：是否去掉SQL中的schema</p>
+</li>
+<li><p>sqlMaxLimit：select 默认的<code>limit</code>值，仅对分片表有效</p>
+</li>
+<li><p>rule：定义分片表的分片规则，必须与<code>rule.xml</code>中的<code>tableRule</code>对应</p>
+</li>
+<li><p>ruleRequired：是否绑定分片规则，如果为true，没有绑定分片规则，程序报错</p>
+</li>
+</ul>
+</li>
+<li><p>Table：定义逻辑表</p>
+</li>
+</ul>
+<p>DataHost 节点定义了 MyCat 要连接哪个 MySQL 实例，连接的账号密码是多少。默认的 MyCat 为我们定义了一个名为 localhost1 的数据服务器（DataHost），它指向了本地（localhost）3306 端口的 MySQL 服务器，对应 MySQL 服务器的账号是 root，密码是 123456。</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dataHost</span> <span class="attr">name</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">maxCon</span>=<span class="string">&quot;1000&quot;</span> <span class="attr">minCon</span>=<span class="string">&quot;10&quot;</span> <span class="attr">balance</span>=<span class="string">&quot;0&quot;</span> <span class="attr">writeType</span>=<span class="string">&quot;0&quot;</span> <span class="attr">dbType</span>=<span class="string">&quot;mysql&quot;</span> <span class="attr">dbDriver</span>=<span class="string">&quot;native&quot;</span> <span class="attr">switchType</span>=<span class="string">&quot;1&quot;</span>  <span class="attr">slaveThreshold</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">heartbeat</span>&gt;</span>select user()<span class="tag">&lt;/<span class="name">heartbeat</span>&gt;</span> </span><br><span class="line">	<span class="tag">&lt;<span class="name">writeHost</span> <span class="attr">host</span>=<span class="string">&quot;hostM1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;localhost:3306&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span> <span class="attr">password</span>=<span class="string">&quot;123456&quot;</span>&gt;</span> </span><br><span class="line">		<span class="tag">&lt;<span class="name">readHost</span> <span class="attr">host</span>=<span class="string">&quot;hostS2&quot;</span> <span class="attr">url</span>=<span class="string">&quot;192.168.1.200:3306&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span> <span class="attr">password</span>=<span class="string">&quot;xxx&quot;</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">writeHost</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">writeHost</span> <span class="attr">host</span>=<span class="string">&quot;hostS1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;localhost:3316&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span> <span class="attr">password</span>=<span class="string">&quot;123456&quot;</span> /&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">dataHost</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>DataNode 节点指定了需要连接的具体数据库名称，其使用一个 dataHost 属性指定该数据库位于哪个数据库实例上。默认的 MyCat 为我们创建了三个数据节点（DataNode），dn1 数据节点对应 localhost1 数据服务器上的 db1 数据库，dn2 数据节点对应 localhost1 数据服务器上的 db2 数据库，dn1 数据节点对应 localhost1 数据服务器上的 db3 数据库。</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn1&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;db1&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn2&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;db2&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn3&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;db3&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Schema 节点定义了 MyCat 的所有逻辑数据库，Table 节点定义了 MyCat 的所有逻辑表。默认的 MyCat 为我们定义了一个名为 TESTDB 的逻辑数据库，在这个逻辑数据库下又定义了名为 travaelrecord、company 等 6 个逻辑表。</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;TESTDB&quot;</span> <span class="attr">checkSQLschema</span>=<span class="string">&quot;false&quot;</span> <span class="attr">sqlMaxLimit</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- auto sharding by id (long) --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;travelrecord&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1,dn2,dn3&quot;</span> <span class="attr">rule</span>=<span class="string">&quot;auto-sharding-long&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">&lt;!-- global table is auto cloned to all defined data nodes ,so can join</span></span><br><span class="line"><span class="comment">			with any table whose sharding node is in the same data node --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;company&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">type</span>=<span class="string">&quot;global&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1,dn2,dn3&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;goods&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">type</span>=<span class="string">&quot;global&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1,dn2&quot;</span> /&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- random sharding using mod sharind rule --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;hotnews&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">autoIncrement</span>=<span class="string">&quot;true&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1,dn2,dn3&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">rule</span>=<span class="string">&quot;mod-long&quot;</span> /&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- &lt;table name=&quot;dual&quot; primaryKey=&quot;ID&quot; dataNode=&quot;dnx,dnoracle2&quot; type=&quot;global&quot;</span></span><br><span class="line"><span class="comment">			needAddLimit=&quot;false&quot;/&gt; &lt;table name=&quot;worker&quot; primaryKey=&quot;ID&quot; dataNode=&quot;jdbc_dn1,jdbc_dn2,jdbc_dn3&quot;</span></span><br><span class="line"><span class="comment">			rule=&quot;mod-long&quot; /&gt; --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;employee&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1,dn2&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">rule</span>=<span class="string">&quot;sharding-by-intfile&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;customer&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1,dn2&quot;</span></span></span><br><span class="line"><span class="tag">			   <span class="attr">rule</span>=<span class="string">&quot;sharding-by-intfile&quot;</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">childTable</span> <span class="attr">name</span>=<span class="string">&quot;orders&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">joinKey</span>=<span class="string">&quot;customer_id&quot;</span></span></span><br><span class="line"><span class="tag">						<span class="attr">parentKey</span>=<span class="string">&quot;id&quot;</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">childTable</span> <span class="attr">name</span>=<span class="string">&quot;order_items&quot;</span> <span class="attr">joinKey</span>=<span class="string">&quot;order_id&quot;</span></span></span><br><span class="line"><span class="tag">							<span class="attr">parentKey</span>=<span class="string">&quot;id&quot;</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">childTable</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">childTable</span> <span class="attr">name</span>=<span class="string">&quot;customer_addr&quot;</span> <span class="attr">primaryKey</span>=<span class="string">&quot;ID&quot;</span> <span class="attr">joinKey</span>=<span class="string">&quot;customer_id&quot;</span></span></span><br><span class="line"><span class="tag">						<span class="attr">parentKey</span>=<span class="string">&quot;id&quot;</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!-- &lt;table name=&quot;oc_call&quot; primaryKey=&quot;ID&quot; dataNode=&quot;dn1$0-743&quot; rule=&quot;latest-month-calldate&quot;</span></span><br><span class="line"><span class="comment">			/&gt; --&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>所以上面当我们登陆 MyCat 输入<code>show databases</code>会看到只有一个名为 TESTDB 的数据库，这个就是 MyCat 的逻辑数据库。</p>
+<h3 id="3-3-2-server-xml"><a href="#3-3-2-server-xml" class="headerlink" title="3.3.2 server.xml"></a>3.3.2 server.xml</h3><p>server.xml 定义了项目中连接 MyCat 服务器所需要的账号密码，以及该账号能访问那些逻辑数据库。 server.xml 配置文件中有 <code>System</code> 和 <code>User</code> 两个配置节点。</p>
+<p>System 节点定义了连接 MyCat 服务器的系统配置信息。例如是否开启实时统计功能，是否开启全加班一致性检测等。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">system</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;useSqlStat&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span>  <span class="comment">&lt;!-- 1为开启实时统计、0为关闭 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;useGlobleTableCheck&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span>  <span class="comment">&lt;!-- 1为开启全加班一致性检测、0为关闭 --&gt;</span> </span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;sequnceHandlerType&quot;</span>&gt;</span>2<span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;processorBufferPoolType&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">	……</span><br><span class="line"><span class="tag">&lt;/<span class="name">system</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>User 配置节点定义了连接 MyCat 服务器的账号密码，以及该账号密码所能进行的数据库操作。默认的 MyCat 为我们创建了一个账户名为 root，密码为 123456 的账号，只能访问 TESTDB 逻辑数据库，并且定义了对相关表的操作权限。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">user</span> <span class="attr">name</span>=<span class="string">&quot;root&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;schemas&quot;</span>&gt;</span>TESTDB<span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">	<span class="tag">&lt;<span class="name">privileges</span> <span class="attr">check</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;TESTDB&quot;</span> <span class="attr">dml</span>=<span class="string">&quot;0110&quot;</span> &gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;tb01&quot;</span> <span class="attr">dml</span>=<span class="string">&quot;0000&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;tb02&quot;</span> <span class="attr">dml</span>=<span class="string">&quot;1111&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">privileges</span>&gt;</span>	 </span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-3-rule-xml"><a href="#3-3-3-rule-xml" class="headerlink" title="3.3.3 rule.xml"></a>3.3.3 rule.xml</h3><p>rule.xml 定义了逻辑表使用哪个字段进行拆分，使用什么拆分算法进行拆分。rule.xml 中有两个配置节点，分别是：<code>TableRule</code> 和 <code>Function</code> 配置节点。</p>
+<p>TableRule 配置节点定义了逻辑表的拆分信息，例如使用哪个字段进行拆分，使用什么拆分算法。默认的 MyCat 为我们配置了一个名为 rule2 的表拆分规则，表示根据 user_id 字段进行拆分，拆分算法是 func1。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;rule2&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">columns</span>&gt;</span>user_id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>func1<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Function 配置节点则定义了具体的拆分算法。例如使用对 1000 取余的拆分算法，对 100 取余的拆分算分等等。默认的 MyCat 为我们定义了一个名为<code> func1</code> 的<strong>拆分算法</strong>，这个拆分算法定义在 <code>io.mycat.route.function.PartitionByLong</code> 类中，并且还传入了两个参数值。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;func1&quot;</span> <span class="attr">class</span>=<span class="string">&quot;io.mycat.route.function.PartitionByLong&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;partitionCount&quot;</span>&gt;</span>8<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;partitionLength&quot;</span>&gt;</span>128<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-Mycat-FAQ"><a href="#3-4-Mycat-FAQ" class="headerlink" title="3.4 Mycat FAQ"></a>3.4 Mycat FAQ</h2><h3 id="3-4-1-ERROR-1184-HY000-Invalid-DataSource-1"><a href="#3-4-1-ERROR-1184-HY000-Invalid-DataSource-1" class="headerlink" title="3.4.1 ERROR 1184 (HY000): Invalid DataSource:1"></a>3.4.1 ERROR 1184 (HY000): Invalid DataSource:1</h3><p>具体错误如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210611093234112.png" alt="image-20210611093234112"></p>
+<p>错误原因有两种可能：</p>
+<ol>
+<li><p>没有为mysql用户配置远程访问的权限</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">writeHost</span> <span class="attr">host</span>=<span class="string">&quot;db1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;192.168.0.3:3306&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span> <span class="attr">password</span>=<span class="string">&quot;123456&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>授予mysql用户远程访问的权限</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">GRANT</span> <span class="keyword">ALL</span> PRIVILEGES <span class="keyword">ON</span> <span class="operator">*</span>.<span class="operator">*</span> <span class="keyword">TO</span> <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;%&#x27;</span> IDENTIFIED <span class="keyword">BY</span> <span class="string">&#x27;123456&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="number">2.</span> 没有在mysql中创建数据库</span><br><span class="line"></span><br><span class="line">   ```<span class="keyword">sql</span></span><br><span class="line">   # 此操作在当前机的mysql上操作（不再mycat）</span><br><span class="line">   # mysql <span class="operator">-</span>uroot <span class="operator">-</span>p</span><br><span class="line">   <span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> mycatdb1 <span class="keyword">DEFAULT</span> CHARSET utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci;</span><br><span class="line">   <span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> mycatdb2 <span class="keyword">DEFAULT</span> CHARSET utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci;</span><br><span class="line">   <span class="keyword">CREATE</span> DATABASE IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> mycatdb3 <span class="keyword">DEFAULT</span> CHARSET utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci;</span><br><span class="line">   </span><br><span class="line">   # 三个分库各自创建表travelrecord</span><br><span class="line">   <span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `travelrecord` (</span><br><span class="line">     `id` <span class="type">int</span>(<span class="number">10</span>) unsigned <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">     `name` <span class="type">varchar</span>(<span class="number">22</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">     `<span class="type">time</span>` <span class="type">int</span>(<span class="number">10</span>) unsigned <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;0&#x27;</span>,</span><br><span class="line">     <span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">   ) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4;</span><br><span class="line">   </span><br><span class="line">   # 模拟数据</span><br><span class="line">   <span class="keyword">INSERT</span> <span class="keyword">INTO</span> `mycat<span class="operator">-</span>db1`.`travelrecord` (`name`, `<span class="type">time</span>`) <span class="keyword">VALUES</span> (<span class="string">&#x27;qkl&#x27;</span>, <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">   <span class="keyword">INSERT</span> <span class="keyword">INTO</span> `mycat<span class="operator">-</span>db1`.`travelrecord` (`name`, `<span class="type">time</span>`) <span class="keyword">VALUES</span> (<span class="string">&#x27;andy&#x27;</span>, <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">   <span class="keyword">INSERT</span> <span class="keyword">INTO</span> `mycat<span class="operator">-</span>db2`.`travelrecord` (`name`, `<span class="type">time</span>`) <span class="keyword">VALUES</span> (<span class="string">&#x27;zgq&#x27;</span>, <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">   <span class="keyword">INSERT</span> <span class="keyword">INTO</span> `mycat<span class="operator">-</span>db3`.`travelrecord` (`name`, `<span class="type">time</span>`) <span class="keyword">VALUES</span> (<span class="string">&#x27;pcb&#x27;</span>, <span class="string">&#x27;0&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在 mycat 的配置文件 schema.xml 中修改 <code>dataNode</code>节点：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn1&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;mycatdb1&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn2&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;mycatdb2&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn3&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;localhost1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;mycatdb3&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1254,253 +1615,6 @@
 <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200410144802569-1725038127.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410144802569-1725038127.png"></p>
 <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200410144811290-2056832827.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410144811290-2056832827.png"></p>
 <p>下一篇 <a href="%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B62%EF%BC%9ABIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E7%BE%A4%E8%81%8A%202d2b7fd177844b1ab85c0276e7ae1e7b.md">手动搭建I/O网络通信框架2：BIO编程模型实现群聊</a>  。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B62%EF%BC%9ABIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E7%BE%A4%E8%81%8A/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B62%EF%BC%9ABIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E7%BE%A4%E8%81%8A/" class="post-title-link" itemprop="url">手动搭建I/O网络通信框架2：BIO编程模型实现群聊</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-05-28 19:39:32 / 修改时间：09:40:58" itemprop="dateCreated datePublished" datetime="2021-05-28T19:39:32+08:00">2021-05-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="手动搭建I-O网络通信框架2：BIO编程模型实现群聊"><a href="#手动搭建I-O网络通信框架2：BIO编程模型实现群聊" class="headerlink" title="手动搭建I/O网络通信框架2：BIO编程模型实现群聊"></a>手动搭建I/O网络通信框架2：BIO编程模型实现群聊</h1><blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lbhym/p/12681787.html">https://www.cnblogs.com/lbhym/p/12681787.html</a></p>
-</blockquote>
-<h1 id="手动搭建I-O网络通信框架2：BIO编程模型实现群聊-1"><a href="#手动搭建I-O网络通信框架2：BIO编程模型实现群聊-1" class="headerlink" title="手动搭建I/O网络通信框架2：BIO编程模型实现群聊"></a><strong>手动搭建I/O网络通信框架2：BIO编程模型实现群聊</strong></h1><p>在第一章中运用Socket和ServerSocket简单的实现了网络通信。这一章，利用BIO编程模型进行升级改造，实现群聊聊天室。</p>
-<p>所谓BIO，就是Block IO，阻塞式的IO。这个阻塞主要发生在：ServerSocket接收请求时（accept()方法）、InputStream、OutputStream（输入输出流的读和写）都是阻塞的。这个可以在下面代码的调试中发现，比如在客户端接收服务器消息的输入流处打上断点，除非服务器发来消息，不然断点是一直停在这个地方的。也就是说这个线程在这时间是被阻塞的。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411190359629-713089288.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411190359629-713089288.png"></p>
-<p>如图：当一个客户端请求进来时，接收器会为这个客户端分配一个工作线程，这个工作线程专职处理客户端的操作。在上一章中，服务器接收到客户端请求后就跑去专门服务这个客户端了，所以当其他请求进来时，是处理不到的。</p>
-<p>看到这个图，很容易就会想到线程池，BIO是一个相对简单的模型，实现它的关键之处也在于线程池。</p>
-<p>在上代码之前，先大概说清楚每个类的作用，以免弄混淆。更详细的说明，都写在注释当中。</p>
-<h2 id="服务器端："><a href="#服务器端：" class="headerlink" title="服务器端："></a><strong>服务器端：</strong></h2><p>ChatServer:这个类的作用就像图中的Acceptor。它有两个比较关键的全局变量，一个就是存储在线用户信息的Map，一个就是线程池。这个类会监听端口，接收客户端的请求，然后为客户端分配工作线程。还会提供一些常用的工具方法给每个工作线程调用，比如：发送消息、添加在线用户等。我之前简单用过Netty和WebSocket，这个类看上去就已经和这些框架有点相似了。学习IO编程模型也是为了接下来深入学习Netty做准备。</p>
-<p>ChatHandler:这个类就是工作线程的类。在这个项目中，它的工作很简单：把接收到的消息转发给其他客户端，当然还有一些小功能，比如添加\移除在线用户。</p>
-<h2 id="客户端："><a href="#客户端：" class="headerlink" title="客户端："></a><strong>客户端：</strong></h2><p>相较于服务器，客户端的改动较小，主要是把等待用户输入信息这个功能分到其他线程做，不然这个功能会一直阻塞主线程，导致无法接收其他客户端的消息。</p>
-<p>ChatClient:客户端启动类，也就是主线程，会通过Socket和服务器连接。也提供了两个工具方法：发送消息和接收消息。</p>
-<p>UserInputHandler:专门负责等待用户输入信息的线程，一旦有信息键入，就马上发送给服务器。</p>
-<p>首先创建两个包区分一下客户端和服务器，client和server</p>
-<p><strong>服务器端ChatServer：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatServer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> DEFAULT_PORT = <span class="number">8888</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建一个Map存储在线用户的信息。这个map可以统计在线用户、针对这些用户可以转发其他用户发送的消息</span></span><br><span class="line"><span class="comment">     * 因为会有多个线程操作这个map，所以为了安全起见用ConcurrentHashMap</span></span><br><span class="line"><span class="comment">     * 在这里key就是客户端的端口号，但在实际中肯定不会用端口号区分用户，如果是web的话一般用session。</span></span><br><span class="line"><span class="comment">     * value是IO的Writer，用以存储客户端发送的消息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Writer&gt; map=<span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建线程池，线程上限为10个，如果第11个客户端请求进来，服务器会接收但是不会去分配线程处理它。</span></span><br><span class="line"><span class="comment">     * 前10个客户端的聊天记录，它看不见。当有一个客户端下线时，这第11个客户端就会被分配线程，服务器显示在线</span></span><br><span class="line"><span class="comment">     * 大家可以把10再设置小一点，测试看看</span></span><br><span class="line"><span class="comment">     * */</span></span><br><span class="line">    <span class="keyword">private</span> ExecutorService executorService= Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line">    <span class="comment">//客户端连接时往map添加客户端</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addClient</span><span class="params">(Socket socket)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (socket != <span class="keyword">null</span>) &#123;</span><br><span class="line">            BufferedWriter writer = <span class="keyword">new</span> BufferedWriter(</span><br><span class="line">                    <span class="keyword">new</span> OutputStreamWriter(socket.getOutputStream())</span><br><span class="line">            );</span><br><span class="line">            map.put(socket.getPort(), writer);</span><br><span class="line">            System.out.println(<span class="string">&quot;Client[&quot;</span>+socket.getPort()+<span class="string">&quot;]:Online&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//断开连接时map里移除客户端</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeClient</span><span class="params">(Socket socket)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (socket != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (map.containsKey(socket.getPort())) &#123;</span><br><span class="line">                map.get(socket.getPort()).close();</span><br><span class="line">                map.remove(socket.getPort());</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;Client[&quot;</span> + socket.getPort() + <span class="string">&quot;]Offline&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//转发客户端消息，这个方法就是把消息发送给在线的其他的所有客户端</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(Socket socket, String msg)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//遍历在线客户端</span></span><br><span class="line">        <span class="keyword">for</span> (Integer port : map.keySet()) &#123;</span><br><span class="line">            <span class="comment">//发送给在线的其他客户端</span></span><br><span class="line">            <span class="keyword">if</span> (port != socket.getPort()) &#123;</span><br><span class="line">                Writer writer = map.get(port);</span><br><span class="line">                writer.write(msg);</span><br><span class="line">                writer.flush();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//接收客户端请求，并分配Handler去处理请求</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> (ServerSocket serverSocket = <span class="keyword">new</span> ServerSocket(DEFAULT_PORT)) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Server Start,The Port is:&quot;</span>+DEFAULT_PORT);</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">                <span class="comment">//等待客户端连接</span></span><br><span class="line">                Socket socket=serverSocket.accept();</span><br><span class="line">                <span class="comment">//为客户端分配一个ChatHandler线程</span></span><br><span class="line">                executorService.execute(<span class="keyword">new</span> ChatHandler(<span class="keyword">this</span>,socket));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ChatServer server=<span class="keyword">new</span> ChatServer();</span><br><span class="line">        server.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>服务器端ChatHandler：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatHandler</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ChatServer server;</span><br><span class="line">    <span class="keyword">private</span> Socket socket;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造函数，ChatServer通过这个分配Handler线程</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ChatHandler</span><span class="params">(ChatServer server, Socket socket)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.server = server;</span><br><span class="line">        <span class="keyword">this</span>.socket = socket;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//往map里添加这个客户端</span></span><br><span class="line">            server.addClient(socket);</span><br><span class="line">            <span class="comment">//读取这个客户端发送的消息</span></span><br><span class="line">            BufferedReader reader = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">                    <span class="keyword">new</span> InputStreamReader(socket.getInputStream())</span><br><span class="line">            );</span><br><span class="line">            String msg = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> ((msg = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">//这样拼接是为了让其他客户端也能看清是谁发送的消息</span></span><br><span class="line">                String sendmsg = <span class="string">&quot;Client[&quot;</span> + socket.getPort() + <span class="string">&quot;]:&quot;</span> + msg;</span><br><span class="line">                <span class="comment">//服务器打印这个消息</span></span><br><span class="line">                System.out.println(sendmsg);</span><br><span class="line">                <span class="comment">//将收到的消息转发给其他在线客户端</span></span><br><span class="line">                server.sendMessage(socket, sendmsg + <span class="string">&quot;\n&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (msg.equals(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">//如果用户退出或者发生异常，就在map中移除该客户端</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                server.removeClient(socket);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>客户端ChatClient:</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatClient</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> BufferedReader reader;</span><br><span class="line">    <span class="keyword">private</span> BufferedWriter writer;</span><br><span class="line">    <span class="keyword">private</span> Socket socket;</span><br><span class="line">    <span class="comment">//发送消息给服务器</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendToServer</span><span class="params">(String msg)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//发送之前，判断socket的输出流是否关闭</span></span><br><span class="line">        <span class="keyword">if</span> (!socket.isOutputShutdown()) &#123;</span><br><span class="line">            <span class="comment">//如果没有关闭就把用户键入的消息放到writer里面</span></span><br><span class="line">            writer.write(msg + <span class="string">&quot;\n&quot;</span>);</span><br><span class="line">            writer.flush();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//从服务器接收消息</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">receive</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String msg = <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">//判断socket的输入流是否关闭</span></span><br><span class="line">        <span class="keyword">if</span> (!socket.isInputShutdown()) &#123;</span><br><span class="line">            <span class="comment">//没有关闭的话就可以通过reader读取服务器发送来的消息。注意：如果没有读取到消息线程会阻塞在这里</span></span><br><span class="line">            msg = reader.readLine();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//和服务创建连接</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            socket = <span class="keyword">new</span> Socket(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8888</span>);</span><br><span class="line">            reader=<span class="keyword">new</span> BufferedReader(</span><br><span class="line">                    <span class="keyword">new</span> InputStreamReader(socket.getInputStream())</span><br><span class="line">            );</span><br><span class="line">            writer=<span class="keyword">new</span> BufferedWriter(</span><br><span class="line">                    <span class="keyword">new</span> OutputStreamWriter(socket.getOutputStream())</span><br><span class="line">            );</span><br><span class="line">            <span class="comment">//新建一个线程去监听用户输入的消息</span></span><br><span class="line">            <span class="keyword">new</span> Thread(<span class="keyword">new</span> UserInputHandler(<span class="keyword">this</span>)).start();</span><br><span class="line">            <span class="comment">/**</span></span><br><span class="line"><span class="comment">             * 不停的读取服务器转发的其他客户端的信息</span></span><br><span class="line"><span class="comment">             * 记录一下之前踩过的小坑：</span></span><br><span class="line"><span class="comment">             * 这里一定要创建一个msg接收信息，如果直接用receive()方法判断和输出receive()的话会造成有的消息不会显示</span></span><br><span class="line"><span class="comment">             * 因为receive()获取时，在返回之前是阻塞的，一旦接收到消息才会返回，也就是while这里是阻塞的，一旦有消息就会进入到while里面</span></span><br><span class="line"><span class="comment">             * 这时候如果输出的是receive(),那么上次获取的信息就会丢失，然后阻塞在System.out.println</span></span><br><span class="line"><span class="comment">             * */</span></span><br><span class="line">            String msg=<span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> ((msg=receive())!=<span class="keyword">null</span>)&#123;</span><br><span class="line">                System.out.println(msg);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">               <span class="keyword">if</span>(writer!=<span class="keyword">null</span>)&#123;</span><br><span class="line">                   writer.close();</span><br><span class="line">               &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> ChatClient().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>　<strong>客户端UserInputHandler:</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserInputHandler</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ChatClient client;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserInputHandler</span><span class="params">(ChatClient client)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.client = client;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//接收用户输入的消息</span></span><br><span class="line">            BufferedReader reader = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">                    <span class="keyword">new</span> InputStreamReader(System.in)</span><br><span class="line">            );</span><br><span class="line">            <span class="comment">//不停的获取reader中的System.in，实现了等待用户输入的效果</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                String input = reader.readLine();</span><br><span class="line">                <span class="comment">//向服务器发送消息</span></span><br><span class="line">                client.sendToServer(input);</span><br><span class="line">                <span class="keyword">if</span> (input.equals(<span class="string">&quot;quit&quot;</span>))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="运行测试："><a href="#运行测试：" class="headerlink" title="运行测试："></a><strong>运行测试：</strong></h2><p>通过打开终端，通过javac编译。如果大家是在IDEA上编码的话可能会报编码错误，在javac后面加上-encoding utf-8再接java文件就好了。</p>
-<p>编译后运行，通过java运行时，又遇到了一个坑。会报找不到主类的错误，原来是因为加上两个包，要在class文件名前面加上包名。比如当前在src目录，下面有client和server两个包，要这么运行：java client.XXXX。可我之前明明在client文件夹下运行的java，也是不行，不知道为什么。</p>
-<p>接着测试：</p>
-<p>1.首先在一个终端里运行ChatServer，打开服务器</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193234531-59946096.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193234531-59946096.png"></p>
-<p>2.在第二个终端里打开ChatClient，暂且叫A，此时服务器的终端显示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193327017-1431424368.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193327017-1431424368.png"></p>
-<p>3.类似的，在第三个终端里打开ChatClient，暂且叫B，此时服务器显示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193358577-1779741867.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193358577-1779741867.png"></p>
-<p>4.A中输入hi,除了服务器会打印hi外，B中也会显示，图片中的端口号和前面的不一样，是因为中间出了点小问题，前三张截图和后面的不是同时运行的。实际中同一个客户端会显示一样的端口号：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193747903-851197924.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193747903-851197924.png"></p>
-<p>5.当客户端输入quit时就会断开连接，最后，服务器的显示为：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193923381-1365643546.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193923381-1365643546.png"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/05/28/%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B63%EF%BC%9ANIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%8D%87%E7%BA%A7%E6%94%B9%E9%80%A0%E8%81%8A%E5%A4%A9%E5%AE%A4/" class="post-title-link" itemprop="url">手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-05-28 19:39:32 / 修改时间：09:45:12" itemprop="dateCreated datePublished" datetime="2021-05-28T19:39:32+08:00">2021-05-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Netty/" itemprop="url" rel="index"><span itemprop="name">Netty</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室"><a href="#手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室" class="headerlink" title="手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室"></a>手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室</h1><blockquote>
-<p>转载自 <a target="_blank" rel="noopener" href="https://www.cnblogs.com/lbhym/p/12698309.html">https://www.cnblogs.com/lbhym/p/12698309.html</a></p>
-</blockquote>
-<h1 id="手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室-1"><a href="#手动搭建I-O网络通信框架3：NIO编程模型，升级改造聊天室-1" class="headerlink" title="手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室"></a><strong>手动搭建I/O网络通信框架3：NIO编程模型，升级改造聊天室</strong></h1><p>在“手动搭建I/O网络通信框架2：BIO编程模型实现群聊”中用BIO编程模型，简单的实现了一个聊天室。但是其最大的问题在解释BIO时就已经说了：ServerSocket接收请求时（accept()方法）、InputStream、OutputStream（输入输出流的读和写）都是阻塞的。还有一个问题就是线程池，线程多了，服务器性能耗不起。线程少了，在聊天室这种场景下，让用户等待连接肯定不可取。今天要说到的NIO编程模型就很好的解决了这几个问题。有两个主要的替换地方：</p>
-<ol>
-<li>用Channel代替Stream。</li>
-<li>使用Selector监控多条Channel，起到类似线程池的作用，但是它只需一条线程。</li>
-</ol>
-<p>既然要用NIO编程模型，那就要说说它的三个主要核心：Selector、Channel、Buffer。它们的关系是：一个Selector管理多个Channel，一个Channel可以往Buffer中写入和读取数据。Buffer名叫缓冲区，底层其实是一个数组，会提供一些方法往数组写入读取数据。</p>
-<h2 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer:"></a><strong>Buffer:</strong></h2><p>不太了解Buffer的可以看看这个：<a target="_blank" rel="noopener" href="https://blog.csdn.net/czx2018/article/details/89502699">https://blog.csdn.net/czx2018/article/details/89502699</a></p>
-<p><strong>常用API：</strong></p>
-<ul>
-<li>allocate() - 初始化一块缓冲区</li>
-<li>put() - 向缓冲区写入数据</li>
-<li>get() - 向缓冲区读数据</li>
-<li>filp() - 将缓冲区的读写模式转换</li>
-<li>clear() - 这个并不是把缓冲区里的数据清除，而是利用后来写入的数据来覆盖原来写入的数据，以达到类似清除了老的数据的效果</li>
-<li>compact() - 从读数据切换到写模式，数据不会被清空，会将所有未读的数据copy到缓冲区头部，后续写数据不会覆盖，而是在这些数据之后写数据</li>
-<li>mark() - 对position做出标记，配合reset使用</li>
-<li>reset() - 将position置为标记值</li>
-</ul>
-<p><em>简单地说</em>：Buffer实质上是个数组，有两个关键的指针，一个position代表当前数据写入到哪了、一个limit代表限制。初始化时设置了数组长度，这limit就是数组的长度。如：设置<code>intBuffer.allocate(10)</code>，最大存储10个int数据，写入5五个数据后，需要读取数据了。用filp()转换读写模式后，limit=position，position=0。也就是说从0开始读，只能读到第五个。读完后这个缓冲区就需要clear()了，实际上并没有真的去清空数据，而是position和limit两个指针又回到了初始化的位置，接着又可以写入数据了，反正数组下标相同重新写入数据会覆盖，就没必要真的去清空了。</p>
-<h2 id="Channel"><a href="#Channel" class="headerlink" title="Channel:"></a><strong>Channel:</strong></h2><p>Channel(通道)主要用于传输数据，然后从Buffer中写入或读取。它们两个结合起来虽然和流有些相似，但主要有以下几点区别：　　</p>
-<ol>
-<li>流是单向的，可以发现Stream的输入流和输出流是独立的，它们只能输入或输出。而通道既可以读也可以写。　　</li>
-<li>通道本身不能存放数据，只能借助Buffer。　　</li>
-<li>Channel支持异步。　　</li>
-</ol>
-<p>Channel有如下三个常用的类：FileChannel、SocketChannel、ServerSocketChannel。从名字也可以看出区别，第一个是对文件数据的读写，后面两个则是针对Socket和ServerSocket，这里我们只是用后面两个。更详细的用法可以看：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/snailclimb/p/9086335.html%EF%BC%8C%E4%B8%8B%E9%9D%A2%E7%9A%84%E4%BB%A3%E7%A0%81%E4%B8%AD%E4%B9%9F%E4%BC%9A%E7%94%A8%E5%88%B0%EF%BC%8C%E4%BC%9A%E6%9C%89%E8%AF%A6%E7%BB%86%E7%9A%84%E6%B3%A8%E9%87%8A%E3%80%82">https://www.cnblogs.com/snailclimb/p/9086335.html，下面的代码中也会用到，会有详细的注释。</a></p>
-<h2 id="Selector"><a href="#Selector" class="headerlink" title="Selector"></a><strong>Selector</strong></h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414150122707-1475260423.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414150122707-1475260423.png"></p>
-<p>多个Channel可以注册到Selector，就可以直接通过一个Selector管理多个通道。Channel在不同的时间或者不同的事件下有不同的状态，Selector会通过轮询来达到监视的效果，如果查到Channel的状态正好是我们注册时声明的所要监视的状态，我们就可以查出这些通道，然后做相应的处理。这些状态如下：　　1.客户端的SocketChannel和服务器端建立连接，SocketChannel状态就是<strong>Connect</strong>。　　2.服务器端的ServerSocketChannel接收了客户端的请求，ServerSocketChannel状态就是<strong>Accept</strong>。　　3.当SocketChannel有数据可读，那么它们的状态就是<strong>Read</strong>。　　4.当我们需要向Channel中写数据时，那么它们的状态就是<strong>Write</strong>。　　</p>
-<p>具体的使用见下面代码注释或看 <a href="Java%20NIO%E4%B9%8BSelector%EF%BC%88%E9%80%89%E6%8B%A9%E5%99%A8%EF%BC%89%20608ea119b60443d6a6233f32004d92ec.md">Java NIO之Selector（选择器）</a> </p>
-<h2 id="NIO编程模型"><a href="#NIO编程模型" class="headerlink" title="NIO编程模型"></a><strong>NIO编程模型</strong></h2><p>NIO编程模型工作流程：　　</p>
-<ol>
-<li>首先会创建一个Selector，用来监视管理各个不同的Channel，也就是不同的客户端。相当于取代了原来BIO的线程池，但是它只需一个线程就可以处理多个Channel，没有了线程上下文切换带来的消耗，很好的优化了性能。　　</li>
-<li>创建一个ServerSocketChannel监听通信端口，并注册到Selector，让Seletor监视这个通道的Accept状态，也就是接收客户端请求的状态。</li>
-<li>此时客户端ClientA请求服务器，那么Selector就知道了有客户端请求进来。这时候我们可以得到客户端的SocketChannel，并为这个通道注册Read状态，也就是Selector会监听ClientA发来的消息。　　</li>
-<li>一旦接收到ClientA的消息，就会用其他客户端的SocketChannel的Write状态，向它们转发ClientA的消息。</li>
-</ol>
-<p>上代码之前，还是先说说各个类的作用：</p>
-<p>相比较BIO的代码，NIO的代码还少了一个类，那就是服务器端的工作线程类。没了线程池，自然也不需要一个单独的线程去服务客户端。客户端还是需要一个单独的线程去等待用户输入，因为用户随时都可能输入信息，这个没法预见，只能阻塞式的等待。</p>
-<ul>
-<li>ChatServer:服务器端的唯一的类，作用就是通过Selector监听Read和Accept事件，并针对这些事件的类型，进行不同的处理，如连接、转发。</li>
-<li>ChatClient:客户端，通过Selector监听Read和Connect事件。Read事件就是获取服务器转发的消息然后显示出来；Connect事件就是和服务器建立连接，建立成功后就可以发送消息。</li>
-<li>UserInputHandler:专门等待用户输入的线程，和BIO没区别。</li>
-</ul>
-<h3 id="ChatServer"><a href="#ChatServer" class="headerlink" title="ChatServer"></a><strong>ChatServer</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatServer</span> </span>&#123;</span><br><span class="line">    <span class="comment">//设置缓冲区的大小，这里设置为1024个字节</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER = <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//Channel都要配合缓冲区进行读写，所以这里创建一个读缓冲区和一个写缓冲区</span></span><br><span class="line">    <span class="comment">//allocate()静态方法就是设置缓存区大小的方法</span></span><br><span class="line">    <span class="keyword">private</span> ByteBuffer read_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer write_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//为了监听端口更灵活，再不写死了，用一个构造函数设置需要监听的端口号</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> port;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ChatServer</span><span class="params">(<span class="keyword">int</span> port)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.port = port;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//创建ServerSocketChannel和Selector并打开</span></span><br><span class="line">        <span class="keyword">try</span> (ServerSocketChannel server = ServerSocketChannel.open(); Selector selector = Selector.open()) &#123;</span><br><span class="line">            <span class="comment">//【重点,实现NIO编程模型的关键】configureBlocking设置ServerSocketChannel为非阻塞式调用,Channel默认的是阻塞的调用方式</span></span><br><span class="line">            server.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//绑定监听端口,这里不是给ServerSocketChannel绑定，而是给ServerSocket绑定，socket()就是获取通道原生的ServerSocket或Socket</span></span><br><span class="line">            server.socket().bind(<span class="keyword">new</span> InetSocketAddress(port));</span><br><span class="line"></span><br><span class="line">            <span class="comment">//把server注册到Selector并监听Accept事件</span></span><br><span class="line">            server.register(selector, SelectionKey.OP_ACCEPT);</span><br><span class="line">            System.out.println(<span class="string">&quot;启动服务器，监听端口:&quot;</span> + port);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">//select()会返回此时触发了多少个Selector监听的事件</span></span><br><span class="line">                <span class="keyword">if</span>(selector.select()&gt;<span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="comment">//获取这些已经触发的事件,selectedKeys()返回的是触发事件的所有信息</span></span><br><span class="line">                    Set&lt;SelectionKey&gt; selectionKeys = selector.selectedKeys();</span><br><span class="line">                    <span class="comment">//循环处理这些事件</span></span><br><span class="line">                    <span class="keyword">for</span> (SelectionKey key : selectionKeys) &#123;</span><br><span class="line">                        handles(key, selector);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">//处理完后清空selectedKeys，避免重复处理</span></span><br><span class="line">                    selectionKeys.clear();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//处理事件的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handles</span><span class="params">(SelectionKey key, Selector selector)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//当触发了Accept事件，也就是有客户端请求进来</span></span><br><span class="line">        <span class="keyword">if</span> (key.isAcceptable()) &#123;</span><br><span class="line">            <span class="comment">//获取ServerSocketChannel</span></span><br><span class="line">            ServerSocketChannel server = (ServerSocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//然后通过accept()方法接收客户端的请求，这个方法会返回客户端的SocketChannel，这一步和原生的ServerSocket类似</span></span><br><span class="line">            SocketChannel client = server.accept();</span><br><span class="line">            client.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//把客户端的SocketChannel注册到Selector，并监听Read事件</span></span><br><span class="line">            client.register(selector, SelectionKey.OP_READ);</span><br><span class="line">            System.out.println(<span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]上线啦！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//当触发了Read事件，也就是客户端发来了消息</span></span><br><span class="line">        <span class="keyword">if</span> (key.isReadable()) &#123;</span><br><span class="line">            SocketChannel client = (SocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//获取消息</span></span><br><span class="line">            String msg = receive(client);</span><br><span class="line">            System.out.println(<span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]:&quot;</span> + msg);</span><br><span class="line">            <span class="comment">//把消息转发给其他客户端</span></span><br><span class="line">            sendMessage(client, msg, selector);</span><br><span class="line">            <span class="comment">//判断用户是否退出</span></span><br><span class="line">            <span class="keyword">if</span> (msg.equals(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//解除该事件的监听</span></span><br><span class="line">                key.cancel();</span><br><span class="line">                <span class="comment">//更新Selector</span></span><br><span class="line">                selector.wakeup();</span><br><span class="line">                System.out.println(<span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]下线了！&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//编码方式设置为utf-8，下面字符和字符串互转时用得到</span></span><br><span class="line">    <span class="keyword">private</span> Charset charset = Charset.forName(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//接收消息的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">receive</span><span class="params">(SocketChannel client)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//用缓冲区之前先清空一下,避免之前的信息残留</span></span><br><span class="line">        read_buffer.clear();</span><br><span class="line">        <span class="comment">//把通道里的信息读取到缓冲区，用while循环一直读取，直到读完所有消息。因为没有明确的类似\n这样的结尾，所以要一直读到没有字节为止</span></span><br><span class="line">        <span class="keyword">while</span> (client.read(read_buffer) &gt; <span class="number">0</span>) ;</span><br><span class="line">        <span class="comment">//把消息读取到缓冲区后，需要转换buffer的读写状态，不明白的看看前面的Buffer的讲解</span></span><br><span class="line">        read_buffer.flip();</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(charset.decode(read_buffer));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//转发消息的方法</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(SocketChannel client, String msg, Selector selector)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        msg = <span class="string">&quot;客户端[&quot;</span> + client.socket().getPort() + <span class="string">&quot;]:&quot;</span> + msg;</span><br><span class="line">        <span class="comment">//获取所有客户端,keys()与前面的selectedKeys不同，这个是获取所有已经注册的信息，而selectedKeys获取的是触发了的事件的信息</span></span><br><span class="line">        <span class="keyword">for</span> (SelectionKey key : selector.keys()) &#123;</span><br><span class="line">            <span class="comment">//排除服务器和本客户端并且保证key是有效的，isValid()会判断Selector监听是否正常、对应的通道是保持连接的状态等</span></span><br><span class="line">            <span class="keyword">if</span> (!(key.channel() <span class="keyword">instanceof</span> ServerSocketChannel) &amp;&amp; !client.equals(key.channel()) &amp;&amp; key.isValid()) &#123;</span><br><span class="line">                SocketChannel otherClient = (SocketChannel) key.channel();</span><br><span class="line">                write_buffer.clear();</span><br><span class="line">                write_buffer.put(charset.encode(msg));</span><br><span class="line">                write_buffer.flip();</span><br><span class="line">                <span class="comment">//把消息写入到缓冲区后，再把缓冲区的内容写到客户端对应的通道中</span></span><br><span class="line">                <span class="keyword">while</span> (write_buffer.hasRemaining()) &#123;</span><br><span class="line">                    otherClient.write(write_buffer);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> ChatServer(<span class="number">8888</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="ChatClient"><a href="#ChatClient" class="headerlink" title="ChatClient"></a><strong>ChatClient</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChatClient</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> BUFFER = <span class="number">1024</span>;</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer read_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line">    <span class="keyword">private</span> ByteBuffer write_buffer = ByteBuffer.allocate(BUFFER);</span><br><span class="line">    <span class="comment">//声明成全局变量是为了方便下面一些工具方法的调用，就不用try with resource了</span></span><br><span class="line">    <span class="keyword">private</span> SocketChannel client;</span><br><span class="line">    <span class="keyword">private</span> Selector selector;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Charset charset = Charset.forName(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span>  &#123;</span><br><span class="line">            client=SocketChannel.open();</span><br><span class="line">            selector=Selector.open();</span><br><span class="line">            client.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">            <span class="comment">//注册channel，并监听SocketChannel的Connect事件</span></span><br><span class="line">            client.register(selector, SelectionKey.OP_CONNECT);</span><br><span class="line">            <span class="comment">//请求服务器建立连接</span></span><br><span class="line">            client.connect(<span class="keyword">new</span> InetSocketAddress(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">8888</span>));</span><br><span class="line">            <span class="comment">//和服务器一样，不停的获取触发事件，并做相应的处理</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                selector.select();</span><br><span class="line">                Set&lt;SelectionKey&gt; selectionKeys = selector.selectedKeys();</span><br><span class="line">                <span class="keyword">for</span> (SelectionKey key : selectionKeys) &#123;</span><br><span class="line">                    handle(key);</span><br><span class="line">                &#125;</span><br><span class="line">                selectionKeys.clear();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">catch</span> (ClosedSelectorException e)&#123;</span><br><span class="line">            <span class="comment">//当用户输入quit时，在send()方法中，selector会被关闭，而在上面的无限while循环中，可能会使用到已经关闭了的selector。</span></span><br><span class="line">            <span class="comment">//所以这里捕捉一下异常，做正常退出处理就行了。不会对服务器造成影响</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(SelectionKey key)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//当触发connect事件，也就是服务器和客户端建立连接</span></span><br><span class="line">        <span class="keyword">if</span> (key.isConnectable()) &#123;</span><br><span class="line">            SocketChannel client = (SocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//finishConnect()返回true，说明和服务器已经建立连接。如果是false，说明还在连接中，还没完全连接完成</span></span><br><span class="line">            <span class="keyword">if</span>(client.finishConnect())&#123;</span><br><span class="line">                <span class="comment">//新建一个新线程去等待用户输入</span></span><br><span class="line">                <span class="keyword">new</span> Thread(<span class="keyword">new</span> UserInputHandler(<span class="keyword">this</span>)).start();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//连接建立完成后，注册read事件，开始监听服务器转发的消息</span></span><br><span class="line">            client.register(selector,SelectionKey.OP_READ);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//当触发read事件，也就是获取到服务器的转发消息</span></span><br><span class="line">        <span class="keyword">if</span>(key.isReadable())&#123;</span><br><span class="line">            SocketChannel client = (SocketChannel) key.channel();</span><br><span class="line">            <span class="comment">//获取消息</span></span><br><span class="line">            String msg = receive(client);</span><br><span class="line">            System.out.println(msg);</span><br><span class="line">            <span class="comment">//判断用户是否退出</span></span><br><span class="line">            <span class="keyword">if</span> (msg.equals(<span class="string">&quot;quit&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//解除该事件的监听</span></span><br><span class="line">                key.cancel();</span><br><span class="line">                <span class="comment">//更新Selector</span></span><br><span class="line">                selector.wakeup();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取消息</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">receive</span><span class="params">(SocketChannel client)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        read_buffer.clear();</span><br><span class="line">        <span class="keyword">while</span> (client.read(read_buffer)&gt;<span class="number">0</span>);</span><br><span class="line">        read_buffer.flip();</span><br><span class="line">        <span class="keyword">return</span> String.valueOf(charset.decode(read_buffer));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//发送消息</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">send</span><span class="params">(String msg)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!msg.isEmpty())&#123;</span><br><span class="line">            write_buffer.clear();</span><br><span class="line">            write_buffer.put(charset.encode(msg));</span><br><span class="line">            write_buffer.flip();</span><br><span class="line">            <span class="keyword">while</span> (write_buffer.hasRemaining())&#123;</span><br><span class="line">                client.write(write_buffer);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(msg.equals(<span class="string">&quot;quit&quot;</span>))&#123;</span><br><span class="line">                selector.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> ChatClient().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="UserInputHandler"><a href="#UserInputHandler" class="headerlink" title="UserInputHandler"></a><strong>UserInputHandler</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserInputHandler</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    ChatClient client;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">UserInputHandler</span><span class="params">(ChatClient chatClient)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.client=chatClient;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        BufferedReader read=<span class="keyword">new</span> BufferedReader(</span><br><span class="line">                <span class="keyword">new</span> InputStreamReader(System.in)</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                String input=read.readLine();</span><br><span class="line">                client.send(input);</span><br><span class="line">                <span class="keyword">if</span>(input.equals(<span class="string">&quot;quit&quot;</span>))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>测试运行：之前用的是win10的终端运行的，以后直接用IDEA运行，方便些。不过一个类同时运行多个，以实现多个客户端的场景，需要先做以下设置</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152051636-927905062.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152051636-927905062.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152100412-1057042302.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152100412-1057042302.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152130678-206345317.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152130678-206345317.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152204091-2069873206.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152204091-2069873206.png"></p>
-<p>设置完后，就可以同时运行两个ChatClient了，上图中得Unnamed就是第二个ChatClient，选中后点击右边运行按钮就行了。效果如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152412715-1986061599.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152412715-1986061599.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152438453-1030565064.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152438453-1030565064.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152450583-1807958534.png" alt="https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152450583-1807958534.png"></p>
 
       
     </div>

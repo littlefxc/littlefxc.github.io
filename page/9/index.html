@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">198</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">119</span>
+        <span class="site-state-item-count">121</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,182 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/25/RabbitMQ%E6%A0%B8%E5%BF%83API-Exchange%E4%B9%8BTopic-16/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/25/RabbitMQ%E6%A0%B8%E5%BF%83API-Exchange%E4%B9%8BTopic-16/" class="post-title-link" itemprop="url">RabbitMQ核心API Exchange之Topic(16)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-25 21:51:45" itemprop="dateCreated datePublished" datetime="2021-01-25T21:51:45+08:00">2021-01-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_1.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_2.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_2.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_3.png"></p>
+<h2 id="Sender4TopicExchange"><a href="#Sender4TopicExchange" class="headerlink" title="Sender4TopicExchange"></a>Sender4TopicExchange</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Sender4TopicExchange</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//1 创建ConnectionFactory</span></span><br><span class="line">		ConnectionFactory connectionFactory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">		connectionFactory.setHost(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">		connectionFactory.setPort(<span class="number">5672</span>);</span><br><span class="line">		connectionFactory.setVirtualHost(<span class="string">&quot;/&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2 创建Connection</span></span><br><span class="line">		Connection connection = connectionFactory.newConnection();</span><br><span class="line">		<span class="comment">//3 创建Channel</span></span><br><span class="line">		Channel channel = connection.createChannel();  </span><br><span class="line">		<span class="comment">//4 声明</span></span><br><span class="line">		String exchangeName = <span class="string">&quot;test_topic_exchange&quot;</span>;</span><br><span class="line">		String routingKey1 = <span class="string">&quot;user.save&quot;</span>;</span><br><span class="line">		String routingKey2 = <span class="string">&quot;user.update&quot;</span>;</span><br><span class="line">		String routingKey3 = <span class="string">&quot;user.delete.abc&quot;</span>;</span><br><span class="line">		<span class="comment">//5 发送</span></span><br><span class="line">		</span><br><span class="line">		String msg = <span class="string">&quot;Hello World RabbitMQ 4 Topic Exchange Message ...&quot;</span>;</span><br><span class="line">		channel.basicPublish(exchangeName, routingKey1 , <span class="keyword">null</span> , msg.getBytes()); </span><br><span class="line">		channel.basicPublish(exchangeName, routingKey2 , <span class="keyword">null</span> , msg.getBytes()); 	</span><br><span class="line">		channel.basicPublish(exchangeName, routingKey3 , <span class="keyword">null</span> , msg.getBytes()); </span><br><span class="line">		channel.close();  </span><br><span class="line">        connection.close();  </span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Receiver4TopicExchange1"><a href="#Receiver4TopicExchange1" class="headerlink" title="Receiver4TopicExchange1"></a>Receiver4TopicExchange1</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Receiver4TopicExchange1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ConnectionFactory connectionFactory = <span class="keyword">new</span> ConnectionFactory() ;  </span><br><span class="line">        </span><br><span class="line">        connectionFactory.setHost(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">        connectionFactory.setPort(<span class="number">5672</span>);</span><br><span class="line">		connectionFactory.setVirtualHost(<span class="string">&quot;/&quot;</span>);</span><br><span class="line">		</span><br><span class="line">        connectionFactory.setAutomaticRecoveryEnabled(<span class="keyword">true</span>);</span><br><span class="line">        connectionFactory.setNetworkRecoveryInterval(<span class="number">3000</span>);</span><br><span class="line">        Connection connection = connectionFactory.newConnection();</span><br><span class="line">        </span><br><span class="line">        Channel channel = connection.createChannel();  </span><br><span class="line">		<span class="comment">//4 声明</span></span><br><span class="line">		String exchangeName = <span class="string">&quot;test_topic_exchange&quot;</span>;</span><br><span class="line">		String exchangeType = <span class="string">&quot;topic&quot;</span>;</span><br><span class="line">		String queueName = <span class="string">&quot;test_topic_queue&quot;</span>;</span><br><span class="line">		<span class="comment">//String routingKey = &quot;user.*&quot;;</span></span><br><span class="line">		String routingKey = <span class="string">&quot;user.#&quot;</span>;</span><br><span class="line">		channel.exchangeDeclare(exchangeName, exchangeType, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">		channel.queueDeclare(queueName, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">		channel.queueBind(queueName, exchangeName, routingKey);</span><br><span class="line">		</span><br><span class="line">        <span class="comment">//durable 是否持久化消息</span></span><br><span class="line">        QueueingConsumer consumer = <span class="keyword">new</span> QueueingConsumer(channel);</span><br><span class="line">        <span class="comment">//	参数：队列名称、是否自动ACK、Consumer</span></span><br><span class="line">        channel.basicConsume(queueName, <span class="keyword">true</span>, consumer);</span><br><span class="line">        System.err.println(<span class="string">&quot;consumer1 start.. &quot;</span>);</span><br><span class="line">        <span class="comment">//	循环获取消息  </span></span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)&#123;  </span><br><span class="line">            <span class="comment">//	获取消息，如果没有消息，这一步将会一直阻塞  </span></span><br><span class="line">            Delivery delivery = consumer.nextDelivery();  </span><br><span class="line">            String msg = <span class="keyword">new</span> String(delivery.getBody());    </span><br><span class="line">            System.out.println(<span class="string">&quot;收到消息：&quot;</span> + msg + <span class="string">&quot;, RoutingKey: &quot;</span> + delivery.getEnvelope().getRoutingKey());  </span><br><span class="line">        &#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Receiver4TopicExchange2"><a href="#Receiver4TopicExchange2" class="headerlink" title="Receiver4TopicExchange2"></a>Receiver4TopicExchange2</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Receiver4TopicExchange2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ConnectionFactory connectionFactory = <span class="keyword">new</span> ConnectionFactory() ;  </span><br><span class="line">        </span><br><span class="line">        connectionFactory.setHost(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">        connectionFactory.setPort(<span class="number">5672</span>);</span><br><span class="line">		connectionFactory.setVirtualHost(<span class="string">&quot;/&quot;</span>);</span><br><span class="line">		</span><br><span class="line">        connectionFactory.setAutomaticRecoveryEnabled(<span class="keyword">true</span>);</span><br><span class="line">        connectionFactory.setNetworkRecoveryInterval(<span class="number">3000</span>);</span><br><span class="line">        Connection connection = connectionFactory.newConnection();</span><br><span class="line">        </span><br><span class="line">        Channel channel = connection.createChannel();  </span><br><span class="line">		<span class="comment">//4 声明</span></span><br><span class="line">		String exchangeName = <span class="string">&quot;test_topic_exchange&quot;</span>;</span><br><span class="line">		String exchangeType = <span class="string">&quot;topic&quot;</span>;</span><br><span class="line">		String queueName = <span class="string">&quot;test_topic_queue&quot;</span>;</span><br><span class="line">		String routingKey = <span class="string">&quot;user.*&quot;</span>;</span><br><span class="line"><span class="comment">//		String routingKey = &quot;user.#&quot;;</span></span><br><span class="line">		channel.exchangeDeclare(exchangeName, exchangeType, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">		channel.queueDeclare(queueName, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">		channel.queueBind(queueName, exchangeName, routingKey);</span><br><span class="line">		</span><br><span class="line">        <span class="comment">//durable 是否持久化消息</span></span><br><span class="line">        QueueingConsumer consumer = <span class="keyword">new</span> QueueingConsumer(channel);</span><br><span class="line">        <span class="comment">//参数：队列名称、是否自动ACK、Consumer</span></span><br><span class="line">        channel.basicConsume(queueName, <span class="keyword">true</span>, consumer); </span><br><span class="line">        System.err.println(<span class="string">&quot;consumer2 start .. &quot;</span>);</span><br><span class="line">        <span class="comment">//	循环获取消息  </span></span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)&#123;  </span><br><span class="line">            <span class="comment">//获取消息，如果没有消息，这一步将会一直阻塞  </span></span><br><span class="line">            Delivery delivery = consumer.nextDelivery();  </span><br><span class="line">            String msg = <span class="keyword">new</span> String(delivery.getBody());    </span><br><span class="line">            System.out.println(<span class="string">&quot;收到消息：&quot;</span> + msg + <span class="string">&quot;, RoutingKey: &quot;</span> + delivery.getEnvelope().getRoutingKey());  </span><br><span class="line">        &#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/25/RabbitMQ%E6%A0%B8%E5%BF%83API-Exchange%E4%B9%8BDirect-15/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/25/RabbitMQ%E6%A0%B8%E5%BF%83API-Exchange%E4%B9%8BDirect-15/" class="post-title-link" itemprop="url">RabbitMQ Exchange之Direct(15)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-25 21:49:11" itemprop="dateCreated datePublished" datetime="2021-01-25T21:49:11+08:00">2021-01-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_3.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_3.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_5.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_5.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_6.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_7.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_7.png"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_8.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_8.png"></p>
+<h2 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Sender4DirectExchange</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//1 创建ConnectionFactory</span></span><br><span class="line">		ConnectionFactory connectionFactory = <span class="keyword">new</span> ConnectionFactory();</span><br><span class="line">		connectionFactory.setHost(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">		connectionFactory.setPort(<span class="number">5672</span>);</span><br><span class="line">		connectionFactory.setVirtualHost(<span class="string">&quot;/&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2 创建Connection</span></span><br><span class="line">		Connection connection = connectionFactory.newConnection();</span><br><span class="line">		<span class="comment">//3 创建Channel</span></span><br><span class="line">		Channel channel = connection.createChannel();  </span><br><span class="line">		<span class="comment">//4 声明</span></span><br><span class="line">		String exchangeName = <span class="string">&quot;test_direct_exchange&quot;</span>;</span><br><span class="line">		String routingKey = <span class="string">&quot;test_direct_routingKey&quot;</span>;</span><br><span class="line">		<span class="comment">//5 发送</span></span><br><span class="line">		</span><br><span class="line">		String msg = <span class="string">&quot;Hello World RabbitMQ 4  Direct Exchange Message ... &quot;</span>;</span><br><span class="line">		channel.basicPublish(exchangeName, routingKey , <span class="keyword">null</span> , msg.getBytes()); 		</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Receiver4DirectExchange</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ConnectionFactory connectionFactory = <span class="keyword">new</span> ConnectionFactory() ;  </span><br><span class="line">        </span><br><span class="line">        connectionFactory.setHost(<span class="string">&quot;localhost&quot;</span>);</span><br><span class="line">        connectionFactory.setPort(<span class="number">5672</span>);</span><br><span class="line">		connectionFactory.setVirtualHost(<span class="string">&quot;/&quot;</span>);</span><br><span class="line">		</span><br><span class="line">        connectionFactory.setAutomaticRecoveryEnabled(<span class="keyword">true</span>);</span><br><span class="line">        connectionFactory.setNetworkRecoveryInterval(<span class="number">3000</span>);</span><br><span class="line">        Connection connection = connectionFactory.newConnection();</span><br><span class="line">        </span><br><span class="line">        Channel channel = connection.createChannel();  </span><br><span class="line">		<span class="comment">//4 声明</span></span><br><span class="line">		String exchangeName = <span class="string">&quot;test_direct_exchange&quot;</span>;</span><br><span class="line">		String exchangeType = <span class="string">&quot;direct&quot;</span>;</span><br><span class="line">		String queueName = <span class="string">&quot;test_direct_queue&quot;</span>;</span><br><span class="line">		String routingKey = <span class="string">&quot;test_direct_routingKey&quot;</span>;</span><br><span class="line">		channel.exchangeDeclare(exchangeName, exchangeType, <span class="keyword">true</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">		channel.queueDeclare(queueName, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">		channel.queueBind(queueName, exchangeName, routingKey);</span><br><span class="line">		</span><br><span class="line">        <span class="comment">//durable 是否持久化消息</span></span><br><span class="line">        QueueingConsumer consumer = <span class="keyword">new</span> QueueingConsumer(channel);</span><br><span class="line">        <span class="comment">//参数：队列名称、是否自动ACK、Consumer</span></span><br><span class="line">        channel.basicConsume(queueName, <span class="keyword">true</span>, consumer);  </span><br><span class="line">        <span class="comment">//循环获取消息  </span></span><br><span class="line">        <span class="keyword">while</span>(<span class="keyword">true</span>)&#123;  </span><br><span class="line">            <span class="comment">//获取消息，如果没有消息，这一步将会一直阻塞  </span></span><br><span class="line">            Delivery delivery = consumer.nextDelivery();  </span><br><span class="line">            String msg = <span class="keyword">new</span> String(delivery.getBody());    </span><br><span class="line">            System.out.println(<span class="string">&quot;收到消息：&quot;</span> + msg);  </span><br><span class="line">        &#125; </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1047,248 +1223,6 @@
 
 <p>结果如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/RocketMQ%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90-6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/20/RocketMQ%E9%9B%86%E7%BE%A4%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90-6/" class="post-title-link" itemprop="url">RocketMQ集群架构与原理解析(6)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-20 20:30:21" itemprop="dateCreated datePublished" datetime="2021-01-20T20:30:21+08:00">2021-01-20</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="初识-RocketMQ"><a href="#初识-RocketMQ" class="headerlink" title="初识 RocketMQ"></a>初识 RocketMQ</h1><p>RocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自主研发的一款适用于高并发、高可靠性、海量数据场景的消息中间件。早期开源2.x版本名为MetaQ；15年迭代3.x版本，更名为RocketMQ，16年开始贡献到Apache，经过1年多的孵化，最终成为Apache顶级的开源项目，更新非常频繁，社区活跃度也非常高；目前最新版本为4.5.1-release版本（2019-7-20日前）。RocketMQ参考借鉴了优秀的开源消息中间件Apache Kafka（这也是我们后面课程中重点要讲解的内容哦），其消息的路由、存储、集群划分都借鉴了Kafka优秀的设计思路，并结合自身的 “双十一” 场景进行了合理的扩展和API丰富。</p>
-<h1 id="优秀的能力与支持"><a href="#优秀的能力与支持" class="headerlink" title="优秀的能力与支持"></a>优秀的能力与支持</h1><p>接下来我们一起来看一下RocketMQ优秀的能力吧 ~</p>
-<ul>
-<li>支持集群模型、负载均衡、水平扩展能力</li>
-<li>亿级别的消息堆积能力</li>
-<li>采用零拷贝的原理、顺序写盘、随机读（索引文件）</li>
-<li>丰富的API使用</li>
-<li>代码优秀，底层通信框架采用Netty NIO框架</li>
-<li>NameServer 代替 Zookeeper</li>
-<li>强调集群无单点，可扩展，任意一点高可用，水平可扩展</li>
-<li>消息失败重试机制、消息可查询</li>
-<li>开源社区活跃度、是否足够成熟（经过双十一考验）</li>
-</ul>
-<h1 id="专业术语"><a href="#专业术语" class="headerlink" title="专业术语"></a>专业术语</h1><p>任何一种技术框架，都有 “她” 的专有名词，在你刚开始接触 “她” 的时候，一定要了解 “她” 的专业术语，这样能够更快速、更高效的和 “她” 愉快的玩耍…</p>
-<ul>
-<li>Producer：消息生产者，负责产生消息，一般由业务系统负责产生消息。</li>
-<li>Consumer：消息消费者，负责消费消息，一般是后台系统负责异步消费。</li>
-<li>Push Consumer：Consumer的一种，需要向Consumer对象注册监听。</li>
-<li>Pull Consumer：Consumer的一种，需要主动请求Broker拉取消息。</li>
-<li>Producer Group：生产者集合，一般用于发送一类消息。</li>
-<li>Consumer Group：消费者集合，一般用于接受一类消息进行消费。</li>
-<li>Broker ： MQ消息服务（中转角色，用于消息存储与生产消费转发）。</li>
-</ul>
-<h1 id="RocketMQ核心源码包及功能说明"><a href="#RocketMQ核心源码包及功能说明" class="headerlink" title="RocketMQ核心源码包及功能说明"></a>RocketMQ核心源码包及功能说明</h1><p>如下图所示，我们要带小伙伴们一起来看看RocketMQ源码包的组成，这样更方便我们日后对他有一个深入的学习。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png" alt="https://climg.mukewang.com/5df8401d0919472f03410264.png"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8404409bd481303400274.png" alt="https://climg.mukewang.com/5df8404409bd481303400274.png"></p>
-<ul>
-<li>rocketmq-broker 主要的业务逻辑，消息收发，主从同步, pagecache</li>
-<li>rocketmq-client 客户端接口，比如生产者和消费者</li>
-<li>rocketmq-common 公用数据结构等等</li>
-<li>rocketmq-distribution 编译模块，编译输出等</li>
-<li>rocketmq-example 示例，比如生产者和消费者</li>
-<li>rocketmq-fliter 进行Broker过滤的不感兴趣的消息传输，减小带宽压力</li>
-<li>rocketmq-logappender、rocketmq-logging日志相关</li>
-<li>rocketmq-namesrv Namesrv服务，用于服务协调</li>
-<li>rocketmq-openmessaging 对外提供服务</li>
-<li>rocketmq-remoting 远程调用接口，封装Netty底层通信</li>
-<li>rocketmq-srvutil 提供一些公用的工具方法，比如解析命令行参数</li>
-<li>rocketmq-store 消息存储核心包</li>
-<li>rocketmq-test 提供一些测试代码包</li>
-<li>rocketmq-tools 管理工具，比如有名的mqadmin工具</li>
-</ul>
-<h1 id="集群架构模型"><a href="#集群架构模型" class="headerlink" title="集群架构模型"></a>集群架构模型</h1><p>RocketMQ为我们提供了丰富的集群架构模型，包括单点模式、主从模式、双主模式、以及生产上使用最多的双主双从模式（或者说多主多从模式），在这里我们仅介绍一下经典的双主双从集群模型，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df8407b0950a18b08540381.png" alt="https://climg.mukewang.com/5df8407b0950a18b08540381.png"></p>
-<ul>
-<li>Producer集群就是生产者集群（他们在同一个生产者组 Producer Group）</li>
-<li>Consumer集群就是消费者集群（他们在同一个消费者组 Consumer Group）</li>
-<li>NameServer集群作为超轻量级的配置中心，只做集群元数据存储和心跳工作，不必保障节点间数据强一致性，也就是说NameServer集群是一个多机热备的概念。</li>
-<li>对于Broker而言，通常Master与Slave为一组服务，他们互为主从节点，通过NameServer与外部的Client端暴露统一的集群入口。Broker就是消息存储的核心MQ服务了。</li>
-</ul>
-<h1 id="集群架构思考"><a href="#集群架构思考" class="headerlink" title="集群架构思考"></a>集群架构思考</h1><p>RocketMQ作为国内顶级的消息中间件，其性能主要依赖于天然的分布式Topic/Queue，并且其内存与磁盘都会存储消息数据，借鉴了Kafka的 “空中接力” 概念（这个我们后面学习Kafka的时候会详细的说明），所谓 “空中接力” 就是指数据不一定要落地，RocketMQ提供了同步/异步双写、同步/异步复制的特性。在真正的生产环境中应该选择符合自己业务的配置。下面针对于RocketMQ的高性能及其瓶颈在这里加以说明：</p>
-<ul>
-<li>架构思考：<ul>
-<li>RocketMQ目前本人在公司内部实际生产环境采用8M-8S的集群架构（8主8从）硬件单点Master为32C，96G内存，500G的SSD</li>
-<li>其主要瓶颈最终会落在IOPS上面，当高峰期来临的时候，磁盘读写能力是主要的性能瓶颈，每秒收发消息IOPS达到10W+ 消息，这也是公司内部主要的可靠性消息中间件</li>
-<li>在很多时候，我们的业务会有一些非核心的消息投递，后续会进行消息中间件的业务拆分，把不重要的消息（可以允许消息丢失、非可靠性投递的消息）采用Kafka的异步发送机制，借助Kafka强大的吞吐量和消息堆积能力来做业务的分流（当然RocketMQ的性能也足够好）。</li>
-<li>为什么瓶颈在IOPS? 根本原因还是因为云环境导致的问题，云环境的SSD物理存储显然和自建机房SSD会有不小的差距，这一点我们无论是从数据库的磁盘性能、还是搜索服务（ElasticSearch）的磁盘性能，都能给出准确的瓶颈点，单机IOPS达到1万左右就是云存储SSD的性能瓶颈，这个也解释了 “木桶短板原理” 的效应，在真正的生产中，CPU的工作主要在等待IO操作，高并发下 CPU资源接近极限，但是IOPS还是达不到我们想要的效果。</li>
-</ul>
-</li>
-</ul>
-<h1 id="本节知识点回顾"><a href="#本节知识点回顾" class="headerlink" title="本节知识点回顾"></a>本节知识点回顾</h1><p>Hi，小伙伴们，本节课我们通过简要的图文学习，带大家快速的过了一下RocketMQ，那么小伙伴们记住一定要在脑海里建立知识的结构体系，并串联起来！无论是现在，还是说未来，本神都希望小伙伴要按照下面的步骤进行回忆和复习：</p>
-<ol>
-<li>RocketMQ的前世今生 ？</li>
-<li>RocketMQ的专业术语？</li>
-<li>RocketMQ源码包的组成？</li>
-<li>RocketMQ的集群架构模型</li>
-<li>RocketMQ在真正生产环境中面临的瓶颈点以及解决方案</li>
-</ol>
-<h1 id="补充课外资料"><a href="#补充课外资料" class="headerlink" title="补充课外资料"></a>补充课外资料</h1><p>为了方便爱学习的小伙伴们，本神特意加餐一波，提供RocketMQ的官方文档和相关软件包，以及对应的代码示例，辅助小伙伴们更好掌握RocketMQ。另外本神还在慕课网上的一门课程详细的讲解了RocketMQ的各个知识点以及实战应用，有想深入学习的小伙伴可以学习共勉。</p>
-<ol>
-<li>官方文档</li>
-<li>RocketMQ4.3.0版本（Linux平台）</li>
-<li>RocketMQ代码示例</li>
-<li>慕课网实战课程《RocketMQ核心技术精讲与高并发抗压实战》传送门：<a target="_blank" rel="noopener" href="https://coding.imooc.com/class/292.html">https://coding.imooc.com/class/292.html</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E4%B8%8ENginx%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8-6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E4%B8%8ENginx%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8-6/" class="post-title-link" itemprop="url">分布式文件系统-FastDFS与Nginx实现文件服务器(6)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-20 15:19:32" itemprop="dateCreated datePublished" datetime="2021-01-20T15:19:32+08:00">2021-01-20</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>fastdfs安装好以后是无法通过http访问的，这个时候就需要借助nginx了，所以需要安装fastdfs的第三方模块到nginx中，就能使用了。</p>
-<p>注：nginx需要和storage在同一个节点。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E4%B8%8ENginx%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E6%9C%8D%E5%8A%A1%E5%99%A8-6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 
