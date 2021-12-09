@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">198</span>
+          <span class="site-state-item-count">203</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">121</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,518 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8B-AtomicLong%E5%8E%9F%E5%AD%90%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8B-AtomicLong%E5%8E%9F%E5%AD%90%E7%B1%BB/" class="post-title-link" itemprop="url">Java多线程JUC原子类之 AtomicLong原子类</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-25 17:10:03" itemprop="dateCreated datePublished" datetime="2021-01-25T17:10:03+08:00">2021-01-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3514593.html">https://www.cnblogs.com/skywang12345/p/3514593.html</a></p>
+</blockquote>
+<h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h1><p>AtomicInteger, AtomicLong和AtomicBoolean这3个基本类型的原子类的原理和用法相似。所以以AtomicLong对基本类型的原子类进行介绍。内容主要包括：</p>
+<ul>
+<li>AtomicLong介绍和函数列表</li>
+<li>AtomicLong源码分析(基于JDK1.8.0_251)</li>
+<li>AtomicLong示例</li>
+</ul>
+<h1 id="2-AtomicLong介绍和函数列表"><a href="#2-AtomicLong介绍和函数列表" class="headerlink" title="2 AtomicLong介绍和函数列表"></a>2 AtomicLong介绍和函数列表</h1><p>AtomicLong是作用是对长整形进行原子操作。</p>
+<p>在32位操作系统中，64位的long 和 double 变量由于会被JVM当作两个分离的32位来进行操作，所以不具有原子性。而使用AtomicLong能让long的操作保持原子型。</p>
+<h2 id="2-1-函数列表"><a href="#2-1-函数列表" class="headerlink" title="2.1 函数列表"></a>2.1 函数列表</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造函数</span></span><br><span class="line">AtomicLong()</span><br><span class="line"><span class="comment">// 创建值为initialValue的AtomicLong对象</span></span><br><span class="line">AtomicLong(<span class="keyword">long</span> initialValue)</span><br><span class="line"><span class="comment">// 以原子方式设置当前值为newValue。</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">long</span> newValue)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">get</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1后的值。等价于“--num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1前的值。等价于“num--”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1后的值。等价于“++num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1前的值。等价于“num++”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta与当前值相加，并返回相加后的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta添加到当前值，并返回相加前的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == expect，则以原子方式将该值设置为update。成功返回true，否则返回false，并且不修改原值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式设置当前值为newValue，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回当前值对应的int值</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">intValue</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值对应的long值</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">longValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 float 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">floatValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 double 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">doubleValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 最后设置为给定值。延时设置变量值，这个等价于set()方法，但是由于字段是volatile类型的，因此次字段的修改会比普通字段（非volatile字段）有稍微的性能延时（尽管可以忽略），所以如果不是想立即读取设置的新值，允许在“后台”修改值，那么此方法就很有用。如果还是难以理解，这里就类似于启动一个后台线程如执行修改新值的任务，原线程就不等待修改结果立即返回（这种解释其实是不正确的，但是可以这么理解）。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该设置为给定的更新值。JSR规范中说：以原子方式读取和有条件地写入变量但不 创建任何 happen-before 排序，因此不提供与除 weakCompareAndSet 目标外任何变量以前或后续读取或写入操作有关的任何保证。大意就是说调用weakCompareAndSet时并不能保证不存在happen-before的发生（也就是可能存在指令重排序导致此操作失败）。但是从Java源码来看，其实此方法并没有实现JSR规范的要求，最后效果和compareAndSet是等效的，都调用了unsafe.compareAndSwapInt()完成操作。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="3-AtomicLong-源码分析"><a href="#3-AtomicLong-源码分析" class="headerlink" title="3 AtomicLong 源码分析"></a>3 AtomicLong 源码分析</h1><ul>
+<li>AtomicLong源码分析</li>
+</ul>
+<p>AtomicLong的代码很简单，下面仅以incrementAndGet()为例，对AtomicLong的原理进行说明。</p>
+<p>incrementAndGet()源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        <span class="comment">// 获取AtomicLong当前对应的long值</span></span><br><span class="line">        <span class="keyword">long</span> current = get();</span><br><span class="line">        <span class="comment">// 将current加1</span></span><br><span class="line">        <span class="keyword">long</span> next = current + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 通过CAS函数，更新current的值</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSet(current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong>：</p>
+<p>(01) incrementAndGet()首先会根据get()获取AtomicLong对应的long值。该值是volatile类型的变量，get()的源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// value是AtomicLong对应的long值</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">long</span> value;</span><br><span class="line"><span class="comment">// 返回AtomicLong对应的long值</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>(02) incrementAndGet()接着将current加1,然后通过CAS函数，将新的值赋值给value。</p>
+<p>compareAndSet()的源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>compareAndSet()的作用是更新AtomicLong对应的long值。它会比较AtomicLong的原始值是否与expect相等，若相等的话，则设置AtomicLong的值为update。</p>
+<h1 id="4-AtomicLong示例"><a href="#4-AtomicLong示例" class="headerlink" title="4 AtomicLong示例"></a>4 AtomicLong示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LongTest.java的源码</span></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicLong;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LongTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 新建AtomicLong对象</span></span><br><span class="line">        AtomicLong mAtoLong = <span class="keyword">new</span> AtomicLong();</span><br><span class="line"></span><br><span class="line">        mAtoLong.set(<span class="number">0x0123456789ABCDEFL</span>);</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;get()&quot;</span>, mAtoLong.get());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;intValue()&quot;</span>, mAtoLong.intValue());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;longValue()&quot;</span>, mAtoLong.longValue());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;doubleValue()&quot;</span>, mAtoLong.doubleValue());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;floatValue()&quot;</span>, mAtoLong.floatValue());</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;getAndDecrement()&quot;</span>, mAtoLong.getAndDecrement());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;decrementAndGet()&quot;</span>, mAtoLong.decrementAndGet());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;getAndIncrement()&quot;</span>, mAtoLong.getAndIncrement());</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;incrementAndGet()&quot;</span>, mAtoLong.incrementAndGet());</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;addAndGet(0x10)&quot;</span>, mAtoLong.addAndGet(<span class="number">0x10</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;getAndAdd(0x10)&quot;</span>, mAtoLong.getAndAdd(<span class="number">0x10</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;\n%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;get()&quot;</span>, mAtoLong.get());</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;compareAndSet()&quot;</span>, mAtoLong.compareAndSet(<span class="number">0x12345679L</span>, <span class="number">0xFEDCBA9876543210L</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : 0x%016X\n&quot;</span>, <span class="string">&quot;get()&quot;</span>, mAtoLong.get());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get() : <span class="number">0x0123456789ABCDEF</span></span><br><span class="line">          intValue() : <span class="number">0x0000000089ABCDEF</span></span><br><span class="line">         longValue() : <span class="number">0x0123456789ABCDEF</span></span><br><span class="line">       doubleValue() : <span class="number">8.1985529216486896E16</span></span><br><span class="line">        floatValue() : <span class="number">8.1985531E16</span></span><br><span class="line">   getAndDecrement() : <span class="number">0x0123456789ABCDEF</span></span><br><span class="line">   decrementAndGet() : <span class="number">0x0123456789ABCDED</span></span><br><span class="line">   getAndIncrement() : <span class="number">0x0123456789ABCDED</span></span><br><span class="line">   incrementAndGet() : <span class="number">0x0123456789ABCDEF</span></span><br><span class="line">     addAndGet(<span class="number">0x10</span>) : <span class="number">0x0123456789ABCDFF</span></span><br><span class="line">     getAndAdd(<span class="number">0x10</span>) : <span class="number">0x0123456789ABCDFF</span></span><br><span class="line"></span><br><span class="line">               get() : <span class="number">0x0123456789ABCE0F</span></span><br><span class="line">     compareAndSet() : <span class="keyword">false</span></span><br><span class="line">               get() : <span class="number">0x0123456789ABCE0F</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8BAtomicLongArray%E5%8E%9F%E5%AD%90%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E4%B9%8BAtomicLongArray%E5%8E%9F%E5%AD%90%E7%B1%BB/" class="post-title-link" itemprop="url">Java多线程JUC原子类之AtomicLongArray原子类</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-25 17:04:06" itemprop="dateCreated datePublished" datetime="2021-01-25T17:04:06+08:00">2021-01-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3514604.html">https://www.cnblogs.com/skywang12345/p/3514604.html</a></p>
+</blockquote>
+<p>在”Java多线程系列–“ <a target="_blank" rel="noopener" href="https://www.notion.so/Java-JUC-AtomicLong-842f5bea464847abbfee4d03a18ca99f">Java多线程JUC原子类之 AtomicLong原子类</a> “中介绍过，AtomicLong是作用是对长整形进行原子操作。而AtomicLongArray的作用则是对”长整形数组”进行原子操作。</p>
+<h1 id="AtomicLongArray函数列表"><a href="#AtomicLongArray函数列表" class="headerlink" title="AtomicLongArray函数列表"></a>AtomicLongArray函数列表</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建给定长度的新 AtomicLongArray。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">int</span> length)</span><br><span class="line"><span class="comment">// 创建与给定数组具有相同长度的新 AtomicLongArray，并从给定数组复制其所有元素。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">long</span>[] array)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以原子方式将给定值添加到索引 i 的元素。</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 获取位置 i 的当前值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将给定值与索引 i 的元素相加。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将位置 i 的元素设置为给定值，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 最终将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回该数组的长度。</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回数组当前值的字符串表示形式。</span></span></span><br><span class="line"><span class="function">String <span class="title">toString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>AtomicLongArray的代码很简单，下面仅以incrementAndGet()为例，对AtomicLong的原理进行说明。</p>
+<h2 id="incrementAndGet-源码如下："><a href="#incrementAndGet-源码如下：" class="headerlink" title="incrementAndGet()源码如下："></a>incrementAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> addAndGet(i, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：incrementAndGet()的作用是以原子方式将long数组的索引 i 的元素加1，并返回加1之后的值。</p>
+<h2 id="addAndGet-源码如下："><a href="#addAndGet-源码如下：" class="headerlink" title="addAndGet()源码如下："></a>addAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查数组是否越界</span></span><br><span class="line">    <span class="keyword">long</span> offset = checkedByteOffset(i);</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 获取long型数组的索引 offset 的原始值</span></span><br><span class="line">        <span class="keyword">long</span> current = getRaw(offset);</span><br><span class="line">        <span class="comment">// 修改long型值</span></span><br><span class="line">        <span class="keyword">long</span> next = current + delta;</span><br><span class="line">        <span class="comment">// 通过CAS更新long型数组的索引 offset的值。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetRaw(offset, current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：addAndGet()首先检查数组是否越界。如果没有越界的话，则先获取数组索引i的值；然后通过CAS函数更新i的值。</p>
+<h2 id="getRaw-源码如下："><a href="#getRaw-源码如下：" class="headerlink" title="getRaw()源码如下："></a>getRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getRaw</span><span class="params">(<span class="keyword">long</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getLongVolatile(array, offset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：unsafe是通过Unsafe.getUnsafe()返回的一个Unsafe对象。通过Unsafe的CAS函数对long型数组的元素进行原子操作。如compareAndSetRaw()就是调用Unsafe的CAS函数，它的源码如下：</p>
+<h2 id="compareAndSetRaw-源码如下："><a href="#compareAndSetRaw-源码如下：" class="headerlink" title="compareAndSetRaw()源码如下："></a>compareAndSetRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">compareAndSetRaw</span><span class="params">(<span class="keyword">long</span> offset, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(array, offset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAtomicArrayLong</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 新建AtomicLongArray对象</span></span><br><span class="line">        <span class="keyword">long</span>[] arrLong = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        AtomicLongArray ala = <span class="keyword">new</span> AtomicLongArray(arrLong);</span><br><span class="line"></span><br><span class="line">        ala.set(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>, len=ala.length(); i&lt;len; i++)</span><br><span class="line">            System.out.printf(<span class="string">&quot;get(%d) : %s\n&quot;</span>, i, ala.get(i));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;getAndDecrement(0)&quot;</span>, ala.getAndDecrement(<span class="number">0</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;decrementAndGet(1)&quot;</span>, ala.decrementAndGet(<span class="number">1</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;getAndIncrement(2)&quot;</span>, ala.getAndIncrement(<span class="number">2</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;incrementAndGet(3)&quot;</span>, ala.incrementAndGet(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;addAndGet(100)&quot;</span>, ala.addAndGet(<span class="number">0</span>, <span class="number">100</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;getAndAdd(100)&quot;</span>, ala.getAndAdd(<span class="number">1</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;compareAndSet()&quot;</span>, ala.compareAndSet(<span class="number">2</span>, <span class="number">31</span>, <span class="number">1000</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\n&quot;</span>, <span class="string">&quot;get(2)&quot;</span>, ala.get(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/21/Alibaba-Sentinel%E5%9F%BA%E7%A1%80-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/21/Alibaba-Sentinel%E5%9F%BA%E7%A1%80-1/" class="post-title-link" itemprop="url">Alibaba Sentinel基础(1)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-21 14:41:56" itemprop="dateCreated datePublished" datetime="2021-01-21T14:41:56+08:00">2021-01-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[TOC]</p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>Alibaba Sentinel 基础部分主要分六个部分：</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> Sentinel 全景分析</li>
+<li><input disabled="" type="checkbox"> Sentinel 极速入门</li>
+<li><input disabled="" type="checkbox"> Sentinel 核心API</li>
+<li><input disabled="" type="checkbox"> Sentinel 控制台使用</li>
+<li><input disabled="" type="checkbox"> Sentinel 与 Spring 整合 AOP 分析</li>
+<li><input disabled="" type="checkbox"> Sentinel 与 Dubbo 整合分析</li>
+</ul>
+<h1 id="2-Sentinel-全景分析"><a href="#2-Sentinel-全景分析" class="headerlink" title="2. Sentinel 全景分析"></a>2. Sentinel 全景分析</h1><p><a target="_blank" rel="noopener" href="https://github.com/alibaba/Sentinel/wiki/%E4%BB%8B%E7%BB%8D">官方介绍</a></p>
+<h2 id="Sentinel-是什么？"><a href="#Sentinel-是什么？" class="headerlink" title="Sentinel 是什么？"></a>Sentinel 是什么？</h2><p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从限流、流量整形、熔断降级、系统负载保护、热点防护等多个维度来帮助开发者保障微服务的稳定性。</p>
+<p>它可以做到以下几点：</p>
+<ul>
+<li><p>流量控制</p>
+</li>
+<li><p>熔断降级</p>
+</li>
+<li><p>系统保护</p>
+</li>
+<li><p>服务安全</p>
+</li>
+</ul>
+<h2 id="Sentinel-的特性"><a href="#Sentinel-的特性" class="headerlink" title="Sentinel 的特性"></a>Sentinel 的特性</h2><ul>
+<li><strong>丰富的应用场景</strong>：Sentinel 承接了阿里巴巴近 10 年的双十一大促流量的核心场景，例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等。</li>
+<li><strong>完备的实时监控</strong>：Sentinel 同时提供实时的监控功能。您可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况。</li>
+<li><strong>广泛的开源生态</strong>：Sentinel 提供开箱即用的与其它开源框架/库的整合模块，例如与 Spring Cloud、Dubbo、gRPC 的整合。您只需要引入相应的依赖并进行简单的配置即可快速地接入 Sentinel。</li>
+<li><strong>完善的 SPI 扩展点</strong>：Sentinel 提供简单易用、完善的 SPI 扩展接口。您可以通过实现扩展接口来快速地定制逻辑。例如定制规则管理、适配动态数据源等。</li>
+</ul>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png"></p>
+<p>部分是 sentinel-dashboard。</p>
+<p>绿色部分是 sentinel-core，是 Sentinel 的核心库。</p>
+<p>紫色部分表示 sentinel 可以持久化规则到配置中心。</p>
+<p>蓝色部分 sentinel 的扩展点。</p>
+<h2 id="Sentinel-的生态"><a href="#Sentinel-的生态" class="headerlink" title="Sentinel 的生态"></a>Sentinel 的生态</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png"></p>
+<h2 id="Sentinel-的组成部分"><a href="#Sentinel-的组成部分" class="headerlink" title="Sentinel 的组成部分"></a>Sentinel 的组成部分</h2><ul>
+<li>核心库：sentinel-core</li>
+<li>控制台：sentinel-dashboard</li>
+<li>第三方支持组件：如spring、dubbo、rocketmq等</li>
+</ul>
+<h1 id="3-Sentinel-极速入门"><a href="#3-Sentinel-极速入门" class="headerlink" title="3. Sentinel 极速入门"></a>3. Sentinel 极速入门</h1><h1 id="4-Sentinel-核心API"><a href="#4-Sentinel-核心API" class="headerlink" title="4. Sentinel 核心API"></a>4. Sentinel 核心API</h1><h1 id="5-Sentinel-控制台使用"><a href="#5-Sentinel-控制台使用" class="headerlink" title="5. Sentinel 控制台使用"></a>5. Sentinel 控制台使用</h1><h1 id="6-Sentinel-与-Spring-整合-AOP-分析"><a href="#6-Sentinel-与-Spring-整合-AOP-分析" class="headerlink" title="6. Sentinel 与 Spring 整合 AOP 分析"></a>6. Sentinel 与 Spring 整合 AOP 分析</h1><h1 id="7-Sentinel-与-Dubbo-整合分析"><a href="#7-Sentinel-与-Dubbo-整合分析" class="headerlink" title="7. Sentinel 与 Dubbo 整合分析"></a>7. Sentinel 与 Dubbo 整合分析</h1>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/21/AtomicLong%E5%8E%9F%E5%AD%90%E7%B1%BB%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/21/AtomicLong%E5%8E%9F%E5%AD%90%E7%B1%BB%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">AtomicLong原子类方法介绍</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-21 13:34:36" itemprop="dateCreated datePublished" datetime="2021-01-21T13:34:36+08:00">2021-01-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造函数</span></span><br><span class="line">AtomicLong()</span><br><span class="line"><span class="comment">// 创建值为initialValue的AtomicLong对象</span></span><br><span class="line">AtomicLong(<span class="keyword">long</span> initialValue)</span><br><span class="line"><span class="comment">// 以原子方式设置当前值为newValue。</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">long</span> newValue)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">get</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1后的值。等价于“--num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值减 1，并返回减1前的值。等价于“num--”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1后的值。等价于“++num”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将当前值加 1，并返回加1前的值。等价于“num++”</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta与当前值相加，并返回相加后的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将delta添加到当前值，并返回相加前的值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">long</span> delta)</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == expect，则以原子方式将该值设置为update。成功返回true，否则返回false，并且不修改原值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式设置当前值为newValue，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回当前值对应的int值</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">intValue</span><span class="params">()</span> </span></span><br><span class="line"><span class="function"><span class="comment">// 获取当前值对应的long值</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">longValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 float 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">floatValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 以 double 形式返回当前值</span></span></span><br><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">doubleValue</span><span class="params">()</span>    </span></span><br><span class="line"><span class="function"><span class="comment">// 最后设置为给定值。延时设置变量值，这个等价于set()方法，但是由于字段是volatile类型的，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此次字段的修改会比普通字段（非volatile字段）有稍微的性能延时（尽管可以忽略），</span></span></span><br><span class="line"><span class="function"><span class="comment">// 所以如果不是想立即读取设置的新值，允许在“后台”修改值，那么此方法就很有用。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果还是难以理解，这里就类似于启动一个后台线程如执行修改新值的任务，原线程就不等待修改结果立即返回</span></span></span><br><span class="line"><span class="function"><span class="comment">// （这种解释其实是不正确的，但是可以这么理解）。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="comment">// JSR规范中说：以原子方式读取和有条件地写入变量但不 创建任何 happen-before 排序，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 因此不提供与除 weakCompareAndSet 目标外任何变量以前或后续读取或写入操作有关的任何保证。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 大意就是说调用weakCompareAndSet时并不能保证不存在happen-before的发生（也就是可能存在指令重排序导致此操作失败）。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 但是从Java源码来看，其实此方法并没有实现JSR规范的要求，最后效果和compareAndSet是等效的，</span></span></span><br><span class="line"><span class="function"><span class="comment">// 都调用了unsafe.compareAndSwapInt()完成操作。</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/21/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-AtomicLongArray/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/21/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB-AtomicLongArray/" class="post-title-link" itemprop="url">JUC原子类-AtomicLongArray</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-21 13:33:17" itemprop="dateCreated datePublished" datetime="2021-01-21T13:33:17+08:00">2021-01-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3514604.html">https://www.cnblogs.com/skywang12345/p/3514604.html</a></p>
+</blockquote>
+<p>在”Java多线程系列–“ <a target="_blank" rel="noopener" href="https://www.notion.so/Java-JUC-AtomicLong-842f5bea464847abbfee4d03a18ca99f">Java多线程JUC原子类之 AtomicLong原子类</a> “中介绍过，AtomicLong是作用是对长整形进行原子操作。而AtomicLongArray的作用则是对”长整形数组”进行原子操作。</p>
+<h1 id="AtomicLongArray函数列表"><a href="#AtomicLongArray函数列表" class="headerlink" title="AtomicLongArray函数列表"></a>AtomicLongArray函数列表</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建给定长度的新 AtomicLongArray。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">int</span> length)</span><br><span class="line"><span class="comment">// 创建与给定数组具有相同长度的新 AtomicLongArray，并从给定数组复制其所有元素。</span></span><br><span class="line">AtomicLongArray(<span class="keyword">long</span>[] array)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以原子方式将给定值添加到索引 i 的元素。</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">decrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 获取位置 i 的当前值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">get</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将给定值与索引 i 的元素相加。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素减 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndDecrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加 1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndIncrement</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将位置 i 的元素设置为给定值，并返回旧值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 以原子方式将索引 i 的元素加1。</span></span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 最终将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回该数组的长度。</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 将位置 i 的元素设置为给定值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> newValue)</span></span></span><br><span class="line"><span class="function"><span class="comment">// 返回数组当前值的字符串表示形式。</span></span></span><br><span class="line"><span class="function">String <span class="title">toString</span><span class="params">()</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果当前值 == 预期值，则以原子方式将该值设置为给定的更新值。</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">weakCompareAndSet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span></span></span><br></pre></td></tr></table></figure>
+
+<h1 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h1><p>AtomicLongArray的代码很简单，下面仅以incrementAndGet()为例，对AtomicLong的原理进行说明。</p>
+<h2 id="incrementAndGet-源码如下："><a href="#incrementAndGet-源码如下：" class="headerlink" title="incrementAndGet()源码如下："></a>incrementAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">incrementAndGet</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> addAndGet(i, <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：incrementAndGet()的作用是以原子方式将long数组的索引 i 的元素加1，并返回加1之后的值。</p>
+<h2 id="addAndGet-源码如下："><a href="#addAndGet-源码如下：" class="headerlink" title="addAndGet()源码如下："></a>addAndGet()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">addAndGet</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">long</span> delta)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查数组是否越界</span></span><br><span class="line">    <span class="keyword">long</span> offset = checkedByteOffset(i);</span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 获取long型数组的索引 offset 的原始值</span></span><br><span class="line">        <span class="keyword">long</span> current = getRaw(offset);</span><br><span class="line">        <span class="comment">// 修改long型值</span></span><br><span class="line">        <span class="keyword">long</span> next = current + delta;</span><br><span class="line">        <span class="comment">// 通过CAS更新long型数组的索引 offset的值。</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetRaw(offset, current, next))</span><br><span class="line">            <span class="keyword">return</span> next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：addAndGet()首先检查数组是否越界。如果没有越界的话，则先获取数组索引i的值；然后通过CAS函数更新i的值。</p>
+<h2 id="getRaw-源码如下："><a href="#getRaw-源码如下：" class="headerlink" title="getRaw()源码如下："></a>getRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getRaw</span><span class="params">(<span class="keyword">long</span> offset)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.getLongVolatile(array, offset);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：unsafe是通过Unsafe.getUnsafe()返回的一个Unsafe对象。通过Unsafe的CAS函数对long型数组的元素进行原子操作。如compareAndSetRaw()就是调用Unsafe的CAS函数，它的源码如下：</p>
+<h2 id="compareAndSetRaw-源码如下："><a href="#compareAndSetRaw-源码如下：" class="headerlink" title="compareAndSetRaw()源码如下："></a>compareAndSetRaw()源码如下：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">compareAndSetRaw</span><span class="params">(<span class="keyword">long</span> offset, <span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(array, offset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="用法示例"><a href="#用法示例" class="headerlink" title="用法示例"></a>用法示例</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestAtomicArrayLong</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 新建AtomicLongArray对象</span></span><br><span class="line">        <span class="keyword">long</span>[] arrLong = <span class="keyword">new</span> <span class="keyword">long</span>[] &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line">        AtomicLongArray ala = <span class="keyword">new</span> AtomicLongArray(arrLong);</span><br><span class="line"></span><br><span class="line">        ala.set(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>, len=ala.length(); i&lt;len; i++)</span><br><span class="line">            System.out.printf(<span class="string">&quot;get(%d) : %s\\n&quot;</span>, i, ala.get(i));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;getAndDecrement(0)&quot;</span>, ala.getAndDecrement(<span class="number">0</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;decrementAndGet(1)&quot;</span>, ala.decrementAndGet(<span class="number">1</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;getAndIncrement(2)&quot;</span>, ala.getAndIncrement(<span class="number">2</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;incrementAndGet(3)&quot;</span>, ala.incrementAndGet(<span class="number">3</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;addAndGet(100)&quot;</span>, ala.addAndGet(<span class="number">0</span>, <span class="number">100</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;getAndAdd(100)&quot;</span>, ala.getAndAdd(<span class="number">1</span>, <span class="number">100</span>));</span><br><span class="line"></span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;compareAndSet()&quot;</span>, ala.compareAndSet(<span class="number">2</span>, <span class="number">31</span>, <span class="number">1000</span>));</span><br><span class="line">        System.out.printf(<span class="string">&quot;%20s : %s\\n&quot;</span>, <span class="string">&quot;get(2)&quot;</span>, ala.get(<span class="number">2</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">get(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">get(<span class="number">1</span>) : <span class="number">20</span></span><br><span class="line">get(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">get(<span class="number">3</span>) : <span class="number">40</span></span><br><span class="line">get(<span class="number">4</span>) : <span class="number">50</span></span><br><span class="line">  getAndDecrement(<span class="number">0</span>) : <span class="number">100</span></span><br><span class="line">  decrementAndGet(<span class="number">1</span>) : <span class="number">19</span></span><br><span class="line">  getAndIncrement(<span class="number">2</span>) : <span class="number">30</span></span><br><span class="line">  incrementAndGet(<span class="number">3</span>) : <span class="number">41</span></span><br><span class="line">      addAndGet(<span class="number">100</span>) : <span class="number">199</span></span><br><span class="line">      getAndAdd(<span class="number">100</span>) : <span class="number">19</span></span><br><span class="line">     compareAndSet() : <span class="keyword">true</span></span><br><span class="line">              get(<span class="number">2</span>) : <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">Process finished with exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -767,466 +1279,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E6%A6%82%E5%BF%B5%E6%A2%B3%E7%90%86-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E6%A6%82%E5%BF%B5%E6%A2%B3%E7%90%86-2/" class="post-title-link" itemprop="url">分布式文件系统-FastDFS概念梳理(2)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-20 15:08:21" itemprop="dateCreated datePublished" datetime="2021-01-20T15:08:21+08:00">2021-01-20</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="什么是FastDFS"><a href="#什么是FastDFS" class="headerlink" title="什么是FastDFS"></a>什么是FastDFS</h1><ul>
-<li>FastDFS是一个开源的轻量级分布式文件系统，它对文件进行管理，功能包括：文件存储、文件同步、文件访问（文件上传、文件下载）等，解决了大容量存储和负载均衡的问题。特别适合以文件为载体的在线服务，如相册网站、视频网站等等。</li>
-<li>FastDFS为互联网量身定制，充分考虑了冗余备份、负载均衡、线性扩容等机制，并注重高可用、高性能等指标，使用FastDFS很容易搭建一套高性能的文件服务器集群提供文件上传、下载等服务。</li>
-<li>FastDFS服务端有两个角色：跟踪器（tracker）和存储节点（storage）。跟踪器主要做调度工作，在访问上起负载均衡的作用。</li>
-<li>存储节点存储文件，完成文件管理的所有功能：就是这样的存储、同步和提供存取接口，FastDFS同时对文件的metadata进行管理。所谓文件的meta data就是文件的相关属性，以键值对（key value）方式表示，如：width=1024，其中的key为width，value为1024。文件metadata是文件属性列表，可以包含多个键值对。</li>
-<li>跟踪器和存储节点都可以由一台或多台服务器构成。跟踪器和存储节点中的服务器均可以随时增加或下线而不会影响线上服务。其中跟踪器中的所有服务器都是对等的，可以根据服务器的压力情况随时增加或减少。</li>
-<li>为了支持大容量，存储节点（服务器）采用了分卷（或分组）的组织方式。存储系统由一个或多个卷组成，卷与卷之间的文件是相互独立的，所有卷的文件容量累加就是整个存储系统中的文件容量。一个卷可以由一台或多台存储服务器组成，一个卷下的存储服务器中的文件都是相同的，卷中的多台存储服务器起到了冗余备份和负载均衡的作用。</li>
-<li>在卷中增加服务器时，同步已有的文件由系统自动完成，同步完成后，系统自动将新增服务器切换到线上提供服务。</li>
-<li>当存储空间不足或即将耗尽时，可以动态添加卷。只需要增加一台或多台服务器，并将它们配置为一个新的卷，这样就扩大了存储系统的容量。</li>
-<li>FastDFS中的文件标识分为两个部分：卷名和文件名，二者缺一不可。</li>
-</ul>
-<p><em>– 摘自&lt;百度百科&gt;</em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-FastDFS%E6%A6%82%E5%BF%B5%E6%A2%B3%E7%90%86-2/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/" class="post-title-link" itemprop="url">分布式文件系统-概述(1)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-20 15:06:53" itemprop="dateCreated datePublished" datetime="2021-01-20T15:06:53+08:00">2021-01-20</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式文件系统</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_1_1.png"></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D/" class="post-title-link" itemprop="url">Logstash数据同步 - 自定义模板配置中文分词</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-14 22:39:14" itemprop="dateCreated datePublished" datetime="2021-01-14T22:39:14+08:00">2021-01-14</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前的数据同步，mappings映射会自动创建，但是分词不会，还是会使用默认的，而我们需要中文分词，这个时候就需要自定义模板功能来设置分词了。</p>
-<h1 id="查看Logstash默认模板"><a href="#查看Logstash默认模板" class="headerlink" title="查看Logstash默认模板"></a>查看Logstash默认模板</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_template/logstash</span><br></pre></td></tr></table></figure>
-
-<h1 id="修改模板如下"><a href="#修改模板如下" class="headerlink" title="修改模板如下"></a>修改模板如下</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;order&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;version&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;index_patterns&quot;</span>: [<span class="string">&quot;*&quot;</span>],</span><br><span class="line">    <span class="string">&quot;settings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;index&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;refresh_interval&quot;</span>: <span class="string">&quot;5s&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;mappings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;_default_&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;dynamic_templates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;message_field&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;path_match&quot;</span>: <span class="string">&quot;message&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;match_mapping_type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;mapping&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;norms&quot;</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;string_fields&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;match&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;match_mapping_type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;mapping&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;norms&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">                            <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;ik_max_word&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;fields&quot;</span>: &#123;</span><br><span class="line">                                <span class="string">&quot;keyword&quot;</span>: &#123;</span><br><span class="line">                                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span>,</span><br><span class="line">                                    <span class="string">&quot;ignore_above&quot;</span>: <span class="number">256</span></span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;@timestamp&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;date&quot;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;@version&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;geoip&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;dynamic&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">                    <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;ip&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;ip&quot;</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">&quot;location&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;geo_point&quot;</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">&quot;latitude&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;half_float&quot;</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">&quot;longitude&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;half_float&quot;</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;aliases&quot;</span>: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="新增如下配置，用于更新模板，设置中文分词"><a href="#新增如下配置，用于更新模板，设置中文分词" class="headerlink" title="新增如下配置，用于更新模板，设置中文分词"></a>新增如下配置，用于更新模板，设置中文分词</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 定义模板名称</span><br><span class="line">template_name =&gt; <span class="string">&quot;myik&quot;</span></span><br><span class="line"># 模板所在位置</span><br><span class="line">template =&gt; <span class="string">&quot;/usr/local/logstash-6.4.3/sync/logstash-ik.json&quot;</span></span><br><span class="line"># 重写模板</span><br><span class="line">template_overwrite =&gt; <span class="literal">true</span></span><br><span class="line"># 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">manage_template =&gt; <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<h1 id="重新运行Logstash进行同步"><a href="#重新运行Logstash进行同步" class="headerlink" title="重新运行Logstash进行同步"></a>重新运行Logstash进行同步</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/local/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E9%85%8D%E7%BD%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">Logstash数据同步-配置</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-14 22:20:07" itemprop="dateCreated datePublished" datetime="2021-01-14T22:20:07+08:00">2021-01-14</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="logstash同步数据库配置"><a href="#logstash同步数据库配置" class="headerlink" title="logstash同步数据库配置"></a>logstash同步数据库配置</h1><ol>
-<li><p>上传并解压logstash，路径为 <code>/usr/local/logstash</code></p>
-</li>
-<li><p>创建文件名：logstash-db-sync.conf，后缀为<code>conf</code>，文件名随意，位置也随意，为方便起见，路径为<code>/usr/local/logstash/sync</code></p>
-</li>
-<li><p>把数据库驱动拷贝至<code>/usr/local/logstash/sync</code>下</p>
-</li>
-<li><p>配置内容如下：</p>
-   <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">input</span> &#123;</span><br><span class="line">    <span class="string">jdbc</span> &#123;</span><br><span class="line">        <span class="comment"># 设置 MySql/MariaDB 数据库url以及数据库名称</span></span><br><span class="line">        <span class="string">jdbc_connection_string</span> <span class="string">=&gt;</span> <span class="string">&quot;jdbc:mysql://192.168.1.6:3306/foodie-shop-dev?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&quot;</span></span><br><span class="line">        <span class="comment"># 用户名和密码</span></span><br><span class="line">        <span class="string">jdbc_user</span> <span class="string">=&gt;</span> <span class="string">&quot;root&quot;</span></span><br><span class="line">        <span class="string">jdbc_password</span> <span class="string">=&gt;</span> <span class="string">&quot;root&quot;</span></span><br><span class="line">        <span class="comment"># 数据库驱动所在位置，可以是绝对路径或者相对路径</span></span><br><span class="line">        <span class="string">jdbc_driver_library</span> <span class="string">=&gt;</span> <span class="string">&quot;/usr/local/logstash-6.4.3/sync/mysql-connector-java-5.1.41.jar&quot;</span></span><br><span class="line">        <span class="comment"># 驱动类名</span></span><br><span class="line">        <span class="string">jdbc_driver_class</span> <span class="string">=&gt;</span> <span class="string">&quot;com.mysql.jdbc.Driver&quot;</span></span><br><span class="line">        <span class="comment"># 开启分页</span></span><br><span class="line">        <span class="string">jdbc_paging_enabled</span> <span class="string">=&gt;</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">        <span class="comment"># 分页每页数量，可以自定义</span></span><br><span class="line">        <span class="string">jdbc_page_size</span> <span class="string">=&gt;</span> <span class="string">&quot;10000&quot;</span></span><br><span class="line">        <span class="comment"># 执行的sql文件路径</span></span><br><span class="line">        <span class="string">statement_filepath</span> <span class="string">=&gt;</span> <span class="string">&quot;/usr/local/logstash-6.4.3/sync/foodie-items.sql&quot;</span></span><br><span class="line">        <span class="comment"># 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span></span><br><span class="line">        <span class="string">schedule</span> <span class="string">=&gt;</span> <span class="string">&quot;* * * * *&quot;</span></span><br><span class="line">        <span class="comment"># 索引类型</span></span><br><span class="line">        <span class="string">type</span> <span class="string">=&gt;</span> <span class="string">&quot;_doc&quot;</span></span><br><span class="line">        <span class="comment"># 是否开启记录上次追踪的结果，也就是上次更新的时间，这个会记录到 last_run_metadata_path 的文件</span></span><br><span class="line">        <span class="string">use_column_value</span> <span class="string">=&gt;</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 记录上一次追踪的结果值</span></span><br><span class="line">        <span class="string">last_run_metadata_path</span> <span class="string">=&gt;</span> <span class="string">&quot;/usr/local/logstash-6.4.3/sync/track_time&quot;</span></span><br><span class="line">        <span class="comment"># 如果 use_column_value 为true， 配置本参数，追踪的 column 名，可以是自增id或者时间</span></span><br><span class="line">        <span class="string">tracking_column</span> <span class="string">=&gt;</span> <span class="string">&quot;updated_time&quot;</span></span><br><span class="line">        <span class="comment"># tracking_column 对应字段的类型</span></span><br><span class="line">        <span class="string">tracking_column_type</span> <span class="string">=&gt;</span> <span class="string">&quot;timestamp&quot;</span></span><br><span class="line">        <span class="comment"># 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span></span><br><span class="line">        <span class="string">clean_run</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">        <span class="comment"># 数据库字段名称大写转小写</span></span><br><span class="line">        <span class="string">lowercase_column_names</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">output</span> &#123;</span><br><span class="line">    <span class="string">elasticsearch</span> &#123;</span><br><span class="line">        <span class="comment"># es地址</span></span><br><span class="line">        <span class="string">hosts</span> <span class="string">=&gt;</span> [<span class="string">&quot;192.168.1.187:9200&quot;</span>]</span><br><span class="line">        <span class="comment"># 同步的索引名</span></span><br><span class="line">        <span class="string">index</span> <span class="string">=&gt;</span> <span class="string">&quot;foodie-items&quot;</span></span><br><span class="line">        <span class="comment"># 设置_docID和数据相同。itemId与sql同步脚本中的itemId保持一致</span></span><br><span class="line">        <span class="string">document_id</span> <span class="string">=&gt;</span> <span class="string">&quot;<span class="template-variable">%&#123;itemId&#125;</span>&quot;</span></span><br><span class="line">        <span class="comment">#document_id =&gt; &quot;%&#123;id&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment"># 日志输出</span></span><br><span class="line">    <span class="string">stdout</span> &#123;</span><br><span class="line">        <span class="string">codec</span> <span class="string">=&gt;</span> <span class="string">json_lines</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>sql同步脚本</p>
-   <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    i.id <span class="keyword">as</span> itemId,</span><br><span class="line">    i.item_name <span class="keyword">as</span> itemName,</span><br><span class="line">    i.sell_counts <span class="keyword">as</span> sellCounts,</span><br><span class="line">    ii.url <span class="keyword">as</span> imgUrl,</span><br><span class="line">    tempSpec.price_discount <span class="keyword">as</span> price,</span><br><span class="line">    i.updated_time <span class="keyword">as</span> updated_time</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    items i</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    items_img ii</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id <span class="operator">=</span> ii.item_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    (<span class="keyword">SELECT</span> item_id,<span class="built_in">MIN</span>(price_discount) <span class="keyword">as</span> price_discount <span class="keyword">from</span> items_spec <span class="keyword">GROUP</span> <span class="keyword">BY</span> item_id) tempSpec</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id <span class="operator">=</span> tempSpec.item_id</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    ii.is_main <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">and</span></span><br><span class="line">    i.updated_time <span class="operator">&gt;=</span> :sql_last_value</span><br><span class="line"><span class="comment">--:sql_last_value是记录的最后的一个值</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<h1 id="启动logstatsh"><a href="#启动logstatsh" class="headerlink" title="启动logstatsh"></a>启动logstatsh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/<span class="built_in">local</span>/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
-
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/huhangfei/p/7605511.html">Logstash使用介绍</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E4%BB%8B%E7%BB%8D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-01-14 22:18:19" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
-<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
-<ul>
-<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
-<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
-</ul>
-<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
-<ul>
-<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
-</ul>
-<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
-<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg"></p>
-<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 

@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://segmentfault.com/img/remote/1460000022904670">
 <meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904671.jpg">
 <meta property="article:published_time" content="2021-08-07T11:41:22.000Z">
-<meta property="article:modified_time" content="2021-09-16T01:03:43.710Z">
+<meta property="article:modified_time" content="2021-12-06T07:57:53.358Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="synchronized">
@@ -209,7 +209,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">198</span>
+          <span class="site-state-item-count">203</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -222,7 +222,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">121</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -292,7 +292,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-16 09:03:43" itemprop="dateModified" datetime="2021-09-16T09:03:43+08:00">2021-09-16</time>
+        <time title="修改时间：2021-12-06 15:57:53" itemprop="dateModified" datetime="2021-12-06T15:57:53+08:00">2021-12-06</time>
       </span>
 
   
@@ -317,9 +317,9 @@
 <h3 id="三、锁状态的思路以及特点"><a href="#三、锁状态的思路以及特点" class="headerlink" title="三、锁状态的思路以及特点"></a>三、锁状态的思路以及特点</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904667.png" alt="img"></p>
 <h3 id="四、锁对比"><a href="#四、锁对比" class="headerlink" title="四、锁对比"></a>四、锁对比</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904669-20210807194327994.png" alt="img"></p>
 <h3 id="五、Synchronized锁"><a href="#五、Synchronized锁" class="headerlink" title="五、Synchronized锁"></a>五、Synchronized锁</h3><p>synchronized 用的锁是存在Java对象头里的，那么什么是对象头呢？</p>
-<h3 id="5-1-Java-对象头"><a href="#5-1-Java-对象头" class="headerlink" title="5.1 Java 对象头"></a>5.1 Java 对象头</h3><p>我们以 Hotspot 虚拟机为例，Hopspot 对象头主要包括两部分数据：Mark Word（标记字段） 和 Klass Pointer（类型指针）</p>
+<h3 id="5-1-Java-对象头"><a href="#5-1-Java-对象头" class="headerlink" title="5.1 Java 对象头"></a>5.1 Java 对象头</h3><p>我们以 Hotspot 虚拟机为例，Hopspot 对象头主要包括两部分数据：Mark Word（标记字段） 和 Class Pointer（类型指针）</p>
 <p>Mark Word：默认存储对象的HashCode，分代年龄和锁标志位信息。这些信息都是与对象自身定义无关的数据，所以Mark Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的数据。它会根据对象的状态复用自己的存储空间，也就是说在运行期间Mark Word里存储的数据会随着锁标志位的变化而变化。</p>
-<p>Klass Point：对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
+<p>Class Point：对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
 <p>在上面中我们知道了，synchronized 用的锁是存在Java对象头里的，那么具体是存在对象头哪里呢？答案是：存在锁对象的对象头的Mark Word中，那么MarkWord在对象头中到底长什么样，它到底存储了什么呢？</p>
 <p>在64位的虚拟机中：<img src="https://segmentfault.com/img/remote/1460000022904668" alt="img"></p>
 <p>在32位的虚拟机中：<img src="https://segmentfault.com/img/remote/1460000022904670" alt="img"></p>

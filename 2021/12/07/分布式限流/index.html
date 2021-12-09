@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+  </script>
+<meta name="description" content="[TOC] 分布式限流介绍限流的目的是通过对并发访问&#x2F;请求进行限速或者在一个时间窗口内的请求进行限速来保护系统，一旦请求到达限制速率则可以拒绝服务、排队或等待、降级。 主要是通过压测时找出每个系统的处理峰值，然后通过处理设定峰值阈值来防止系统过载时，通过拒绝处理过载的请求来保障系统可用性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式限流">
+<meta property="og:url" content="http://littlefxc.github.io/2021/12/07/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/index.html">
+<meta property="og:site_name" content="一年春又来">
+<meta property="og:description" content="[TOC] 分布式限流介绍限流的目的是通过对并发访问&#x2F;请求进行限速或者在一个时间窗口内的请求进行限速来保护系统，一旦请求到达限制速率则可以拒绝服务、排队或等待、降级。 主要是通过压测时找出每个系统的处理峰值，然后通过处理设定峰值阈值来防止系统过载时，通过拒绝处理过载的请求来保障系统可用性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f15a8097b023f27401174.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20211207163639135.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20211207163552357.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f176d09e1a32330281388.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f177b09c240dc25841544.png">
+<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f17870983b50a33121060.png">
+<meta property="article:published_time" content="2021-12-07T07:46:47.000Z">
+<meta property="article:modified_time" content="2021-12-07T09:23:06.942Z">
+<meta property="article:author" content="一年春又来">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="限流">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f15a8097b023f27401174.png">
+
+
+<link rel="canonical" href="http://littlefxc.github.io/2021/12/07/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>分布式限流 | 一年春又来</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">一年春又来</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81%E4%BB%8B%E7%BB%8D"><span class="nav-text">分布式限流介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81%E7%9A%84%E5%87%A0%E7%A7%8D%E7%BB%B4%E5%BA%A6"><span class="nav-text">分布式限流的几种维度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E7%AE%97%E6%B3%95"><span class="nav-text">限流算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="nav-text">令牌桶算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95"><span class="nav-text">漏桶算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A4%E6%BC%8F%E6%B4%9E%E7%AE%97%E6%B3%95-VS-%E6%BC%8F%E6%B4%9E%E7%AE%97%E6%B3%95"><span class="nav-text">令漏洞算法 VS 漏洞算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3"><span class="nav-text">滑动窗口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6"><span class="nav-text">限流组件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Guava-RateLimiter-%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%99%90%E6%B5%81"><span class="nav-text">Guava RateLimiter 客户端限流</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">203</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/12/07/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式限流
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-12-07 15:46:47 / 修改时间：17:23:06" itemprop="dateCreated datePublished" datetime="2021-12-07T15:46:47+08:00">2021-12-07</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>[TOC]</p>
+<h1 id="分布式限流介绍"><a href="#分布式限流介绍" class="headerlink" title="分布式限流介绍"></a>分布式限流介绍</h1><p>限流的目的是通过对并发访问/请求进行限速或者在一个时间窗口内的请求进行限速来保护系统，一旦请求到达限制速率则可以拒绝服务、排队或等待、降级。</p>
+<p>主要是通过压测时找出每个系统的处理峰值，然后通过处理设定峰值阈值来防止系统过载时，通过拒绝处理过载的请求来保障系统可用性。</p>
+<span id="more"></span>
+
+<h1 id="分布式限流的几种维度"><a href="#分布式限流的几种维度" class="headerlink" title="分布式限流的几种维度"></a>分布式限流的几种维度</h1><ul>
+<li>时间： 限流基于某段时间范围或者某个时间点，也就是我们常说的“时间窗口”，比如对每分钟、每秒钟的时间窗口做限定</li>
+<li>资源： 基于可用资源的限制，比如设定最大访问次数，或最高可用连接数</li>
+</ul>
+<p>上面两个维度结合起来看，限流就是在某个时间窗口对资源访问做限制，比如设定每秒最多100个访问请求。但在真正的场景里，我们不止设置一种限流规则，而是会设置多个限流规则共同作用，主要的几种限流规则如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f15a8097b023f27401174.png" alt="img"></p>
+<p>一般开发高并发系统常见的限流有：</p>
+<ul>
+<li>限制总并发数：如数据库连接池、线程池</li>
+<li>限制瞬时并发数：如Nginx的 limit_conn 模块</li>
+<li>限制时间窗口内的平均速率：如Guava的RateLimiter、Nginx的 limit_req 模块</li>
+<li>限制远程接口调用速率</li>
+<li>限制MQ的消费速率</li>
+<li>等等…</li>
+<li>还可以根据网络连接数、网络流量、CPU或内存负载</li>
+</ul>
+<h1 id="限流算法"><a href="#限流算法" class="headerlink" title="限流算法"></a>限流算法</h1><h2 id="令牌桶算法"><a href="#令牌桶算法" class="headerlink" title="令牌桶算法"></a>令牌桶算法</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211207163639135.png" alt="image-20211207163639135"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211207163552357.png" alt="image-20211207163552357"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f176d09e1a32330281388.png" alt="img"></p>
+<p>有两个关键的角色：</p>
+<ul>
+<li>令牌：获取到令牌的Request才会被处理，其他Requests要么排队要么被直接丢弃</li>
+<li>桶：用来装令牌的地方，所有Request都从这个桶里面获取令牌</li>
+</ul>
+<p>两个关键流程：</p>
+<ul>
+<li><p>生成令牌</p>
+<p>这个流程涉及到令牌生成器和令牌桶，令牌桶是一个装令牌的地方，既然是个桶那么必然有一个容量，也就是说令牌桶所能容纳的令牌数量是一个固定的数值。</p>
+<p>对于令牌生成器来说，它会根据一个预定的速率向桶中添加令牌，比如我们可以配置让它以每秒100个请求的速率发放令牌，或者每分钟50个。注意这里的发放速度是匀速，也就是说这50个令牌并非是在每个时间窗口刚开始的时候一次性发放，而是会在这个时间窗口内匀速发放。</p>
+<p>在令牌发放器就是一个水龙头，假如在下面接水的桶子满了，那么自然这个水（令牌）就流到了外面。在令牌发放过程中也一样，令牌桶的容量是有限的，如果当前已经放满了额定容量的令牌，那么新来的令牌就会被丢弃掉。</p>
+</li>
+<li><p>获取令牌</p>
+<p>每个访问请求到来后，必须获取到一个令牌才能执行后面的逻辑。假如令牌的数量少，而访问请求较多的情况下，一部分请求自然无法获取到令牌，那么这个时候我们可以设置一个“缓冲队列”来暂存这些多余的令牌。</p>
+<p><strong>缓冲队列</strong>其实是一个可选的选项，并不是所有应用了令牌桶算法的程序都会实现队列。当有缓存队列存在的情况下，那些暂时没有获取到令牌的请求将被放到这个队列中排队，直到新的令牌产生后，再从队列头部拿出一个请求来匹配令牌。</p>
+<p>当队列已满的情况下，这部分访问请求将被丢弃。在实际应用中我们还可以给这个队列加一系列的特效，比如设置队列中请求的存活时间，或者将队列改造为PriorityQueue，根据某种优先级排序，而不是先进先出。算法是死的，人是活的，先进的生产力来自于不断的创造，在技术领域尤其如此。</p>
+</li>
+</ul>
+<h2 id="漏桶算法"><a href="#漏桶算法" class="headerlink" title="漏桶算法"></a>漏桶算法</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f177b09c240dc25841544.png" alt="img"></p>
+<p>漏桶算法的前半段和令牌桶类似，但是操作的对象不同，令牌桶是将令牌放入桶里，而漏桶是将访问请求的数据包放到桶里。同样的是，如果桶满了，那么后面新来的数据包将被丢弃。</p>
+<p>漏桶算法的后半程是有鲜明特色的，它永远只会以一个恒定的速率将数据包从桶内流出。打个比方，如果我设置了漏桶可以存放100个数据包，然后流出速度是1s一个，那么不管数据包以什么速率流入桶里，也不管桶里有多少数据包，漏桶能保证这些数据包永远以1s一个的恒定速度被处理。</p>
+<h2 id="令漏洞算法-VS-漏洞算法"><a href="#令漏洞算法-VS-漏洞算法" class="headerlink" title="令漏洞算法 VS 漏洞算法"></a>令漏洞算法 VS 漏洞算法</h2><p><strong>漏桶</strong></p>
+<p>漏桶的出水速度是恒定的，那么意味着如果瞬时大流量的话，将有大部分请求被丢弃掉（也就是所谓的溢出）。</p>
+<p><strong>令牌桶</strong></p>
+<p>生成令牌的速度是恒定的，而请求去拿令牌是没有速度限制的。这意味，面对瞬时大流量，<em>该算法可以在短时间内请求拿到大量令牌</em>，而且拿令牌的过程并不是消耗很大的事情。</p>
+<p>最后，不论是对于令牌桶拿不到令牌被拒绝，还是漏桶的水满了溢出，都是为了保证大部分流量的正常使用，而牺牲掉了少部分流量，这是合理的，如果因为极少部分流量需要保证的话，那么就可能导致系统达到极限而挂掉，得不偿失。</p>
+<h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f17870983b50a33121060.png" alt="img"></p>
+<p>上图中黑色的大框就是时间窗口，我们设定窗口时间为5秒，它会随着时间推移向后滑动。我们将窗口内的时间划分为五个小格子，每个格子代表1秒钟，同时这个格子还包含一个计数器，用来计算在当前时间内访问的请求数量。那么这个时间窗口内的总访问量就是所有格子计数器累加后的数值。</p>
+<p>比如说，我们在每一秒内有5个用户访问，第5秒内有10个用户访问，那么在0到5秒这个时间窗口内访问量就是15。如果我们的接口设置了时间窗口内访问上限是20，那么当时间到第六秒的时候，这个时间窗口内的计数总和就变成了10，因为1秒的格子已经退出了时间窗口，因此在第六秒内可以接收的访问量就是20-10=10个。</p>
+<p>滑动窗口其实也是一种计算器算法，它有一个显著特点，当时间窗口的跨度越长时，限流效果就越平滑。打个比方，如果当前时间窗口只有两秒，而访问请求全部集中在第一秒的时候，当时间向后滑动一秒后，当前窗口的计数量将发生较大的变化，拉长时间窗口可以降低这种情况的发生概率</p>
+<h1 id="限流组件"><a href="#限流组件" class="headerlink" title="限流组件"></a>限流组件</h1><h2 id="Guava-RateLimiter-客户端限流"><a href="#Guava-RateLimiter-客户端限流" class="headerlink" title="Guava RateLimiter 客户端限流"></a>Guava RateLimiter 客户端限流</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+              <a href="/tags/%E9%99%90%E6%B5%81/" rel="tag"># 限流</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/12/06/%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7/" rel="prev" title="接口幂等性">
+                  <i class="fa fa-chevron-left"></i> 接口幂等性
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">一年春又来</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

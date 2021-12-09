@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">198</span>
+          <span class="site-state-item-count">203</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">121</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,438 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/04/28/Redission-introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/28/Redission-introduction/" class="post-title-link" itemprop="url">Redission 介绍</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-04-28 10:27:15 / 修改时间：10:34:00" itemprop="dateCreated datePublished" datetime="2021-04-28T10:27:15+08:00">2021-04-28</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Redisson概述"><a href="#Redisson概述" class="headerlink" title="Redisson概述"></a>Redisson概述</h1><p>在前面的章节中，我们已经接触了Redis，也知道了如何在Java中调用Redis。Redis有很多Java客户端，我们比较常用有Jedis，spring-data-redis，lettuce等。今天我们给大家介绍另外一个非常好用的Redis的Java客户端——Redisson。我们先看一下Redis官网中介绍的Java客户端列表：<br><img src="https://gitee.com/littlefxc/oss/raw/master/images/5df98c910958344319200842.png" alt="图片描述">在这个列表中，我们可以看到Redisson的后面有笑脸，有星，说明还是比较受欢迎的。再看看后面的简介，Redisson是一个在Redis服务之上的，分布式、可扩展的Java数据结构。我们进入到Redisson的官网，看看官网是怎么介绍的。</p>
+<blockquote>
+<p>Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。充分的利用了Redis键值数据库提供的一系列优势，基于Java实用工具包中常用接口，为使用者提供了一系列具有分布式特性的常用工具类。使得原本作为协调单机多线程并发程序的工具包获得了协调分布式多机多线程并发系统的能力，大大降低了设计和研发大规模分布式系统的难度。同时结合各富特色的分布式服务，更进一步简化了分布式环境中程序相互之间的协作。它不仅提供了一系列的分布式的Java常用对象，还提供了许多分布式服务。Redisson提供了使用Redis的最简单和最便捷的方法。Redisson的宗旨是促进使用者对Redis的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
+</blockquote>
+<p>上面一段话看起来有点晦涩难懂，总结起来可以归结为一下几点：</p>
+<ul>
+<li>Redisson提供了使用Redis的最简单和最便捷的方法；</li>
+<li>开发人员不需过分关注Redis，集中精力关注业务即可；</li>
+<li>基于Redis，提供了在Java中具有分布式特性的工具类；</li>
+<li>使Java中的并发工具包获得了协调多机多线程并发的能力；</li>
+</ul>
+<h2 id="Redisson特性"><a href="#Redisson特性" class="headerlink" title="Redisson特性"></a>Redisson特性</h2><p>上面我们对Redisson有了一个整体的印象，接下来我们看看它都有哪些特点。</p>
+<h4 id="支持的Redis的配置"><a href="#支持的Redis的配置" class="headerlink" title="支持的Redis的配置"></a>支持的Redis的配置</h4><p>Redisson支持多种Redis配置，无论你的Redis是单点、集群、主从还是哨兵模式，它都是支持的。只需要在Redisson的配置文件中，增加相应的配置就可以了。</p>
+<h4 id="支持的Java实体"><a href="#支持的Java实体" class="headerlink" title="支持的Java实体"></a>支持的Java实体</h4><p>Redisson支持多种Java实体，使其具有分布式的特性。我们比较常用的有：AtomicLong（原子Long）、AtomicDouble（原子Double）、PublishSubscribe（发布订阅）等。</p>
+<h4 id="Java分布式锁与同步器"><a href="#Java分布式锁与同步器" class="headerlink" title="Java分布式锁与同步器"></a>Java分布式锁与同步器</h4><p>Redisson支持Java并发包中的多种锁，比如：Lock（可重入锁）、FairLock（公平锁）、MultiLock（联锁）、RedLock（红锁）、ReadWriteLock（读写锁）、Semaphore（信号量）、CountDownLatch（闭锁）等。我们注意到这些都是Java并发包中的类，Redisson借助于Redis又重新实现了一套，使其具有了分布式的特性。以后我们在使用Redisson中的这些类的时候，可以跨进程跨JVM去使用。</p>
+<h4 id="分布式Java集合"><a href="#分布式Java集合" class="headerlink" title="分布式Java集合"></a>分布式Java集合</h4><p>Redisson对Java的集合类也进行了封装，使其具有分布式的特性。如：Map、Set、List、Queue、Deque、BlockingQueue等。以后我们就可以在分布式的环境中使用这些集合了。</p>
+<h4 id="与Spring框架的整合"><a href="#与Spring框架的整合" class="headerlink" title="与Spring框架的整合"></a>与Spring框架的整合</h4><p>Redisson可以与Spring大家族中的很多框架进行整合，其中包括：Spring基础框架、Spring Cache、Spring Session、Spring Data Redis、Spring Boot等。在项目中我们可以轻松的与这些框架整合，通过简单的配置就可以实现项目的需求。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过上面的介绍，我相信大家对Redisson有了比较初步的了解，大部分人可能对Redisson有了浓厚的兴趣，迫不及待的想在自己的项目使用Redisson。Redisson的使用方法以及Redisson的分布式锁，我们会在后面的视频教程中给大家做详细的介绍。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/04/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E5%85%AC%E5%B9%B3%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E5%85%AC%E5%B9%B3%E9%94%81/" class="post-title-link" itemprop="url">Java多线程JUC锁之公平锁</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-25 22:26:40" itemprop="dateCreated datePublished" datetime="2021-04-25T22:26:40+08:00">2021-04-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-05-07 19:20:10" itemprop="dateModified" datetime="2021-05-07T19:20:10+08:00">2021-05-07</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <blockquote>
+<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3496147.html">https://www.cnblogs.com/skywang12345/p/3496147.html</a></p>
+</blockquote>
+<h1 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1 基本概念"></a><strong>1 基本概念</strong></h1><p>本章，我们会讲解“线程获取公平锁”的原理；在讲解之前，需要了解几个基本概念。后面的内容，都是基于这些概念的；这些概念可能比较枯燥，但从这些概念中，能窥见“java锁”的一些架构，这对我们了解锁是有帮助的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/25/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81%E4%B9%8B%E5%85%AC%E5%B9%B3%E9%94%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/04/20/logstash%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/20/logstash%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">logstash基础语法与使用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-04-20 22:21:10 / 修改时间：22:27:50" itemprop="dateCreated datePublished" datetime="2021-04-20T22:21:10+08:00">2021-04-20</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="logstash基础语法与使用"><a href="#logstash基础语法与使用" class="headerlink" title="logstash基础语法与使用"></a>logstash基础语法与使用</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 解压安装</span></span><br><span class="line">tar -zxvf logstash-6.6.0.tar.gz -C /usr/<span class="built_in">local</span>/</span><br><span class="line"></span><br><span class="line"><span class="comment">## conf下配置文件说明：</span></span><br><span class="line"><span class="comment"># logstash配置文件：/config/logstash.yml</span></span><br><span class="line"><span class="comment"># JVM参数文件：/config/jvm.options</span></span><br><span class="line"><span class="comment"># 日志格式配置文件：log4j2.properties</span></span><br><span class="line"><span class="comment"># 制作Linux服务参数：/config/startup.options</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 配置文件说明：</span></span><br><span class="line">vim /usr/<span class="built_in">local</span>/logstash-6.6.0/config/logstash.yml</span><br><span class="line"></span><br><span class="line">--path.config 或 –f ：logstash启动时使用的配置文件</span><br><span class="line">--configtest 或 –t：测试 Logstash 读取到的配置文件语法是否能正常解析</span><br><span class="line">--<span class="built_in">log</span>或-l：日志输出存储位置</span><br><span class="line">--pipeline.workers 或 –w：运行 filter 和 output 的 pipeline 线程数量。默认是 CPU 核数。</span><br><span class="line">--pipeline.batch.size 或 –b：每个 Logstash pipeline 线程，在执行具体的 filter 和 output 函数之前，最多能累积的日志条数。</span><br><span class="line">--pipeline.batch.delay 或 –u：每个 Logstash pipeline 线程，在打包批量日志的时候，最多等待几毫秒。</span><br><span class="line">--verbose：输出调试日志</span><br><span class="line">--debug：输出更多的调试日志</span><br><span class="line"></span><br><span class="line"><span class="comment">## 虚拟机配置</span></span><br><span class="line">vim /usr/<span class="built_in">local</span>/logstash-6.6.0/config/jvm.options</span><br><span class="line"></span><br><span class="line"><span class="comment">## 启动配置 比如启动时的java位置、LS的home等</span></span><br><span class="line">vim /usr/<span class="built_in">local</span>/logstash-6.6.0/config/startup.options</span><br><span class="line"></span><br><span class="line"><span class="comment">## 数据收集目录：/usr/local/logstash-6.6.0/data</span></span><br><span class="line"><span class="comment">## 插件目录：/usr/local/logstash-6.6.0/vendor/bundle/jruby/1.9/gems</span></span><br><span class="line"><span class="comment">## 查看插件命令：</span></span><br><span class="line">/usr/<span class="built_in">local</span>/logstash-6.6.0/bin/logstash-plugin list</span><br><span class="line"><span class="comment">## 更新插件命令：</span></span><br><span class="line">/usr/<span class="built_in">local</span>/logstash-6.6.0/bin/logstash-plugin update logstash-xxxx-xxxxx</span><br><span class="line"><span class="comment">## 安装插件命令：</span></span><br><span class="line">/usr/<span class="built_in">local</span>/logstash-6.6.0/bin/logstash-plugin install logstash-xxxx-xxxxx</span><br><span class="line"><span class="comment">## 插件地址： https://github.com/logstash-plugins</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>logstash语法与基本使用：</strong></p>
+<ol>
+<li><p>Logstash设计了自己的DSL包括有区域，注释，数据类型(布尔值，字符串，数值，数组，哈希)，条件判断字段引用等。</p>
+</li>
+<li><p>Logstash用{}来定义区域。区域内可以包括插件区域定义，你可以在一个区域内定义多个插件。插件区域内则可以定义键值对设置。</p>
+</li>
+<li><p>格式、语法、使用方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 注释.</span><br><span class="line">input &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">filter &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">output &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>两个input设置：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">input &#123;</span><br><span class="line">  file &#123;</span><br><span class="line">    path &#x3D;&gt; &quot;&#x2F;var&#x2F;log&#x2F;messages&quot;</span><br><span class="line">    type &#x3D;&gt; &quot;syslog&quot;</span><br><span class="line">  &#125;</span><br><span class="line">  file &#123;</span><br><span class="line">    path &#x3D;&gt; &quot;&#x2F;var&#x2F;log&#x2F;apache&#x2F;access.log&quot;</span><br><span class="line">    type &#x3D;&gt; &quot;apache&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;                                                           </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">## 数据类型：</span><br><span class="line">## bool类型</span><br><span class="line">debug &#x3D;&gt; true</span><br><span class="line">## string类型</span><br><span class="line">host &#x3D;&gt; &quot;hostname&quot;</span><br><span class="line">## number类型</span><br><span class="line">port &#x3D;&gt; 6789</span><br><span class="line">## array or list类型</span><br><span class="line">path &#x3D;&gt; [&quot;&#x2F;var&#x2F;log&#x2F;message&quot;,&quot;&#x2F;var&#x2F;log&#x2F;*.log&quot;]</span><br><span class="line">## hash类型</span><br><span class="line">match &#x3D;&gt; &#123;</span><br><span class="line">    &quot;field1&quot; &#x3D;&gt; &quot;value1&quot;</span><br><span class="line">    &quot;field2&quot; &#x3D;&gt; &quot;value2&quot;</span><br><span class="line">&#125;</span><br><span class="line">## codec类型</span><br><span class="line">codec &#x3D;&gt; &quot;json&quot;</span><br><span class="line"></span><br><span class="line">##字段引用方式：</span><br><span class="line">&#123;</span><br><span class="line">    &quot;agent&quot;:  &quot;Mozilla&#x2F;5.0  (compatible;  MSIE  9.0)&quot;,</span><br><span class="line">    &quot;ip&quot;:  &quot;192.168.24.44&quot;,</span><br><span class="line">    &quot;request&quot;:  &quot;&#x2F;index.html&quot;</span><br><span class="line">    &quot;response&quot;:  &#123;</span><br><span class="line">        &quot;status&quot;:  200,</span><br><span class="line">        &quot;bytes&quot;:  52353</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;ua&quot;:  &#123;</span><br><span class="line">        &quot;os&quot;:  &quot;Windows  7&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">##获取字段值：</span><br><span class="line">[response][status]</span><br><span class="line">[ua][os]                                       </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">## 条件判断condition：</span><br><span class="line">if EXPRESSION &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125; else if EXPRESSION &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125; else &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;(等于), !&#x3D;(不等于), &lt;(小于), &gt;(大于), &lt;&#x3D;(小于等于), &gt;&#x3D;(大于等于), &#x3D;~(匹配正则), !~（不匹配正则）</span><br><span class="line">in(包含), not in(不包含), and(与), or(或), nand(非与), xor(非或)</span><br><span class="line">()(复合表达式), !()(对复合表达式结果取反)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">## 使用环境变量（缺失报错）:</span><br><span class="line">input &#123; </span><br><span class="line">	tcp &#123; </span><br><span class="line">		port &#x3D;&gt; &quot;$&#123;TCP_PORT&#125;&quot; </span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br><span class="line">## 使用环境变量（缺失使用默认值）：</span><br><span class="line">input &#123; </span><br><span class="line">	tcp &#123; </span><br><span class="line">		port &#x3D;&gt; &quot;$&#123;TCP_PORT:54321&#125;&quot; </span><br><span class="line">	&#125; </span><br><span class="line">&#125;                                            </span><br></pre></td></tr></table></figure></li>
+<li><p>logstash例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">## input 从标准输入流：</span><br><span class="line">input &#123; stdin &#123; &#125; &#125;</span><br><span class="line"></span><br><span class="line">## 输入数据之后 如何进行处理：</span><br><span class="line">filter &#123;</span><br><span class="line">  ## grok：解析元数据插件,这里从input输入进来的所有数据默认都会存放到 &quot;message&quot; 字段中</span><br><span class="line">  ## grok提供很多正则表达式，地址为：http:&#x2F;&#x2F;grokdebug.herokuapp.com&#x2F;patterns</span><br><span class="line">  ## 比如：%&#123;COMBINEDAPACHELOG&#125; 表示其中一种正则表达式 Apache的表达式</span><br><span class="line">  grok &#123;</span><br><span class="line">    match &#x3D;&gt; &#123; &quot;message&quot; &#x3D;&gt; &quot;%&#123;COMBINEDAPACHELOG&#125;&quot; &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ## date：日期格式化</span><br><span class="line">  date &#123;</span><br><span class="line">    match &#x3D;&gt; [ &quot;timestamp&quot; , &quot;dd&#x2F;MMM&#x2F;yyyy:HH:mm:ss Z&quot; ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## output 从标准输出流：</span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123; hosts &#x3D;&gt; [&quot;192.168.11.35:9200&quot;] &#125;</span><br><span class="line">  stdout &#123; codec &#x3D;&gt; rubydebug &#125;</span><br><span class="line">&#125;                         </span><br></pre></td></tr></table></figure></li>
+<li><p>file插件使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">## file插件</span><br><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        path &#x3D;&gt; [&quot;&#x2F;var&#x2F;log&#x2F;*.log&quot;, &quot;&#x2F;var&#x2F;log&#x2F;message&quot;]</span><br><span class="line">        type &#x3D;&gt; &quot;system&quot;</span><br><span class="line">        start_position &#x3D;&gt; &quot;beginning&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">## 其他参数：</span><br><span class="line">discover_interval ## 表示每隔多久检测一下文件，默认15秒</span><br><span class="line">exclude ## 表示排除那些文件</span><br><span class="line">close_older ## 文件超过多长时间没有更新，就关闭监听 默认3600s</span><br><span class="line">ignore_older ## 每次检查文件列表 如果有一个文件 最后修改时间超过这个值 那么就忽略文件 86400s</span><br><span class="line">sincedb_path ## sincedb保存文件的位置，默认存在home下（&#x2F;dev&#x2F;null）</span><br><span class="line">sincedb_write_interval ## 每隔多久去记录一次 默认15秒</span><br><span class="line">stat_interval ## 每隔多久查询一次文件状态 默认1秒</span><br><span class="line">start_position ## 从头开始读取或者从结尾开始读取</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/04/08/Flink%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/08/Flink%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/" class="post-title-link" itemprop="url">Flink核心概念</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-08 19:55:12" itemprop="dateCreated datePublished" datetime="2021-04-08T19:55:12+08:00">2021-04-08</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-05-07 14:07:46" itemprop="dateModified" datetime="2021-05-07T14:07:46+08:00">2021-05-07</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>运行 Flink 应用其实非常简单，但是在运行 Flink 应用之前，还是有必要了解 Flink 运行时的各个组件，因为这涉及到 Flink 应用的配置问题。下图 所示，这是用户用 DataStream API 写的一个数据处理程序。可以看到，在一个 DAG 图中不能被 Chain 在一起的 Operator 会被分隔到不同的 Task 中，也就是说 Task 是 Flink 中资源调度的最小单位。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/04/08/Flink%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/04/08/flink%E8%B5%84%E6%96%99%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/04/08/flink%E8%B5%84%E6%96%99%E6%B1%87%E6%80%BB/" class="post-title-link" itemprop="url">flink资料汇总</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-04-08 16:58:57 / 修改时间：17:29:17" itemprop="dateCreated datePublished" datetime="2021-04-08T16:58:57+08:00">2021-04-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <ul>
+<li><p><a target="_blank" rel="noopener" href="https://ververica.cn/wp-content/uploads/2020/03/Apache-Flink-Stateful-Computations-over-Data-Streams.pdf">Flink知识图谱</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://ververica.cn/">中文社区</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/flink-china">https://github.com/flink-china</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://github.com/flink-china/flink-training-course">Flink 中文视频课程（持续更新…）</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.iteblog.com/archives/category/flink/">https://www.iteblog.com/archives/category/flink/</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1076,622 +1508,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/26/opentsdb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/26/opentsdb/" class="post-title-link" itemprop="url">opentsdb</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-26 11:28:48" itemprop="dateCreated datePublished" datetime="2021-03-26T11:28:48+08:00">2021-03-26</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-31 11:06:18" itemprop="dateModified" datetime="2021-03-31T11:06:18+08:00">2021-03-31</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="1-OpenTSDB-概述"><a href="#1-OpenTSDB-概述" class="headerlink" title="1 OpenTSDB 概述"></a>1 OpenTSDB 概述</h1><p><a target="_blank" rel="noopener" href="http://opentsdb.net/overview.html">官网概述</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/OpenTSDB/opentsdb">源码</a></p>
-<p>OpenTSDB是基于HBase的分布式、可伸缩的时间序列数据库。它存储的是时间序列数据，时间序列数据是指在不同时间点上收集到的数据，这类数据反映了一个对象随时间的变化状态或程度。</p>
-<h2 id="1-1-架构"><a href="#1-1-架构" class="headerlink" title="1.1 架构"></a>1.1 架构</h2><p>OpenTSDB由时间序列守护进程（TSD）和一组命令行实用程序组成。与OpenTSDB的交互主要通过运行一个或多个TSD来实现。每个TSD都是独立的。没有主服务器，没有共享状态，因此您可以根据需要运行任意数量的TSD来处理您向其投入的任何负载。每个TSD使用CloudTable集群中的HBase来存储和检索时间序列数据。数据模式经过高度优化，可快速聚合相似的时间序列，从而最大限度地减少存储空间。TSD的用户不需要直接访问底层存储。您可以通过HTTP API与TSD进行通信。所有通信都发生在同一个端口上（TSD通过查看它收到的前几个字节来确定客户端的协议）。</p>
-<p><img src="http://opentsdb.net/img/tsdb-architecture.png" alt="tsdb-architecture"></p>
-<h2 id="1-2-基本概念"><a href="#1-2-基本概念" class="headerlink" title="1.2 基本概念"></a>1.2 基本概念</h2><ul>
-<li><p><strong>data point</strong>：时间序列数据点，包括metric、timestamp、value和tag。表示某个metric在某个时间点的数值。</p>
-</li>
-<li><p><strong>metric</strong>：指标项。例如，在系统监控中的CPU使用率、内存、IO等指标。</p>
-</li>
-<li><p><strong>timestamp</strong>：UNIX时间戳（自Epoch以来的秒或毫秒），即value产生的时间。</p>
-</li>
-<li><p><strong>value</strong>：某个metric的值，是JSON格式的事件或直方图/摘要。</p>
-</li>
-<li><p>tag：标签，是由Tagk和Tagv组成的键值对。用于描述该点所属的时间序列。</p>
-<p>标签允许您从不同的源或相关实体中分离出类似的数据点，因此您可以轻松地单独或成组地绘制它们。标签的一个常见用法是使用生成数据点的机器名称以及机器所属的集群或池的名称来注释数据点。这使您可以轻松地制作显示每个服务器的服务状态的仪表盘，以及显示跨逻辑服务器池的聚合状态的仪表盘。</p>
-</li>
-</ul>
-<h2 id="1-3-OpenTSDB系统表简介"><a href="#1-3-OpenTSDB系统表简介" class="headerlink" title="1.3 OpenTSDB系统表简介"></a>1.3 OpenTSDB系统表简介</h2><p>OpenTSDB是基于HBase存储时序列数据的，在集群中开启OpenTSDB后，系统会在集群中创建4张HBase表。OpenTSDB系统表如下表所示。</p>
-<blockquote>
-<p>请不要人为去修改这4张HBase表，因为这可能会导致OpenTSDB不可用。</p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>表名</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>OPENTSDB.DATA</td>
-<td>用于存储数据点，OpenTSDB的所有数据都存储在这个表中。OpenTSDB按照salt进行分区，默认20个region，暂不支持设置。</td>
-</tr>
-<tr>
-<td>OPENTSDB.UID</td>
-<td>用于存储UID映射，数据点中的每个metric，tag都会映射成UID，同时每个UID反向映射为metric，tag，这些映射关系存储在这个表中。</td>
-</tr>
-<tr>
-<td>OPENTSDB.TREE</td>
-<td>用于存储metric的结构信息，默认未开启该特性。</td>
-</tr>
-<tr>
-<td>OPENTSDB.META</td>
-<td>用于存储时间序列索引和元数据，默认未开启该特性。</td>
-</tr>
-</tbody></table>
-<h1 id="2-安装"><a href="#2-安装" class="headerlink" title="2 安装"></a>2 安装</h1><h2 id="2-1-运行时要求"><a href="#2-1-运行时要求" class="headerlink" title="2.1 运行时要求"></a>2.1 运行时要求</h2><p>要实际运行OpenTSDB，您需要满足以下条件：</p>
-<ul>
-<li>Linux系统</li>
-<li>Java运行时环境1.6或更高版本</li>
-<li>HBase 0.92 或更高版本</li>
-<li>GnuPlot 4.2 或更高版本</li>
-</ul>
-<h2 id="2-2-手动安装"><a href="#2-2-手动安装" class="headerlink" title="2.2 手动安装"></a>2.2 手动安装</h2><p>当然，如果为了尽快上手，你也可以<code>standalone</code>模式（该模式独立运行zookeeper，hbase数据保存在本地）安装 HBase。(所以如果需要好的性能，整套大数据集群是少不了的)</p>
-<p>opentsdb的安装方式有两种：源码编译安装和RPM包安装。</p>
-<h3 id="2-2-1-源码编译安装"><a href="#2-2-1-源码编译安装" class="headerlink" title="2.2.1 源码编译安装"></a>2.2.1 源码编译安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone git://github.com/OpenTSDB/opentsdb.git</span><br><span class="line">cd opentsdb</span><br><span class="line">./build.sh # 等同于 .configure &amp;&amp; make</span><br><span class="line">./build/tsdb # 等同于 make install</span><br></pre></td></tr></table></figure>
-
-<p>如果要卸载的话，执行 <code>make uninstall</code>。</p>
-<h3 id="2-2-2-RPM-包安装"><a href="#2-2-2-RPM-包安装" class="headerlink" title="2.2.2 RPM 包安装"></a>2.2.2 RPM 包安装</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 直接从 github 上下载 OpenTSDB 的 release 版本的 RPM 包。</span></span><br><span class="line">yum localinstall opentsdb-2.3.1.noarch.rpm</span><br></pre></td></tr></table></figure>
-
-<p>注： 安装时会提示下面两个问题 </p>
-<ul>
-<li><p>gnuplot-4.6.2-3.el7.x86_64: [Errno 256] No more mirrors to try. </p>
-</li>
-<li><p>gnuplot-common-4.6.2-3.el7.x86_64: [Errno 256] No more mirrors to try. </p>
-</li>
-</ul>
-<p>这个是应为CentOS中官方的yum源默认是国外的源，除非挂载VPN，否者不发找到镜像。<br>解决方法： </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 先下载阿里源</span> </span><br><span class="line">wget http://mirrors.aliyun.com/repo/Centos-7.repo -O /etc/yum.repos.d/CentOS-Base.repo</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后更新源</span></span><br><span class="line">yum makecache </span><br></pre></td></tr></table></figure>
-
-<p>再重新安装OpenTSDB。</p>
-<h3 id="2-2-3-建表"><a href="#2-2-3-建表" class="headerlink" title="2.2.3 建表"></a>2.2.3 建表</h3><p>配置完成后，我们通过下面命令在 HBase 中建立 opentsdb 所需的表。默认情况下 opentsdb 建立的 HBase 表启用了 lzo 压缩。需要开启 Hadoop 中的 lzo 压缩支持， 这里我们直接在下面脚本中把 COMPRESSION 的支持关闭。修改 <code>/usr/share/opentsdb/tools/create_table.sh</code>，设置 COMPRESSION=NONE，并且在文件开始处设置 HBase 所在目录。之后执行该脚本，在 HBase 中创建相应的表，命令如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># COMPRESSION 的值有：NONE, LZO, GZIP or SNAPPY，</span></span><br><span class="line"><span class="comment"># TSDB_TTL: 数据只保存一个月</span></span><br><span class="line">env COMPRESSION=snappy HBASE_HOME=/usr/<span class="built_in">local</span>/hbase TSDB_TTL=1296000 /usr/share/opentsdb/tools/create_table.sh</span><br></pre></td></tr></table></figure>
-
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lin443514407lin/article/details/80591867">opentsdb调优</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bigdataf/article/details/87350357">opentsdb加kerberos认证</a></p>
-<h3 id="2-2-4-启动"><a href="#2-2-4-启动" class="headerlink" title="2.2.4 启动"></a>2.2.4 启动</h3><p>启动 OpenTSDB，<code>service opentsdb start</code> 或者 <code>nohup tsdb tsd &amp;</code>。</p>
-<p>通过浏览器访问 <a target="_blank" rel="noopener" href="http://localhost:4242/%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E6%88%90%E5%8A%9F%E3%80%82">http://localhost:4242/查看是否安装成功。</a></p>
-<h2 id="2-3-Docker-安装"><a href="#2-3-Docker-安装" class="headerlink" title="2.3 Docker 安装"></a>2.3 Docker 安装</h2><p>还有一种更快速便捷的方法，就是直接使用 docker 安装。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 4242:4242 --name opentsdb petergrace/opentsdb-docker</span><br></pre></td></tr></table></figure>
-
-<p>-d表示在后台运行，<br>-p绑定主机端口，<br>–name为容器命名为opentsdb</p>
-<p>下次可以直接使用：<br>docker start opentsdb启动<br>docker stop opentsdb停止<br>docker rm opentsdb删除</p>
-<h1 id="3-配置"><a href="#3-配置" class="headerlink" title="3 配置"></a>3 配置</h1><p>OpenTSDB所有的配置都在 <a target="_blank" rel="noopener" href="http://opentsdb.net/docs/build/html/user_guide/configuration.html#data-types">link</a>. 这里列出来的配置基本都有默认值，但是有些需要根据环境和性能做出改变，具体如下表：</p>
-<table>
-<thead>
-<tr>
-<th>配置项</th>
-<th>默认值</th>
-<th>描述</th>
-<th>修改值</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>tsd.core.preload_uid_cache</td>
-<td>false</td>
-<td>是否在TSD启动的时候，预热UID缓存数据，为了提升性能，需要开启</td>
-<td>true</td>
-</tr>
-<tr>
-<td>tsd.core.auto_create_metrics</td>
-<td>false</td>
-<td>一个新的metric存入tsdb时，是否自动为其生成UID，如果true,存入成功，反之，失败。(按照最大优化性能的目标来说，应该预先为所有的metric生成UID，但是实际中预先不知道所有的metric,所以这个值需要设置为true)</td>
-<td>true</td>
-</tr>
-<tr>
-<td>tsd.http.cachedir</td>
-<td>无</td>
-<td>tsd写临时文件的目录    根据实际环境设置，比如/tmp/opentsdb</td>
-<td></td>
-</tr>
-<tr>
-<td>tsd.http.request.enable_chunked</td>
-<td>false</td>
-<td>Http写入数据时是否支持一次写入大批量的数据</td>
-<td>true</td>
-</tr>
-<tr>
-<td>tsd.http.request.max_chunk</td>
-<td>4096</td>
-<td>写入的批量数据的上限    根据需要增大，比如65535</td>
-<td></td>
-</tr>
-<tr>
-<td>tsd.http.staticroot</td>
-<td>无</td>
-<td>opentsdb页面的静态资源文件目录    安装目录下 ./build/staticroot</td>
-<td></td>
-</tr>
-<tr>
-<td>tsd.network.port</td>
-<td>无</td>
-<td>tsd读写数据的端口 根据实际配置 比如9099</td>
-<td></td>
-</tr>
-<tr>
-<td>tsd.query.timeout</td>
-<td>0</td>
-<td>tsd查询的timeout,如果为0,则不会timeout    合理配置。 比如200</td>
-<td></td>
-</tr>
-<tr>
-<td>tsd.storage.enable_appends</td>
-<td>false</td>
-<td>2.2版本，tsd 写数据到HBase有两种方式，一种是每来一条数据append到hbase, 一种是先缓存大量数据到tsd内存，然后进行compaction，一些性写入。推荐Append方式</td>
-<td>true</td>
-</tr>
-<tr>
-<td>tsd.storage.enable_compaction</td>
-<td>true</td>
-<td>append打开，这种就关闭</td>
-<td>false</td>
-</tr>
-<tr>
-<td>tsd.storage.fix_duplicates</td>
-<td>false</td>
-<td>相同时间存储相同metric的时候(重复数据)，最新写入的覆盖前面的值</td>
-<td>true</td>
-</tr>
-<tr>
-<td>tsd.storage.hbase.zk_basedir</td>
-<td>/hbase</td>
-<td>hbase 的zk的目录</td>
-<td>根据实际配置</td>
-</tr>
-<tr>
-<td>tsd.storage.hbase.zk_quorum</td>
-<td>localhost</td>
-<td>hbase 的zk地址</td>
-<td>根据实际配置</td>
-</tr>
-</tbody></table>
-<h1 id="4-OpenTSDB-API简介"><a href="#4-OpenTSDB-API简介" class="headerlink" title="4 OpenTSDB API简介"></a>4 OpenTSDB API简介</h1><p>OpenTSDB提供了基于HTTP或HTTPS的应用程序接口。请求方式是通过向资源对应的路径发送标准的HTTP请求，请求包含GET、POST方法。它的接口与开源OpenTSDB保持一致，请参见<a target="_blank" rel="noopener" href="http://opentsdb.net/docs/build/html/api_http/index.html%E3%80%82">http://opentsdb.net/docs/build/html/api_http/index.html。</a></p>
-<h2 id="4-1-api-put"><a href="#4-1-api-put" class="headerlink" title="4.1 /api/put"></a>4.1 /api/put</h2><h2 id="4-2-api-query"><a href="#4-2-api-query" class="headerlink" title="4.2 /api/query"></a>4.2 /api/query</h2><h2 id="4-3-api-search"><a href="#4-3-api-search" class="headerlink" title="4.3 /api/search"></a>4.3 /api/search</h2><h1 id="5-开发-OpenTSDB-应用"><a href="#5-开发-OpenTSDB-应用" class="headerlink" title="5 开发 OpenTSDB 应用"></a>5 开发 OpenTSDB 应用</h1><h2 id="5-1-示例场景"><a href="#5-1-示例场景" class="headerlink" title="5.1 示例场景"></a>5.1 示例场景</h2>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/24/Spring-Integration-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/24/Spring-Integration-1/" class="post-title-link" itemprop="url">Spring Integration(1)</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-24 16:57:18" itemprop="dateCreated datePublished" datetime="2021-03-24T16:57:18+08:00">2021-03-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 22:19:43" itemprop="dateModified" datetime="2021-03-25T22:19:43+08:00">2021-03-25</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><em>Spring Integration 对 Spring 编程模型进行了扩展，使得后者能够支持著名的“<a target="_blank" rel="noopener" href="https://www.oschina.net/action/GoToLink?url=http://www.eaipatterns.com/">企业集成模式</a>”。通过SI（Spring Integration）可以在基于Spring的应用中引入轻量级的“消息驱动模式”，并且支持“通过声明式的适配器”与外部系统进行集成。这些“适配器”相较于Spring对于“remoting（远程调用）”、“messaging（事件消息）”、“scheduling（任务调度）”方面的支持，提供了更高层次的一种抽象。SI的首要目标是：为“构建企业集成方案、维护系统间通信”提供一种<strong>简单模型</strong>，应用该模型所产出的代码是<strong>可维护、可测试的</strong>。</em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/24/Spring-Integration-1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/" class="post-title-link" itemprop="url">Spring Boot 中如何统一 API 接口响应格式？</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-22 19:30:14" itemprop="dateCreated datePublished" datetime="2021-03-22T19:30:14+08:00">2021-03-22</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:59:09" itemprop="dateModified" datetime="2021-03-25T21:59:09+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/8aMz07rOF5LuclnBaI_p5g">https://mp.weixin.qq.com/s/8aMz07rOF5LuclnBaI_p5g</a></p>
-</blockquote>
-<hr>
-<p>今天又要给大家介绍一个 Spring Boot 中的组件–HandlerMethodReturnValueHandler。</p>
-<p>在前面的文章中（<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI1NDY0MTkzNQ==&mid=2247492446&idx=1&sn=d75472fed90752c609a918aefd2796d4&scene=21#wechat_redirect">如何优雅的实现 Spring Boot 接口参数加密解密？</a>），松哥已经和大家介绍过如何对请求/响应数据进行预处理/二次处理，当时我们使用了 ResponseBodyAdvice 和 RequestBodyAdvice。其中 ResponseBodyAdvice 可以实现对响应数据的二次处理，可以在这里对响应数据进行加密/包装等等操作。不过这不是唯一的方案，今天松哥要和大家介绍一种更加灵活的方案–HandlerMethodReturnValueHandler，我们一起来看看下。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/22/Spring-Boot-%E4%B8%AD%E5%A6%82%E4%BD%95%E7%BB%9F%E4%B8%80-API-%E6%8E%A5%E5%8F%A3%E5%93%8D%E5%BA%94%E6%A0%BC%E5%BC%8F%EF%BC%9F/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/03/22/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81-%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/22/Java%E5%A4%9A%E7%BA%BF%E7%A8%8BJUC%E9%94%81-%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">Java多线程JUC锁-简介</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-22 16:51:24" itemprop="dateCreated datePublished" datetime="2021-03-22T16:51:24+08:00">2021-03-22</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skywang12345/p/3496098.html">Java多线程系列–“JUC锁”01之 框架</a></p>
-</blockquote>
-<p>[TOC]</p>
-<h1 id="synchronized-同步锁"><a href="#synchronized-同步锁" class="headerlink" title="synchronized 同步锁"></a>synchronized 同步锁</h1><p>使用 <code>synchronized</code> 关键字进行同步，实现对竞争资源的互斥访问的锁。Java 1.0版本中就已经支持同步锁了。</p>
-<p>同步锁的原理是，对于每一个对象，有且仅有一个同步锁；不同的线程能共同访问该同步锁。但是，在同一个时间点，该同步锁能且只能被一个线程获取到。这样，获取到同步锁的线程就能进行CPU调度，从而在CPU上执行；而没有获取到同步锁的线程，必须进行等待，直到获取到同步锁之后才能继续运行。这就是，多线程通过同步锁进行同步的原理！</p>
-<h1 id="java-util-concurrent-包中的锁"><a href="#java-util-concurrent-包中的锁" class="headerlink" title="java.util.concurrent 包中的锁"></a>java.util.concurrent 包中的锁</h1><p><strong>相比同步锁，JUC包中的锁的功能更加强大，它为锁提供了一个框架，该框架允许更灵活地使用锁，只是它的用法更难罢了。</strong></p>
-<p>JUC包中的锁，包括：Lock接口，ReadWriteLock接口，LockSupport阻塞原语，Condition条件，AbstractOwnableSynchronizer/AbstractQueuedSynchronizer/AbstractQueuedLongSynchronizer三个抽象类，ReentrantLock独占锁，ReentrantReadWriteLock读写锁。由于CountDownLatch，CyclicBarrier和Semaphore也是通过AQS来实现的；因此，我也将它们归纳到锁的框架中进行介绍。</p>
-<p>先看看锁的框架图，如下所示。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/271147386096273.jpg" alt="img"></p>
-<h2 id="Lock"><a href="#Lock" class="headerlink" title="Lock"></a>Lock</h2><p>JUC包中的 Lock 接口支持那些语义不同(重入、公平等)的锁规则。所谓语义不同，是指锁可是有”公平机制的锁”、”非公平机制的锁”、”可重入的锁”等等。”公平机制”是指”不同线程获取锁的机制是公平的”，而”非公平机制”则是指”不同线程获取锁的机制是非公平的”，”可重入的锁”是指同一个锁能够被一个线程多次获取。</p>
-<h2 id="ReadWriteLock"><a href="#ReadWriteLock" class="headerlink" title="ReadWriteLock"></a>ReadWriteLock</h2><p>ReadWriteLock 接口以和Lock类似的方式定义了一些读取者可以共享而写入者独占的锁。JUC包只有一个类实现了该接口，即 ReentrantReadWriteLock，因为它适用于大部分的标准用法上下文。但程序员可以创建自己的、适用于非标准要求的实现。</p>
-<h2 id="AbstractOwnableSynchronizer-AbstractQueuedSynchronizer-AbstractQueuedLongSynchronizer"><a href="#AbstractOwnableSynchronizer-AbstractQueuedSynchronizer-AbstractQueuedLongSynchronizer" class="headerlink" title="AbstractOwnableSynchronizer/AbstractQueuedSynchronizer/AbstractQueuedLongSynchronizer"></a>AbstractOwnableSynchronizer/AbstractQueuedSynchronizer/AbstractQueuedLongSynchronizer</h2><p>AbstractQueuedSynchronizer就是被称之为<strong>AQS</strong>的类，它是一个非常有用的超类，可用来定义锁以及依赖于排队阻塞线程的其他同步器；ReentrantLock，ReentrantReadWriteLock，CountDownLatch，CyclicBarrier和Semaphore等这些类都是基于AQS类实现的。AbstractQueuedLongSynchronizer 类提供相同的功能但扩展了对同步状态的 64 位的支持。两者都扩展了类 AbstractOwnableSynchronizer（一个帮助记录当前保持独占同步的线程的简单类）。</p>
-<h2 id="LockSupport"><a href="#LockSupport" class="headerlink" title="LockSupport"></a>LockSupport</h2><p>LockSupport提供“创建锁”和“其他同步类的基本线程阻塞原语”。<br>LockSupport的功能和”Thread中的Thread.suspend()和Thread.resume()有点类似”，LockSupport中的park() 和 unpark() 的作用分别是阻塞线程和解除阻塞线程。但是park()和unpark()不会遇到“Thread.suspend 和 Thread.resume所可能引发的死锁”问题。</p>
-<h2 id="Condition"><a href="#Condition" class="headerlink" title="Condition"></a>Condition</h2><p>Condition需要和Lock联合使用，它的作用是代替Object监视器方法，可以通过await(),signal()来休眠/唤醒线程。<br>Condition 接口描述了可能会与锁有关联的条件变量。这些变量在用法上与使用 Object.wait 访问的隐式监视器类似，但提供了更强大的功能。需要特别指出的是，单个 Lock 可能与多个 Condition 对象关联。为了避免兼容性问题，Condition 方法的名称与对应的 Object 版本中的不同。</p>
-<h2 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h2><p>ReentrantLock是独占锁。所谓独占锁，是指只能被独自占领，即同一个时间点只能被一个线程锁获取到的锁。ReentrantLock锁包括”公平的ReentrantLock”和”非公平的ReentrantLock”。”公平的ReentrantLock”是指”不同线程获取锁的机制是公平的”，而”非公平的　　ReentrantLock”则是指”不同线程获取锁的机制是非公平的”，ReentrantLock是”可重入的锁”。<br>ReentrantLock的UML类图如下：</p>
-<p><a target="_blank" rel="noopener" href="https://images0.cnblogs.com/blog/497634/201401/271152070311302.jpg"><img src="https://gitee.com/littlefxc/oss/raw/master/images/271152070311302.jpg" alt="img"></a></p>
-<ol>
-<li>ReentrantLock实现了Lock接口。</li>
-<li>ReentrantLock中有一个成员变量sync，sync是Sync类型；Sync是一个抽象类，而且它继承于AQS。</li>
-<li>ReentrantLock中有”公平锁类”FairSync和”非公平锁类”NonfairSync，它们都是Sync的子类。ReentrantReadWriteLock中sync对象，是FairSync与NonfairSync中的一种，这也意味着ReentrantLock是”公平锁”或”非公平锁”中的一种，ReentrantLock默认是非公平锁。</li>
-</ol>
-<h2 id="ReentrantReadWriteLock"><a href="#ReentrantReadWriteLock" class="headerlink" title="ReentrantReadWriteLock"></a>ReentrantReadWriteLock</h2><p>ReentrantReadWriteLock是读写锁接口ReadWriteLock的实现类，它包括子类ReadLock和WriteLock。ReentrantLock是共享锁，而WriteLock是独占锁。<br>ReentrantReadWriteLock的UML类图如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/271152304845270.jpg" alt="img"></p>
-<ol>
-<li>ReentrantReadWriteLock实现了ReadWriteLock接口。</li>
-<li>ReentrantReadWriteLock中包含sync对象，读锁readerLock和写锁writerLock。读锁ReadLock和写锁WriteLock都实现了Lock接口。</li>
-<li>和”ReentrantLock”一样，sync是Sync类型；而且，Sync也是一个继承于AQS的抽象类。Sync也包括”公平锁”FairSync和”非公平锁”NonfairSync。</li>
-</ol>
-<h2 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h2><p>CountDownLatch是一个同步辅助类，在完成一组正在其他线程中执行的操作之前，它允许一个或多个线程一直等待。<br>CountDownLatch的UML类图如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/271151497193557.jpg" alt="img"></p>
-<p>CountDownLatch包含了sync对象，sync是Sync类型。CountDownLatch的Sync是实例类，它继承于AQS。</p>
-<h2 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h2><p>CyclicBarrier是一个同步辅助类，允许一组线程互相等待，直到到达某个公共屏障点 (common barrier point)。因为该 barrier 在释放等待线程后可以重用，所以称它为循环 的 barrier。<br>CyclicBarrier的UML类图如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/271151078288989.jpg" alt="img"></p>
-<p>CyclicBarrier是包含了”ReentrantLock对象lock”和”Condition对象trip”，它是通过独占锁实现的。<br><strong>CyclicBarrier和CountDownLatch的区别</strong>是：</p>
-<ol>
-<li>CountDownLatch的作用是允许1或N个线程等待其他线程完成执行；而CyclicBarrier则是允许N个线程相互等待。</li>
-<li> CountDownLatch的计数器无法被重置；CyclicBarrier的计数器可以被重置后使用，因此它被称为是循环的barrier。</li>
-</ol>
-<h2 id="Semaphore"><a href="#Semaphore" class="headerlink" title="Semaphore"></a>Semaphore</h2><p>Semaphore是一个计数信号量，它的本质是一个”共享锁”。</p>
-<p>信号量维护了一个信号量许可集。线程可以通过调用acquire()来获取信号量的许可；当信号量中有可用的许可时，线程能获取该许可；否则线程必须等待，直到有可用的许可为止。 线程可以通过release()来释放它所持有的信号量许可。</p>
-<p>Semaphore的UML类图如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/271150551567427.jpg" alt="img"></p>
-<p>和”ReentrantLock”一样，Semaphore包含了sync对象，sync是Sync类型；而且，Sync也是一个继承于AQS的抽象类。Sync也包括”公平信号量”FairSync和”非公平信号量”NonfairSync。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/02/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/02/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">设计模式学习记录</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-02-24 09:11:19" itemprop="dateCreated datePublished" datetime="2021-02-24T09:11:19+08:00">2021-02-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-04-01 13:23:10" itemprop="dateModified" datetime="2021-04-01T13:23:10+08:00">2021-04-01</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>记录在学习设计模式过程中的点滴</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/02/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 

@@ -195,7 +195,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">198</span>
+          <span class="site-state-item-count">203</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -208,7 +208,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">121</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -237,6 +237,643 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/12/ES-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/12/ES-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk/" class="post-title-link" itemprop="url">ES 批量操作 bulk</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-12 22:50:04" itemprop="dateCreated datePublished" datetime="2021-01-12T22:50:04+08:00">2021-01-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><p>bulk操作和以往的普通请求格式有区别。不要格式化json，不然就不在同一行了，这个需要注意。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">action</span>: &#123; metadata &#125;&#125;\\n</span><br><span class="line">&#123; request body        &#125;\\n</span><br><span class="line">&#123; <span class="attr">action</span>: &#123; metadata &#125;&#125;\\n</span><br><span class="line">&#123; request body        &#125;\\n</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>&#123; action: &#123; metadata &#125;&#125;</code>代表批量操作的类型，可以是新增、删除或修改</li>
+<li><code>\\n</code>是每行结尾必须填写的一个规范，每一行包括最后一行都要写，用于es的解析</li>
+<li><code>&#123; request body &#125;</code>是请求body，增加和修改操作需要，删除操作则不需要</li>
+</ul>
+<h1 id="批量操作的类型"><a href="#批量操作的类型" class="headerlink" title="批量操作的类型"></a>批量操作的类型</h1><p>action 必须是以下选项之一:</p>
+<ul>
+<li>create：如果文档不存在，那么就创建它。存在会报错。发生异常报错不会影响其他操作。</li>
+<li>index：创建一个新文档或者替换一个现有的文档。</li>
+<li>update：部分更新一个文档。</li>
+<li>delete：删除一个文档。</li>
+</ul>
+<p>metadata 中需要指定要操作的文档的<code>_index 、 _type 和 _id</code>，<code>_index 、 _type</code>也可以在url中指定</p>
+<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><h2 id="create"><a href="#create" class="headerlink" title="create"></a>create</h2><ul>
+<li><p>create新增文档数据，在metadata中指定index以及type</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2001&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2002&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2002&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2002&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line"><span class="number">1234567</span></span><br></pre></td></tr></table></figure></li>
+<li><p>create创建已有id文档，在url中指定index和type</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2005&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2005&quot;</span>&#125;</span><br><span class="line"><span class="number">1234567</span></span><br></pre></td></tr></table></figure></li>
+<li><p>index创建，已有文档id会被覆盖，不存在的id则新增</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;index2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2007&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2007&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2008&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2008&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2008&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="number">12345678</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="update"><a href="#update" class="headerlink" title="update"></a>update</h2><ul>
+<li><p>update跟新部分文档数据</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;id&quot;</span>: <span class="string">&quot;3004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;nameupdate&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h2><ul>
+<li><p>delete批量删除</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="复合操作"><a href="#复合操作" class="headerlink" title="复合操作"></a>复合操作</h2><ul>
+<li><p>综合批量各种操作</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;8001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;8001&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name8001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;id&quot;</span>: <span class="string">&quot;20010&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p>官文：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/bulk.html">https://www.elastic.co/guide/cn/elasticsearch/guide/current/bulk.html</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/12/ES%20%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5-%E6%BB%9A%E5%8A%A8%E6%90%9C%E7%B4%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/12/ES%20%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5-%E6%BB%9A%E5%8A%A8%E6%90%9C%E7%B4%A2/" class="post-title-link" itemprop="url">ES 深度分页 & 滚动搜索</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-12 21:17:45" itemprop="dateCreated datePublished" datetime="2021-01-12T21:17:45+08:00">2021-01-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a>分页查询</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;from&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;                                                                </span><br></pre></td></tr></table></figure>
+
+<h1 id="深度分页"><a href="#深度分页" class="headerlink" title="深度分页"></a>深度分页</h1><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-13_1-20210112211825281.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-13_1.png"></p>
+<p>深度分页其实就是搜索的深浅度，比如第1页，第2页，第10页，第20页，是比较浅的；第10000页，第20000页就是很深了。</p>
+<p>使用如下操作：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;from&quot;</span>: <span class="number">9990</span>,</span><br><span class="line">    <span class="string">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;from&quot;</span>: <span class="number">9999</span>,</span><br><span class="line">    <span class="string">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们在获取第9999条到10009条数据的时候，其实每个分片都会拿到10009条数据，然后集合在一起，总共是10009*3=30027条数据，针对30027数据再次做排序处理，最终会获取最后10条数据。</p>
+<p>如此一来，搜索得太深，就会造成性能问题，会耗费内存和占用cpu。而且es为了性能，他不支持超过一万条数据以上的分页查询。那么如何解决深度分页带来的性能呢？其实我们应该避免深度分页操作（限制分页页数），比如最多只能提供100页的展示，从第101页开始就没了，毕竟用户也不会搜的那么深，我们平时搜索淘宝或者百度，一般也就看个10来页就顶多了。</p>
+<p>譬如淘宝搜索限制分页最多100页，如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-13_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-13_2.jpg"></p>
+<h1 id="通过设置index-max-result-window来突破10000数据"><a href="#通过设置index-max-result-window来突破10000数据" class="headerlink" title="通过设置index.max_result_window来突破10000数据"></a>通过设置index.max_result_window来突破10000数据</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 查询shop索引的设置</span><br><span class="line">GET /shop/_settings</span><br><span class="line"># 修改 shop 索引的最大返回结果</span><br><span class="line">PUT /shop/_settings</span><br><span class="line">&#123; </span><br><span class="line">    <span class="string">&quot;index.max_result_window&quot;</span>: <span class="string">&quot;20000&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="scroll-滚动搜索"><a href="#scroll-滚动搜索" class="headerlink" title="scroll 滚动搜索"></a>scroll 滚动搜索</h1><p>一次性查询1万+数据，往往会造成性能影响，因为数据量太多了。这个时候可以使用滚动搜索，也就是 <code>scroll</code>。滚动搜索可以先查询出一些数据，然后再紧接着依次往下查询。在第一次查询的时候会有一个滚动id，相当于一个<code>锚标记</code>，随后再次滚动搜索会需要上一次搜索的<code>锚标记</code>，根据这个进行下一次的搜索请求。每次搜索都是基于一个历史的数据快照，查询数据的期间，如果有数据变更，那么和搜索是没有关系的，搜索的内容还是快照中的数据。</p>
+<ul>
+<li>scroll=1m，相当于是一个session会话时间，搜索保持的上下文时间为1分钟。</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_search?scroll=1m</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123; </span><br><span class="line">    	<span class="string">&quot;match_all&quot;</span>: &#123;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,  </span><br><span class="line">    <span class="string">&quot;sort&quot;</span> : [<span class="string">&quot;_doc&quot;</span>], </span><br><span class="line">    <span class="string">&quot;size&quot;</span>:  <span class="number">5</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /_search/scroll</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;scroll&quot;</span>: <span class="string">&quot;1m&quot;</span>, </span><br><span class="line">    <span class="string">&quot;scroll_id&quot;</span> : <span class="string">&quot;your last scroll_id&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>官文地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/scroll.html">https://www.elastic.co/guide/cn/elasticsearch/guide/current/scroll.html</a></li>
+</ul>
+<h1 id="mget-批量查询"><a href="#mget-批量查询" class="headerlink" title="mget 批量查询"></a>mget 批量查询</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/tototuzuoquan/article/details/80558611">26、ES中使用mget批量查询api（学习笔记，来自课程资料 + 自己整理）_涂作权的博客-CSDN博客_es mget</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/12/ES-%E4%B9%8B-DSL-%E6%90%9C%E7%B4%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/12/ES-%E4%B9%8B-DSL-%E6%90%9C%E7%B4%A2/" class="post-title-link" itemprop="url">ES 之 DSL 搜索</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-12 20:56:00" itemprop="dateCreated datePublished" datetime="2021-01-12T20:56:00+08:00">2021-01-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="1-准备数据"><a href="#1-准备数据" class="headerlink" title="1 准备数据"></a>1 准备数据</h1><ul>
+<li><p>建立索引 shop（名字随意）</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_mapping</span><br><span class="line">&#123; <span class="string">&quot;properties&quot;</span>: &#123; <span class="string">&quot;id&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;long&quot;</span> &#125;, <span class="string">&quot;age&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;integer&quot;</span> &#125;, <span class="string">&quot;username&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span> &#125;, <span class="string">&quot;nickname&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>, <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;ik_max_word&quot;</span> &#125;, <span class="string">&quot;money&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;float&quot;</span> &#125;, <span class="string">&quot;desc&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>, <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;ik_max_word&quot;</span> &#125;, <span class="string">&quot;sex&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;byte&quot;</span> &#125;, <span class="string">&quot;birthday&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;date&quot;</span> &#125;, <span class="string">&quot;face&quot;</span>: &#123; <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>, <span class="string">&quot;index&quot;</span>: <span class="literal">false</span> &#125; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>录入数据</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/1001</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1001,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 18,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;imoocAmazing&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;慕课网&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 88.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;我在慕课网学习java和前端，学习到了很多知识&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 0,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1992-12-24&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1002</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1002,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 19,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;justbuy&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;周杰棍&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 77.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;今天上下班都很堵，车流量很大&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1993-01-24&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1003</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1003,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 20,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;bigFace&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;飞翔的巨鹰&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 66.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网团队和导游坐飞机去海外旅游，去了新马泰和欧洲&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1996-01-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1004</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1004,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 22,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;flyfish&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;水中鱼&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 55.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;昨天在学校的池塘里，看到有很多鱼在游泳，然后就去慕课网上课了&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 0,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1988-02-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1005</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1005,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 25,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;gotoplay&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;ps游戏机&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 155.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;今年生日，女友送了我一台play station游戏机，非常好玩，非常不错&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1989-03-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1006</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1006,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 19,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;missimooc&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;我叫小慕&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 156.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;我叫凌云慕，今年20岁，是一名律师，我在琦䯲星球做演讲&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1993-04-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1007</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1007,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 19,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;msgame&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;gamexbox&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 1056.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;明天去进货，最近微软处理很多游戏机，还要买xbox游戏卡带&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1985-05-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1008</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1008,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 19,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;muke&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;慕学习&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 1056.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;大学毕业后，可以到imooc.com进修&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1995-06-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1009</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1009,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 22,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;shaonian&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;骚年轮&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 96.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;骚年在大学毕业后，考研究生去了&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1998-07-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1010</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1010,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 30,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;tata&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;隔壁老王&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 100.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;隔壁老外去国外出差，带给我很多好吃的&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1988-07-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1011</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1011,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 31,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;sprder&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;皮特帕克&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 180.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;它是一个超级英雄&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1989-08-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/1012</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: 1012,</span><br><span class="line">    <span class="string">&quot;age&quot;</span>: 31,</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;super hero&quot;</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;super hero&quot;</span>,</span><br><span class="line">    <span class="string">&quot;money&quot;</span>: 188.8,</span><br><span class="line">    <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;BatMan, GreenArrow, SpiderMan, IronMan... are all Super Hero&quot;</span>,</span><br><span class="line">    <span class="string">&quot;sex&quot;</span>: 1,</span><br><span class="line">    <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1980-08-14&quot;</span>,</span><br><span class="line">    <span class="string">&quot;face&quot;</span>: <span class="string">&quot;https://www.imooc.com/static/img/index/logo.png&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="2-使用-QueryString-查询"><a href="#2-使用-QueryString-查询" class="headerlink" title="2 使用 QueryString 查询"></a>2 使用 QueryString 查询</h1><p>查询[字段]包含[内容]的文档</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/_search?q=desc:慕课网</span><br><span class="line">GET /shop/_doc/_search?q=nickname:慕&amp;q=age:<span class="number">25</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="3-DSL"><a href="#3-DSL" class="headerlink" title="3 DSL"></a>3 DSL</h1><h2 id="3-1-match-查询"><a href="#3-1-match-查询" class="headerlink" title="3.1 match - 查询"></a>3.1 match - 查询</h2><p>全文检索</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-2-exists-判断某个字段是否存在"><a href="#3-2-exists-判断某个字段是否存在" class="headerlink" title="3.2 exists - 判断某个字段是否存在"></a>3.2 exists - 判断某个字段是否存在</h2><p>exists可以理解为SQL中的exists函数，就是判断是否存在该字段。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;exists&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;field&quot;</span>: <span class="string">&quot;desc&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-match-all-查询所有与分页"><a href="#3-3-match-all-查询所有与分页" class="headerlink" title="3.3 match_all - 查询所有与分页"></a>3.3 match_all - 查询所有与分页</h2><p>可以查询集群所有索引库的信息，包括一些隐藏索性库的信息。</p>
+<h3 id="3-3-1-在索引中查询所有的文档"><a href="#3-3-1-在索引中查询所有的文档" class="headerlink" title="3.3.1 在索引中查询所有的文档"></a>3.3.1 在索引中查询所有的文档</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/_search</span><br></pre></td></tr></table></figure>
+
+<p>或者指定返回属性</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;_source&quot;</span>: [<span class="string">&quot;id&quot;</span>, <span class="string">&quot;nickname&quot;</span>, <span class="string">&quot;age&quot;</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Head 可视化操作</p>
+<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_1.jpg"></p>
+</li>
+</ul>
+<h3 id="3-3-2-分页查询"><a href="#3-3-2-分页查询" class="headerlink" title="3.3.2 分页查询"></a>3.3.2 分页查询</h3><p>默认查询是只有10条记录，可以通过分页来展示</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;from&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">		<span class="string">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	<span class="string">&quot;_source&quot;</span>: [</span><br><span class="line">		<span class="string">&quot;id&quot;</span>,</span><br><span class="line">		<span class="string">&quot;nickname&quot;</span>,</span><br><span class="line">		<span class="string">&quot;age&quot;</span></span><br><span class="line">	],</span><br><span class="line">	<span class="string">&quot;from&quot;</span>: <span class="number">5</span>,</span><br><span class="line">	<span class="string">&quot;size&quot;</span>: <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>Head 可视化操作</p>
+<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_2.jpg"></p>
+</li>
+</ul>
+<h2 id="3-4-term-精确查询"><a href="#3-4-term-精确查询" class="headerlink" title="3.4 term - 精确查询"></a>3.4 term - 精确查询</h2><p>term主要用于精确匹配哪些值，比如数字，日期，布尔值或 not_analyzed 的字符串(未经分析的文本数据类型)</p>
+<h3 id="3-4-1-term精确搜索与match分词搜索"><a href="#3-4-1-term精确搜索与match分词搜索" class="headerlink" title="3.4.1 term精确搜索与match分词搜索"></a>3.4.1 term精确搜索与match分词搜索</h3><p>搜索的时候会把用户搜索内容，比如“慕课网强大”作为一整个关键词去搜索，而不会对其进行分词后再搜索</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;term&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">对比</span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>注：match会对<code>慕课网慕课网</code></p>
+<p>  先进行分词（其实就是全文检索），在查询，而term则不会，直接把</p>
+<p>  作为一个整的词汇去搜索。</p>
+</li>
+<li><p>head 可视化操作对比：</p>
+<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/5df73ae408b52e4b14850283.jpg" alt="https://climg.mukewang.com/5df73ae408b52e4b14850283.jpg"></p>
+<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/5df73af9088d880314890314.jpg" alt="https://climg.mukewang.com/5df73af9088d880314890314.jpg"></p>
+</li>
+</ul>
+<h3 id="3-4-2-terms-多个词语匹配检索"><a href="#3-4-2-terms-多个词语匹配检索" class="headerlink" title="3.4.2 terms 多个词语匹配检索"></a>3.4.2 terms 多个词语匹配检索</h3><p>相当于是tag标签查询，比如慕课网的一些课程会打上<code>前端</code>/<code>后端</code>/<code>大数据</code>/<code>就业课</code>这样的标签，可以完全匹配做类似标签的查询</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;terms&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: [<span class="string">&quot;慕课网&quot;</span>, <span class="string">&quot;学习&quot;</span>, <span class="string">&quot;骚年&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-5-match-phrase"><a href="#3-5-match-phrase" class="headerlink" title="3.5 match_phrase"></a>3.5 match_phrase</h2><p>match：分词后只要有匹配就返回，match_phrase：分词结果必须在text字段分词中都包含，而且顺序必须相同，而且必须都是连续的。（搜索比较严格）</p>
+<p>slop：允许词语间跳过的数量</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match_phrase&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: &#123;</span><br><span class="line">            	<span class="string">&quot;query&quot;</span>: <span class="string">&quot;大学 毕业 研究生&quot;</span>,</span><br><span class="line">            	<span class="string">&quot;slop&quot;</span>: <span class="number">2</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-6-match（operator）-ids"><a href="#3-6-match（operator）-ids" class="headerlink" title="3.6 match（operator）/ids"></a>3.6 match（operator）/ids</h2><h3 id="3-6-1-match-扩展"><a href="#3-6-1-match-扩展" class="headerlink" title="3.6.1 match 扩展"></a>3.6.1 match 扩展</h3><ul>
+<li><p>operator</p>
+<ul>
+<li>or：搜索内容分词后，只要存在一个词语匹配就展示结果</li>
+<li>and：搜索内容分词后，都要满足词语匹配</li>
+</ul>
+  <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">POST     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 等同于</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;query&quot;</span>: <span class="string">&quot;xbox游戏机&quot;</span>,</span><br><span class="line">                <span class="string">&quot;operator&quot;</span>: <span class="string">&quot;or&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 相当于 select * from shop where desc=&#x27;xbox&#x27; or|and desc=&#x27;游戏机&#x27;</span><br></pre></td></tr></table></figure></li>
+<li><p>minimum_should_match: 最低匹配精度，至少有[分词后的词语个数]x百分百，得出一个数据值取整。举个例子：当前属性设置为<code>70</code>，若一个用户查询检索内容分词后有10个词语，那么匹配度按照 10x70%=7，则desc中至少需要有7个词语匹配，就展示；若分词后有8个，则 8x70%=5.6，则desc中至少需要有5个词语匹配，就展示。</p>
+<p>  minimum_should_match 也能设置具体的数字，表示个数</p>
+  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;query&quot;</span>: <span class="string">&quot;女友生日送我好玩的xbox游戏机&quot;</span>,</span><br><span class="line">                <span class="string">&quot;minimum_should_match&quot;</span>: <span class="string">&quot;60%&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="3-6-2-根据文档主键ids搜索"><a href="#3-6-2-根据文档主键ids搜索" class="headerlink" title="3.6.2 根据文档主键ids搜索"></a>3.6.2 根据文档主键ids搜索</h3><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/<span class="number">1001</span></span><br></pre></td></tr></table></figure>
+
+<p>查询多个</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;ids&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;_doc&quot;</span>,</span><br><span class="line">            <span class="string">&quot;values&quot;</span>: [<span class="string">&quot;1001&quot;</span>, <span class="string">&quot;1010&quot;</span>, <span class="string">&quot;1008&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-7-multi-match-boost"><a href="#3-7-multi-match-boost" class="headerlink" title="3.7 multi_match/boost"></a>3.7 multi_match/boost</h2><h3 id="3-7-1-multi-match-多字段查询"><a href="#3-7-1-multi-match-多字段查询" class="headerlink" title="3.7.1 multi_match - 多字段查询"></a>3.7.1 multi_match - 多字段查询</h3><p>满足使用match在多个字段中进行查询的需求</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;query&quot;</span>: <span class="string">&quot;皮特帕克慕课网&quot;</span>,</span><br><span class="line">            <span class="string">&quot;fields&quot;</span>: [<span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-7-2-boost-权重"><a href="#3-7-2-boost-权重" class="headerlink" title="3.7.2 boost - 权重"></a>3.7.2 boost - 权重</h3><p>权重，为某个字段设置权重，权重越高，文档相关性得分就越高。通畅来说搜索商品名称要比商品简介的权重更高。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;query&quot;</span>: <span class="string">&quot;皮特帕克慕课网&quot;</span>,</span><br><span class="line">                <span class="string">&quot;fields&quot;</span>: [<span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname^10&quot;</span>]</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>nickname^10</code> 代表搜索提升10倍相关性，也就是说用户搜索的时候其实以这个<code>nickname</code>为主，<code>desc</code>为辅，<code>nickname</code>的匹配相关度当然要提高权重比例了。</p>
+<h2 id="3-8-bool-布尔查询"><a href="#3-8-bool-布尔查询" class="headerlink" title="3.8 bool - 布尔查询"></a>3.8 bool - 布尔查询</h2><p>可以组合多重查询</p>
+<ul>
+<li><p>must：查询必须匹配搜索条件，譬如 and</p>
+</li>
+<li><p>should：查询匹配满足1个以上条件，譬如 or</p>
+</li>
+<li><p>must_not：不匹配搜索条件，一个都不要满足</p>
+</li>
+<li><p>实操1：</p>
+  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;bool&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;must&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;query&quot;</span>: <span class="string">&quot;慕课网&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;fields&quot;</span>: [<span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>]</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;term&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;sex&quot;</span>: <span class="number">1</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;term&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1996-01-14&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;bool&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;should（must_not）&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;query&quot;</span>: <span class="string">&quot;学习&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;fields&quot;</span>: [<span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>]</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">                		<span class="string">&quot;desc&quot;</span>: <span class="string">&quot;游戏&quot;</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;term&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;sex&quot;</span>: <span class="number">0</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>实操2：</p>
+  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;bool&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;must&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">                		<span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕&quot;</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">                		<span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;慕&quot;</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">&quot;should&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">                		<span class="string">&quot;sex&quot;</span>: <span class="string">&quot;0&quot;</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">&quot;must_not&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                	<span class="string">&quot;term&quot;</span>: &#123;</span><br><span class="line">                		<span class="string">&quot;birthday&quot;</span>: <span class="string">&quot;1992-12-24&quot;</span></span><br><span class="line">                	&#125;	</span><br><span class="line">                &#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>Head 可视化组合查询</p>
+<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/es-12_3.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-12_3.jpg"></p>
+</li>
+<li><p>为指定词语加权</p>
+<p>  特殊场景下，某些词语可以单独加权，这样可以排得更加靠前。</p>
+  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;bool&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;should&quot;</span>: [</span><br><span class="line">            	&#123;</span><br><span class="line">            		<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            			<span class="string">&quot;desc&quot;</span>: &#123;</span><br><span class="line">            				<span class="string">&quot;query&quot;</span>: <span class="string">&quot;律师&quot;</span>,</span><br><span class="line">            				<span class="string">&quot;boost&quot;</span>: <span class="number">18</span></span><br><span class="line">            			&#125;</span><br><span class="line">            		&#125;</span><br><span class="line">            	&#125;,</span><br><span class="line">            	&#123;</span><br><span class="line">            		<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            			<span class="string">&quot;desc&quot;</span>: &#123;</span><br><span class="line">            				<span class="string">&quot;query&quot;</span>: <span class="string">&quot;进修&quot;</span>,</span><br><span class="line">            				<span class="string">&quot;boost&quot;</span>: <span class="number">2</span></span><br><span class="line">            			&#125;</span><br><span class="line">            		&#125;</span><br><span class="line">            	&#125;</span><br><span class="line">            ]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="3-9-post-filter-过滤器"><a href="#3-9-post-filter-过滤器" class="headerlink" title="3.9 post_filter - 过滤器"></a>3.9 post_filter - 过滤器</h2><p>对搜索出来的结果进行数据过滤。不会到es库里去搜，不会去计算文档的相关度分数，所以过滤的性能会比较高，过滤器可以和全文搜索结合在一起使用。<code>post_filter</code>元素是一个顶层元素，只会对搜索结果进行过滤。不会计算数据的匹配度相关性分数，不会根据分数去排序，query则相反，会计算分数，也会按照分数去排序。</p>
+<p>使用场景：</p>
+<ul>
+<li>query：根据用户搜索条件检索匹配记录</li>
+<li>post_filter：用于查询后，对结果数据的筛选</li>
+</ul>
+<p>实操：查询账户金额大于80元，小于160元的用户。并且生日在1998-07-14的用户</p>
+<ul>
+<li>gte：大于等于</li>
+<li>lte：小于等于</li>
+<li>gt：大于</li>
+<li>lt：小于（除此以外还能做其他的match等操作也行）</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">		<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">			<span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网游戏&quot;</span></span><br><span class="line">		&#125;	</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;post_filter&quot;</span>: &#123;</span><br><span class="line">		<span class="string">&quot;range&quot;</span>: &#123;</span><br><span class="line">			<span class="string">&quot;money&quot;</span>: &#123;</span><br><span class="line">				<span class="string">&quot;gt&quot;</span>: <span class="number">60</span>,</span><br><span class="line">				<span class="string">&quot;lt&quot;</span>: <span class="number">1000</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-10-sort-排序"><a href="#3-10-sort-排序" class="headerlink" title="3.10 sort - 排序"></a>3.10 sort - 排序</h2><p>es的排序同sql，可以desc也可以asc。也支持组合排序。</p>
+<ul>
+<li><p>实操：</p>
+  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">		<span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">			<span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网游戏&quot;</span></span><br><span class="line">		&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;post_filter&quot;</span>: &#123;</span><br><span class="line">    	<span class="string">&quot;range&quot;</span>: &#123;</span><br><span class="line">    		<span class="string">&quot;money&quot;</span>: &#123;</span><br><span class="line">    			<span class="string">&quot;gt&quot;</span>: <span class="number">55.8</span>,</span><br><span class="line">    			<span class="string">&quot;lte&quot;</span>: <span class="number">155.8</span></span><br><span class="line">    		&#125;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;sort&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;age&quot;</span>: <span class="string">&quot;desc&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;money&quot;</span>: <span class="string">&quot;desc&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>对文本排序</p>
+<p>  由于文本会被分词，所以往往要去做排序会报错，通常我们可以为这个字段增加额外的一个附属属性，类型为keyword，用于做排序。</p>
+<ol>
+<li><p>创建新的索引</p>
+ <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /shop2/_mapping</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;id&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;long&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">&quot;nickname&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">            <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;ik_max_word&quot;</span>,</span><br><span class="line">            <span class="string">&quot;fields&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;keyword&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>插入数据</p>
+ <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: <span class="number">1001</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;美丽的风景&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: <span class="number">1002</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;漂亮的小哥哥&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: <span class="number">1003</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;飞翔的巨鹰&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: <span class="number">1004</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;完美的天空&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop2/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;id&quot;</span>: <span class="number">1005</span>,</span><br><span class="line">    <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;广阔的海域&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>排序</p>
+ <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop2/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;sort&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&quot;nickname.keyword&quot;</span>: <span class="string">&quot;desc&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<h2 id="3-11-highlight-高亮显示"><a href="#3-11-highlight-高亮显示" class="headerlink" title="3.11 highlight - 高亮显示"></a>3.11 highlight - 高亮显示</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;highlight&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;pre_tags&quot;</span>: [<span class="string">&quot;&lt;span&gt;&quot;</span>],</span><br><span class="line">        <span class="string">&quot;post_tags&quot;</span>: [<span class="string">&quot;&lt;/span&gt;&quot;</span>],</span><br><span class="line">        <span class="string">&quot;fields&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-12-prefix-前缀"><a href="#3-12-prefix-前缀" class="headerlink" title="3.12 prefix - 前缀"></a>3.12 prefix - 前缀</h2><p>根据前缀去查询</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;prefix&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;imo&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;                                                                  </span><br></pre></td></tr></table></figure>
+
+<h2 id="3-13-fuzzy-模糊搜索"><a href="#3-13-fuzzy-模糊搜索" class="headerlink" title="3.13 fuzzy - 模糊搜索"></a>3.13 fuzzy - 模糊搜索</h2><p>模糊搜索，并不是指的sql的模糊搜索，而是用户在进行搜索的时候的打字错误现象，搜索引擎会自动纠正，然后尝试匹配索引库中的数据。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;fuzzy&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;imoov.coom&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 或多字段搜索</span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;fields&quot;</span>: [ <span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>],</span><br><span class="line">      <span class="string">&quot;query&quot;</span>: <span class="string">&quot;imcoc supor&quot;</span>,</span><br><span class="line">      <span class="string">&quot;fuzziness&quot;</span>: <span class="string">&quot;AUTO&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;fields&quot;</span>: [ <span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>],</span><br><span class="line">      <span class="string">&quot;query&quot;</span>: <span class="string">&quot;演说&quot;</span>,</span><br><span class="line">      <span class="string">&quot;fuzziness&quot;</span>: <span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>官文：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/fuzzy-match-query.html">https://www.elastic.co/guide/cn/elasticsearch/guide/current/fuzzy-match-query.html</a></li>
+</ul>
+<h2 id="3-14-wildcard-占位符查询"><a href="#3-14-wildcard-占位符查询" class="headerlink" title="3.14 wildcard - 占位符查询"></a>3.14 wildcard - 占位符查询</h2><p>占位符查询。</p>
+<ul>
+<li><p>？：1个字符</p>
+</li>
+<li><p>：1个或多个字符</p>
+  <figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;wildcard&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;desc&quot;</span>: <span class="string">&quot;*oo?&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;query&quot;</span>: &#123;</span><br><span class="line">    	<span class="string">&quot;wildcard&quot;</span>: &#123;</span><br><span class="line">    		<span class="string">&quot;desc&quot;</span>: <span class="string">&quot;演*&quot;</span></span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>官文：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/11/ES-%E4%B9%8B%E5%88%86%E8%AF%8D%E4%B8%8E%E5%86%85%E7%BD%AE%E5%88%86%E8%AF%8D%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/11/ES-%E4%B9%8B%E5%88%86%E8%AF%8D%E4%B8%8E%E5%86%85%E7%BD%AE%E5%88%86%E8%AF%8D%E5%99%A8/" class="post-title-link" itemprop="url">ES 之分词与内置分词器</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-11 20:32:21" itemprop="dateCreated datePublished" datetime="2021-01-11T20:32:21+08:00">2021-01-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="什么是分词？"><a href="#什么是分词？" class="headerlink" title="什么是分词？"></a>什么是分词？</h1><p>把文本转换为一个个的单词，分词称之为analysis。es默认只对英文语句做分词，中文不支持，每个中文字都会被拆分为独立的个体。</p>
+<ul>
+<li>英文分词：I study in <a target="_blank" rel="noopener" href="http://imooc.com/">imooc.com</a></li>
+<li>中文分词：我在慕课网学习</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /_analyze</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;standard&quot;</span>,</span><br><span class="line">    <span class="string">&quot;text&quot;</span>: <span class="string">&quot;text文本&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">POST /my_doc/_analyze</span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;standard&quot;</span>,</span><br><span class="line">    <span class="string">&quot;field&quot;</span>: <span class="string">&quot;name&quot;</span>,</span><br><span class="line">    <span class="string">&quot;text&quot;</span>: <span class="string">&quot;text文本&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="es内置分词器"><a href="#es内置分词器" class="headerlink" title="es内置分词器"></a>es内置分词器</h1><ul>
+<li><p>standard：默认分词，单词会被拆分，大小会转换为小写。</p>
+</li>
+<li><p>simple：按照非字母分词。大写转为小写。</p>
+</li>
+<li><p>whitespace：按照空格分词。忽略大小写。</p>
+</li>
+<li><p>stop：去除无意义单词，比如<code>the</code>/<code>a</code>/<code>an</code>/<code>is</code>…</p>
+</li>
+<li><p>keyword：不做分词。把整个文本作为一个单独的关键词。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;analyzer&quot;: &quot;standard&quot;,</span><br><span class="line">    &quot;text&quot;: &quot;My name is Peter Parker,I am a Super Hero. I don&#39;t like the Criminals.&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/11/ES%E4%B9%8B%E6%96%87%E6%A1%A3%E4%B9%90%E8%A7%82%E9%94%81%E6%8E%A7%E5%88%B6-if-seq-no%E4%B8%8Eif-primary-term/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/11/ES%E4%B9%8B%E6%96%87%E6%A1%A3%E4%B9%90%E8%A7%82%E9%94%81%E6%8E%A7%E5%88%B6-if-seq-no%E4%B8%8Eif-primary-term/" class="post-title-link" itemprop="url">ES之文档乐观锁控制 if_seq_no与if_primary_term</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-11 20:11:28" itemprop="dateCreated datePublished" datetime="2021-01-11T20:11:28+08:00">2021-01-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="观察操作"><a href="#观察操作" class="headerlink" title="观察操作"></a>观察操作</h1><ul>
+<li><p>插入新数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;my_doc&#x2F;_doc</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1010,</span><br><span class="line">    &quot;name&quot;: &quot;imooc-1010&quot;,</span><br><span class="line">    &quot;desc&quot;: &quot;imoocimooc！&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-24&quot;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 1</span><br></pre></td></tr></table></figure></li>
+<li><p>修改数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    &#x2F;my_doc&#x2F;_doc&#x2F;&#123;_id&#125;&#x2F;_update</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 此时 _version 为 2</span><br><span class="line">1234567</span><br></pre></td></tr></table></figure></li>
+<li><p>模拟两个客户端操作同一个文档数据，_version都携带为一样的数值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 操作1</span><br><span class="line">POST    &#x2F;my_doc&#x2F;_doc&#x2F;&#123;_id&#125;&#x2F;_update?if_seq_no&#x3D;&#123;数值&#125;&amp;if_primary_term&#x3D;&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课1&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 操作2</span><br><span class="line">POST    &#x2F;my_doc&#x2F;_doc&#x2F;&#123;_id&#125;&#x2F;_update?if_seq_no&#x3D;&#123;数值&#125;&amp;if_primary_term&#x3D;&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;doc&quot;: &#123;</span><br><span class="line">        &quot;name&quot;: &quot;慕课2&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="版本元数据"><a href="#版本元数据" class="headerlink" title="版本元数据"></a>版本元数据</h1><ul>
+<li>_seq_no：文档版本号，作用同_version（相当于学生编号，每个班级的班主任为学生分配编号，效率要比学校教务处分配来的更加高效，管理起来更方便）</li>
+<li>_primary_term：文档所在位置（相当于班级）</li>
+<li>官文地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html">https://www.elastic.co/guide/en/elasticsearch/reference/current/optimistic-concurrency-control.html</a></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -865,569 +1502,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/" class="post-title-link" itemprop="url">理解Redis的持久化机制:RDB&AOF</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-12-24 11:33:37" itemprop="dateCreated datePublished" datetime="2020-12-24T11:33:37+08:00">2020-12-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903874927525902#heading-21">https://juejin.cn/post/6844903874927525902#heading-21</a></p>
-</blockquote>
-<h1 id="什么是Redis持久化"><a href="#什么是Redis持久化" class="headerlink" title="什么是Redis持久化?"></a>什么是Redis持久化?</h1><hr>
-<p><code>Redis</code>作为一个键值对内存数据库(<code>NoSQL</code>)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg"></p>
-<p>这样做有什么问题呢？</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Hive集成HBase 详解</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-11 16:31:29" itemprop="dateCreated datePublished" datetime="2020-11-11T16:31:29+08:00">2020-11-11</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><h2 id="1-1-为什么要集成Hive和HBase"><a href="#1-1-为什么要集成Hive和HBase" class="headerlink" title="1.1 为什么要集成Hive和HBase?"></a>1.1 为什么要集成Hive和HBase?</h2><p>Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着调研和使用的深入，渐渐有用户发现它们均存在不足之处。</p>
-<p>比如 Hive 不应该用来进行实时的查询，因为它需要很长时间才可以返回结果。同时想要将数据实时的插入hive中则完全没有可操作性。</p>
-<p>至于 HBase虽然非常适用于海量明细数据（十亿、百亿）的随机实时查询但只提供了简单的基于 Key 值的快速查询能力—，没法进行大量的条件查询，对于数据分析来说，不太友好。</p>
-<p>在大数据架构中，Hive和HBase是协作关系，Hive方便地提供了Hive QL的接口来简化MapReduce的使用， 而HBase提供了低延迟的数据库访问。如果两者结合，可以利用MapReduce的优势针对HBase存储的大量内容进行离线的计算和分析。</p>
-<h1 id="2-Hive集成HBase的原理"><a href="#2-Hive集成HBase的原理" class="headerlink" title="2 Hive集成HBase的原理"></a>2 Hive集成HBase的原理</h1><p>Hive 整合 hbase 为用户提供一种 sqlOnHbase 的方法。Hive 与 HBase 整合的实现是利用两者本身对外的 API 接口互相通信来完成的，其具体工作交由 Hive 的 lib 目录中的 <code>hive-hbase-handler-xxx.jar</code> 工具类来实现对 HBase 数据的读取。</p>
-<p>通过HBaseStorageHandler，Hive可以获取到Hive表所对应的HBase表名，列簇和列，InputFormat、OutputFormat类，创建和删除HBase表等。</p>
-<p>Hive访问HBase中HTable的数据，实质上是通过MR读取HBase的数据，而MR是使用HiveHBaseTableInputFormat完成对表的切分，获取RecordReader对象来读取数据的。</p>
-<p>对HBase表的切分原则是一个Region切分成一个Split,即表中有多少个Regions,MR中就有多少个Map；</p>
-<p>读取HBase表数据都是通过构建Scanner，对表进行全表扫描，如果有过滤条件，则转化为Filter。当过滤条件为rowkey时，则转化为对rowkey的过滤；Scanner通过RPC调用RegionServer的next()来获取数据。</p>
-<h1 id="3-使用场景"><a href="#3-使用场景" class="headerlink" title="3 使用场景"></a>3 使用场景</h1><h1 id="4-整合"><a href="#4-整合" class="headerlink" title="4 整合"></a>4 整合</h1><p>因为Hive与HBase集成是利用两者本身对外的API接口互相通信来完成的，其具体工作交由Hive的lib目录中的hive-hbase-handler-.jar工具类来实现。所以只需要将hive的 <code>hive-hbase-handler-.jar</code> 复制到<code>hbase/lib</code>中就可以了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp &#x2F;usr&#x2F;local&#x2F;hive&#x2F;lib&#x2F;hive-hbase-handler-2.3.7.jar &#x2F;usr&#x2F;local&#x2F;hbase&#x2F;lib&#x2F;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注</strong>: 如果在hive整合hbase中，出现版本之类的问题，那么以hbase的版本为主，将hbase中的jar包覆盖hive的jar包。</p>
-<h2 id="4-1-示例"><a href="#4-1-示例" class="headerlink" title="4.1 示例"></a>4.1 示例</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># Hive 语句</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t_employee(id <span class="type">int</span>,name string) </span><br><span class="line">stored <span class="keyword">by</span> <span class="string">&#x27;org.apache.hadoop.hive.hbase.HBaseStorageHandler&#x27;</span> </span><br><span class="line"><span class="keyword">with</span> serdeproperties(&quot;hbase.columns.mapping&quot;<span class="operator">=</span>&quot;:key,st1:name&quot;) </span><br><span class="line">tblproperties(&quot;hbase.table.name&quot;<span class="operator">=</span>&quot;t_employee&quot;,&quot;hbase.mapred.output.outputtable&quot; <span class="operator">=</span> &quot;t_employee&quot;);</span><br><span class="line"></span><br><span class="line"># hbase 语句</span><br><span class="line">list</span><br><span class="line"><span class="keyword">describe</span> <span class="string">&#x27;t_employee&#x27;</span></span><br><span class="line"># 返回结果</span><br><span class="line"><span class="keyword">Table</span> t_employee <span class="keyword">is</span> ENABLED</span><br><span class="line">t_employee</span><br><span class="line"><span class="keyword">COLUMN</span> FAMILIES DESCRIPTION</span><br><span class="line">&#123;NAME =&gt; &#x27;st1&#x27;, BLOOMFILTER =&gt; &#x27;ROW&#x27;, VERSIONS =&gt; &#x27;1&#x27;, IN_MEMORY =&gt; &#x27;false&#x27;, KEEP_DELETED_CELLS =&gt; &#x27;FALSE&#x27;, DATA_BLOCK_ENCODING =&gt; &#x27;NONE&#x27;, TTL =&gt; &#x27;FOREVER&#x27;, COMPRESSION =&gt; &#x27;NONE&#x27;</span><br><span class="line">, MIN_VERSIONS =&gt; &#x27;0&#x27;, BLOCKCACHE =&gt; &#x27;true&#x27;, BLOCKSIZE =&gt; &#x27;65536&#x27;, REPLICATION_SCOPE =&gt; &#x27;0&#x27;&#125;</span><br><span class="line"><span class="number">1</span> <span class="type">row</span>(s) <span class="keyword">in</span> <span class="number">0.0260</span> seconds</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ol>
-<li><p>这里面出现了三个t_employee表名，第一个t_employee 是hive表中的名称，(id int,name string) 是hive表结构。</p>
-<p>在tblproperties 语句中还出现了2个t_employee表，”hbase.table.name”定义的是在hbase中的表名 ，这个属性是可选的，仅当你想在Hive和Hbase中使用不同名字的表名时才需要填写，如果使用相同的名字则可以省略；</p>
-<p>“hbase.mapred.output.outputtable”定义的第三个t_employee是存储数据表的名称，指定插入数据时写入的表，如果以后需要往该表插入数据就需要指定该值，这个可以不要，表数据就存储在第二个表中了 。</p>
-</li>
-<li><p>stored by ‘org.apache.hadoop.hive.hbase.HBaseStorageHandler’ ：是指定处理的存储器，就是hive-hbase-handler-*.jar包，要做hive和hbase的集成必须要加上这一句；</p>
-</li>
-<li><p>“hbase.columns.mapping” 是定义在hive表中的字段怎么与hbase的列族进行映射。</p>
-<p>   例如:st1就是列族，name就是列。它们之间通过“：”连接。</p>
-<p>   在hive中创建的t_employee表，包括两个字段（int型的id和string型的name），映射为hbase中的表t_employee，其中：key对应hbase的rowkey，value对应hbase的st1:name列。</p>
-</li>
-</ol>
-<h2 id="4-2-字段映射"><a href="#4-2-字段映射" class="headerlink" title="4.2 字段映射"></a>4.2 字段映射</h2><p>控制HBase字段和Hive之间的映射有两种<code>SERDEPROPERTIES</code>:</p>
-<ul>
-<li>hbase.columns.mapping</li>
-<li>hbase.table.default.storage.type，可以是string(default)或binary中的任一个，指定这个选项只有在Hive 0.9之后可使用.</li>
-</ul>
-<p>目前所支持的字段映射多少是有些难处理或存在约束的：</p>
-<ul>
-<li>对于每一个Hive字段，表的创建者必须用逗号分隔的字符串（<code>hbase.columns.mapping</code>）指定对应的入口（Hive表有n个字段，则该字符串得指定n个入口），在各个入口之间不能由空格（因为空格会被解析成字段名中的一部分）。</li>
-<li>映射入口必须是以下两者之一：<strong>行健</strong>或**’列族名:[列名][#(binary|string)]’**<ul>
-<li>如果没有指定类型，则直接使用<code>hbase.table.default.storage.type</code>的值</li>
-<li>合法值的的前缀也是合法的（例如#b表示#binary）</li>
-<li>如果指定某字段为binary，则对应的HBase中的单元格则应该是HBase的Bytes类的内容组成</li>
-</ul>
-</li>
-<li>必须要有确切的行健映射</li>
-<li>如果没有指定列名，则默认使用Hive的字段名作为HBase中的列名</li>
-</ul>
-<h2 id="4-3-数据同步测试"><a href="#4-3-数据同步测试" class="headerlink" title="4.3 数据同步测试"></a>4.3 数据同步测试</h2><p>进入hbase之后，在t_employee中添加两条数据 然后查询该表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">put <span class="string">&#x27;t_employee&#x27;</span>,<span class="string">&#x27;1001&#x27;</span>,<span class="string">&#x27;st1:name&#x27;</span>,<span class="string">&#x27;zhaoqian&#x27;</span></span><br><span class="line">put <span class="string">&#x27;t_employee&#x27;</span>,<span class="string">&#x27;1002&#x27;</span>,<span class="string">&#x27;st1:name&#x27;</span>,<span class="string">&#x27;sunli&#x27;</span></span><br><span class="line">scan <span class="string">&#x27;t_employee&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>查询结果：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled.png"></p>
-<p>然后切换到hive中查询该表</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png" alt="Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled%201.png"></p>
-<p>至此，hive 集成hbase 就到此告一段落。</p>
-<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/74041611">如何整合hive和hbase</a></p>
-<p><a target="_blank" rel="noopener" href="https://ask.hellobi.com/blog/marsj/4002">Hive与HBase的集成实践</a></p>
-<p>[[hbase-1-4-13-安装部署]]</p>
-<p>[[hive2-3-7安装]]</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/11/02/Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/02/Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81/" class="post-title-link" itemprop="url">Hive注释中文乱码</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-02 16:44:32" itemprop="dateCreated datePublished" datetime="2020-11-02T16:44:32+08:00">2020-11-02</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="1-Hive注释中文乱码"><a href="#1-Hive注释中文乱码" class="headerlink" title="1. Hive注释中文乱码"></a>1. Hive注释中文乱码</h1><p>创建表的时候，comment说明字段包含中文，表成功创建成功之后，中文说明显示乱码</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> if <span class="keyword">not</span> <span class="keyword">exists</span> capacity_stats_live_access (</span><br><span class="line">  id <span class="type">bigint</span> comment <span class="string">&#x27;主键&#x27;</span>,</span><br><span class="line">  device_num <span class="type">varchar</span>(<span class="number">100</span>) COMMENT <span class="string">&#x27;设备号&#x27;</span>,</span><br><span class="line">  start_time <span class="type">timestamp</span> COMMENT <span class="string">&#x27;调阅开始时间&#x27;</span>,</span><br><span class="line">  finish_time <span class="type">timestamp</span> COMMENT <span class="string">&#x27;调阅结束时间&#x27;</span>,</span><br><span class="line">  duration <span class="type">int</span> COMMENT <span class="string">&#x27;耗时，单位秒&#x27;</span>,</span><br><span class="line">  response <span class="type">int</span> COMMENT <span class="string">&#x27;调用结果 1.成功 0.失败&#x27;</span></span><br><span class="line">) COMMENT <span class="string">&#x27;直播调阅日志统计&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/hive%E4%B8%AD%E6%96%87%E6%B3%A8%E9%87%8A%E4%B9%B1%E7%A0%81.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled.png"></p>
-<p>这是因为在MySQL中的元数据出现乱码</p>
-<h1 id="2-针对元数据库metastore中的表-分区-视图的编码设置"><a href="#2-针对元数据库metastore中的表-分区-视图的编码设置" class="headerlink" title="2. 针对元数据库metastore中的表,分区,视图的编码设置"></a>2. 针对元数据库metastore中的表,分区,视图的编码设置</h1><p>因为我们知道 metastore 支持数据库级别，表级别的字符集是 <code>latin1</code> 。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%201-20201102170449594.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%201.png"></p>
-<p>那么我们只需要把相应注释的地方的字符集由 latin1 改成 utf-8，就可以了。用到注释的就三个地方，表、分区、视图。如下修改分为两个步骤：</p>
-<h2 id="2-1-进入数据库-Metastore-中执行以下-5-条-SQL-语句"><a href="#2-1-进入数据库-Metastore-中执行以下-5-条-SQL-语句" class="headerlink" title="2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句"></a>2.1. 进入数据库 Metastore 中执行以下 5 条 SQL 语句</h2><p>修改表字段注解和表注解 <code>COLUMNS_V2</code>，<code>TABLE_PARAMS</code> </p>
-<p>修改分区字段注解 <code>PARTITION_PARAMS</code>，<code>PARTITION_KEYS</code> </p>
-<p>修改索引注解<code>INDEX_PARAMS</code> </p>
-<h2 id="2-2-修改-metastore-的连接-URL"><a href="#2-2-修改-metastore-的连接-URL" class="headerlink" title="2.2. 修改 metastore 的连接 URL"></a>2.2. 修改 metastore 的连接 URL</h2><p>修改hive-site.xml配置文件</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>javax.jdo.option.ConnectionURL<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>jdbc:mysql://IP:3306/db_name?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=UTF-8<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">description</span>&gt;</span>JDBC connect string for a JDBC metastore<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="2-3-验证"><a href="#2-3-验证" class="headerlink" title="2.3. 验证"></a>2.3. 验证</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%202-20201102170449708.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%202.png"></p>
-<p>发现注释还是乱码。</p>
-<p>把表删除然后重新创建。效果如下：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled%203-20201102170449863.png" alt="Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%203.png"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/09/24/Hive-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/09/24/Hive-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F/" class="post-title-link" itemprop="url">Hive 数据类型和存储格式</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-09-24 19:02:20" itemprop="dateCreated datePublished" datetime="2020-09-24T19:02:20+08:00">2020-09-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><a target="_blank" rel="noopener" href="http://bigdata-star.com/archives/1013">【Hive教程】（二）Hive数据类型和存储格式</a></p>
-<p><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/Hive/LanguageManual+Types">Apache Software Foundation</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/sl1992/article/details/53894481?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.channel_param">Hive复合数据类型array,map,struct的使用_Life is for sharing的博客-CSDN博客</a></p>
-<h1 id="HIVE数据类型"><a href="#HIVE数据类型" class="headerlink" title="HIVE数据类型"></a><strong>HIVE数据类型</strong></h1><p>毕竟HIVE穿着SQL的外壳，肯定支持诸如Mysql这种RDBMS的数据类型，如<code>int</code>,<code>varchar</code>,但是它还具有非常多自有的数据类型，包括复杂的数据类型（数组，Map等）也是支持的！</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Untitled.png" alt="Hive 支持的数据类型 - 摘自官网wiki"></p>
-<p>数字类型，日期类型，String类型，Boolean类型我们都是比较熟悉的，也比较简单，就不讲解了。演示一下复杂数据类型：</p>
-<h2 id="arrays"><a href="#arrays" class="headerlink" title="arrays"></a>arrays</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hive (hive)<span class="operator">&gt;</span> <span class="keyword">create</span> <span class="keyword">table</span> arraytest (id <span class="type">int</span>,course <span class="keyword">array</span><span class="operator">&lt;</span>string<span class="operator">&gt;</span>)</span><br><span class="line">           <span class="operator">&gt;</span> <span class="type">row</span> format delimited fields terminated <span class="keyword">by</span><span class="string">&#x27;,&#x27;</span></span><br><span class="line">           <span class="operator">&gt;</span> collection items terminated <span class="keyword">by</span><span class="string">&#x27;:&#x27;</span>;</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<ul>
-<li><code>row format delimited fields terminated by&#39;,&#39;</code> 是指定列与列之间的分隔符,此处为”,”</li>
-<li><code>collection items terminated by&#39;:&#39;</code> 是指定集合内元素之间的分隔符,此处为”：”</li>
-</ul>
-<p>因此我们要导入到hive中的数据应该是形如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1,math:chinese</span><br><span class="line">2,english:history</span><br></pre></td></tr></table></figure>
-
-<p>数据加载到数据库</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> load data <span class="keyword">local</span> inpath <span class="string">&#x27;/Users/fengxuechao/WorkSpace/software/hive_data/arraytest.txt&#x27;</span> <span class="keyword">into</span> <span class="keyword">table</span> arraytest;</span><br><span class="line">Loading data <span class="keyword">to</span> <span class="keyword">table</span> default.arraytest</span><br><span class="line">OK</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.963</span> seconds</span><br></pre></td></tr></table></figure>
-
-<p>查询所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> arraytest;</span><br><span class="line">OK</span><br><span class="line"><span class="number">1</span>	[&quot;math&quot;,&quot;chinese&quot;]</span><br><span class="line"><span class="number">2</span>	[&quot;english&quot;,&quot;history&quot;]</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">1.297</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br></pre></td></tr></table></figure>
-
-<p>查询数组指定索引的所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> course[<span class="number">1</span>] <span class="keyword">from</span> arraytest;</span><br><span class="line">OK</span><br><span class="line">chinese</span><br><span class="line">history</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.364</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br></pre></td></tr></table></figure>
-
-<h2 id="maps"><a href="#maps" class="headerlink" title="maps"></a>maps</h2><p>创建表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">create</span> <span class="keyword">table</span> maptest(name string,score map<span class="operator">&lt;</span>string,<span class="type">float</span><span class="operator">&gt;</span>)</span><br><span class="line">    <span class="operator">&gt;</span> <span class="type">row</span> format delimited fields terminated <span class="keyword">by</span><span class="string">&#x27;,&#x27;</span></span><br><span class="line">    <span class="operator">&gt;</span> collection items terminated <span class="keyword">by</span> <span class="string">&#x27;|&#x27;</span></span><br><span class="line">    <span class="operator">&gt;</span> map keys terminated <span class="keyword">by</span><span class="string">&#x27;:&#x27;</span>;</span><br><span class="line">OK</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.046</span> seconds</span><br></pre></td></tr></table></figure>
-
-<p>数据</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;小明&#x27;</span>,math:<span class="number">96</span><span class="operator">|</span>chinese:<span class="number">95</span></span><br><span class="line"><span class="string">&#x27;小红&#x27;</span>,math:<span class="number">80</span><span class="operator">|</span>chinese:<span class="number">99</span></span><br></pre></td></tr></table></figure>
-
-<p>数据加载到数据库</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> load data <span class="keyword">local</span> inpath <span class="string">&#x27;/Users/fengxuechao/WorkSpace/software/hive_data/maptest.txt&#x27;</span> <span class="keyword">into</span> <span class="keyword">table</span> maptest;</span><br><span class="line">Loading data <span class="keyword">to</span> <span class="keyword">table</span> default.maptest</span><br><span class="line">OK</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.293</span> seconds</span><br></pre></td></tr></table></figure>
-
-<p>查询所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> maptest;</span><br><span class="line">OK</span><br><span class="line">&#x27;小明&#x27;	&#123;&quot;math&quot;:96.0,&quot;chinese&quot;:95.5&#125;</span><br><span class="line">&#x27;小红&#x27;	&#123;&quot;math&quot;:80.0,&quot;chinese&quot;:99.0&#125;</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.1</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br></pre></td></tr></table></figure>
-
-<p>查询数组指定key的所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> name,score[<span class="string">&#x27;math&#x27;</span>] <span class="keyword">from</span> maptest;</span><br><span class="line">OK</span><br><span class="line"><span class="string">&#x27;小明&#x27;</span>	<span class="number">96.0</span></span><br><span class="line"><span class="string">&#x27;小红&#x27;</span>	<span class="number">80.0</span></span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.112</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br></pre></td></tr></table></figure>
-
-<h2 id="structs"><a href="#structs" class="headerlink" title="structs"></a>structs</h2><p>创建表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">create</span> <span class="keyword">table</span> struct_test(name string,course struct<span class="operator">&lt;</span>course:string,score:<span class="type">int</span><span class="operator">&gt;</span>)</span><br><span class="line">    <span class="operator">&gt;</span> <span class="type">row</span> format delimited fields terminated <span class="keyword">by</span> <span class="string">&#x27;,&#x27;</span></span><br><span class="line">    <span class="operator">&gt;</span> collection items terminated <span class="keyword">by</span> <span class="string">&#x27;:&#x27;</span>;</span><br><span class="line">OK</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.047</span> seconds</span><br></pre></td></tr></table></figure>
-
-<p>数据</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">小明,math:<span class="number">79</span></span><br><span class="line">小红,math:<span class="number">80</span></span><br></pre></td></tr></table></figure>
-
-<p>数据加载到数据库</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> load data <span class="keyword">local</span> inpath <span class="string">&#x27;/Users/fengxuechao/WorkSpace/software/hive_data/struct_test.txt&#x27;</span> <span class="keyword">into</span> <span class="keyword">table</span> struct_test;</span><br><span class="line">Loading data <span class="keyword">to</span> <span class="keyword">table</span> default.struct_test</span><br><span class="line">OK</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.293</span> seconds</span><br></pre></td></tr></table></figure>
-
-<p>查询所有数据：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> struct_test;</span><br><span class="line">OK</span><br><span class="line">小明	&#123;&quot;course&quot;:&quot;math&quot;,&quot;score&quot;:79&#125;</span><br><span class="line">小红	&#123;&quot;course&quot;:&quot;math&quot;,&quot;score&quot;:80&#125;</span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.097</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br><span class="line">hive<span class="operator">&gt;</span> <span class="keyword">select</span> name,course.course,course.score <span class="keyword">from</span> struct_test;</span><br><span class="line">OK</span><br><span class="line">小明	math	<span class="number">79</span></span><br><span class="line">小红	math	<span class="number">80</span></span><br><span class="line"><span class="type">Time</span> taken: <span class="number">0.213</span> seconds, Fetched: <span class="number">2</span> <span class="type">row</span>(s)</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/09/22/Kylin%E5%85%A5%E9%97%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/09/22/Kylin%E5%85%A5%E9%97%A8/" class="post-title-link" itemprop="url">Kylin 入门</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-09-22 16:56:14" itemprop="dateCreated datePublished" datetime="2020-09-22T16:56:14+08:00">2020-09-22</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/" itemprop="url" rel="index"><span itemprop="name">大数据</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>[TOC]</p>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>随着移动互联网、物联网等技术的发展，近些年人类所积累的数据正在呈爆炸式的增长，大数据时代已经来临。但是海量数据的收集只是大数据技术的第一步，如何让数据产生价值才是大数据领域的终极目标。Hadoop的出现解决了数据存储问题，但如何对海量数据进行OLAP查询，却一直令人十分头疼。</p>
-<p>企业中的查询大致可分为即席查询和定制查询两种。之前出现的很多OLAP引擎，包括Hive、Presto、SparkSQL等，虽然在很大程度上降低了数据分析的难度，但它们都只适用于即席查询的场景。它们的优点是查询灵活，但是随着数据量和计算复杂度的增长，响应时间不能得到保证。而定制查询多数情况下是对用户的操作做出实时反应，Hive等查询引擎动辄数分钟甚至数十分钟的响应时间显然是不能满足需求的。在很长一段时间里，企业只能对数据仓库中的数据进行提前计算，再将算好后的结果存储在MySQL等关系型数据库中，再提供给用户进行查询。但是当业务复杂度和数据量逐渐升高后，使用这套方案的开发成本和维护成本都显著上升。因此，如何对已经固化下来的查询进行亚秒级返回一直是企业应用中的一个痛点。</p>
-<p>在这种情况下，Apache Kylin应运而生。不同于“大规模并行处理”（Massive Parallel Processing，MPP）架构的Hive、Presto等，Apache Kylin采用“预计算”的模式，用户只需要提前定义好查询维度，Kylin将帮助我们进行计算，并将结果存储到HBase中，为海量数据的查询和分析提供亚秒级返回，是一种典型的“空间换时间”的解决方案。Apache Kylin的出现不仅很好地解决了海量数据快速查询的问题，也避免了手动开发和维护提前计算程序带来的一系列麻烦。</p>
-<p>Apache Kylin™是一个开源的、分布式的分析型数据仓库，提供 Hadoop 之上的 SQL 查询接口及多维分析（OLAP）能力以支持超大规模数据，最初由eBay Inc.开发并贡献至开源社区。</p>
-<h1 id="Kylin-架构"><a href="#Kylin-架构" class="headerlink" title="Kylin 架构"></a>Kylin 架构</h1><p>如果想要知道Kylin是如何实现超大数据集的秒级多维分析查询，那么就得了解Kylin的架构原理。<br>Kylin实现秒级查询的关键点是预计算，对于超大数据集的复杂查询，既然现场计算需要花费较长时间，那么根据空间换时间的原理，我们就可以提前将所有可能的计算结果计算并存储下来，把高复杂度的聚合运算、多表连接等操作转换成对预计算结果的查询，比如把本该进行的Join、Sum、CountDistinct等操作改写成Cube的查询操作。从而实现超大数据集的秒级多维分析查询。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200924112848747.png" alt="image-20200924112848747"></p>
-<ul>
-<li>REST Server:<br>REST Server是一套面向应用程序开发的入口点，旨在实现针对Kylin平台的应用开发工作。 此类应用程序可以提供查询、获取结果、触发cube构建任务、获取元数据以及获取用户权限等等。 另外可以通过Restful接口实现SQL查询。</li>
-<li>查询引擎（Query Engine）:<br>当cube准备就绪后，查询引擎就能够获取并解析用户查询。它随后会与系统中的其它组件进行交互，从而向用户返回对应的结果。<br>在Kylin当中，我们使用一套名为Apache Calcite的开源动态数据管理框架对代码内的SQL以及其它插入内容进行解析。（Calcite最初被命名为Optiq，由Julian Hyde所编写，但如今已经成为Apache孵化器项目之一。）</li>
-<li>Routing<br>负责将解析的SQL生成的执行计划转换成cube缓存的查询，cube是通过预计算缓存在hbase中，这部分查询可以在秒级设置毫秒级完成，而且还有一些操作使用过的查询原始数据（存储在Hadoop的hdfs中通过hive查询）。这部分查询延迟较高。</li>
-<li>元数据管理工具（Metadata Manager）<br>Kylin是一款元数据驱动型应用程序。元数据管理工具是一大关键性组件，用于对保存在Kylin当中的所有元数据进行管理，其中包括最为重要的cube元数据。其它全部组件的正常运作都需以元数据管理工具为基础。 Kylin的元数据存储在hbase中。</li>
-<li>任务引擎（Cube Build Engine）:<br>这套引擎的设计目的在于处理所有离线任务，其中包括shell脚本、Java API以及Map Reduce任务等等。任务引擎对Kylin当中的全部任务加以管理与协调，从而确保每一项任务都能得到切实执行并解决其间出现的故障。</li>
-<li>存储引擎（Storage Engine）<br>这套引擎负责管理底层存储——特别是cuboid，其以键-值对的形式进行保存。存储引擎使用的是HBase——这是目前Hadoop生态系统当中最理想的键-值系统使用方案。Kylin还能够通过扩展实现对其它键-值系统的支持，例如Redis。</li>
-</ul>
-<p><strong>预计算大概流程</strong>就是：将数据源中的数据按照指定的维度和指标，由计算引擎MapReduce离线计算出所有可能的查询结果(即Cube)存储到HBase中。HBase中每行记录的Rowkey由维度组成，度量会保存在 column family中。为了减小存储代价，这里会对维度和度量进行编码。查询阶段，利用HBase列存储的特性就可以保证Kylin有良好的快速响应和高并发。</p>
-<p>需要注意的是：Kylin的三大依赖模块分别是数据源、构建引擎和存储引擎。默认这三者分别是Hive、MapReduce和HBase。但随着推广和使用的深入，渐渐有用户发现它们均存在不足之处。比如，实时分析可能会希望从Kafka导入数据而不是从Hive；而Spark的迅速崛起，又使我们不得不考虑将MapReduce替换为Spark，以期大幅提高Cube的构建速度；至于HBase，它的读性能可能还不如Cassandra或Kudu等。因此Kylin1.5版本的系统架构进行了重构，将数据源、构建引擎、存储引擎三大依赖抽象为接口，而Hive、MapReduce、HBase只是默认实现。深度用户可以根据自己的需要做二次开发，将其中的一个或多个替换为更适合的技术。</p>
-<h1 id="安装Kylin"><a href="#安装Kylin" class="headerlink" title="安装Kylin"></a>安装Kylin</h1><h2 id="单节点安装"><a href="#单节点安装" class="headerlink" title="单节点安装"></a>单节点安装</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /opt/apache-kylin-3.1.0-bin-hbase1x /usr/local/kylin</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">KYLIN_HOME=/usr/<span class="built_in">local</span>/kylin</span><br><span class="line"><span class="built_in">export</span> KYLIN_HOME</span><br><span class="line">PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$KYLIN_HOME</span>/bin</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source /etc/proifle</span><br></pre></td></tr></table></figure>
-
-<h3 id="macOS遇到的问题"><a href="#macOS遇到的问题" class="headerlink" title="macOS遇到的问题"></a>macOS遇到的问题</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/check-env.sh</span><br></pre></td></tr></table></figure>
-
-<p>此处mac有坑，因为检查脚本使用的是gnu的一些命令，和mac上的命令不同。所以需要安装gnu命令:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">brew install gnu-sed</span><br><span class="line">brew install findutils</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 检查环境</span></span><br><span class="line">/usr/local/kylin/bin/check-env.sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动</span></span><br><span class="line">/usr/local/kylin/bin/kylin.sh start</span><br><span class="line"><span class="meta">#</span><span class="bash"> 样例</span></span><br><span class="line">/usr/local/kylin/bin/sample.sh</span><br><span class="line"><span class="meta">#</span><span class="bash"> 重启</span></span><br><span class="line">/usr/local/kylin/bin/kylin.sh restart</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20200924103518462.png" alt="image-20200924103518462"></p>
-<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><h2 id="数据仓库"><a href="#数据仓库" class="headerlink" title="数据仓库"></a>数据仓库</h2><h2 id="OLAP"><a href="#OLAP" class="headerlink" title="OLAP"></a>OLAP</h2><h2 id="维度和度量"><a href="#维度和度量" class="headerlink" title="维度和度量"></a>维度和度量</h2><h2 id="Cube和Cuboid"><a href="#Cube和Cuboid" class="headerlink" title="Cube和Cuboid"></a>Cube和Cuboid</h2><h2 id="事实表和维度表"><a href="#事实表和维度表" class="headerlink" title="事实表和维度表"></a>事实表和维度表</h2><h2 id="星形模型"><a href="#星形模型" class="headerlink" title="星形模型"></a>星形模型</h2>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 

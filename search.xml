@@ -1724,6 +1724,16 @@ bin/elasticsearch-setup-passwords interactive
 <h3 id="1-3-8-方法调用计数器流程"><a href="#1-3-8-方法调用计数器流程" class="headerlink" title="1.3.8 方法调用计数器流程"></a>1.3.8 方法调用计数器流程</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210809233815237.png" alt="image-20210809233815237"></p>
 <p>如果不做任何设置，方法调用次数统计的并不是方法被调用的绝对次数，而是一个相对的执行频，即一段时间之内方法被调用的次数。当超过一定的时间限度，如果方法的调用次数荏苒不足以让它提交给及时编译器编译，那这个方法的调用计数器就会减少一半，这个过程称为方法调用计数器热度的衰减，而这段时间就称为此方法统计的半衰周期。进行热度衰减的动作是在虚拟机进行垃圾手机是顺便进行的，可以使用虚拟机参数-XX:-UseCounterDecay来关闭热度衰减，让方法计数器统计方法调用的绝对次数，这样，只要系统运行时间足够长，绝大部分方法都会被编译成本地代码。另外，可以使用-XX:CounterHalfLifeTime参数设置半衰周期的时间，单位是秒。</p>
 <h3 id="1-3-9-回边计数器流程"><a href="#1-3-9-回边计数器流程" class="headerlink" title="1.3.9 回边计数器流程"></a>1.3.9 回边计数器流程</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210809234920524.png" alt="image-20210809234920524"></p>
+<h3 id="1-3-10-方法内联"><a href="#1-3-10-方法内联" class="headerlink" title="1.3.10 方法内联"></a>1.3.10 方法内联</h3><ul>
+<li><p>什么事方法内联？示例？</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InlineTest1</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add1</span><span class="params">(<span class="keyword">int</span> x1, <span class="keyword">int</span> x2, <span class="keyword">int</span> x3, <span class="keyword">int</span> x4)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> add2(x1, x2) + add2(x3, x4);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add2</span><span class="params">(<span class="keyword">int</span> x1, <span class="keyword">int</span> x2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x1 + x3;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 内联后</span></span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">addInline</span><span class="params">(<span class="keyword">int</span> x1, <span class="keyword">int</span> x2, <span class="keyword">int</span> x3, <span class="keyword">int</span> x4)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x1 + x2 + x3 + x4;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>方法内联的条件 -1</p>
+<ul>
+<li><h2 id="方法体足够小"><a href="#方法体足够小" class="headerlink" title="方法体足够小"></a>方法体足够小</h2></li>
+</ul>
+</li>
+<li></li>
+</ul>
 <h2 id="1-4-垃圾收集算法"><a href="#1-4-垃圾收集算法" class="headerlink" title="1.4 垃圾收集算法"></a>1.4 垃圾收集算法</h2><h2 id="1-5-垃圾收集器"><a href="#1-5-垃圾收集器" class="headerlink" title="1.5 垃圾收集器"></a>1.5 垃圾收集器</h2><h1 id="2-工具"><a href="#2-工具" class="headerlink" title="2 工具"></a>2 工具</h1><h1 id="3-实战"><a href="#3-实战" class="headerlink" title="3 实战"></a>3 实战</h1><h1 id="4-参考资源"><a href="#4-参考资源" class="headerlink" title="4 参考资源"></a>4 参考资源</h1><p><a href="https://www.cnblogs.com/andy-zhou/p/5327288.html">JVM调优总结</a></p>
 ]]></content>
       <tags>
@@ -10409,9 +10419,9 @@ bin/elasticsearch-setup-passwords interactive
 <h3 id="三、锁状态的思路以及特点"><a href="#三、锁状态的思路以及特点" class="headerlink" title="三、锁状态的思路以及特点"></a>三、锁状态的思路以及特点</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904667.png" alt="img"></p>
 <h3 id="四、锁对比"><a href="#四、锁对比" class="headerlink" title="四、锁对比"></a>四、锁对比</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904669-20210807194327994.png" alt="img"></p>
 <h3 id="五、Synchronized锁"><a href="#五、Synchronized锁" class="headerlink" title="五、Synchronized锁"></a>五、Synchronized锁</h3><p>synchronized 用的锁是存在Java对象头里的，那么什么是对象头呢？</p>
-<h3 id="5-1-Java-对象头"><a href="#5-1-Java-对象头" class="headerlink" title="5.1 Java 对象头"></a>5.1 Java 对象头</h3><p>我们以 Hotspot 虚拟机为例，Hopspot 对象头主要包括两部分数据：Mark Word（标记字段） 和 Klass Pointer（类型指针）</p>
+<h3 id="5-1-Java-对象头"><a href="#5-1-Java-对象头" class="headerlink" title="5.1 Java 对象头"></a>5.1 Java 对象头</h3><p>我们以 Hotspot 虚拟机为例，Hopspot 对象头主要包括两部分数据：Mark Word（标记字段） 和 Class Pointer（类型指针）</p>
 <p>Mark Word：默认存储对象的HashCode，分代年龄和锁标志位信息。这些信息都是与对象自身定义无关的数据，所以Mark Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的数据。它会根据对象的状态复用自己的存储空间，也就是说在运行期间Mark Word里存储的数据会随着锁标志位的变化而变化。</p>
-<p>Klass Point：对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
+<p>Class Point：对象指向它的类元数据的指针，虚拟机通过这个指针来确定这个对象是哪个类的实例。</p>
 <p>在上面中我们知道了，synchronized 用的锁是存在Java对象头里的，那么具体是存在对象头哪里呢？答案是：存在锁对象的对象头的Mark Word中，那么MarkWord在对象头中到底长什么样，它到底存储了什么呢？</p>
 <p>在64位的虚拟机中：<img src="https://segmentfault.com/img/remote/1460000022904668" alt="img"></p>
 <p>在32位的虚拟机中：<img src="https://segmentfault.com/img/remote/1460000022904670" alt="img"></p>
@@ -13567,6 +13577,171 @@ end
 ]]></content>
       <tags>
         <tag>mycat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2021/10/19/Kubenete%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97%201/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>分布式限流</title>
+    <url>/2021/12/07/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h1 id="分布式限流介绍"><a href="#分布式限流介绍" class="headerlink" title="分布式限流介绍"></a>分布式限流介绍</h1><p>限流的目的是通过对并发访问/请求进行限速或者在一个时间窗口内的请求进行限速来保护系统，一旦请求到达限制速率则可以拒绝服务、排队或等待、降级。</p>
+<p>主要是通过压测时找出每个系统的处理峰值，然后通过处理设定峰值阈值来防止系统过载时，通过拒绝处理过载的请求来保障系统可用性。</p>
+<span id="more"></span>
+
+<h1 id="分布式限流的几种维度"><a href="#分布式限流的几种维度" class="headerlink" title="分布式限流的几种维度"></a>分布式限流的几种维度</h1><ul>
+<li>时间： 限流基于某段时间范围或者某个时间点，也就是我们常说的“时间窗口”，比如对每分钟、每秒钟的时间窗口做限定</li>
+<li>资源： 基于可用资源的限制，比如设定最大访问次数，或最高可用连接数</li>
+</ul>
+<p>上面两个维度结合起来看，限流就是在某个时间窗口对资源访问做限制，比如设定每秒最多100个访问请求。但在真正的场景里，我们不止设置一种限流规则，而是会设置多个限流规则共同作用，主要的几种限流规则如下：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f15a8097b023f27401174.png" alt="img"></p>
+<p>一般开发高并发系统常见的限流有：</p>
+<ul>
+<li>限制总并发数：如数据库连接池、线程池</li>
+<li>限制瞬时并发数：如Nginx的 limit_conn 模块</li>
+<li>限制时间窗口内的平均速率：如Guava的RateLimiter、Nginx的 limit_req 模块</li>
+<li>限制远程接口调用速率</li>
+<li>限制MQ的消费速率</li>
+<li>等等…</li>
+<li>还可以根据网络连接数、网络流量、CPU或内存负载</li>
+</ul>
+<h1 id="限流算法"><a href="#限流算法" class="headerlink" title="限流算法"></a>限流算法</h1><h2 id="令牌桶算法"><a href="#令牌桶算法" class="headerlink" title="令牌桶算法"></a>令牌桶算法</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211207163639135.png" alt="image-20211207163639135"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211207163552357.png" alt="image-20211207163552357"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f176d09e1a32330281388.png" alt="img"></p>
+<p>有两个关键的角色：</p>
+<ul>
+<li>令牌：获取到令牌的Request才会被处理，其他Requests要么排队要么被直接丢弃</li>
+<li>桶：用来装令牌的地方，所有Request都从这个桶里面获取令牌</li>
+</ul>
+<p>两个关键流程：</p>
+<ul>
+<li><p>生成令牌</p>
+<p>这个流程涉及到令牌生成器和令牌桶，令牌桶是一个装令牌的地方，既然是个桶那么必然有一个容量，也就是说令牌桶所能容纳的令牌数量是一个固定的数值。</p>
+<p>对于令牌生成器来说，它会根据一个预定的速率向桶中添加令牌，比如我们可以配置让它以每秒100个请求的速率发放令牌，或者每分钟50个。注意这里的发放速度是匀速，也就是说这50个令牌并非是在每个时间窗口刚开始的时候一次性发放，而是会在这个时间窗口内匀速发放。</p>
+<p>在令牌发放器就是一个水龙头，假如在下面接水的桶子满了，那么自然这个水（令牌）就流到了外面。在令牌发放过程中也一样，令牌桶的容量是有限的，如果当前已经放满了额定容量的令牌，那么新来的令牌就会被丢弃掉。</p>
+</li>
+<li><p>获取令牌</p>
+<p>每个访问请求到来后，必须获取到一个令牌才能执行后面的逻辑。假如令牌的数量少，而访问请求较多的情况下，一部分请求自然无法获取到令牌，那么这个时候我们可以设置一个“缓冲队列”来暂存这些多余的令牌。</p>
+<p><strong>缓冲队列</strong>其实是一个可选的选项，并不是所有应用了令牌桶算法的程序都会实现队列。当有缓存队列存在的情况下，那些暂时没有获取到令牌的请求将被放到这个队列中排队，直到新的令牌产生后，再从队列头部拿出一个请求来匹配令牌。</p>
+<p>当队列已满的情况下，这部分访问请求将被丢弃。在实际应用中我们还可以给这个队列加一系列的特效，比如设置队列中请求的存活时间，或者将队列改造为PriorityQueue，根据某种优先级排序，而不是先进先出。算法是死的，人是活的，先进的生产力来自于不断的创造，在技术领域尤其如此。</p>
+</li>
+</ul>
+<h2 id="漏桶算法"><a href="#漏桶算法" class="headerlink" title="漏桶算法"></a>漏桶算法</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f177b09c240dc25841544.png" alt="img"></p>
+<p>漏桶算法的前半段和令牌桶类似，但是操作的对象不同，令牌桶是将令牌放入桶里，而漏桶是将访问请求的数据包放到桶里。同样的是，如果桶满了，那么后面新来的数据包将被丢弃。</p>
+<p>漏桶算法的后半程是有鲜明特色的，它永远只会以一个恒定的速率将数据包从桶内流出。打个比方，如果我设置了漏桶可以存放100个数据包，然后流出速度是1s一个，那么不管数据包以什么速率流入桶里，也不管桶里有多少数据包，漏桶能保证这些数据包永远以1s一个的恒定速度被处理。</p>
+<h2 id="令漏洞算法-VS-漏洞算法"><a href="#令漏洞算法-VS-漏洞算法" class="headerlink" title="令漏洞算法 VS 漏洞算法"></a>令漏洞算法 VS 漏洞算法</h2><p><strong>漏桶</strong></p>
+<p>漏桶的出水速度是恒定的，那么意味着如果瞬时大流量的话，将有大部分请求被丢弃掉（也就是所谓的溢出）。</p>
+<p><strong>令牌桶</strong></p>
+<p>生成令牌的速度是恒定的，而请求去拿令牌是没有速度限制的。这意味，面对瞬时大流量，<em>该算法可以在短时间内请求拿到大量令牌</em>，而且拿令牌的过程并不是消耗很大的事情。</p>
+<p>最后，不论是对于令牌桶拿不到令牌被拒绝，还是漏桶的水满了溢出，都是为了保证大部分流量的正常使用，而牺牲掉了少部分流量，这是合理的，如果因为极少部分流量需要保证的话，那么就可能导致系统达到极限而挂掉，得不偿失。</p>
+<h2 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f17870983b50a33121060.png" alt="img"></p>
+<p>上图中黑色的大框就是时间窗口，我们设定窗口时间为5秒，它会随着时间推移向后滑动。我们将窗口内的时间划分为五个小格子，每个格子代表1秒钟，同时这个格子还包含一个计数器，用来计算在当前时间内访问的请求数量。那么这个时间窗口内的总访问量就是所有格子计数器累加后的数值。</p>
+<p>比如说，我们在每一秒内有5个用户访问，第5秒内有10个用户访问，那么在0到5秒这个时间窗口内访问量就是15。如果我们的接口设置了时间窗口内访问上限是20，那么当时间到第六秒的时候，这个时间窗口内的计数总和就变成了10，因为1秒的格子已经退出了时间窗口，因此在第六秒内可以接收的访问量就是20-10=10个。</p>
+<p>滑动窗口其实也是一种计算器算法，它有一个显著特点，当时间窗口的跨度越长时，限流效果就越平滑。打个比方，如果当前时间窗口只有两秒，而访问请求全部集中在第一秒的时候，当时间向后滑动一秒后，当前窗口的计数量将发生较大的变化，拉长时间窗口可以降低这种情况的发生概率</p>
+<h1 id="限流组件"><a href="#限流组件" class="headerlink" title="限流组件"></a>限流组件</h1><h2 id="Guava-RateLimiter-客户端限流"><a href="#Guava-RateLimiter-客户端限流" class="headerlink" title="Guava RateLimiter 客户端限流"></a>Guava RateLimiter 客户端限流</h2>]]></content>
+      <tags>
+        <tag>分布式</tag>
+        <tag>限流</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>网络基础概述</title>
+    <url>/2021/10/19/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="移动通信发展回顾"><a href="#移动通信发展回顾" class="headerlink" title="移动通信发展回顾"></a>移动通信发展回顾</h1><span id="more"></span>
+
+]]></content>
+      <tags>
+        <tag>网络</tag>
+        <tag>5G</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>接口幂等性</title>
+    <url>/2021/12/06/%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7/</url>
+    <content><![CDATA[<h1 id="什么是幂等性？"><a href="#什么是幂等性？" class="headerlink" title="什么是幂等性？"></a>什么是幂等性？</h1><ul>
+<li>幂等性：f(f(x)) = f(x)</li>
+<li>幂等元素运行多次，还等于它原来的运算结果</li>
+<li>在系统中，一个接口运行多次，与运行一次的效果是一致的</li>
+</ul>
+<span id="more"></span>
+
+<h1 id="什么情况下需要把接口设计为幂等性？"><a href="#什么情况下需要把接口设计为幂等性？" class="headerlink" title="什么情况下需要把接口设计为幂等性？"></a>什么情况下需要把接口设计为幂等性？</h1><ul>
+<li><p>重复提交、接口重试、前段操作抖动等</p>
+</li>
+<li><p>业务场景：用户多次点击提交订单，后台应只生成一个订单</p>
+</li>
+<li><p>业务场景：支付时，由于网络问题重发，应该只扣一次钱</p>
+</li>
+<li><p><font color = red>并不是所有的接口都要求幂等性，要根据业务而定</font></p>
+</li>
+</ul>
+<h1 id="保证幂等性的策略有哪些？"><a href="#保证幂等性的策略有哪些？" class="headerlink" title="保证幂等性的策略有哪些？"></a>保证幂等性的策略有哪些？</h1><ul>
+<li><p>幂等性的核心思想：通过<font color=red>唯一的业务单号</font>保证幂等，</p>
+<p>如果有唯一的业务单号，可以使用分布式锁，</p>
+<p>如果没有唯一的业务单号，可以通过Token保证幂等。</p>
+</li>
+<li><p>常见的两种实现方案: </p>
+<ol>
+<li><p><strong>通过代码逻辑判断实现</strong>：只能针对一些满足判断的逻辑实现,具有一定局限性</p>
+</li>
+<li><p><strong>使用token机制实现</strong>：通用型较强</p>
+<p><strong><font color=red>token机制实现步骤</font></strong>:</p>
+<ol>
+<li><strong>生成全局唯一的token,token放到redis或jvm内存,token会在页面跳转时获取.存放到pageScope中,支付请求提交先获取token</strong></li>
+<li><strong>提交后后台校验token，执行提交逻辑,提交成功同时删除token，生成新的token更新redis ,这样当第一次提交后token更新了,页面再次提交携带的token是已删除的token后台验证会失败不让提交</strong></li>
+</ol>
+<p>**<font color=red>token特点</font>**：  要申请，一次有效性，可以限流</p>
+<p><font color=red><strong>注意</strong></font>： redis要用删除操作来判断token，删除成功代表token校验通过，如果用select+delete来校验token，存在并发问题，不建议使用</p>
+</li>
+</ol>
+</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>负载均衡Ribbon</title>
+    <url>/2021/10/21/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1Ribbon/</url>
+    <content><![CDATA[<h1 id="负载均衡介绍"><a href="#负载均衡介绍" class="headerlink" title="负载均衡介绍"></a>负载均衡介绍</h1><p>将请求或者说流量，以期望的规则分摊到多个操作单元上进行执行。</p>
+<p>通过它可以实现横向扩展(scale out)，将冗余的作用发挥为高可用。另外，还可以物尽其用，提升资源使用率。</p>
+<span id="more"></span>
+
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h2 id="客户端负载均衡"><a href="#客户端负载均衡" class="headerlink" title="客户端负载均衡"></a>客户端负载均衡</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211021155325000.png" alt="image-20211021155325000"></p>
+<p>基于客户端做负载均衡，有一个前提是需要在客户端本地维护一个服务的机器列表，同时在本地指定一个LB策略，然后输出一个服务。服务列表并不是一成不变的，机器列表需要通过注册中心动态更新机器列表。</p>
+<h2 id="服务端负载均衡"><a href="#服务端负载均衡" class="headerlink" title="服务端负载均衡"></a>服务端负载均衡</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211021160108842.png" alt="image-20211021160108842"></p>
+<ul>
+<li>大型应用通常是客户端+服务端负载均衡搭配使用</li>
+</ul>
+<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20211021160704789.png" alt="image-20211021160704789"></p>
+<h1 id="深入Ribbon"><a href="#深入Ribbon" class="headerlink" title="深入Ribbon"></a>深入Ribbon</h1><h2 id="负载均衡策略和原理，加载方式，IPing-机制"><a href="#负载均衡策略和原理，加载方式，IPing-机制" class="headerlink" title="负载均衡策略和原理，加载方式，IPing 机制"></a>负载均衡策略和原理，加载方式，IPing 机制</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e12e23709f43f6528861210.png"></p>
+<p>一个HttpRequest发过来，先被转发到Eureka上。此时Eureka仍然通过服务发现获取了所有服务节点的物理地址，但问题是他不知道该调用哪一个，只好把请求转到了Ribbon手里。</p>
+<ul>
+<li><p>IPing</p>
+<p>IPing是Ribbon的一套healthcheck机制，故名思议，就是要Ping一下目标机器看是否还在线，一般情况下IPing并不会主动向服务节点发起healthcheck请求，Ribbon后台通过静默处理返回true默认表示所有服务节点都处于存活状态（和Eureka集成的时候会检查服节点UP状态）。</p>
+<p>IPing 有以下几种方式：</p>
+<ul>
+<li>DummyPing，默认返回true，即认为所有节点都可用，这也是单独使用Ribbon时的默认模式</li>
+<li>NIWSDiscoveryPing，借助Eureka服务发现机制获取节点状态，假如节点状态是UP则认为是可用状态</li>
+<li>PingUrl，它会主动向服务节点发起一次http调用，如果对方有响应则认为节点可用</li>
+</ul>
+<p>第三种方式 PingUrl 比较生猛，会对各个服务节点请求个不停，各个节点有可能扛不住压力，因此除非特殊指定，在和Eureka合作时，一般采用第二种方式。</p>
+</li>
+<li><p>IRule</p>
+<p>这就是Ribbon的组件库了，各种负载均衡策略都继承自IRule接口。所有经过Ribbon的请求都会先请示IRule一把，找到负载均衡策略选定的目标机器，然后再把请求转发过去。</p>
+</li>
+</ul>
+<h2 id="LoadBalanced-原理解析"><a href="#LoadBalanced-原理解析" class="headerlink" title="LoadBalanced 原理解析"></a>LoadBalanced 原理解析</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e12e63009550a2029541170.png"></p>
+<h3 id="LoadBalanced"><a href="#LoadBalanced" class="headerlink" title="@LoadBalanced"></a>@LoadBalanced</h3><p>这个注解一头挂在<code>RestTemplate</code>上，另一头挂在<code>LoadBalancerAutoConfiguration</code>这个类上。它就像连接两个世界的传送门，将所有顶着「LoadBalanced」注解的RestTemplate类，都传入到<code>LoadBalancerAutoConfiguration</code>中。如果要深挖底层的作用机制，大家可以发现这个注解的定义上还有一个<code>@Qualifier</code>注解。@Qualifier注解搭配@Autowired注解做自动装配，可以通过name属性，将指定的Bean装载到指定位置（即使有两个同样类型的Bean，也可以通过Qualifier定义时声明的name做区分）。这里「LoadBalanced」也是借助Qualifier实现了一个给RestTemplate打标签的功能，凡是被打标的RestTemplate都会被传送到AutoConfig中做进一步改造。</p>
+<h3 id="LBAutoConfig"><a href="#LBAutoConfig" class="headerlink" title="LBAutoConfig"></a>LBAutoConfig</h3><p>从前一步中传送过来的RestTemplate，会经过<code>LBAutoConfig</code>的装配，将一系列的<code>Interceptor</code>（拦截器）添加到RestTemplate中。拦截器是类似职责链编程模型的结构，我们常见的ServletFilter，权限控制器等，都是类似的模式。Ribbon拦截器会拦截每个网络请求做一番处理，在这个过程中拦截器会找到对应的LoadBalancer对HTTP请求进行接管，接着LoadBalancer就会找到默认或指定的负载均衡策略来对HTTP请求进行转发。</p>
+]]></content>
+      <tags>
+        <tag>负载均衡</tag>
+        <tag>Ribbon</tag>
       </tags>
   </entry>
 </search>
