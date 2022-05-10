@@ -195,20 +195,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">203</span>
+          <span class="site-state-item-count">234</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">125</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -246,7 +246,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/06/18/Python%E4%B8%AD-%E5%92%8Cis%E7%9A%84%E5%8C%BA%E5%88%AB/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -259,7 +259,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/06/18/Python%E4%B8%AD-%E5%92%8Cis%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">Python中==和is的区别</a>
+          <a href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/" class="post-title-link" itemprop="url">分布式文件系统-概述(1)</a>
         </h2>
 
         <div class="post-meta-container">
@@ -270,14 +270,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-06-18 19:52:06" itemprop="dateCreated datePublished" datetime="2020-06-18T19:52:06+08:00">2020-06-18</time>
+      <time title="创建时间：2021-01-20 15:06:53" itemprop="dateCreated datePublished" datetime="2021-01-20T15:06:53+08:00">2021-01-20</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+        <time title="修改时间：2022-05-10 09:52:45" itemprop="dateModified" datetime="2022-05-10T09:52:45+08:00">2022-05-10</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,7 +285,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
         </span>
     </span>
 
@@ -299,195 +299,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文主要内容是 Python 中运算符 <code>==</code> 和 <code>is</code> 的区别。</p>
-<p>进入正文前，首先简单介绍一下 Python 中对象的 3 个基本要素，id(身份标识)、type(数据类型)和value(值)。</p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><code>==</code> 是python标准操作符中的比较操作符，用来比较判断两个对象的value(值)是否相等，例如下面两个字符串间的比较：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="string">&#x27;cheesezh&#x27;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="string">&#x27;cheesezh&#x27;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a == b</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
-
-<p><code>is</code> 也被叫做同一性运算符，这个运算符比较判断的是对象间的唯一身份标识，也就是id是否相同。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = y = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>z = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x == y</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x == z</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x <span class="keyword">is</span> y</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x <span class="keyword">is</span> z</span><br><span class="line"><span class="literal">False</span></span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> <span class="built_in">id</span>(x)</span><br><span class="line"><span class="number">3075326572</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> <span class="built_in">id</span>(y)</span><br><span class="line"><span class="number">3075326572</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> <span class="built_in">id</span>(z)</span><br><span class="line"><span class="number">3075328140</span></span><br></pre></td></tr></table></figure>
-
-<p>可以明显的看到前 3 个比较都是 True， 最后一个是 False。</p>
-<p>使用 <code>id()</code> 方法查看 x, y, z 的对象ID就明白了。</p>
-<p>我在这里使用的是数组，其实，当它们是 tuple, list, dict 或者 set 时也一样。</p>
-<p>不过，当类型是 int 或者 string 时，它们的对象ID都会一样,</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="number">1</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a <span class="keyword">is</span> b</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a = <span class="string">&quot;asd&quot;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>b = <span class="string">&quot;asd&quot;</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a <span class="keyword">is</span> b</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/05/28/apt-get%E5%9C%A8%E5%9F%BA%E4%BA%8EUbuntu%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8FDockerfile%E4%B8%AD%E7%9A%84%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/05/28/apt-get%E5%9C%A8%E5%9F%BA%E4%BA%8EUbuntu%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8FDockerfile%E4%B8%AD%E7%9A%84%E5%B8%B8%E8%A7%81%E7%94%A8%E6%B3%95/" class="post-title-link" itemprop="url">apt-get在基于Ubuntu基础镜像Dockerfile中的常见用法</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-05-28 15:39:46" itemprop="dateCreated datePublished" datetime="2020-05-28T15:39:46+08:00">2020-05-28</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>首先，在Ubuntu的Docker官方镜像中是没有缓存Apt的软件包列表的。因此在做其他任何基础软件的安装前，都需要至少先做一次apt-get update。有时为了加快apt-get安装软件的速度，还需要修改Apt源的列表文件/etc/apt/sources.list。相应的操作用命令表示如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-
-<p>在容器构建时，为了避免使用apt-get install安装基础软件的过程中需要进行交互操作，使用-y参数来避免安装非必须的文件，从而减小镜像的体积。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get -y --no-install-recommends install</span><br></pre></td></tr></table></figure>
-
-<p>使用<code>apt-get autoremove</code>命令移除为了满足包依赖而安装的、但不再需要的包；使用<code>apt-get clean</code>命令清除所获得包文件的本地仓库。</p>
-<p><code>DEBIAN_FRONTEND</code>这个环境变量，告知操作系统应该从哪儿获得用户输入。如果设置为<code>noninteractive</code>，你就可以直接运行命令，而无需向用户请求输入（所有操作都是非交互式的）。这在运行apt-get命令的时候格外有用，因为它会不停的提示用户进行到了哪步并且需要不断确认。非交互模式会选择默认的选项并以最快的速度完成构建。请确保只在Dockerfile中调用的RUN命令中设置了该选项，而不是使用ENV命令进行全局的设置。因为ENV命令在整个容器运行过程中都会生效，所以当你通过BASH和容器进行交互时，如果进行了全局设置那就会出问题。</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 正确的做法 - 只为这个命令设置ENV变量</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> DEBIAN_FRONTEND=noninteractive apt-get install -y python3</span></span><br><span class="line"><span class="comment"># 错误地做法 - 为接下来的任何命令都设置ENV变量，包括正在运行地容器</span></span><br><span class="line"><span class="keyword">ENV</span> DEBIAN_FRONTEND noninteractive</span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get install -y python3</span></span><br></pre></td></tr></table></figure>
-
-<p>示例:</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> ubuntu:<span class="number">16.04</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Ali apt-get source.list</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mv /etc/apt/sources.list /etc/apt/sources.list.bak &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb-src http://archive.ubuntu.com/ubuntu xenial main restricted&quot;</span> &gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb-src http://mirrors.aliyun.com/ubuntu/ xenial main restricted multiverse universe&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted multiverse universe&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial universe&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb-src http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://archive.canonical.com/ubuntu xenial partner&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb-src http://archive.canonical.com/ubuntu xenial partner&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted multiverse universe&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe&quot;</span> &gt;&gt;/etc/apt/sources.list &amp;&amp; \</span></span><br><span class="line"><span class="bash">    <span class="built_in">echo</span> <span class="string">&quot;deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse&quot;</span> &gt;&gt;/etc/apt/sources.list</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> apt-get update \</span></span><br><span class="line"><span class="bash">    &amp;&amp; apt-get install -y --no-install-recommends \</span></span><br><span class="line"><span class="bash">        ca-certificates \</span></span><br><span class="line"><span class="bash">        vim \</span></span><br><span class="line"><span class="bash">        python \</span></span><br><span class="line"><span class="bash">        libopencv-dev \</span></span><br><span class="line"><span class="bash">        python-pip \</span></span><br><span class="line"><span class="bash">    &amp;&amp; rm -rf /var/lib/apt/lists/*</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install --upgrade pip \</span></span><br><span class="line"><span class="bash">    numpy \</span></span><br><span class="line"><span class="bash">    pymongo \</span></span><br><span class="line"><span class="bash">    opencv-python</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a target="_blank" rel="noopener" href="https://www.aiuai.cn/aifarm299.html">Docker - 更换内部Ubuntu apt 为国内源</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/" class="post-title-link" itemprop="url">CentOS7下yum安装和配置NFS</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-04-29 14:54:31" itemprop="dateCreated datePublished" datetime="2020-04-29T14:54:31+08:00">2020-04-29</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>NFS 是 Network File System 的缩写，即网络文件系统。功能是让客户端通过网络访问不同主机上磁盘里的数据，主要用在类Unix系统上实现文件共享的一种方法。 本例演示 CentOS 7 下安装和配置 NFS 的基本步骤。</p>
-<p>根据官网说明 <a target="_blank" rel="noopener" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/ch-nfs">Chapter 8. Network File System (NFS) - Red Hat Customer Portal，CentOS 7.4</a> 以后，支持 NFS v4.2 不需要 rpcbind 了，但是如果客户端只支持 NFC v3 则需要 rpcbind 这个服务。</p>
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_1_1.png"></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/#more" rel="contents">
+              <a class="btn" href="/2021/01/20/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%BF%B0-1/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -518,7 +333,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/04/28/%E5%9F%BA%E4%BA%8EJenkins%E3%80%81SVN%E3%80%81Harbor%E3%80%81Helm%E5%92%8CKubernetes%E7%9A%84%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -531,7 +346,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/04/28/%E5%9F%BA%E4%BA%8EJenkins%E3%80%81SVN%E3%80%81Harbor%E3%80%81Helm%E5%92%8CKubernetes%E7%9A%84%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/" class="post-title-link" itemprop="url">基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成</a>
+          <a href="/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A8%A1%E6%9D%BF%E9%85%8D%E7%BD%AE%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D/" class="post-title-link" itemprop="url">Logstash数据同步 - 自定义模板配置中文分词</a>
         </h2>
 
         <div class="post-meta-container">
@@ -542,94 +357,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-04-28 13:59:44" itemprop="dateCreated datePublished" datetime="2020-04-28T13:59:44+08:00">2020-04-28</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 13:40:21" itemprop="dateModified" datetime="2021-08-30T13:40:21+08:00">2021-08-30</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/devops/" itemprop="url" rel="index"><span itemprop="name">devops</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>本文介绍如何结合 Kubernetes + Jenkis + SVN + Harbor + Helm 实现一个完整的 CI/CD 流水线作业进行持续集成和持续部署。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/28/%E5%9F%BA%E4%BA%8EJenkins%E3%80%81SVN%E3%80%81Harbor%E3%80%81Helm%E5%92%8CKubernetes%E7%9A%84%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/04/28/Kubernetes%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/04/28/Kubernetes%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/" class="post-title-link" itemprop="url">Kubernetes数据持久化</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-04-28 13:56:49" itemprop="dateCreated datePublished" datetime="2020-04-28T13:56:49+08:00">2020-04-28</time>
+      <time title="创建时间：2021-01-14 22:39:14" itemprop="dateCreated datePublished" datetime="2021-01-14T22:39:14+08:00">2021-01-14</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
@@ -644,7 +372,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
         </span>
     </span>
 
@@ -658,7 +386,14 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前的数据同步，mappings映射会自动创建，但是分词不会，还是会使用默认的，而我们需要中文分词，这个时候就需要自定义模板功能来设置分词了。</p>
+<h1 id="查看Logstash默认模板"><a href="#查看Logstash默认模板" class="headerlink" title="查看Logstash默认模板"></a>查看Logstash默认模板</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_template/logstash</span><br></pre></td></tr></table></figure>
+
+<h1 id="修改模板如下"><a href="#修改模板如下" class="headerlink" title="修改模板如下"></a>修改模板如下</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;order&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;version&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;index_patterns&quot;</span>: [<span class="string">&quot;*&quot;</span>],</span><br><span class="line">    <span class="string">&quot;settings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;index&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;refresh_interval&quot;</span>: <span class="string">&quot;5s&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;mappings&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;_default_&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;dynamic_templates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;message_field&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;path_match&quot;</span>: <span class="string">&quot;message&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;match_mapping_type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;mapping&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;norms&quot;</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;string_fields&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;match&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;match_mapping_type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;mapping&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;norms&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">                            <span class="string">&quot;analyzer&quot;</span>: <span class="string">&quot;ik_max_word&quot;</span>,</span><br><span class="line">                            <span class="string">&quot;fields&quot;</span>: &#123;</span><br><span class="line">                                <span class="string">&quot;keyword&quot;</span>: &#123;</span><br><span class="line">                                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span>,</span><br><span class="line">                                    <span class="string">&quot;ignore_above&quot;</span>: <span class="number">256</span></span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;@timestamp&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;date&quot;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;@version&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span></span><br><span class="line">                &#125;,</span><br><span class="line">                <span class="string">&quot;geoip&quot;</span>: &#123;</span><br><span class="line">                    <span class="string">&quot;dynamic&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">                    <span class="string">&quot;properties&quot;</span>: &#123;</span><br><span class="line">                        <span class="string">&quot;ip&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;ip&quot;</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">&quot;location&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;geo_point&quot;</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">&quot;latitude&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;half_float&quot;</span></span><br><span class="line">                        &#125;,</span><br><span class="line">                        <span class="string">&quot;longitude&quot;</span>: &#123;</span><br><span class="line">                            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;half_float&quot;</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&quot;aliases&quot;</span>: &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="新增如下配置，用于更新模板，设置中文分词"><a href="#新增如下配置，用于更新模板，设置中文分词" class="headerlink" title="新增如下配置，用于更新模板，设置中文分词"></a>新增如下配置，用于更新模板，设置中文分词</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 定义模板名称</span><br><span class="line">template_name =&gt; <span class="string">&quot;myik&quot;</span></span><br><span class="line"># 模板所在位置</span><br><span class="line">template =&gt; <span class="string">&quot;/usr/local/logstash-6.4.3/sync/logstash-ik.json&quot;</span></span><br><span class="line"># 重写模板</span><br><span class="line">template_overwrite =&gt; <span class="literal">true</span></span><br><span class="line"># 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">manage_template =&gt; <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="重新运行Logstash进行同步"><a href="#重新运行Logstash进行同步" class="headerlink" title="重新运行Logstash进行同步"></a>重新运行Logstash进行同步</h1><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/local/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -684,7 +419,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/04/28/kubernetesNotes/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -697,7 +432,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/04/28/kubernetesNotes/" class="post-title-link" itemprop="url">kubernetes学习笔记</a>
+          <a href="/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">Logstash数据同步-配置</a>
         </h2>
 
         <div class="post-meta-container">
@@ -708,14 +443,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-04-28 11:11:04" itemprop="dateCreated datePublished" datetime="2020-04-28T11:11:04+08:00">2020-04-28</time>
+      <time title="创建时间：2021-01-14 22:20:07" itemprop="dateCreated datePublished" datetime="2021-01-14T22:20:07+08:00">2021-01-14</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -723,7 +458,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
         </span>
     </span>
 
@@ -737,24 +472,22 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>markdown编写的hexo博客文章内部怎么跳转?</p>
-<p><code>&#123;% post_link 文章文件名（不要后缀） 文章标题（可选） %&#125;</code></p>
-<p>相对路径引用资源文件</p>
-<p><code>&#123;% asset_img example.jpg This is an example image %&#125;</code></p>
-<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ol>
-<li><a href="/2020/04/27/Kubenete%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/" title="Kubernetes集群安装指南">Kubernetes集群安装指南</a></li>
-<li><a href="/2020/04/29/CentOS7%E4%B8%8Byum%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AENFS/" title="CentOS7下yum安装和配置NFS">CentOS7下yum安装和配置NFS</a></li>
-<li><a href="/2020/04/28/Kubernetes%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96/" title="Kubernetes数据持久化">Kubernetes数据持久化</a></li>
-<li><a href="/2020/04/28/%E5%9F%BA%E4%BA%8EJenkins%E3%80%81SVN%E3%80%81Harbor%E3%80%81Helm%E5%92%8CKubernetes%E7%9A%84%E6%8C%81%E7%BB%AD%E9%9B%86%E6%88%90/" title="基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成">基于Jenkins、SVN、Harbor、Helm和Kubernetes的持续集成</a></li>
+          <h1 id="logstash同步数据库配置"><a href="#logstash同步数据库配置" class="headerlink" title="logstash同步数据库配置"></a>logstash同步数据库配置</h1><ol>
+<li><p>上传并解压logstash，路径为 <code>/usr/local/logstash</code></p>
+</li>
+<li><p>创建文件名：logstash-db-sync.conf，后缀为<code>conf</code>，文件名随意，位置也随意，为方便起见，路径为<code>/usr/local/logstash/sync</code></p>
+</li>
+<li><p>把数据库驱动拷贝至<code>/usr/local/logstash/sync</code>下</p>
+</li>
+<li><p>配置内容如下：</p>
+   <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">input</span> &#123;</span><br><span class="line">    <span class="string">jdbc</span> &#123;</span><br><span class="line">        <span class="comment"># 设置 MySql/MariaDB 数据库url以及数据库名称</span></span><br><span class="line">        <span class="string">jdbc_connection_string</span> <span class="string">=&gt;</span> <span class="string">&quot;jdbc:mysql://192.168.1.6:3306/foodie-shop-dev?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&quot;</span></span><br><span class="line">        <span class="comment"># 用户名和密码</span></span><br><span class="line">        <span class="string">jdbc_user</span> <span class="string">=&gt;</span> <span class="string">&quot;root&quot;</span></span><br><span class="line">        <span class="string">jdbc_password</span> <span class="string">=&gt;</span> <span class="string">&quot;root&quot;</span></span><br><span class="line">        <span class="comment"># 数据库驱动所在位置，可以是绝对路径或者相对路径</span></span><br><span class="line">        <span class="string">jdbc_driver_library</span> <span class="string">=&gt;</span> <span class="string">&quot;/usr/local/logstash-6.4.3/sync/mysql-connector-java-5.1.41.jar&quot;</span></span><br><span class="line">        <span class="comment"># 驱动类名</span></span><br><span class="line">        <span class="string">jdbc_driver_class</span> <span class="string">=&gt;</span> <span class="string">&quot;com.mysql.jdbc.Driver&quot;</span></span><br><span class="line">        <span class="comment"># 开启分页</span></span><br><span class="line">        <span class="string">jdbc_paging_enabled</span> <span class="string">=&gt;</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">        <span class="comment"># 分页每页数量，可以自定义</span></span><br><span class="line">        <span class="string">jdbc_page_size</span> <span class="string">=&gt;</span> <span class="string">&quot;10000&quot;</span></span><br><span class="line">        <span class="comment"># 执行的sql文件路径</span></span><br><span class="line">        <span class="string">statement_filepath</span> <span class="string">=&gt;</span> <span class="string">&quot;/usr/local/logstash-6.4.3/sync/foodie-items.sql&quot;</span></span><br><span class="line">        <span class="comment"># 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span></span><br><span class="line">        <span class="string">schedule</span> <span class="string">=&gt;</span> <span class="string">&quot;* * * * *&quot;</span></span><br><span class="line">        <span class="comment"># 索引类型</span></span><br><span class="line">        <span class="string">type</span> <span class="string">=&gt;</span> <span class="string">&quot;_doc&quot;</span></span><br><span class="line">        <span class="comment"># 是否开启记录上次追踪的结果，也就是上次更新的时间，这个会记录到 last_run_metadata_path 的文件</span></span><br><span class="line">        <span class="string">use_column_value</span> <span class="string">=&gt;</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 记录上一次追踪的结果值</span></span><br><span class="line">        <span class="string">last_run_metadata_path</span> <span class="string">=&gt;</span> <span class="string">&quot;/usr/local/logstash-6.4.3/sync/track_time&quot;</span></span><br><span class="line">        <span class="comment"># 如果 use_column_value 为true， 配置本参数，追踪的 column 名，可以是自增id或者时间</span></span><br><span class="line">        <span class="string">tracking_column</span> <span class="string">=&gt;</span> <span class="string">&quot;updated_time&quot;</span></span><br><span class="line">        <span class="comment"># tracking_column 对应字段的类型</span></span><br><span class="line">        <span class="string">tracking_column_type</span> <span class="string">=&gt;</span> <span class="string">&quot;timestamp&quot;</span></span><br><span class="line">        <span class="comment"># 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span></span><br><span class="line">        <span class="string">clean_run</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">        <span class="comment"># 数据库字段名称大写转小写</span></span><br><span class="line">        <span class="string">lowercase_column_names</span> <span class="string">=&gt;</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="string">output</span> &#123;</span><br><span class="line">    <span class="string">elasticsearch</span> &#123;</span><br><span class="line">        <span class="comment"># es地址</span></span><br><span class="line">        <span class="string">hosts</span> <span class="string">=&gt;</span> [<span class="string">&quot;192.168.1.187:9200&quot;</span>]</span><br><span class="line">        <span class="comment"># 同步的索引名</span></span><br><span class="line">        <span class="string">index</span> <span class="string">=&gt;</span> <span class="string">&quot;foodie-items&quot;</span></span><br><span class="line">        <span class="comment"># 设置_docID和数据相同。itemId与sql同步脚本中的itemId保持一致</span></span><br><span class="line">        <span class="string">document_id</span> <span class="string">=&gt;</span> <span class="string">&quot;<span class="template-variable">%&#123;itemId&#125;</span>&quot;</span></span><br><span class="line">        <span class="comment">#document_id =&gt; &quot;%&#123;id&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment"># 日志输出</span></span><br><span class="line">    <span class="string">stdout</span> &#123;</span><br><span class="line">        <span class="string">codec</span> <span class="string">=&gt;</span> <span class="string">json_lines</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>sql同步脚本</p>
+   <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    i.id <span class="keyword">as</span> itemId,</span><br><span class="line">    i.item_name <span class="keyword">as</span> itemName,</span><br><span class="line">    i.sell_counts <span class="keyword">as</span> sellCounts,</span><br><span class="line">    ii.url <span class="keyword">as</span> imgUrl,</span><br><span class="line">    tempSpec.price_discount <span class="keyword">as</span> price,</span><br><span class="line">    i.updated_time <span class="keyword">as</span> updated_time</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    items i</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    items_img ii</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id <span class="operator">=</span> ii.item_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    (<span class="keyword">SELECT</span> item_id,<span class="built_in">MIN</span>(price_discount) <span class="keyword">as</span> price_discount <span class="keyword">from</span> items_spec <span class="keyword">GROUP</span> <span class="keyword">BY</span> item_id) tempSpec</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id <span class="operator">=</span> tempSpec.item_id</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    ii.is_main <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">and</span></span><br><span class="line">    i.updated_time <span class="operator">&gt;=</span> :sql_last_value</span><br><span class="line"><span class="comment">--:sql_last_value是记录的最后的一个值</span></span><br></pre></td></tr></table></figure></li>
 </ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/28/kubernetesNotes/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<h1 id="启动logstatsh"><a href="#启动logstatsh" class="headerlink" title="启动logstatsh"></a>启动logstatsh</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./logstash -f /usr/<span class="built_in">local</span>/logstash/sync/logstash-db-sync.conf</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/huhangfei/p/7605511.html">Logstash使用介绍</a></p>
+
       
     </div>
 
@@ -780,7 +513,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/04/27/Kubenete%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E4%BB%8B%E7%BB%8D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -793,7 +526,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/04/27/Kubenete%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/" class="post-title-link" itemprop="url">Kubernetes集群安装指南</a>
+          <a href="/2021/01/14/Logstash%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">Logstash数据同步-介绍</a>
         </h2>
 
         <div class="post-meta-container">
@@ -804,14 +537,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-04-27 15:00:31" itemprop="dateCreated datePublished" datetime="2020-04-27T15:00:31+08:00">2020-04-27</time>
+      <time title="创建时间：2021-01-14 22:18:19" itemprop="dateCreated datePublished" datetime="2021-01-14T22:18:19+08:00">2021-01-14</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-26 11:25:15" itemprop="dateModified" datetime="2021-03-26T11:25:15+08:00">2021-03-26</time>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -819,7 +552,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/k8s/" itemprop="url" rel="index"><span itemprop="name">k8s</span></a>
+          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
         </span>
     </span>
 
@@ -833,99 +566,20 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><h3 id="查看系统版本"><a href="#查看系统版本" class="headerlink" title="查看系统版本"></a>查看系统版本</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/centos-release</span></span><br><span class="line">CentOS Linux release 7.6.1810 (Core)</span><br></pre></td></tr></table></figure>
-
-<p><strong>overlay2介绍</strong></p>
-<p>overlay的改进版，只支持4.0以上内核添加了Multiple lower layers in overlayfs的特性，所以overlay2可以直接造成muitiple lower layers不用像overlay一样要通过硬链接的方式(最大128层) centos的话支持3.10.0-514及以上内核版本也有此特性，所以消耗更少的inode</p>
-<p>docker官方overlay2的PR:<br><a target="_blank" rel="noopener" href="https://github.com/moby/moby/pull/22126">https://github.com/moby/moby/pull/22126</a></p>
-<p>LINUX KERNERL 4.0 release说明：<br><a target="_blank" rel="noopener" href="https://kernelnewbies.org/Linux_4.0">https://kernelnewbies.org/Linux_4.0</a></p>
-<h3 id="配置主机名"><a href="#配置主机名" class="headerlink" title="配置主机名"></a>配置主机名</h3><p>为将来要作为主节点的服务器设置主机名。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostnamectl set-hostname k8s-master-1 --static</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置服务器hosts"><a href="#配置服务器hosts" class="headerlink" title="配置服务器hosts"></a>配置服务器hosts</h3><p>各个服务器上都要配置</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/hosts</span></span><br><span class="line">127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 k8s-master-1</span><br><span class="line">::1         localhost localhost.localdomain localhost6 localhost6.localdomain6</span><br><span class="line">192.168.212.155 salt</span><br><span class="line"></span><br><span class="line">0.0.0.0 aliyun.one</span><br><span class="line">0.0.0.0 lsd.systemten.org</span><br><span class="line">0.0.0.0 pastebin.com</span><br><span class="line">0.0.0.0 pm.cpuminerpool.com</span><br><span class="line">0.0.0.0 systemten.org</span><br><span class="line"></span><br><span class="line">192.168.200.19 k8s-master-1</span><br><span class="line">192.168.154.14 ip-192-168-154-14</span><br><span class="line">192.168.154.15 ip-192-168-154-15</span><br><span class="line">192.168.154.16 ip-192-168-154-16</span><br></pre></td></tr></table></figure>
-
-<h3 id="关闭swap，注释swap分区"><a href="#关闭swap，注释swap分区" class="headerlink" title="关闭swap，注释swap分区"></a>关闭swap，注释swap分区</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># swapoff -a</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/fstab</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># /etc/fstab</span></span><br><span class="line"><span class="comment"># Created by anaconda on Mon Mar 26 20:43:49 2018</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Accessible filesystems, by reference, are maintained under &#x27;/dev/disk&#x27;</span></span><br><span class="line"><span class="comment"># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">/dev/mapper/centos-root /                       xfs     defaults        0 0</span><br><span class="line">UUID=848d5a8b-0ee9-481f-b1ff-833fb35cfd03 /boot                   xfs     defaults        0 0</span><br><span class="line">/dev/mapper/centos-home /home                   xfs     defaults        0 0</span><br><span class="line"><span class="comment">#/dev/mapper/centos-swap swap                    swap    defaults        0 0</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="添加网易-yum-镜像"><a href="#添加网易-yum-镜像" class="headerlink" title="添加网易 yum 镜像"></a>添加网易 yum 镜像</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/yum.repos.d/CentOS-Base.repo</span></span><br><span class="line"><span class="comment"># CentOS-Base.repo</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The mirror system uses the connecting IP address of the client and the</span></span><br><span class="line"><span class="comment"># update status of each mirror to pick mirrors that are updated to and</span></span><br><span class="line"><span class="comment"># geographically close to the client.  You should use this for CentOS updates</span></span><br><span class="line"><span class="comment"># unless you are manually picking other mirrors.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># If the mirrorlist= does not work for you, as a fall back you can try the</span></span><br><span class="line"><span class="comment"># remarked out baseurl= line instead.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">[base]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Base - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/os/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#released updates</span></span><br><span class="line">[updates]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Updates - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/updates/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#additional packages that may be useful</span></span><br><span class="line">[extras]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Extras - 163.com</span><br><span class="line"><span class="comment">#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras</span></span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/extras/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br><span class="line"></span><br><span class="line"><span class="comment">#additional packages that extend functionality of existing packages</span></span><br><span class="line">[centosplus]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Plus - 163.com</span><br><span class="line">baseurl=http://mirrors.163.com/centos/<span class="variable">$releasever</span>/centosplus/<span class="variable">$basearch</span>/</span><br><span class="line">gpgcheck=1</span><br><span class="line">enabled=0</span><br><span class="line">gpgkey=http://mirrors.163.com/centos/RPM-GPG-KEY-CentOS-7</span><br></pre></td></tr></table></figure>
-
-<h3 id="关闭防火墙"><a href="#关闭防火墙" class="headerlink" title="关闭防火墙"></a>关闭防火墙</h3><p>在各个服务器上关闭防火墙</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl stop firewalld.service            #停止firewall</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl disable firewalld.service         #禁止firewall开机启动</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl stop iptables.service             #停止iptables</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl disable iptables.service          #禁止iptables开机启动l</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="配置内核参数，将桥接的IPv4流量传递到iptables的链"><a href="#配置内核参数，将桥接的IPv4流量传递到iptables的链" class="headerlink" title="配置内核参数，将桥接的IPv4流量传递到iptables的链"></a>配置内核参数，将桥接的IPv4流量传递到iptables的链</h3><p>各个服务器都要配置</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat &gt; /etc/sysctl.d/k8s.conf &lt;&lt;EOF</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">EOF</span><br><span class="line">sysctl --system</span><br></pre></td></tr></table></figure>
-
-<h3 id="禁用SELinux"><a href="#禁用SELinux" class="headerlink" title="禁用SELinux"></a>禁用SELinux</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># sestatus</span></span><br><span class="line">SELinux status: disabled</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装配置-docker"><a href="#安装配置-docker" class="headerlink" title="安装配置 docker"></a>安装配置 docker</h2><p>官方文档地址：<a target="_blank" rel="noopener" href="https://docs.docker.com/engine/install/centos/">Install Docker Engine on CentOS</a></p>
-<p>Docker官方文档对安装步骤描述已经足够详细, 过程并不复杂, 本文便不再赘述.</p>
-<h3 id="安装-docker"><a href="#安装-docker" class="headerlink" title="安装 docker"></a>安装 docker</h3><p>本文安装docker的版本是<code>18.09</code>, 安装时请按照文档描述的方式明确指定版本号<code>yum install docker-ce-18.09.9-3.el7 docker-ce-cli-18.09.9-3.el7 containerd.io</code>.</p>
-<h3 id="配置-docker"><a href="#配置-docker" class="headerlink" title="配置 docker"></a>配置 docker</h3><p>官方文档地址：<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/setup/production-environment/container-runtimes/">容器运行时</a></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;registry-mirrors&quot;</span>: [<span class="string">&quot;https://registry.docker-cn.com&quot;</span>, <span class="string">&quot;https://docker.mirrors.ustc.edu.cn&quot;</span>, <span class="string">&quot;https://fzhifedh.mirror.aliyuncs.com&quot;</span>],</span><br><span class="line">  <span class="string">&quot;insecure-registries&quot;</span>: [<span class="string">&quot;hub.51iwifi.com&quot;</span>,<span class="string">&quot;alpha-harbor.51iwifi.com&quot;</span>,<span class="string">&quot;192.168.195.2&quot;</span>,<span class="string">&quot;134.108.20.13&quot;</span>],</span><br><span class="line">  <span class="string">&quot;max-concurrent-downloads&quot;</span>: 10,</span><br><span class="line">  <span class="string">&quot;log-driver&quot;</span>: <span class="string">&quot;json-file&quot;</span>,</span><br><span class="line">  <span class="string">&quot;log-level&quot;</span>: <span class="string">&quot;warn&quot;</span>,</span><br><span class="line">  <span class="string">&quot;log-opts&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;max-size&quot;</span>: <span class="string">&quot;10m&quot;</span>,</span><br><span class="line">    <span class="string">&quot;max-file&quot;</span>: <span class="string">&quot;3&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装完后重启"><a href="#安装完后重启" class="headerlink" title="安装完后重启"></a>安装完后重启</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl enable docker</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl start docker</span></span><br></pre></td></tr></table></figure>
-
-<p>同样在各个服务器上都要保持一致</p>
-<h2 id="安装-Kubernetes-kubectl-kubelet-kubeadm"><a href="#安装-Kubernetes-kubectl-kubelet-kubeadm" class="headerlink" title="安装 Kubernetes(kubectl, kubelet, kubeadm)"></a>安装 Kubernetes(kubectl, kubelet, kubeadm)</h2><h3 id="添加阿里kubernetes源"><a href="#添加阿里kubernetes源" class="headerlink" title="添加阿里kubernetes源"></a>添加阿里kubernetes源</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span></span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span><br><span class="line">exclude=kube*</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># systemctl enable kubelet</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化-master-节点"><a href="#初始化-master-节点" class="headerlink" title="初始化 master 节点"></a>初始化 master 节点</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config print init-defaults &gt; kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
-
-<p>该文件有两处需要修改:</p>
-<p>将<code>advertiseAddress: 1.2.3.4</code>修改为本机地址<br>将<code>imageRepository: k8s.gcr.io</code>修改为<code>imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers</code></p>
-<p>修改完毕后文件如下:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeadm.k8s.io/v1beta2</span></span><br><span class="line"><span class="attr">bootstrapTokens:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">groups:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">system:bootstrappers:kubeadm:default-node-token</span></span><br><span class="line">  <span class="attr">token:</span> <span class="string">abcdef.0123456789abcdef</span></span><br><span class="line">  <span class="attr">ttl:</span> <span class="string">0s</span></span><br><span class="line">  <span class="attr">usages:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">signing</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">authentication</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">InitConfiguration</span></span><br><span class="line"><span class="attr">localAPIEndpoint:</span></span><br><span class="line">  <span class="attr">advertiseAddress:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line">  <span class="attr">bindPort:</span> <span class="number">6443</span></span><br><span class="line"><span class="attr">nodeRegistration:</span></span><br><span class="line">  <span class="attr">criSocket:</span> <span class="string">/var/run/dockershim.sock</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">k8s-master-1</span></span><br><span class="line">  <span class="attr">taints:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">effect:</span> <span class="string">NoSchedule</span></span><br><span class="line">    <span class="attr">key:</span> <span class="string">node-role.kubernetes.io/master</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiServer:</span></span><br><span class="line">  <span class="attr">timeoutForControlPlane:</span> <span class="string">4m0s</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">kubeadm.k8s.io/v1beta2</span></span><br><span class="line"><span class="attr">certificatesDir:</span> <span class="string">/etc/kubernetes/pki</span></span><br><span class="line"><span class="attr">clusterName:</span> <span class="string">kubernetes</span></span><br><span class="line"><span class="attr">controllerManager:</span> &#123;&#125;</span><br><span class="line"><span class="attr">dns:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">CoreDNS</span></span><br><span class="line"><span class="attr">etcd:</span></span><br><span class="line">  <span class="attr">local:</span></span><br><span class="line">    <span class="attr">dataDir:</span> <span class="string">/var/lib/etcd</span></span><br><span class="line"><span class="attr">imageRepository:</span> <span class="string">registry.cn-hangzhou.aliyuncs.com/google_containers</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterConfiguration</span></span><br><span class="line"><span class="attr">kubernetesVersion:</span> <span class="string">v1.18.0</span></span><br><span class="line"><span class="attr">networking:</span></span><br><span class="line">  <span class="attr">dnsDomain:</span> <span class="string">cluster.local</span></span><br><span class="line">  <span class="attr">serviceSubnet:</span> <span class="number">10.96</span><span class="number">.0</span><span class="number">.0</span><span class="string">/12</span></span><br><span class="line"><span class="attr">scheduler:</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config images pull --config kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="执行初始化"><a href="#执行初始化" class="headerlink" title="执行初始化"></a>执行初始化</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubeadm config images pull --config kubeadm-init.yaml</span></span><br></pre></td></tr></table></figure>
-
-<p>等待执行完毕后, 会输出如下内容:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">Your Kubernetes control-plane has initialized successfully!</span><br><span class="line">...</span><br><span class="line">Then you can join any number of worker nodes by running the following on each as root:</span><br><span class="line"></span><br><span class="line">kubeadm join 192.168.200.19:6443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:a67698bdd29af4af0d70a563c4a17d1c751faabe65d7d3661eb90783568ecda6</span><br></pre></td></tr></table></figure>
-
-<p>最后两行需要保存下来, <code>kubeadm join ...</code>是其它worker节点加入所需要执行的命令.</p>
-<p>接下来配置环境, 让当前用户可以执行kubectl命令:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
-
-<p>查看节点，<code>kubectl get node</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS     ROLES    AGE     VERSION</span><br><span class="line">k8s-master-1   NotReady   master   3m25s   v1.18.0</span><br></pre></td></tr></table></figure>
-
-<p>node节点为<code>NotReady</code>，因为 pod <code>coredns</code> 没有启动，缺少网络pod.</p>
-<h2 id="安装-calico-网络"><a href="#安装-calico-网络" class="headerlink" title="安装 calico 网络"></a>安装 calico 网络</h2><p>官方文档地址：<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/">Instructions</a></p>
-<h3 id="下载-calico-的-k8s-文件"><a href="#下载-calico-的-k8s-文件" class="headerlink" title="下载 calico 的 k8s 文件"></a>下载 calico 的 k8s 文件</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml</span></span><br><span class="line">[root@k8s-master-1 ~]<span class="comment"># cat kubeadm-init.yaml | grep serviceSubnet:</span></span><br><span class="line">  serviceSubnet: 10.96.0.0/12</span><br></pre></td></tr></table></figure>
-
-<p>打开 <code>calico.yaml</code>, 将<code>192.168.0.0/16</code>修改为<code>10.96.0.0/12</code></p>
-<blockquote>
-<p>需要注意的是, calico.yaml中的IP和kubeadm-init.yaml需要保持一致, 要么初始化前修改kubeadm-init.yaml, 要么初始化后修改calico.yaml.</p>
-</blockquote>
-<p>执行<code>kubectl apply -f calico.yaml</code>初始化网络.</p>
-<p>此时查看node信息, master的状态已经是<code>Ready</code>了.</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 ~]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME           STATUS   ROLES    AGE   VERSION</span><br><span class="line">k8s-master-1   Ready    master   15m   v1.18.0</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装-dashboard"><a href="#安装-dashboard" class="headerlink" title="安装 dashboard"></a>安装 dashboard</h2><h3 id="部署-dashboard"><a href="#部署-dashboard" class="headerlink" title="部署 dashboard"></a>部署 dashboard</h3><p>官方文档：<a target="_blank" rel="noopener" href="https://kubernetes.io/zh/docs/tasks/access-application-cluster/web-ui-dashboard/">网页界面 (Dashboard)</a></p>
-<p>官方部署dashboard的服务没使用nodeport，将yaml文件下载到本地，在service里添加<code>NodePort</code></p>
-<h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>官方文档地址: <a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">Creating sample user</a></p>
-<p>创建一个用于登录Dashboard的用户. 创建文件<code>dashboard-adminuser.yaml</code>内容如下:</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">admin-user</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">kube-system</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">rbac.authorization.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">ClusterRoleBinding</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">admin-user</span></span><br><span class="line"><span class="attr">roleRef:</span></span><br><span class="line">  <span class="attr">apiGroup:</span> <span class="string">rbac.authorization.k8s.io</span></span><br><span class="line">  <span class="attr">kind:</span> <span class="string">ClusterRole</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">cluster-admin</span></span><br><span class="line"><span class="attr">subjects:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">kind:</span> <span class="string">ServiceAccount</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">admin-user</span></span><br><span class="line">  <span class="attr">namespace:</span> <span class="string">kube-system</span></span><br></pre></td></tr></table></figure>
-
-<p>执行命令<code>kubectl apply -f dashboard-adminuser.yaml</code>.</p>
-<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>官方文档地址：<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">Bearer Token</a></p>
-<p>使用token进行登录，执行下面命令获取token</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe secrets -n kubernetes-dashboard kubernetes-dashboard-token-t4hxz  | grep token | awk <span class="string">&#x27;NR==3&#123;print $2&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>复制该Token到登录页, 点击登录即可, 效果如下:</p>
-<p><img src="Kubenete%E9%9B%86%E7%BE%A4%E5%AE%89%E8%A3%85%E6%8C%87%E5%8D%97/" alt="image">%</p>
-<h2 id="添加其它-Worker-节点"><a href="#添加其它-Worker-节点" class="headerlink" title="添加其它 Worker 节点"></a>添加其它 Worker 节点</h2><p>在使用 <code>kubeadm</code> 初始化 master 节点后会有 <code>kubeadm join ...</code> 这样的返回信息，详见前文。</p>
-<p>同时，默认你已经在其它的服务器中已经安装了 docker, kubernetes. </p>
-<p>请注意在其它的服务器只需安装kubernetes，等初始化 master 节点后，执行如下命令将 Worker 加入集群:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubeadm join 192.168.200.19:6443 --token abcdef.0123456789abcdef \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:a67698bdd29af4af0d70a563c4a17d1c751faabe65d7d3661eb90783568ecda6</span><br></pre></td></tr></table></figure>
-
-<p>添加完毕后, 在Master上查看节点状态:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@k8s-master-1 k8s-master]<span class="comment"># kubectl get node</span></span><br><span class="line">NAME                STATUS   ROLES    AGE   VERSION</span><br><span class="line">ip-192-168-154-14   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">ip-192-168-154-15   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">ip-192-168-154-16   Ready    &lt;none&gt;   14d   v1.18.0</span><br><span class="line">k8s-master-1        Ready    master   19d   v1.18.0</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a target="_blank" rel="noopener" href="https://www.kubernetes.org.cn/7189.html">使用kubeadm在Centos8上部署kubernetes1.18</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.piaoruiqing.com/2019/09/17/kubernetes-1-installation/">Kubernetes(一) 跟着官方文档从零搭建K8S</a></p>
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png"></p>
+<h1 id="1-Logstash"><a href="#1-Logstash" class="headerlink" title="1 Logstash"></a>1 Logstash</h1><p>Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎，可以从数据库采集数据到es中。我们可以通过设置自增id主键或者时间来控制数据的自动同步，这个id或者时间就是用于给logstash进行识别的</p>
+<ul>
+<li>id：假设现在有1000条数据，Logstatsh识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstatsh会有定时任务，发现有id大于1000了，则增量加入到es中</li>
+<li>时间：同理，一开始同步1000条数据，每条数据都有一个字段，为time，初次同步完毕后，记录这个time，下次同步的时候进行时间比对，如果有超过这个时间的，那么就可以做同步，这里可以同步新增数据，或者修改元数据，因为同一条数据的时间更改会被识别，而id则不会。</li>
+</ul>
+<h1 id="2-安装Logstash"><a href="#2-安装Logstash" class="headerlink" title="2 安装Logstash"></a>2 安装Logstash</h1><p>官方链接：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3">https://www.elastic.co/cn/downloads/past-releases/logstash-6-4-3</a></p>
+<ul>
+<li>注：使用Logstatsh的版本号与elasticsearch版本号需要保持一致</li>
+</ul>
+<h1 id="3-插件-logstash-input-jdbc"><a href="#3-插件-logstash-input-jdbc" class="headerlink" title="3 插件 logstash-input-jdbc"></a>3 插件 logstash-input-jdbc</h1><p>本插件用于同步，es6.x起自带，这个是集成在了 logstash中的。所以直接配置同步数据库的配置文件即可</p>
+<h1 id="4-创建索引"><a href="#4-创建索引" class="headerlink" title="4 创建索引"></a>4 创建索引</h1><p>同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：<code>foodie-items</code></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg"></p>
+<h1 id="5-JDK"><a href="#5-JDK" class="headerlink" title="5 JDK"></a>5 JDK</h1><p>记得安装JDK，java -version检查一下，如果没有安装，请安装一下。</p>
 
       
     </div>
@@ -952,7 +606,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/03/05/%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84nginx%E7%9A%84%E6%97%A5%E5%BF%97/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/14/spring-boot-2-3-7-es7-%E9%9B%86%E6%88%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -965,7 +619,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/03/05/%E5%A6%82%E4%BD%95%E5%88%A0%E9%99%A4%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84nginx%E7%9A%84%E6%97%A5%E5%BF%97/" class="post-title-link" itemprop="url">如何删除正在运行的nginx的日志</a>
+          <a href="/2021/01/14/spring-boot-2-3-7-es7-%E9%9B%86%E6%88%90/" class="post-title-link" itemprop="url">spring boot 2.3.7 + es7 集成</a>
         </h2>
 
         <div class="post-meta-container">
@@ -976,78 +630,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-03-05 11:23:01" itemprop="dateCreated datePublished" datetime="2020-03-05T11:23:01+08:00">2020-03-05</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在删除nginx的日志的时候不要直接 <code>rm -f access.log</code>, 而是要 <code>echo &quot;&quot; &gt; access.log</code></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/03/05/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E6%B8%85%E7%90%86Linux%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/03/05/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E6%B8%85%E7%90%86Linux%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4/" class="post-title-link" itemprop="url">如何快速清理Linux磁盘空间</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-03-05 11:13:47" itemprop="dateCreated datePublished" datetime="2020-03-05T11:13:47+08:00">2020-03-05</time>
+      <time title="创建时间：2021-01-14 21:04:41" itemprop="dateCreated datePublished" datetime="2021-01-14T21:04:41+08:00">2021-01-14</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
@@ -1062,7 +645,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+          <a href="/categories/elasticsearch/" itemprop="url" rel="index"><span itemprop="name">elasticsearch</span></a>
         </span>
     </span>
 
@@ -1076,16 +659,41 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言:"></a>前言:</h2><pre><code>在生产环境中,首先服务器磁盘满了之后,会导致一系列小问题,网站能正常访问, 但是不能登录以及一些奇奇怪怪的问题,但是不能耽误用户访问呀,所以我们的及 时清理磁盘空间出来,让MySQL能够正常写入各种数据
-</code></pre>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/05/%E5%A6%82%E4%BD%95%E5%BF%AB%E9%80%9F%E6%B8%85%E7%90%86Linux%E7%A3%81%E7%9B%98%E7%A9%BA%E9%97%B4/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+          <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_20280007/article/details/108388459?utm_medium=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-OPENSEARCH-1.control">springboot2.3.3中关于spring-data-elasticsearch-4.0.3的使用_阿良~的博客-CSDN博客</a></p>
+<h1 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- spring boot 2.3.7 以上 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 2.3.7.RELEASE 支持 ES 7.X --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.7.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-webflux<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">elasticsearch:</span></span><br><span class="line">    <span class="attr">rest:</span></span><br><span class="line">      <span class="attr">uris:</span> <span class="string">&lt;http://localhost:9200&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="对象映射"><a href="#对象映射" class="headerlink" title="对象映射"></a><strong>对象映射</strong></h1><ul>
+<li><p>首先要清楚注解的使用。</p>
+<ul>
+<li>@Document：类注解，以指示该类是映射到数据库的候选对象。最重要的属性是：<ul>
+<li>indexName：用于存储此实体的索引的名称</li>
+<li>type：映射类型。如果未设置，则使用小写的类的简单名称。（当前版本开始不推荐使用）</li>
+<li>shards：索引的分片数。（经测试，分片数无法设置，应该是个BUG，推荐先创建索引设置好分片数和副本数）</li>
+<li>replicas：索引的副本数。（经测试，分片数无法设置，应该是个BUG）</li>
+<li>refreshIntervall：索引的刷新间隔。用于索引创建。默认值为“ 1s”。</li>
+<li>indexStoreType：索引的索引存储类型。用于索引创建。默认值为“ fs”。</li>
+<li>createIndex：配置是否在存储库引导中创建索引。默认值为true。</li>
+<li>versionType：版本管理的配置。默认值为EXTERNAL。</li>
+</ul>
+</li>
+<li>@Id：字段注解，以标记用于标识目的的字段。</li>
+<li>@Field：在字段级别应用并定义字段的属性，大多数属性映射到各自的Elasticsearch映射定义（以下列表不完整，请查看注释Javadoc以获取完整的参考）：<ul>
+<li>name：字段名称，它将在Elasticsearch文档中表示，如果未设置，则使用Java字段名称。</li>
+<li>type：字段类型，可以是文本，关键字，长整数，短整数，字节，双精度，浮点型，半浮点数，标度浮点数，日期，布尔值，二进制，整数等。（属性（FieldType）类型不灵活）</li>
+<li>format和日期类型的pattern定义。必须为日期类型定义。</li>
+<li>store：标记是否将原始字段值存储在Elasticsearch中，默认值为false。</li>
+<li>analyzer，searchAnalyzer，normalizer用于指定自定义分析和正规化。</li>
+</ul>
+</li>
+<li>@GeoPoint：将字段标记为geo_point数据类型。如果字段是GeoPoint类的实例，则可以省略。</li>
+</ul>
+</li>
+<li><p>示例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.data.annotation.Id;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.Field;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.annotations.FieldType;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 经测试，更改 shards，replicas的值无法更改</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Document(indexName = &quot;stu&quot;, shards = 3, replicas = 2, createIndex = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stu</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> Long stuId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field(store = true)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field(store = true)</span></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field(store = true)</span></span><br><span class="line">    <span class="keyword">private</span> Float money;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field(store = true, type = FieldType.Keyword)</span></span><br><span class="line">    <span class="keyword">private</span> String sign;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Field(store = true)</span></span><br><span class="line">    <span class="keyword">private</span> String description;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 getter、setter</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Stu&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;stuId=&quot;</span> + stuId +</span><br><span class="line">                <span class="string">&quot;, name=&#x27;&quot;</span> + name + <span class="string">&#x27;\\&#x27;</span><span class="string">&#x27; +</span></span><br><span class="line"><span class="string">                &quot;, age=&quot; + age +</span></span><br><span class="line"><span class="string">                &quot;, money=&quot; + money +</span></span><br><span class="line"><span class="string">                &quot;, sign=&#x27;</span><span class="string">&quot; + sign + &#x27;\\&#x27;&#x27; +</span></span><br><span class="line"><span class="string">                &quot;</span>, description=<span class="string">&#x27;&quot; + description + &#x27;</span>\\<span class="string">&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="ElasticsearchRestTemplate-用法"><a href="#ElasticsearchRestTemplate-用法" class="headerlink" title="ElasticsearchRestTemplate 用法"></a>ElasticsearchRestTemplate 用法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fengxuechao.FoodieSearchApp;</span><br><span class="line"><span class="keyword">import</span> com.fengxuechao.es.pojo.Stu;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.action.index.IndexRequest;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.index.query.QueryBuilders;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.FieldSortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortBuilder;</span><br><span class="line"><span class="keyword">import</span> org.elasticsearch.search.sort.SortOrder;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.PageRequest;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.domain.Pageable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHit;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.SearchHits;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.document.Document;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.elasticsearch.core.query.*;</span><br><span class="line"><span class="keyword">import</span> org.springframework.test.context.junit4.SpringRunner;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.stream.Collectors;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith(SpringRunner.class)</span></span><br><span class="line"><span class="meta">@SpringBootTest(classes = FoodieSearchApp.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ElasticsearchRestTemplate esTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 不建议使用 ElasticsearchRestTemplate 对索引进行管理（创建索引，更新映射，删除索引）</span></span><br><span class="line"><span class="comment">     * 索引就像是数据库或者数据库中的表，我们平时是不会是通过java代码频繁的去创建修改删除数据库或者表的</span></span><br><span class="line"><span class="comment">     * 我们只会针对数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 在es中也是同理，我们尽量使用 ElasticsearchRestTemplate 对文档数据做CRUD的操作</span></span><br><span class="line"><span class="comment">     * 1. 属性（FieldType）类型不灵活</span></span><br><span class="line"><span class="comment">     * 2. 主分片与副本分片数无法设置</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Stu stu = <span class="keyword">new</span> Stu();</span><br><span class="line">        stu.setStuId(<span class="number">1007L</span>);</span><br><span class="line">        stu.setName(<span class="string">&quot;iron man&quot;</span>);</span><br><span class="line">        stu.setAge(<span class="number">22</span>);</span><br><span class="line">        stu.setMoney(<span class="number">1000.8f</span>);</span><br><span class="line">        stu.setSign(<span class="string">&quot;I am iron man&quot;</span>);</span><br><span class="line">        stu.setDescription(<span class="string">&quot;I have a spider man&quot;</span>);</span><br><span class="line"></span><br><span class="line">        IndexQuery indexQuery = <span class="keyword">new</span> IndexQueryBuilder().withObject(stu).build();</span><br><span class="line">        esTemplate.index(indexQuery, esTemplate.getIndexCoordinatesFor(stu.getClass()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteIndexStu</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.indexOps(Stu.class).delete();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; sourceMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        sourceMap.put(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;spider man&quot;</span>);</span><br><span class="line">        sourceMap.put(<span class="string">&quot;money&quot;</span>, <span class="number">99.8f</span>);</span><br><span class="line">        sourceMap.put(<span class="string">&quot;age&quot;</span>, <span class="number">33</span>);</span><br><span class="line"></span><br><span class="line">        IndexRequest indexRequest = <span class="keyword">new</span> IndexRequest();</span><br><span class="line">        indexRequest.source(sourceMap);</span><br><span class="line"></span><br><span class="line">        UpdateQuery updateQuery = UpdateQuery.builder(<span class="string">&quot;1004&quot;</span>)</span><br><span class="line">                .withDocument(Document.from(sourceMap))</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">//        update stu set sign=&#x27;abc&#x27;,age=33,money=88.6 where docId=&#x27;1002&#x27;</span></span><br><span class="line"></span><br><span class="line">        esTemplate.update(updateQuery, IndexCoordinates.of(<span class="string">&quot;stu&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Stu stu = esTemplate.get(<span class="string">&quot;1004&quot;</span>, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(stu);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        esTemplate.delete(<span class="string">&quot;1002&quot;</span>, IndexCoordinates.of(<span class="string">&quot;stu&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//    ------------------------- 我是分割线 --------------------------------</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">searchStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">&quot;description&quot;</span>, <span class="string">&quot;spider man&quot;</span>))</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class, esTemplate.getIndexCoordinatesFor(Stu.class));</span><br><span class="line">        System.out.println(<span class="string">&quot;检索后的总分页数目为：&quot;</span> + hits.getTotalHits());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : hits) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">highlightStuDoc</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        String preTag = <span class="string">&quot;&lt;font color=&#x27;red&#x27;&gt;&quot;</span>;</span><br><span class="line">        String postTag = <span class="string">&quot;&lt;/font&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        Pageable pageable = PageRequest.of(<span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">        SortBuilder sortBuilder = <span class="keyword">new</span> FieldSortBuilder(<span class="string">&quot;money&quot;</span>)</span><br><span class="line">                .order(SortOrder.DESC);</span><br><span class="line">        SortBuilder sortBuilderAge = <span class="keyword">new</span> FieldSortBuilder(<span class="string">&quot;age&quot;</span>)</span><br><span class="line">                .order(SortOrder.ASC);</span><br><span class="line"></span><br><span class="line">        NativeSearchQuery query = <span class="keyword">new</span> NativeSearchQueryBuilder()</span><br><span class="line">                .withQuery(QueryBuilders.matchQuery(<span class="string">&quot;description&quot;</span>, <span class="string">&quot;spider man&quot;</span>))</span><br><span class="line">                .withHighlightFields(<span class="keyword">new</span> HighlightBuilder.Field(<span class="string">&quot;description&quot;</span>)</span><br><span class="line">                        .preTags(preTag)</span><br><span class="line">                        .postTags(postTag))</span><br><span class="line">                .withSort(sortBuilder)</span><br><span class="line">                .withSort(sortBuilderAge)</span><br><span class="line">                .withPageable(pageable)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        SearchHits&lt;Stu&gt; hits = esTemplate.search(query, Stu.class);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;检索后的总分页数目为：&quot;</span> + hits.getTotalHits());</span><br><span class="line">        <span class="comment">// 将</span></span><br><span class="line">        List&lt;SearchHit&lt;Stu&gt;&gt; list = hits.get()</span><br><span class="line">                .peek(stuSearchHit -&gt; stuSearchHit.getContent().setDescription(stuSearchHit.getHighlightField(<span class="string">&quot;description&quot;</span>).get(<span class="number">0</span>))).collect(Collectors.toList());</span><br><span class="line">        <span class="keyword">for</span> (SearchHit&lt;Stu&gt; hit : list) &#123;</span><br><span class="line">            System.out.println(hit.getContent());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -1111,7 +719,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/03/03/%E5%85%B6%E4%BB%96%E4%BA%BA%E7%9A%84%E7%9F%A5%E8%AF%86/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/Elasticsearch-6-4-3-%E6%95%B4%E5%90%88SpringBoot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1124,7 +732,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/03/03/%E5%85%B6%E4%BB%96%E4%BA%BA%E7%9A%84%E7%9F%A5%E8%AF%86/" class="post-title-link" itemprop="url">其他人的知识</a>
+          <a href="/2021/01/13/Elasticsearch-6-4-3-%E6%95%B4%E5%90%88SpringBoot-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" class="post-title-link" itemprop="url">Elasticsearch 6.4.3 整合SpringBoot - 配置文件</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1135,15 +743,24 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-03-03 08:39:54" itemprop="dateCreated datePublished" datetime="2020-03-03T08:39:54+08:00">2020-03-03</time>
+      <time title="创建时间：2021-01-13 21:28:55" itemprop="dateCreated datePublished" datetime="2021-01-13T21:28:55+08:00">2021-01-13</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
       </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
 
   
 </div>
@@ -1155,11 +772,483 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/41d359a6aaee">jmeter进行http压力测试（图文小教程）</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/imyalost/p/9808079.html">jmeter（二十五）linux环境运行jmeter并生成报告</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/imyalost/p/10239317.html">jmeter（二十六）生成HTML性能测试报告</a></p>
-<h2 id="RocketMQ"><a href="#RocketMQ" class="headerlink" title="RocketMQ"></a>RocketMQ</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qdhxhz/p/11096682.html">RocketMQ(2)—Docker部署RocketMQ集群</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/fx-blog/p/11738419.html">Spring Cloud Alibaba学习笔记（11） - RocketMQ事务消息</a></p>
+          <h1 id="创建工程，引入依赖"><a href="#创建工程，引入依赖" class="headerlink" title="创建工程，引入依赖"></a>创建工程，引入依赖</h1><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-elasticsearch<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;version&gt;2.1.5.RELEASE&lt;/version&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.2.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="配置yml"><a href="#配置yml" class="headerlink" title="配置yml"></a>配置yml</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">data:</span></span><br><span class="line">    <span class="attr">elasticsearch:</span></span><br><span class="line">      <span class="attr">cluster-name:</span> <span class="string">es6</span></span><br><span class="line">      <span class="attr">cluster-nodes:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.187</span><span class="string">:9300</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="版本协调"><a href="#版本协调" class="headerlink" title="版本协调"></a>版本协调</h1><p>目前springboot-data-elasticsearch中的es版本贴合为es-6.4.3，如此一来版本需要统一，把es进行降级。等springboot升级es版本后可以在对接最新版的7.4。</p>
+<h1 id="Netty-issue-fix"><a href="#Netty-issue-fix" class="headerlink" title="Netty issue fix"></a>Netty issue fix</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ESConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解决netty引起的issue</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.setProperty(<span class="string">&quot;es.set.netty.runtime.available.processors&quot;</span>, <span class="string">&quot;false&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="附-elasticsearch6-4-3配置文件"><a href="#附-elasticsearch6-4-3配置文件" class="headerlink" title="附 elasticsearch6.4.3配置文件"></a>附 elasticsearch6.4.3配置文件</h1><p>elasticsearch.yml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cluster.name:</span> <span class="string">es6</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">node0</span></span><br><span class="line"><span class="attr">path.data:</span> <span class="string">/usr/local/elasticsearch-6.4.3/data</span></span><br><span class="line"><span class="attr">path.logs:</span> <span class="string">/usr/local/elasticsearch-6.4.3/logs</span></span><br><span class="line"><span class="attr">network.host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="string">./elasticsearch</span></span><br></pre></td></tr></table></figure>
+
+<p>如果出现如下错误：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg"></p>
+<p>那么需要切换到root用户下去修改配置如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br><span class="line">soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg"></p>
+<p>别忘记 <code>sysctl -p</code> 刷新一下</p>
+<p>最后再次启动OK</p>
+<h1 id="Don’t-forget"><a href="#Don’t-forget" class="headerlink" title="Don’t forget!"></a>Don’t forget!</h1><p>中文分词器也需要去配置一下噢别忘记！：）中文分词器的版本要记得使用6，而不是之前的7，版本一定要贴合噢~比如目前的所有版本都是统一为es-6.4.3，那么下载地址为：<a target="_blank" rel="noopener" href="https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3">https://github.com/medcl/elasticsearch-analysis-ik/releases/tag/v6.4.3</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/ES%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E7%8E%B0%E8%B1%A1%E6%8E%A2%E8%AE%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/ES%E9%9B%86%E7%BE%A4%E8%84%91%E8%A3%82%E7%8E%B0%E8%B1%A1%E6%8E%A2%E8%AE%A8/" class="post-title-link" itemprop="url">ES集群脑裂现象探讨</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 20:07:06" itemprop="dateCreated datePublished" datetime="2021-01-13T20:07:06+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="什么是脑裂"><a href="#什么是脑裂" class="headerlink" title="什么是脑裂"></a>什么是脑裂</h1><p>如果发生网络中断或者服务器宕机，那么集群会有可能被划分为两个部分，各自有自己的master来管理，那么这就是脑裂。</p>
+<h1 id="脑裂解决方案"><a href="#脑裂解决方案" class="headerlink" title="脑裂解决方案"></a>脑裂解决方案</h1><p>master主节点要经过多个master节点共同选举后才能成为新的主节点。就跟班级里选班长一样，并不是你1个人能决定的，需要班里半数以上的人决定。</p>
+<p>解决实现原理：半数以上的节点同意选举，节点方可成为新的master。</p>
+<ul>
+<li>discovery.zen.minimum_master_nodes=(N/2)+1<ul>
+<li>N为集群的中master节点的数量，也就是那些 <code>node.master=true</code> 设置的那些服务器节点总数。</li>
+</ul>
+</li>
+</ul>
+<h1 id="ES-7-X"><a href="#ES-7-X" class="headerlink" title="ES 7.X"></a>ES 7.X</h1><p>在最新版7.x中，<code>minimum_master_node</code>这个参数已经被移除了，这一块内容完全由es自身去管理，这样就避免了脑裂的问题，选举也会非常快。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/ES%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/ES%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">ES集群配置</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 19:39:32" itemprop="dateCreated datePublished" datetime="2021-01-13T19:39:32+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前置操作"><a href="#前置操作" class="headerlink" title="前置操作"></a>前置操作</h1><p>需要确认其它es节点中的data目录，一定要清空，不能有数据。</p>
+<h1 id="配置集群"><a href="#配置集群" class="headerlink" title="配置集群"></a>配置集群</h1><p>修改<code>elasticsearch.yml</code>这个配置文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置集群名称，保证每个节点的名称相同，如此就能都处于一个集群之内了</span></span><br><span class="line">cluster.name: es-cluster</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一个节点的名称，必须不一样</span></span><br><span class="line">node.name: es-node1</span><br><span class="line"></span><br><span class="line"><span class="comment"># http端口（使用默认即可）</span></span><br><span class="line">http.port: 9200</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主节点，作用主要是用于来管理整个集群，负责创建或删除索引，管理其他非master节点（相当于企业老总）</span></span><br><span class="line">node.master: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据节点，用于对文档数据的增删改查</span></span><br><span class="line">node.data: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 集群列表</span></span><br><span class="line">discovery.seed_hosts: [<span class="string">&quot;192.168.1.184&quot;</span>, <span class="string">&quot;192.168.1.185&quot;</span>, <span class="string">&quot;192.168.1.186&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动的时候使用一个master节点</span></span><br><span class="line">cluster.initial_master_nodes: [<span class="string">&quot;es-node1&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>最后可以通过如下命令查看配置文件的内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more elasticsearch.yml | grep ^[^<span class="comment">#]</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/13/Consul-Watches%E7%9B%91%E6%8E%A7%E4%B8%BB%E5%8A%A8%E9%80%9A%E7%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/13/Consul-Watches%E7%9B%91%E6%8E%A7%E4%B8%BB%E5%8A%A8%E9%80%9A%E7%9F%A5/" class="post-title-link" itemprop="url">Consul - Watches监控主动通知</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-13 10:04:09" itemprop="dateCreated datePublished" datetime="2021-01-13T10:04:09+08:00">2021-01-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" itemprop="url" rel="index"><span itemprop="name">注册中心</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1 概念"></a>1 概念</h1><p>当Consul中注册的服务信息发生变化的时候，我们除了定时通过接口去查询最新的服务信息之外，consul还提供了watch机制，通过监控consul数据的变化，主动通知。</p>
+<p>目前conusl watch支持两种通知方式：<strong>可执行程序</strong>和<strong>Http接口</strong>。</p>
+<p>consul watch支持监控的数据类型：</p>
+<ul>
+<li>services - 监控指定列表服务的可用性</li>
+<li>service - 监控指定服务的实例</li>
+<li>nodes - 监控节点</li>
+<li>key - 监控特定的键值对</li>
+<li>keyprefix - 监控consul配置中心的前缀</li>
+<li>checks - 监控健康检查的值</li>
+<li>event - 监控自定义用户事件</li>
+</ul>
+<p>也就是说，consul支持监控服务、键值数据、节点信息，只要发生变化，就通知我们。</p>
+<h1 id="2-基本用法"><a href="#2-基本用法" class="headerlink" title="2 基本用法"></a>2 基本用法</h1><p>我们以监控键值数据的变化为例子，介绍watch机制的用法。</p>
+<p>watch监控的配置信息是跟consul的配置文件放在一起的，通过配置文件中的watches字段，设置监控信息。</p>
+<p>说明：watches的配置，大致用法就是通过type，配置监控数据的类型，然后根据不同数据类型配置不同的参数，最后选择一种通知方式进行配置。</p>
+<h2 id="2-1-通过可执行程序通知"><a href="#2-1-通过可执行程序通知" class="headerlink" title="2.1 通过可执行程序通知"></a>2.1 通过可执行程序通知</h2><p>当我们监控的数据发生变化，consul agent会调用我们配置的可执行程序（命令、脚本等等），并且通过标准输入，以Json格式传入通知的参数， 我们只要在程序中根据参数处理业务即可。</p>
+<p>例子：</p>
+<p>下面是我们consul agent的配置，文件名是 <code>/etc/consul/watches.json</code> 。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;datacenter&quot;</span>: <span class="string">&quot;dc1&quot;</span>, </span><br><span class="line">	<span class="attr">&quot;data_dir&quot;</span>: <span class="string">&quot;/var/consul&quot;</span>, </span><br><span class="line">	<span class="attr">&quot;ui&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">&quot;watches&quot;</span>: [&#123;</span><br><span class="line">		<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;key&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;key&quot;</span>: <span class="string">&quot;foo/bar/baz&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;handler_type&quot;</span>: <span class="string">&quot;script&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;args&quot;</span>: [<span class="string">&quot;/usr/bin/my-service-handler.sh&quot;</span>, <span class="string">&quot;-redis&quot;</span>]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子的意思，监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令。</p>
+<p>参数说明：</p>
+<ul>
+<li><p>datacenter - 数据中心的名字</p>
+</li>
+<li><p>data_dir - consul数据存放目录</p>
+</li>
+<li><p>ui - 开启consul ui</p>
+</li>
+<li><p>watches - 配置监控信息，如果监控的数据发生变化，则根据配置执行通知。</p>
+<p>watches参数说明：</p>
+<ul>
+<li>type - 监控的数据类型</li>
+<li>key - 监控的键值数据的Key</li>
+<li>handler_type - 通知类型，支持script和http</li>
+<li>args - 配置通知类型为script的，执行命令，是一个数组，第一个元素是命令，后面第2个到第N个元素是命令的参数。</li>
+</ul>
+</li>
+</ul>
+<p>例子的<code>watches</code>配置的意思就是：</p>
+<p>监控<code>key=foo/bar/baz</code>的键值数据，如果数据发生变化，就调用<code>/usr/bin/my-service-handler.sh -redis</code> 命令， 这个命令可以通过标准输入，接收变化的数据。</p>
+<p>启动consul，就会加载watches配置。</p>
+<h2 id="2-2-通过Http接口通知"><a href="#2-2-通过Http接口通知" class="headerlink" title="2.2 通过Http接口通知"></a>2.2 通过Http接口通知</h2><p>通过http接口通知数据变化，大体上配置跟上面一样，区别是多了一些http接口的配置参数。</p>
+<p>例子：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;datacenter&quot;</span>: <span class="string">&quot;dc1&quot;</span>,</span><br><span class="line">	<span class="attr">&quot;data_dir&quot;</span>: <span class="string">&quot;/Users/jogin/Documents/work/local/consul/data&quot;</span>,</span><br><span class="line">	<span class="attr">&quot;ui&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">	<span class="attr">&quot;watches&quot;</span>: [&#123;</span><br><span class="line">		<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;key&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;key&quot;</span>: <span class="string">&quot;foo/bar/baz&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;handler_type&quot;</span>: <span class="string">&quot;http&quot;</span>,</span><br><span class="line">		<span class="attr">&quot;http_handler_config&quot;</span>: &#123;</span><br><span class="line">			<span class="attr">&quot;path&quot;</span>: <span class="string">&quot;&lt;https://localhost:8000/watch&gt;&quot;</span>,</span><br><span class="line">			<span class="attr">&quot;method&quot;</span>: <span class="string">&quot;POST&quot;</span>,</span><br><span class="line">			<span class="attr">&quot;header&quot;</span>: &#123;</span><br><span class="line">				<span class="attr">&quot;x-foo&quot;</span>: [<span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>]</span><br><span class="line">			&#125;,</span><br><span class="line">			<span class="attr">&quot;timeout&quot;</span>: <span class="string">&quot;10s&quot;</span>,</span><br><span class="line">			<span class="attr">&quot;tls_skip_verify&quot;</span>: <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子的意思，就是当<code>key=foo/bar/baz</code>的键值数据发生变化，就通过<code>https://localhost:8000/watch</code>通知我们。</p>
+<p>我们关注<code>watches</code>字段的配置信息，下面是参数说明：</p>
+<ul>
+<li><p>type - watch监控类型是key</p>
+</li>
+<li><p>key - 监控foo/bar/baz这个key</p>
+</li>
+<li><p>handler_type - 通知类型, http</p>
+</li>
+<li><p>http_handler_config - 配置http通知信息。</p>
+<p>http_handler_config参数说明：</p>
+<ul>
+<li>path - 通知Url</li>
+<li>method - http请求方法</li>
+<li>header - 自定义Http请求头，没有可以忽略</li>
+<li>timeout - 超时时间，10秒</li>
+<li>tls_skip_verify - 是否跳过tls验证</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-监控服务"><a href="#3-监控服务" class="headerlink" title="3 监控服务"></a>3 监控服务</h1><p>上面介绍了watch的基本用法，我们也可以监控服务信息的变化，例如当有人注册新的服务或者服务不可用的时候，通知我们。</p>
+<p>我们忽略掉，consul agent的配置，单独看watches的配置。</p>
+<p>监控所有的服务的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;services&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>监控单个服务的配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;service&quot;,</span><br><span class="line">                &quot;service&quot;: &quot;要监控的服务名&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-监控键值数据"><a href="#4-监控键值数据" class="headerlink" title="4 监控键值数据"></a>4 监控键值数据</h1><p>前面介绍过基本Key的监控，其实我们还可以通过key的前缀，批量监控一批key，只要key的前缀相同，这些Key下面的数据发生变化，都会发送通知。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;keyprefix&quot;,</span><br><span class="line">		&quot;prefix&quot;: &quot;foo&#x2F;&quot;,</span><br><span class="line">		&quot;args&quot;: [&quot;&#x2F;usr&#x2F;bin&#x2F;my-service-handler.sh&quot;, &quot;-redis&quot;]</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>监控类型为：keyprefix</p>
+<p>通过prefix字段，配置key的前缀。</p>
+<p>这个配置的意思就是：以foo/开头的Key, 数据发生变化，都会执行args参数，配置的命令。</p>
+<h1 id="5-监控节点"><a href="#5-监控节点" class="headerlink" title="5 监控节点"></a>5 监控节点</h1><p>我们也可以监控consul集群节点的变化信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	&quot;watches&quot;: [&#123;</span><br><span class="line">		&quot;type&quot;: &quot;nodes&quot;,</span><br><span class="line">		&quot;handler_type&quot;: &quot;http&quot;,</span><br><span class="line">		&quot;http_handler_config&quot;: &#123;</span><br><span class="line">			...忽略...</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>没有其他额外的参数，type=nodes即可，当节点信息发生变化，会根据配置的方式通知。</p>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p><a target="_blank" rel="noopener" href="https://www.consul.io/docs/dynamic-app-config/watches">Consul by HashiCorp</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ExMan/p/11907491.html">ExplorerMan</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tizi365.com/archives/535.html">Consul Watches监控服务变化</a></p>
+<p><a target="_blank" rel="noopener" href="https://toutiao.io/posts/zeu435/preview">开发者头条</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.notion.so/Consul-6982c01eb1594549ab0a6dd463f16cfd">Consul 单机集群搭建</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/01/12/ES-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/01/12/ES-%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C-bulk/" class="post-title-link" itemprop="url">ES 批量操作 bulk</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-12 22:50:04" itemprop="dateCreated datePublished" datetime="2021-01-12T22:50:04+08:00">2021-01-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-25 21:15:48" itemprop="dateModified" datetime="2021-03-25T21:15:48+08:00">2021-03-25</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ELK/" itemprop="url" rel="index"><span itemprop="name">ELK</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><p>bulk操作和以往的普通请求格式有区别。不要格式化json，不然就不在同一行了，这个需要注意。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">action</span>: &#123; metadata &#125;&#125;\\n</span><br><span class="line">&#123; request body        &#125;\\n</span><br><span class="line">&#123; <span class="attr">action</span>: &#123; metadata &#125;&#125;\\n</span><br><span class="line">&#123; request body        &#125;\\n</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>&#123; action: &#123; metadata &#125;&#125;</code>代表批量操作的类型，可以是新增、删除或修改</li>
+<li><code>\\n</code>是每行结尾必须填写的一个规范，每一行包括最后一行都要写，用于es的解析</li>
+<li><code>&#123; request body &#125;</code>是请求body，增加和修改操作需要，删除操作则不需要</li>
+</ul>
+<h1 id="批量操作的类型"><a href="#批量操作的类型" class="headerlink" title="批量操作的类型"></a>批量操作的类型</h1><p>action 必须是以下选项之一:</p>
+<ul>
+<li>create：如果文档不存在，那么就创建它。存在会报错。发生异常报错不会影响其他操作。</li>
+<li>index：创建一个新文档或者替换一个现有的文档。</li>
+<li>update：部分更新一个文档。</li>
+<li>delete：删除一个文档。</li>
+</ul>
+<p>metadata 中需要指定要操作的文档的<code>_index 、 _type 和 _id</code>，<code>_index 、 _type</code>也可以在url中指定</p>
+<h1 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h1><h2 id="create"><a href="#create" class="headerlink" title="create"></a>create</h2><ul>
+<li><p>create新增文档数据，在metadata中指定index以及type</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2001&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2002&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2002&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2002&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="string">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line"><span class="number">1234567</span></span><br></pre></td></tr></table></figure></li>
+<li><p>create创建已有id文档，在url中指定index和type</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2005&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2005&quot;</span>&#125;</span><br><span class="line"><span class="number">1234567</span></span><br></pre></td></tr></table></figure></li>
+<li><p>index创建，已有文档id会被覆盖，不存在的id则新增</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;index2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2007&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2007&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;index&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2008&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;2008&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name2008&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="number">12345678</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="update"><a href="#update" class="headerlink" title="update"></a>update</h2><ul>
+<li><p>update跟新部分文档数据</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;id&quot;</span>: <span class="string">&quot;3004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;nameupdate&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h2><ul>
+<li><p>delete批量删除</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="复合操作"><a href="#复合操作" class="headerlink" title="复合操作"></a>复合操作</h2><ul>
+<li><p>综合批量各种操作</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="string">&quot;create&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;8001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;id&quot;</span>: <span class="string">&quot;8001&quot;</span>, <span class="string">&quot;nickname&quot;</span>: <span class="string">&quot;name8001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="string">&quot;update&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;doc&quot;</span>:&#123; <span class="string">&quot;id&quot;</span>: <span class="string">&quot;20010&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="string">&quot;delete&quot;</span>: &#123;<span class="string">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h1><p>官文：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/bulk.html">https://www.elastic.co/guide/cn/elasticsearch/guide/current/bulk.html</a></p>
 
       
     </div>
@@ -1179,7 +1268,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1213,7 +1302,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

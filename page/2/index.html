@@ -195,20 +195,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">203</span>
+          <span class="site-state-item-count">234</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-count">38</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">125</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -246,7 +246,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/23/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96%E7%9A%84%E5%87%A0%E4%B8%AA%E9%98%B6%E6%AE%B5/">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/03/16/docs/JVM/JVM-%E5%85%B6%E5%AE%83%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -259,195 +259,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/23/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96%E7%9A%84%E5%87%A0%E4%B8%AA%E9%98%B6%E6%AE%B5/" class="post-title-link" itemprop="url">数据库优化的几个阶段</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-08-23 16:15:27 / 修改时间：16:16:02" itemprop="dateCreated datePublished" datetime="2021-08-23T16:15:27+08:00">2021-08-23</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/rjzheng/p/9619855.html">https://www.cnblogs.com/rjzheng/p/9619855.html</a></p>
-</blockquote>
-<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>大家在面试的时候，是否遭遇过，面试官询问</p>
-<blockquote>
-<p>你们是如何进行数据库优化的?</p>
-</blockquote>
-<p>那这个问题应该怎么答呢？其实写这个题材的原因是我这几天看到各公众号转的一篇数据库调优的知识（不上链接了），我就稍微翻了几下，上面动不动就来说要对数据库进行<strong>水平拆分</strong>，我就想反问各位读者，你们几个人经历过<strong>水平拆分</strong>?现在很多文章，实践性实在太差，只能说纯理论分析。<br>这篇文章最早来自知乎的一个提问，我在其基础上完善了一下。</p>
-<h2 id="第一阶段-优化sql和索引"><a href="#第一阶段-优化sql和索引" class="headerlink" title="第一阶段 优化sql和索引"></a>第一阶段 优化sql和索引</h2><p>这才是调优的第一阶段啊，<strong>为什么呢？</strong><br>因为这一步成本最低啊，不需要加什么中间件。你没经过索引优化和SQL优化，就来什么<strong>水平拆分</strong>，这不是坑人么。<br>那<strong>步骤</strong>是什么样呢?我说个大概<br>(1)用慢查询日志定位执行效率低的<code>SQL</code>语句<br>(2)用<code>explain</code>分析<code>SQL</code>的执行计划<br>(3)确定问题，采取相应的优化措施，建立索引啊，等<br>我就不举例了，因为如何优化SQL的文章，一抓一大把，再贴过来，读者看着也累。</p>
-<h2 id="第二阶段-搭建缓存"><a href="#第二阶段-搭建缓存" class="headerlink" title="第二阶段 搭建缓存"></a>第二阶段 搭建缓存</h2><p>在优化sql无法解决问题的情况下，才考虑搭建缓存。毕竟你使用缓存的目的，就是将复杂的、耗时的、不常变的执行结果缓存起来，降低数据库的资源消耗。<br>这里需要<strong>注意</strong>的是:搭建缓存后，系统的复杂性增加了。你需要考虑很多问题，比如:</p>
-<ul>
-<li>缓存和数据库一致性问题？(比如是更缓存，还是删缓存),这点可以看我的一篇文章<a target="_blank" rel="noopener" href="https://www.cnblogs.com/rjzheng/p/9041659.html">《数据库和缓存双写一致性方案解析》</a>。</li>
-<li>缓存击穿、缓存穿透、缓存雪崩问题如何解决？是否有做缓存预热的必要。不过我猜，大部分中小公司应该都没考虑。这点可以看我的另一篇<a target="_blank" rel="noopener" href="https://www.cnblogs.com/rjzheng/p/9096228.html">《分布式之redis复习精讲》</a></li>
-</ul>
-<h2 id="第三阶段-读写分离"><a href="#第三阶段-读写分离" class="headerlink" title="第三阶段 读写分离"></a>第三阶段 读写分离</h2><p>缓存也搞不定的情况下，搞主从复制，上读写分离。在应用层，区分读写请求。或者利用现成的中间件mycat或者altas等做读写分离。<br>需要注意的是,只要你敢说你用了主从架构，有三个问题，你要准备:<br>(1)主从的好处？<br>回答:实现数据库备份，实现数据库负载均衡，提交数据库可用性<br>(2)主从的原理?<br>回答:如图所示（图片不是自己画的，偷懒了）<br><img src="https://gitee.com/littlefxc/oss/raw/master/images/o_youhua1.jpg" alt="image">主库有一个<code>log dump</code>线程，将<code>binlog</code>传给从库<br>从库有两个线程，一个I/O线程，一个SQL线程，I/O线程读取主库传过来的<code>binlog</code>内容并写入到<code>relay log</code>,SQL线程从<code>relay log</code>里面读取内容，写入从库的数据库。</p>
-<p>(3)如何解决主从一致性?<br>回答:这个问题，我不建议在数据库层面解决该问题。根据CAP定理，主从架构本来就是一种高可用架构，是无法满足一致性的<br>哪怕你采用同步复制模式或者半同步复制模式，都是弱一致性，并不是强一致性。所以，推荐还是利用缓存，来解决该问题。<br>步骤如下:<br>1、自己通过测试，计算主从延迟时间，建议mysql版本为5.7以后，因为mysql自5.7开始，多线程复制功能比较完善，一般能保证延迟在1s内。不过话说回来，mysql现在都出到8.x了，还有人用5.x的版本么。<br>2、数据库的写操作，先写数据库，再写cache，但是有效期很短，就比主从延时的时间稍微长一点。<br>3、读请求的时候，先读缓存，缓存不存在(这时主从同步已经完成)，再读数据库。</p>
-<h2 id="第四阶段-利用分区表"><a href="#第四阶段-利用分区表" class="headerlink" title="第四阶段 利用分区表"></a>第四阶段 利用分区表</h2><p>说句实在话，你们面试的时候，其实可以略过这个阶段。因为很多互联网公司都不建议用分区表，我自己也不太建议用分区表，采用这个分区表，坑太多。<br>这里引用一下其他文章的回答:<br><strong>什么是mysql的分区表？</strong><br>回答：所有数据还在一个表中，但物理存储根据一定的规则放在不同的文件中。这个是mysql支持的功能，业务代码不需要改动，但是sql语句需要改动，sql条件需要带上分区的列。<br><strong>缺点</strong><br>(1)分区键设计不太灵活，如果不走分区键，很容易出现全表锁<br>(2)在分区表使用<code>ALTER TABLE</code> … <code>ORDER BY</code>，只能在每个分区内进行<code>order by</code>。<br>(3)分区表的分区键创建索引，那么这个索引也将被分区。分区键没有全局索引一说。<br>(4)自己分库分表，自己掌控业务场景与访问模式，可控。分区表，研发写了一个sql，都不确定该去哪个分区查，不太可控。<br>…不列举了，不推荐</p>
-<h2 id="第五阶段-垂直拆分"><a href="#第五阶段-垂直拆分" class="headerlink" title="第五阶段 垂直拆分"></a>第五阶段 垂直拆分</h2><p>上面四个阶段都没搞定，就来垂直拆分了。垂直拆分的复杂度还是比水平拆分小的。将你的表，按模块拆分为不同的小表。大家应该都看过《大型网站架构演变之路》，这种类型的文章或者书籍，基本都有提到这一阶段。<br>如果你有幸能够在什么运营商、银行等公司上班，你会发现他们一个表，几百个字段都是很常见的事情。所以，应该要进行拆分，拆分原则一般是如下三点:<br>(1)把不常用的字段单独放在一张表。<br>(2)把常用的字段单独放一张表<br>(3)经常组合查询的列放在一张表中（联合索引）。</p>
-<h2 id="第六阶段-水平拆分"><a href="#第六阶段-水平拆分" class="headerlink" title="第六阶段 水平拆分"></a>第六阶段 水平拆分</h2><p>OK,水平拆分是最麻烦的一个阶段，拆分后会有很多的问题，我再强调一次，水平拆分一定是最最最最后的选择。从某种意义上，我觉得还不如垂直拆分。因为你用垂直拆分，分成不同模块后，发现单模块的压力过大，你完全可以给该模块单独做优化，例如提高该模块的机器配置等。如果是水平拆分，拆成两张表，代码需要变动，然后发现两张表还不行，再变代码，再拆成三张表的？水平拆分模块间耦合性太强，成本太大，不是特别推荐。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/10/jinfo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/10/jinfo/" class="post-title-link" itemprop="url">内置故障排查工具-jinfo</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-08-10 11:20:40 / 修改时间：11:23:04" itemprop="dateCreated datePublished" datetime="2021-08-10T11:20:40+08:00">2021-08-10</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="jinfo"><a href="#jinfo" class="headerlink" title="jinfo"></a>jinfo</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>jinfo全称Java Configuration Info，主要用来查看与调整JVM参数。</p>
-<blockquote>
-<p><strong>TIPS</strong></p>
-<ul>
-<li>此命令是实验性的，不受支持，对于JDK 9及更高版本，部分功能可使用 <code>jhsdb jinfo</code> 代替，也可用jcmd代替。</li>
-<li>部分JDK版本的jinfo命令对Windows支持比较有限，参数较少。本文为了更加接近生产环境，都是基于类Unix操作系统编写的。如果在Windows操作系统下测试，应以jinfo -h的结果为准。</li>
-</ul>
-</blockquote>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><p>命令如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">➜ jinfo -h</span><br><span class="line">Usage:</span><br><span class="line">    jinfo &lt;option&gt; &lt;pid&gt;</span><br><span class="line">       (to connect to a running process)</span><br><span class="line"></span><br><span class="line">where &lt;option&gt; is one of:</span><br><span class="line">    -flag &lt;name&gt;         打印指定参数的值</span><br><span class="line">    -flag [+|-]&lt;name&gt;    启用&#x2F;关闭指定参数</span><br><span class="line">    -flag &lt;name&gt;&#x3D;&lt;value&gt; 将指定的参数设置为指定的值</span><br><span class="line">    -flags               打印VM参数</span><br><span class="line">    -sysprops            打印系统属性（笔者注：系统属性打印的是System.getProperties()的结果）</span><br><span class="line">    &lt;no option&gt;          打印VM参数及系统属性</span><br><span class="line">    -? | -h | --help | -help to print this help message</span><br><span class="line">12345678910111213</span><br></pre></td></tr></table></figure>
-
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><h3 id="查看参数"><a href="#查看参数" class="headerlink" title="查看参数"></a>查看参数</h3><p>示例1：打印42342这个进程的VM参数及Java系统属性：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo 42342</span><br></pre></td></tr></table></figure>
-
-<p>示例2：打印42342这个进程的Java系统属性</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -sysprops 42342</span><br></pre></td></tr></table></figure>
-
-<p>示例3：打印42342这个进程的VM参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flags 42342</span><br></pre></td></tr></table></figure>
-
-<p>示例4：打印42342这个进程ConcGCThreads参数的值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flag ConcGCThreads 42342</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>拓展知识</strong></p>
-<p>要想查看JVM参数，也可在启动时，指定 <code>-XX:+PrintFlagsFinal</code> ，这样会在启动时将JVM参数打印到日志。</p>
-</blockquote>
-<h3 id="动态修改参数"><a href="#动态修改参数" class="headerlink" title="动态修改参数"></a>动态修改参数</h3><p>示例5：将42342这个进程的PrintClassHistogram设置为false</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flag -PrintClassHistogram 42342</span><br></pre></td></tr></table></figure>
-
-<p>示例6：将42342这个进程的MaxHeapFreeRatio设置为80</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flag MaxHeapFreeRatio&#x3D;80 42342</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>TIPS</strong></p>
-<p>虽然可用jinfo动态修改VM参数，但并非所有参数都支持动态修改，如果操作了不支持的修改的参数，将会报类似如下的异常：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; com.sun.tools.attach.AttachOperationFailedException: flag &#39;xxx&#39; cannot be changed</span><br></pre></td></tr></table></figure>
-
-<p>使用如下命令显示出来的参数，基本上都是支持动态修改的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -XX:+PrintFlagsInitial | grep manageable</span><br></pre></td></tr></table></figure>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/07/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E5%92%8C%E9%94%81%E7%8A%B6%E6%80%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/07/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E5%92%8C%E9%94%81%E7%8A%B6%E6%80%81/" class="post-title-link" itemprop="url">synchronized锁升级过程和锁状态</a>
+          <a href="/2022/03/16/docs/JVM/JVM-%E5%85%B6%E5%AE%83%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/" class="post-title-link" itemprop="url">JVM 其它垃圾收集器</a>
         </h2>
 
         <div class="post-meta-container">
@@ -458,341 +270,24 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-08-07 19:41:22" itemprop="dateCreated datePublished" datetime="2021-08-07T19:41:22+08:00">2021-08-07</time>
+      <time title="创建时间：2022-03-16 09:03:21" itemprop="dateCreated datePublished" datetime="2022-03-16T09:03:21+08:00">2022-03-16</time>
     </span>
       <span class="post-meta-item">
         <span class="post-meta-item-icon">
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-12-06 15:57:53" itemprop="dateModified" datetime="2021-12-06T15:57:53+08:00">2021-12-06</time>
+        <time title="修改时间：2022-05-10 09:24:53" itemprop="dateModified" datetime="2022-05-10T09:24:53+08:00">2022-05-10</time>
       </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>转载自<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000022904663">https://segmentfault.com/a/1190000022904663</a></p>
-</blockquote>
-<h3 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h3><p>锁的状态总共有四种，级别由低到高依次为：无锁、偏向锁、轻量级锁、重量级锁，这四种锁状态分别代表什么，为什么会有锁升级？其实在 JDK 1.6之前，synchronized 还是一个重量级锁，是一个效率比较低下的锁，但是在JDK 1.6后，Jvm为了提高锁的获取与释放效率对（synchronized ）进行了优化，引入了 偏向锁 和 轻量级锁 ，从此以后锁的状态就有了四种（无锁、偏向锁、轻量级锁、重量级锁），并且四种状态会随着竞争的情况逐渐升级，而且是不可逆的过程，即不可降级，也就是说只能进行锁升级（从低级别到高级别），不能锁降级（高级别到低级别），意味着偏向锁升级成轻量级锁后不能降级成偏向锁。这种锁升级却不能降级的策略，目的是为了提高获得锁和释放锁的效率。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/07/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E5%92%8C%E9%94%81%E7%8A%B6%E6%80%81/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/05/jstat/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/05/jstat/" class="post-title-link" itemprop="url">内置监控工具 - jstat</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
+        <i class="far fa-folder"></i>
       </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-08-05 09:52:54 / 修改时间：09:54:28" itemprop="dateCreated datePublished" datetime="2021-08-05T09:52:54+08:00">2021-08-05</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="内置监控工具-jstat"><a href="#内置监控工具-jstat" class="headerlink" title="内置监控工具 - jstat"></a>内置监控工具 - jstat</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>jstat全称JVM Statistics Monitoring Tool，用于监控JVM的各种运行状态。</p>
-<blockquote>
-<p>TIPS<br>此命令是实验性的，不受支持。</p>
-</blockquote>
-<blockquote>
-<p>参考文档：<br>Java 8：<a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jstat.html">https://docs.oracle.com/javase/8/docs/technotes/tools/unix/jstat.html</a><br>Java 11：<a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/11/tools/jstat.html">https://docs.oracle.com/en/java/javase/11/tools/jstat.html</a></p>
-</blockquote>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><p>命令如下：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">➜ jstat -h</span><br><span class="line">Usage: jstat --<span class="built_in">help</span>|-options</span><br><span class="line">       jstat -&lt;option&gt; [-t] [-h&lt;lines&gt;] &lt;vmid&gt; [&lt;interval&gt; [&lt;count&gt;]]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Definitions:</span><br><span class="line">  &lt;option&gt;      指定参数，取值可用jstat -options查看</span><br><span class="line">  &lt;vmid&gt;        VM标识，格式为&lt;lvmid&gt;[@&lt;hostname&gt;[:&lt;port&gt;]]</span><br><span class="line">                &lt;lvmid&gt;：如果lvmid是本地VM，那么用进程号即可; </span><br><span class="line">                &lt;hostname&gt;：目标JVM的主机名;</span><br><span class="line">                &lt;port&gt;：目标主机的rmiregistry端口;</span><br><span class="line">  -t            用来展示每次采样花费的时间</span><br><span class="line">  &lt;lines&gt;       每抽样几次就列一个标题，默认0，显示数据第一行的列标题</span><br><span class="line">  &lt;interval&gt;    抽样的周期，格式使用:&lt;n&gt;[<span class="string">&quot;ms&quot;</span>|<span class="string">&quot;s&quot;</span>]，n是数字，ms/s是时间单位，默认是ms</span><br><span class="line">  &lt;count&gt;       采样多少次停止</span><br><span class="line">  -J&lt;flag&gt;      将&lt;flag&gt;传给运行时系统，例如：-J-Xms48m</span><br><span class="line">  -? -h --<span class="built_in">help</span>  Prints this <span class="built_in">help</span> message.</span><br><span class="line">  -<span class="built_in">help</span>         Prints this <span class="built_in">help</span> message.</span><br></pre></td></tr></table></figure>
-
-<p>option取值如下：</p>
-<ul>
-<li>class：显示类加载器的统计信息</li>
-<li>compiler：显示有关Java HotSpot VM即时编译器行为的统计信息</li>
-<li>gc：显示有关垃圾收集堆行为的统计信息</li>
-<li>gccapacity：统计各个分代（新生代，老年代，持久代）的容量情况</li>
-<li>gccause：显示引起垃圾收集事件的原因</li>
-<li>gcnew：显示有关新生代行为的统计信息</li>
-<li>gcnewcapacity：显示新生代容量</li>
-<li>gcold：显示老年代、元空间区的统计信息</li>
-<li>gcoldcapacity：显示老年代的容量</li>
-<li>gcmetacapacity：显示元空间的容量</li>
-<li>gcutil：显示有关垃圾收集统计信息的摘要</li>
-<li>printcompilation：显示Java HotSpot VM编译方法统计信息</li>
-</ul>
-<h2 id="输出信息"><a href="#输出信息" class="headerlink" title="输出信息"></a>输出信息</h2><p>class:</p>
-<ul>
-<li>Loaded：当前加载的类的数量</li>
-<li>Bytes：当前加载的空间(单位KB)</li>
-<li>Unloaded：卸载的类的数量Number of classes unloaded.</li>
-<li>Bytes：当前卸载的空间(单位KB)</li>
-<li>Time：执行类加载/卸载操作所花费的时间</li>
-<li>compiler：</li>
-</ul>
-<p>compiler:</p>
-<ul>
-<li>Compiled：执行了多少次编译任务</li>
-<li>Failed：多少次编译任务执行失败</li>
-<li>Invalid：无效的编译任务数</li>
-<li>Time：执行编译任务所花费的时间</li>
-<li>FailedType：上次失败的编译的编译类型</li>
-<li>FailedMethod：上次失败的编译的类名和方法</li>
-</ul>
-<p>gc：</p>
-<ul>
-<li>S0C：第一个存活区(S0)的容量（KB）</li>
-<li>S1C：第二个存活区(S1)的容量（KB）</li>
-<li>S0U：第一个存活区(S0)使用的大小（KB）</li>
-<li>S1U：第二个存活区(S1)使用的大小（KB）</li>
-<li>EC：伊甸园空间容量（KB）</li>
-<li>EU：伊甸园使用的大小（KB）</li>
-<li>OC：老年代容量（KB）</li>
-<li>OU：老年代使用的大小（KB）</li>
-<li>MC：元空间的大小（KB）</li>
-<li>MU：元空间使用的大小（KB）</li>
-<li>CCSC：压缩的类空间大小（KB）</li>
-<li>CCSU：压缩类空间使用的大小（KB）</li>
-<li>YGC：年轻代垃圾收集事件的数量</li>
-<li>YGCT：年轻代垃圾回收时间</li>
-<li>FGC：Full GC事件的数量</li>
-<li>FGCT：Full GC回收时间</li>
-<li>GCT：垃圾收集总时间</li>
-</ul>
-<p>gccapacity：</p>
-<ul>
-<li>NGCMN：最小新生代容量（KB）</li>
-<li>NGCMX：最大新生代容量（KB）</li>
-<li>NGC：当前的新生代容量（KB）</li>
-<li>S0C：第一个存活区(S0)的当前容量（KB）</li>
-<li>S1C：第二个存活区(S1)的当前容量（KB）</li>
-<li>EC：当前伊甸园容量（KB）</li>
-<li>OGCMN：最小老年代容量（KB）</li>
-<li>OGCMX：最大老年代容量（KB）</li>
-<li>OGC：当前老年代容量（KB）</li>
-<li>OC：当前old space容量（KB）</li>
-<li>MCMN：最小元空间容量（KB）</li>
-<li>MCMX：最大元空间容量（KB）</li>
-<li>MC：当前元空间的容量（KB）</li>
-<li>CCSMN：压缩的类空间最小容量（KB）</li>
-<li>CCSMX：压缩的类空间最大容量（KB）</li>
-<li>CCSC：当前压缩的类空间大小（KB）</li>
-<li>YGC：年轻代GC事件的数量</li>
-<li>FGC：Full GC事件的数量</li>
-</ul>
-<p>gccause：其他展示列和-gcutil一致</p>
-<ul>
-<li>LGCC：导致GC的原因</li>
-<li>GCC：导致当前GC的原因</li>
-</ul>
-<p>gcnew：</p>
-<ul>
-<li>S0C：第一个存活区(S0)的容量（KB）</li>
-<li>S1C：第二个存活区(S1)的容量（KB）</li>
-<li>S0U：第一个存活区(S0)的利用率（KB）</li>
-<li>S1U：第二个存活区(S1)的利用率（KB）</li>
-<li>TT：老年代阈值</li>
-<li>MTT：最大老年代阈值</li>
-<li>DSS：期望的存活区大小（KB）</li>
-<li>EC：当前伊甸园容量（KB）</li>
-<li>EU：伊甸园利用率（KB）</li>
-<li>YGC：年轻代GC事件的数量</li>
-<li>YGCT：年轻代垃圾回收时间</li>
-</ul>
-<p>gcnewcapacity：</p>
-<ul>
-<li>NGCMN：最小年轻代容量（KB）</li>
-<li>NGCMX：最大年轻代容量（KB）</li>
-<li>NGC：当前年轻代容量（KB） </li>
-<li>S0CMX：最大S0容量（KB） </li>
-<li>S0C：当前S0容量（KB） </li>
-<li>S1CMX：最大S1容量（KB） </li>
-<li>S1C：当前S1容量（KB） </li>
-<li>ECMX：最大伊甸园容量（KB） </li>
-<li>EC：当前伊甸园容量（KB） </li>
-<li>YGC：年轻代GC事件的数量 </li>
-<li>FGC：Full GC事件的数量</li>
-</ul>
-<p>gcold：</p>
-<ul>
-<li>MC：当前元空间使用大小（KB）</li>
-<li>MU：元空间利用率（KB）</li>
-<li>CCSC：压缩的类的大小（KB）</li>
-<li>CCSU：使用的压缩类空间（KB）</li>
-<li>OC：当前的老年代空间容量（KB）</li>
-<li>OU：来年代空间利用率（KB）</li>
-<li>YGC：年轻代GC事件的数量</li>
-<li>FGC：Full GC事件的数量</li>
-<li>FGCT：Full GC垃圾收集时间</li>
-<li>GCT：总垃圾收集时间</li>
-</ul>
-<p>gcoldcapacity：</p>
-<ul>
-<li>OGCMN：最小老年代容量（KB）</li>
-<li>OGCMX：最大老年代容量（KB）</li>
-<li>OGC：当前老年代容量（KB）</li>
-<li>OC：当前old space容量（KB）</li>
-<li>YGC：年轻代GC事件的数量</li>
-<li>FGC：Full GC事件的数量</li>
-<li>FGCT：Full GC垃圾收集时间</li>
-<li>GCT：总垃圾收集时间</li>
-</ul>
-<p>gcmetacapacity：</p>
-<ul>
-<li>MCMN：最小元空间容量（KB）</li>
-<li>MCMX：最大元空间容量（KB）</li>
-<li>MC：元空间大小（KB）</li>
-<li>CCSMN：压缩的类空间最小容量（KB）</li>
-<li>CCSMX：压缩的类空间最大容量（KB）</li>
-<li>YGC：年轻代GC事件的数量</li>
-<li>FGC：Full GC事件的数量</li>
-<li>FGCT：Full GC垃圾收集时间</li>
-<li>GCT：总垃圾收集时间</li>
-</ul>
-<p>gcutil：</p>
-<ul>
-<li>S0：第一个存活区(S0)利用率</li>
-<li>S1：第二个存活区(S1)利用率</li>
-<li>E：Eden空间利用率</li>
-<li>O：老年代空间利用率</li>
-<li>M：元空间利用率</li>
-<li>CCS：压缩的类空间利用率</li>
-<li>YGC：年轻代GC事件的数量</li>
-<li>YGCT：年轻代垃圾回收时间</li>
-<li>FGC：Full GC事件的数量</li>
-<li>FGCT：Full GC垃圾收集时间</li>
-<li>GCT：总垃圾收集时间</li>
-</ul>
-<p>printcompilation：</p>
-<ul>
-<li>Compiled：由最近编译的方法去执行的编译任务数</li>
-<li>Size：最近编译的方法的字节码的字节数</li>
-<li>Type：最近编译的方法的编译类型。</li>
-<li>Method：标识最近编译的方法的类名和方法名。类名使用 / 代替点 . 作为名称空间分隔符；方法名称是指定类中的方法。这两个字段的格式与HotSpot -XX:+PrintCompilation 选项一致。</li>
-</ul>
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><p>示例1：查看21891这个进程的gc相关信息，每隔250ms采样1次，采样7次</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat -gcutil 21891 250 7</span><br></pre></td></tr></table></figure>
-
-<p>示例2：显示有关新生代行为的统计信息，重复列标题：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat -gcnew -h3 21891 250</span><br></pre></td></tr></table></figure>
-
-<p>示例3：查看remote.domain机器上的40496这个进程有关垃圾收集统计信息的摘要，每隔1秒采样1次：</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat -gcutil 40496@remote.domain 1000</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/04/%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/04/%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/" class="post-title-link" itemprop="url">线程池ThreadPoolExecutor</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-08-04 22:01:38" itemprop="dateCreated datePublished" datetime="2021-08-04T22:01:38+08:00">2021-08-04</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
         </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-05 23:30:59" itemprop="dateModified" datetime="2021-08-05T23:30:59+08:00">2021-08-05</time>
-      </span>
+    </span>
 
   
 </div>
@@ -804,589 +299,1749 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>线程就是一个放线程的池子。</p>
-<p>使用线程池的好处：</p>
+          <h1 id="其他垃圾收集器"><a href="#其他垃圾收集器" class="headerlink" title="其他垃圾收集器"></a>其他垃圾收集器</h1><h2 id="Shenandoah"><a href="#Shenandoah" class="headerlink" title="Shenandoah"></a>Shenandoah</h2><p>厂商：RedHat，贡献给了OpenJDK</p>
+<p>定位：低延迟垃圾收集器</p>
+<p>状态：实验性</p>
+<p>限制：<strong>Oracle JDK无法使用</strong></p>
+<p>适用版本：详见 <a target="_blank" rel="noopener" href="https://wiki.openjdk.java.net/display/shenandoah">https://wiki.openjdk.java.net/display/shenandoah</a></p>
+<p>网址：<a target="_blank" rel="noopener" href="https://wiki.openjdk.java.net/display/shenandoah">https://wiki.openjdk.java.net/display/shenandoah</a></p>
+<p>和G1对比，相同点：</p>
 <ul>
-<li>重用已存在的线程，从而减少对象创建和销毁的开销。</li>
-<li>控制并发，从而提高资源利用率，有效避免过多的资源竞争，提升性能</li>
-<li>功能强大，有定时执行、定期执行、单线程执行、并发控制等等</li>
+<li>基于Region的内存布局</li>
+<li>有用于存放大对象的Humongous Region</li>
+<li>回收策略也同样是优先处理回收价值最大的Region</li>
 </ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/04/%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
+<p>和G1对比，不同点：</p>
+<ul>
+<li>并发的整理算法</li>
+<li>Shenandoah默认是不使用分代收集的</li>
+<li>解决跨region引用的机制不同，G1主要基于Rememberd Set、CardTable，而Shenandoah是基于连接矩阵（Connection Matrix）去实现的。</li>
+</ul>
+<p>启用参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UnlockExperimentalVMOptions  -XX:+UseShenandoahGC</span><br></pre></td></tr></table></figure>
 
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/02/ab%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/02/ab%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/" class="post-title-link" itemprop="url">ab使用教程</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-08-02 09:26:12 / 修改时间：09:32:52" itemprop="dateCreated datePublished" datetime="2021-08-02T09:26:12+08:00">2021-08-02</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h1><p>ab全称Apache HTTP server benchmarking tool的缩写，是Apache自带的网站benchmark测试工具。使用非常方便，简约而不简单。</p>
-<p>官方网站：<a target="_blank" rel="noopener" href="https://httpd.apache.org/docs/2.4/programs/ab.html">https://httpd.apache.org/docs/2.4/programs/ab.html</a></p>
+<p>适用场景：</p>
+<ul>
+<li>低延迟、响应快的业务场景</li>
+</ul>
+<p>工作步骤：</p>
 <blockquote>
-<p><strong>TIPS</strong></p>
-<p>可达到ab相同效果的工具： </p>
-<ul>
-<li><p>wrk：<a target="_blank" rel="noopener" href="https://github.com/wg/wrk">https://github.com/wg/wrk</a> </p>
-</li>
-<li><p>wrk2：<a target="_blank" rel="noopener" href="https://github.com/giltene/wrk2">https://github.com/giltene/wrk2</a> </p>
-</li>
-<li><p>JMeter：<a target="_blank" rel="noopener" href="https://jmeter.apache.org/">https://jmeter.apache.org/</a> </p>
-</li>
-<li><p>Locust：<a target="_blank" rel="noopener" href="https://locust.io/">https://locust.io/</a></p>
-</li>
-</ul>
+<p>相关论文：<a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/306112816_Shenandoah_An_open-source_concurrent_compacting_garbage_collector_for_OpenJDK">https://www.researchgate.net/publication/306112816_Shenandoah_An_open-source_concurrent_compacting_garbage_collector_for_OpenJDK</a></p>
 </blockquote>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a><strong>安装</strong></h2><h3 id="macOS"><a href="#macOS" class="headerlink" title="macOS"></a><strong>macOS</strong></h3><p>系统自带，直接使用即可。</p>
-<h3 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a><strong>CentOS 7</strong></h3><p>运行如下命令即可安装</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install httpd-tools</span><br></pre></td></tr></table></figure>
-
-<h3 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a><strong>Windows</strong></h3><ul>
-<li>前往 <a target="_blank" rel="noopener" href="https://www.apachehaus.com/cgi-bin/download.plx">https://www.apachehaus.com/cgi-bin/download.plx</a> 下载ab安装包。</li>
-<li>解压，将目录切换到安装包的bin目录，并在终端中执行如下命令即可</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./ab xxxx</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>TIPS</strong></p>
-<p>由于笔者没有Windows环境，所以此步骤无法亲测。<br>亲们可百度 “Windows 安装 ab”，参照结果安装即可。资料非常丰富。</p>
-</blockquote>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a><strong>使用说明</strong></h2><p>ab是一个命令行工具，使用说明如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">➜ ab -help</span><br><span class="line"></span><br><span class="line">Usage: ab [options] [http[s]://]hostname[:port]/path</span><br><span class="line"></span><br><span class="line">Options are:</span><br><span class="line"></span><br><span class="line">  -n requests   指定请求多少次</span><br><span class="line"></span><br><span class="line">  -c concurrency 指定并发数(指定同时发送几个请求)</span><br><span class="line"></span><br><span class="line">  -t timelimit  测试持续的最长时间，默认无限制，此参数隐含-n 50000</span><br><span class="line"></span><br><span class="line">  -s timeout   每个请求的超时时间，默认30秒</span><br><span class="line"></span><br><span class="line">  -b windowsize  指定TCP收发缓存大小，单位字节</span><br><span class="line"></span><br><span class="line">  -B address   指定在发起连接时绑定的IP地址</span><br><span class="line"></span><br><span class="line">  -p postfile   指定想要POST的文件，需和-T参数配合使用</span><br><span class="line"></span><br><span class="line">  -u putfile   指定想要PUT的文件，需和-T参数配合使用</span><br><span class="line"></span><br><span class="line">  -T content-type 指定POST/PUT文件时的Content-type。默认text/plain</span><br><span class="line"></span><br><span class="line">  -v verbosity  详细模式，打印更多日志</span><br><span class="line"></span><br><span class="line">  -w       将结果输出到html表格中</span><br><span class="line"></span><br><span class="line">  -i       使用HEAD方式代替GET发起请求</span><br><span class="line"></span><br><span class="line">  -x attributes  插入字符串作为table标签的属性</span><br><span class="line"></span><br><span class="line">  -y attributes  插入字符串作为tr标签的属性</span><br><span class="line"></span><br><span class="line">  -z attributes  插入字符串作为td或th标签的属性</span><br><span class="line"></span><br><span class="line">  -C attribute  添加Cookie，例如Apache=1234；可重复该参数选项以添加多个Cookie</span><br><span class="line"></span><br><span class="line">  -H attribute  添加任意的请求头，例如Accept-Encoding: gzip；可重复该参数选项以添加多个</span><br><span class="line"></span><br><span class="line">  -A attribute  添加Basic WWW认证信息，用户名和密码之间用:分隔</span><br><span class="line"></span><br><span class="line">  -P attribute  添加Basic Proxy认证信息，用户名和密码之间用:分隔</span><br><span class="line"></span><br><span class="line">  -X proxy:port  指定代理地址</span><br><span class="line"></span><br><span class="line">  -V       打印ab的版本信息</span><br><span class="line"></span><br><span class="line">  -k       使用HTTP的KeepAlive特性</span><br><span class="line"></span><br><span class="line">  -d       不显示百分比</span><br><span class="line"></span><br><span class="line">  -S       不显示预估和警告信息</span><br><span class="line"></span><br><span class="line">  -q       默认情况下，如果处理的请求数大于150，ab每处理大约10%或者100个请求时，打印一下进度信息。使用该参数后则不打印进度。</span><br><span class="line"></span><br><span class="line">  -g filename   输出结果信息到gnuplot格式的文件中</span><br><span class="line"></span><br><span class="line">  -e filename   输出结果信息到CSV格式的文件中</span><br><span class="line"></span><br><span class="line">  -r       指定接收到错误信息时不退出程序</span><br><span class="line"></span><br><span class="line">  -h       显示使用说明</span><br><span class="line"></span><br><span class="line">  -Z ciphersuite 指定SSL/TLS密码套件</span><br><span class="line"></span><br><span class="line">  -f protocol   指定SSL/TLS协议(SSL3, TLS1, TLS1.1, TLS1.2 or ALL)</span><br></pre></td></tr></table></figure>
-
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a><strong>示例</strong></h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ab -c 100 -n 10000 http://www.baidu.com/</span><br></pre></td></tr></table></figure>
-
-<p>表示并发100，请求baidu 10000次。</p>
-<blockquote>
-<p><strong>TIPS</strong></p>
-<p><a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com/</a> 不能写成 <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com</a> 。</p>
-<p>这是因为 <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com</a> 不符合ab要求的 [http[s]://]hostname[:port]/path 格式要求。这是个小坑，需要注意一下。</p>
-</blockquote>
-<h2 id="报表解读"><a href="#报表解读" class="headerlink" title="报表解读"></a><strong>报表解读</strong></h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line">➜ ab -c 10 -n 1000 http://www.baidu.com/</span><br><span class="line"></span><br><span class="line">This is ApacheBench, Version 2.3 &lt;$Revision: 1843412 $&gt;</span><br><span class="line"></span><br><span class="line">Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/</span><br><span class="line"></span><br><span class="line">Licensed to The Apache Software Foundation, http://www.apache.org/</span><br><span class="line"></span><br><span class="line">Benchmarking www.baidu.com (be patient)</span><br><span class="line"></span><br><span class="line">Completed 100 requests</span><br><span class="line"></span><br><span class="line">Completed 200 requests</span><br><span class="line"></span><br><span class="line">Completed 300 requests</span><br><span class="line"></span><br><span class="line">Completed 400 requests</span><br><span class="line"></span><br><span class="line">Completed 500 requests</span><br><span class="line"></span><br><span class="line">Completed 600 requests</span><br><span class="line"></span><br><span class="line">Completed 700 requests</span><br><span class="line"></span><br><span class="line">Completed 800 requests</span><br><span class="line"></span><br><span class="line">Completed 900 requests</span><br><span class="line"></span><br><span class="line">Completed 1000 requests</span><br><span class="line"></span><br><span class="line">Finished 1000 requests</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 展示测试地址所使用的服务器软件及版本</span></span><br><span class="line">Server Software:    BWS/1.1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试地址的主机名</span></span><br><span class="line">Server Hostname:    www.baidu.com</span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试地址的端口</span></span><br><span class="line">Server Port:      80</span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试地址的路径</span></span><br><span class="line">Document Path:     /</span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试地址的文档大小</span></span><br><span class="line">Document Length:    255598 bytes</span><br><span class="line"><span class="meta">#</span><span class="bash"> 并发数</span></span><br><span class="line">Concurrency Level:   10</span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试花费了多久</span></span><br><span class="line">Time taken for tests:  81.881 seconds</span><br><span class="line"><span class="meta">#</span><span class="bash"> 测试总共请求了多少次</span></span><br><span class="line">Complete requests:   1000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 失败的请求数</span></span><br><span class="line">Failed requests:    979</span><br><span class="line"></span><br><span class="line">  (Connect: 0, Receive: 0, Length: 979, Exceptions: 0)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 传输的总数据量</span></span><br><span class="line">Total transferred:   256761473 bytes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> HTML文档的总数据量</span></span><br><span class="line">HTML transferred:    255605512 bytes</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 平均每秒的请求数，也叫RPS，该值越大表示服务器吞吐量越大，性能表现越好</span></span><br><span class="line">Requests per second:  12.21 [#/sec] (mean)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 请求平均耗时，越小说明响应越快</span></span><br><span class="line">Time per request:    818.815 [ms] (mean)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 服务器平均处理时间，其实是服务器吞吐量的倒数</span></span><br><span class="line">Time per request:    81.881 [ms] (mean, across all concurrent requests)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 每秒获取的数据长度，单位单位：KB/s</span></span><br><span class="line">Transfer rate:     3062.28 [Kbytes/sec] received</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 连接时间统计信息</span></span><br><span class="line">Connection Times (ms)</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">       最小 平均     中值  最大</span></span><br><span class="line"></span><br><span class="line">​       min mean[+/-sd] median  max</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 连接时间</span></span><br><span class="line">Connect:    17 154 118.0  135  1416</span><br><span class="line"><span class="meta">#</span><span class="bash"> 处理时间</span></span><br><span class="line">Processing:  329 661 211.2  602  1824</span><br><span class="line"><span class="meta">#</span><span class="bash"> 等待时间</span></span><br><span class="line">Waiting:    22 160 88.4  143  1089</span><br><span class="line"><span class="meta">#</span><span class="bash"> 总计时间</span></span><br><span class="line">Total:    391 816 263.4  731  2521</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 请求耗时的统计信息。例如请求经过排序后，50百分位的请求花费了731毫秒；99百分位的请求花费了1942毫秒等</span></span><br><span class="line">Percentage of the requests served within a certain time (ms)</span><br><span class="line"></span><br><span class="line"><span class="meta"> 50%</span><span class="bash">  731</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 66%</span><span class="bash">  804</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 75%</span><span class="bash">  873</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 80%</span><span class="bash">  943</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 90%</span><span class="bash">  1154</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 95%</span><span class="bash">  1332</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 98%</span><span class="bash">  1726</span></span><br><span class="line"></span><br><span class="line"><span class="meta"> 99%</span><span class="bash">  1942</span></span><br><span class="line"></span><br><span class="line"><span class="meta">100%</span><span class="bash">  2521 (longest request)</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/01/%E5%AF%B9%E8%B1%A1%E6%B1%A0%E5%AE%9E%E6%88%98-%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/01/%E5%AF%B9%E8%B1%A1%E6%B1%A0%E5%AE%9E%E6%88%98-%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E6%B1%A0/" class="post-title-link" itemprop="url">对象池实战-编写一个数据库连接池</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-08-01 16:49:55 / 修改时间：20:33:00" itemprop="dateCreated datePublished" datetime="2021-08-01T16:49:55+08:00">2021-08-01</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>通过对象池编写一个数据库连接池，深入学习，巩固对象池用法。</p>
-<ul>
-<li><p>能代替其它数据库连接池产品</p>
-<ul>
-<li>Hikari、DBCP、Tomcat、Druid…</li>
-</ul>
-</li>
-<li><p>带监控，随时了解了解连接池的情况</p>
-</li>
-</ul>
-<h1 id="ConnectionPooledObjectFactory"><a href="#ConnectionPooledObjectFactory" class="headerlink" title="ConnectionPooledObjectFactory"></a>ConnectionPooledObjectFactory</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectionPooledObjectFactory</span></span></span><br><span class="line"><span class="class">  <span class="keyword">implements</span> <span class="title">PooledObjectFactory</span>&lt;<span class="title">MyConnection</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> ObjectPool&lt;MyConnection&gt; objectPool;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ObjectPool&lt;MyConnection&gt; <span class="title">getObjectPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> objectPool;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setObjectPool</span><span class="params">(ObjectPool&lt;MyConnection&gt; objectPool)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.objectPool = objectPool;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PooledObject&lt;MyConnection&gt; <span class="title">makeObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Class.forName(<span class="string">&quot;com.mysql.jdbc.Driver&quot;</span>);</span><br><span class="line">    Connection connection = DriverManager.getConnection(</span><br><span class="line">      <span class="string">&quot;jdbc:mysql://localhost:3306/xxxx?useUnicode=true&amp;characterEncoding=UTF-8&amp;autoReconnect=true&quot;</span>,</span><br><span class="line">      <span class="string">&quot;root&quot;</span>,</span><br><span class="line">      <span class="string">&quot;root123&quot;</span></span><br><span class="line">    );</span><br><span class="line">    MyConnection myConnection = <span class="keyword">new</span> MyConnection();</span><br><span class="line">    myConnection.setConnection(connection);</span><br><span class="line">    myConnection.setObjectPool(objectPool);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DefaultPooledObject&lt;&gt;(myConnection);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroyObject</span><span class="params">(PooledObject&lt;MyConnection&gt; p)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    p.getObject().close();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">validateObject</span><span class="params">(PooledObject&lt;MyConnection&gt; p)</span> </span>&#123;</span><br><span class="line">    Connection connection = p.getObject();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      PreparedStatement statement = connection.prepareStatement(<span class="string">&quot;SELECT 1&quot;</span>);</span><br><span class="line">      ResultSet resultSet = statement.executeQuery();</span><br><span class="line">      <span class="keyword">int</span> i = resultSet.getInt(<span class="number">1</span>);</span><br><span class="line">      <span class="keyword">return</span> i == <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">activateObject</span><span class="params">(PooledObject&lt;MyConnection&gt; p)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// 可以把connection额外的配置放到这里</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">passivateObject</span><span class="params">(PooledObject&lt;MyConnection&gt; p)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// 钝化</span></span><br><span class="line">    MyConnection myConnection = p.getObject();</span><br><span class="line">    Statement statement = myConnection.getStatement();</span><br><span class="line">    <span class="keyword">if</span> (statement != <span class="keyword">null</span>) &#123;</span><br><span class="line">      statement.close();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="MyDataSource"><a href="#MyDataSource" class="headerlink" title="MyDataSource"></a>MyDataSource</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyDataSource</span> <span class="keyword">implements</span> <span class="title">DataSource</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> GenericObjectPool&lt;MyConnection&gt; pool;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> GenericObjectPool&lt;MyConnection&gt; <span class="title">getPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> pool;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPool</span><span class="params">(GenericObjectPool&lt;MyConnection&gt; pool)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.pool = pool;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">MyDataSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConnectionPooledObjectFactory factory = <span class="keyword">new</span> ConnectionPooledObjectFactory();</span><br><span class="line">    <span class="keyword">this</span>.pool = <span class="keyword">new</span> GenericObjectPool&lt;&gt;(factory);</span><br><span class="line">    factory.setObjectPool(pool);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.pool.borrowObject();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> SQLException(<span class="string">&quot;获取连接失败！&quot;</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnection</span><span class="params">(String username, String password)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.getConnection();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">unwrap</span><span class="params">(Class&lt;T&gt; iface)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isWrapperFor</span><span class="params">(Class&lt;?&gt; iface)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PrintWriter <span class="title">getLogWriter</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLogWriter</span><span class="params">(PrintWriter out)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setLoginTimeout</span><span class="params">(<span class="keyword">int</span> seconds)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getLoginTimeout</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Logger <span class="title">getParentLogger</span><span class="params">()</span> <span class="keyword">throws</span> SQLFeatureNotSupportedException </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">&quot;不支持的操作！&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="MyConnection"><a href="#MyConnection" class="headerlink" title="MyConnection"></a>MyConnection</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 回收statement</span></span><br><span class="line"><span class="comment">// 2. 回收resultSet</span></span><br><span class="line"><span class="comment">// 3. 复用Connection</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyConnection</span> <span class="keyword">implements</span> <span class="title">Connection</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Connection connection;</span><br><span class="line">  <span class="keyword">private</span> Statement statement;</span><br><span class="line">  <span class="keyword">private</span> ObjectPool&lt;MyConnection&gt; objectPool;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 篇幅有限，省略其它方法</span></span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Statement <span class="title">createStatement</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.connection.createStatement();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PreparedStatement <span class="title">prepareStatement</span><span class="params">(String sql)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    PreparedStatement prepareStatement = <span class="keyword">this</span>.connection.prepareStatement(sql);</span><br><span class="line">    <span class="keyword">this</span>.statement = prepareStatement;</span><br><span class="line">    <span class="keyword">return</span> prepareStatement;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PreparedStatement <span class="title">prepareStatement</span><span class="params">(String sql, String[] columnNames)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    PreparedStatement statement = <span class="keyword">this</span>.connection.prepareStatement(sql, columnNames);</span><br><span class="line">    <span class="keyword">this</span>.statement = statement;</span><br><span class="line">    <span class="keyword">return</span> statement;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">    <span class="comment">// 如果底层的Connection已经关闭</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.isClosed()) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        objectPool.invalidateObject(<span class="keyword">this</span>);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SQLException(e);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 底层Connection没有关闭，可以继续复用</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        objectPool.returnObject(<span class="keyword">this</span>);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">this</span>.connection.close();</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> SQLException(e);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="如何使用？"><a href="#如何使用？" class="headerlink" title="如何使用？"></a>如何使用？</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@Primary</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> DataSource <span class="title">dataSource</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DMDataSource();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="如何使用-spring-boot-starter-actuator-添加监控？"><a href="#如何使用-spring-boot-starter-actuator-添加监控？" class="headerlink" title="如何使用 spring-boot-starter-actuator 添加监控？"></a>如何使用 <code>spring-boot-starter-actuator</code> 添加监控？</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以用/actuator/datasource</span></span><br><span class="line"><span class="meta">@Endpoint(id = &quot;datasource&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DataSourceEnpoint</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> MyDataSource dataSource;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">DataSourceEnpoint</span><span class="params">(MyDataSource dataSource)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.dataSource = dataSource;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@ReadOperation</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Map&lt;String, Object&gt; <span class="title">pool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    GenericObjectPool&lt;MyConnection&gt; pool = dataSource.getPool();</span><br><span class="line">    HashMap&lt;String, Object&gt; map = Maps.newHashMap();</span><br><span class="line">    map.put(<span class="string">&quot;numActive&quot;</span>, pool.getNumActive());</span><br><span class="line">    map.put(<span class="string">&quot;numIdle&quot;</span>, pool.getNumIdle());</span><br><span class="line">    map.put(<span class="string">&quot;createdCount&quot;</span>, pool.getCreatedCount());</span><br><span class="line">    <span class="keyword">return</span> map;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/01/%E5%AF%B9%E8%B1%A1%E6%B1%A0-commons-pool2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/08/01/%E5%AF%B9%E8%B1%A1%E6%B1%A0-commons-pool2/" class="post-title-link" itemprop="url">对象池 commons-pool2</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-08-01 13:48:21 / 修改时间：21:58:31" itemprop="dateCreated datePublished" datetime="2021-08-01T13:48:21+08:00">2021-08-01</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1 前言"></a>1 前言</h1><p>池化技术是性能调优的重要措施，池化的思想是把对象放到池子里面，当要使用的时候从池子里面拿对象，用完之后在放回池子里面。这样可以降低资源分配和释放资源的开销，从而提升性能。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/01/%E5%AF%B9%E8%B1%A1%E6%B1%A0-commons-pool2/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/07/27/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AAzipkin/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/07/27/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AAzipkin/" class="post-title-link" itemprop="url">链路追踪zipkin</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-07-27 13:34:25" itemprop="dateCreated datePublished" datetime="2021-07-27T13:34:25+08:00">2021-07-27</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/07/24/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="一年春又来">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一年春又来">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/07/24/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" class="post-title-link" itemprop="url">分布式事务</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-07-24 16:38:01" itemprop="dateCreated datePublished" datetime="2021-07-24T16:38:01+08:00">2021-07-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-07-28 23:32:28" itemprop="dateModified" datetime="2021-07-28T23:32:28+08:00">2021-07-28</time>
-      </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h1><ul>
-<li><p>CAP原理</p>
-</li>
-<li><p>ACID原理与BASE原理</p>
-</li>
-<li><p>基于XA协议的两阶段提交</p>
-</li>
-<li><p>事务补偿机制</p>
-</li>
-<li><p>基于本地消息表的最终一致方案</p>
-</li>
-<li><p>基于MQ消息队列的最终一致方案</p>
-</li>
-</ul>
-<h1 id="2-CAP原理"><a href="#2-CAP原理" class="headerlink" title="2 CAP原理"></a>2 CAP原理</h1><h2 id="2-1-简介"><a href="#2-1-简介" class="headerlink" title="2.1 简介"></a>2.1 简介</h2><p>在分布式系统中，我们经常听到CAP原理这个词，它是什么意思呢？其实和C、A、P这3个字母有关，C、A、P分别是这3个词的首字母。下面我们就看一下这3个词分别是什么意思？</p>
-<ul>
-<li>C - Consistent ，一致性。具体是指，操作成功以后，所有的节点，在同一时间，看到的数据都是完全一致的。所以，一致性，说的就是数据一致性。</li>
-<li>A - Availability ，可用性。指服务一致可用，在规定的时间内完成响应。</li>
-<li>P - Partition tolerance ，分区容错性。指分布式系统在遇到某节点或网络分区故障的时候，仍然能够对外提供服务。</li>
-</ul>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c0c0934d12d06200487.png"></p>
-<p>CAP原理指出，这3个指标不能同时满足，最多只能满足其中的两个。</p>
-<h2 id="2-2-详解"><a href="#2-2-详解" class="headerlink" title="2.2 详解"></a>2.2 详解</h2><p>我们之所以使用分布式系统，就是为了在某个节点不可用的情况下，整个服务对外还是可用的，这正是满足P（分区容错性）。如果我们的服务不满足P（分区容错性），那么我们的系统也就不是分布式系统了，所以，在分布式系统中，P（分布容错性）总是成立的。那么，A（可用性）和C（一致性）能不能同时满足呢？我们看一下下面的图例。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c24092a8a2205300403.png"></p>
-<p>A和B是两个数据节点，A向B同步数据，并且作为一个整体对外提供服务。由于我们的系统保证了P（分区容错性），那么A和B的同步，我们允许出现故障。接下来我们再保证A（可用性），也就是说A和B同步出现问题时，客户端还能够访问我们的系统，那么客户端既可能访问A也可能访问B，这时，A和B的数据是不一致的，所以C（一致性）不能满足。</p>
-<p>如果我们满足C（一致性），也就是说客户端无论访问A还是访问B，得到的结果都是一样的，那么现在A和B的数据不一致，需要等到A和B的数据一致以后，也就是同步恢复以后，才可对外提供服务。这样我们虽然满足了C（一致性），却不能满足A（可用性）。</p>
-<p>所以，我们的系统在满足P（分区容错性）的同时，只能在A（可用性）和C（一致性）当中选择一个不能CAP同时满足。我们的分布式系统只能是AP或者CP。</p>
-<h1 id="3-ACID与BASE"><a href="#3-ACID与BASE" class="headerlink" title="3 ACID与BASE"></a>3 ACID与BASE</h1><p>在关系型数据库中，最大的特点就是事务处理，也就是ACID。ACID是事务处理的4个特性。</p>
-<ul>
-<li><p>A - Atomicity（原子性），事务中的操作要么都做，要么都不做。</p>
-</li>
-<li><p>C - Consistency（一致性），系统必须始终处在强一致状态下。</p>
-</li>
-<li><p>I - Isolation（隔离性），一个事务的执行不能被其他事务所干扰。</p>
-</li>
-<li><p>D - Durability（持久性），一个已提交的事务对数据库中数据的改变是永久性的。</p>
-</li>
-</ul>
-<p>ACID强调的是强一致性，要么全做，要么全不做，所有的用户看到的都是一致的数据。传统的数据库都有ACID特性，它们在CAP原理中，保证的是CA。但是在分布式系统大行其道的今天，满足CA特性的系统很难生存下去。ACID也逐渐的向BASE转换。那么什么是BASE呢？</p>
-<p> BASE是Basically Available（基本可用）, Soft-state（软状态）, Eventually consistent（最终一致）的缩写。</p>
-<ul>
-<li><p>Basically Available，基本可用是指分布式系统在出现故障的时候，允许损失部分可用性，即保证核心可用。</p>
-<p>电商大促时，为了应对访问量激增，部分用户可能会被引导到降级页面，服务层也可能只提供降级服务。这就是损失部分可用性的体现。</p>
-</li>
-<li><p>软状态（ Soft State）</p>
-<p>软状态是指允许系统存在中间状态，而该中间状态不会影响系统整体可用性。分布式存储中一般一份数据至少会有两到三个副本，允许不同节点间副本同步的延时就是软状态的体现。mysql replication的异步复制也是一种体现。</p>
-</li>
-<li><p>最终一致性（ Eventual Consistency）</p>
-<p>最终一致性是指系统中的所有数据副本经过一定时间后，最终能够达到一致的状态。弱一致性和强一致性相反，最终一致性是弱一致性的一种特殊情况。</p>
-</li>
-</ul>
-<p>BASE模型是传统ACID模型的反面，不同与ACID，BASE强调牺牲高一致性，从而获得可用性，数据允许在一段时间内的不一致，只要保证最终一致就可以了。</p>
-<p>在分布式事务的解决方案中，它们都是依赖了ACID或者BASE的模型而实现的。像基于XA协议的两阶段提交和实物补偿机制就是基于ACID实现的。而基于本地消息表和基于MQ的最终一致方案都是通过BASE原理实现的。这几种分布式事务的解决方案，我们会在视频的课程中给大家讲解。</p>
-<h1 id="4-由分库分表引发的事物问题和解决方案"><a href="#4-由分库分表引发的事物问题和解决方案" class="headerlink" title="4 由分库分表引发的事物问题和解决方案"></a>4 由分库分表引发的事物问题和解决方案</h1><h2 id="4-1-由分库分表引发的事物问题"><a href="#4-1-由分库分表引发的事物问题" class="headerlink" title="4.1 由分库分表引发的事物问题"></a>4.1 由分库分表引发的事物问题</h2><p>传统的应用都是单一数据库事物，所有的业务表都在同一数据库内，这时候数据库的事物可以得到很好的支持，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724171356938.png" alt="image-20210724171356938"></p>
-<p>然后在同一个业务内，再把数据库进行水平切分多个数据库，多个数据库之间是没有办法无法统一事务管理的，就会造成数据不一致的情况。如果按照垂直切分成多个数据库，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724172152429.png" alt="image-20210724172152429"></p>
-<p>比如：</p>
-<ul>
-<li><p>一个下单操作，用户使用积分购买商品</p>
-</li>
-<li><p>用户库扣减积分，订单库生成订单，商品库扣减库存</p>
-</li>
-<li><p>由于它们不在同一数据库，不能改保证事务统一</p>
-</li>
-<li><p>任何一个环节出错，其他两个数据的事务将不能回滚</p>
-</li>
-</ul>
-<h2 id="4-2-解决方案"><a href="#4-2-解决方案" class="headerlink" title="4.2 解决方案"></a>4.2 解决方案</h2><p>那么如何解决呢？</p>
-<ul>
-<li>基于XA协议的两阶段提交</li>
-<li>事务补偿机制</li>
-<li>基于本地消息表+定时任务的最终一致性方案</li>
-<li>基于MQ的最终一致方案</li>
-</ul>
-<h3 id="4-2-1-基于XA协议的两阶段提交"><a href="#4-2-1-基于XA协议的两阶段提交" class="headerlink" title="4.2.1 基于XA协议的两阶段提交"></a>4.2.1 基于XA协议的两阶段提交</h3><p><strong>XA 协议原理简介</strong></p>
-<ul>
-<li><p>XA 是由 X/Open 组织提出的分布式事务的规范</p>
-</li>
-<li><p>有一个事务管理器（TM）和多个资源管理器（RM）组成</p>
-<p>TM：数据源，RM：数据库</p>
-</li>
-<li><p>提交阶段分为两个阶段：prepare 和 commit</p>
-<p>也就是说在提交之前，让所有的数据库先进行准备，准备好了之后通知事务管理器，然后由事务管理器统一的提交事务，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724175921780.png" alt="image-20210724175921780"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724180456245.png" alt="image-20210724180456245"></p>
-</li>
-<li><p>XA协议保证了数据的强一致性</p>
-</li>
-<li><p>commit 阶段出现问题，事务不一致，需人工处理</p>
-</li>
-<li><p>但是两阶段提交效率低下，性能与本地事务相差 10 倍</p>
-</li>
-<li><p>MySql5.7 及以上均支持XA协议</p>
-</li>
-<li><p>Mysql Connector/J 5.0以上支持XA协议</p>
-</li>
-<li><p>Java系统中，数据源可以采用 Atomikos（充当事务管理器）</p>
-</li>
-</ul>
-<h4 id="4-2-1-1-使用Mycat-或者Sharding-Jdbc"><a href="#4-2-1-1-使用Mycat-或者Sharding-Jdbc" class="headerlink" title="4.2.1.1 使用Mycat 或者Sharding-Jdbc"></a>4.2.1.1 使用Mycat 或者Sharding-Jdbc</h4><p><strong>配置Mycat</strong></p>
-<p>通过修改<code>conf/server.xml</code>配置分布式事务，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5ec4e2810969290517080353.jpg"></p>
-<p>至于Sharding-Jdbc则默认为我们开启了分布式事务</p>
-<h3 id="4-2-2-事务补偿机制"><a href="#4-2-2-事务补偿机制" class="headerlink" title="4.2.2 事务补偿机制"></a>4.2.2 事务补偿机制</h3><p><strong>什么事务补偿机制？</strong></p>
-<p>其实就是针对每个操作，都要注册一个与其对应的补偿（撤销）操作，在执行失败时，调用补偿操作，撤销之前的操作。</p>
-<p>例如一个A给B转账的例子：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210725155803128.png" alt="image-20210725155803128"></p>
-<ul>
-<li>A 和 B 在不两家不同的银行</li>
-<li>A 账户减 200元，B 账户加 200 元</li>
-<li>两个操作要保证原子性，要么都成功，要么都失败</li>
-<li>由于A和B在两家不同的银行，所以存在分布式事务问题</li>
-<li>转账接口需要提供补偿机制</li>
-<li>如果A在扣减的过程中出现问题，直接抛出异常，事务回滚</li>
-<li>B在增加余额的过程中，出现问题，要调用A的补偿接口</li>
-<li>A之前的扣减操作，得到了补偿，进行了撤销</li>
-<li>保证了A和B的帐是没有问题的</li>
-</ul>
-<p><strong>如果A补偿操作也失败了呢？</strong></p>
-<p>我们可以为A补偿操作添加有限次数的重试机制，超出重试次数后，人工介入。</p>
-<p><strong>事务补偿机制看起来有点繁琐，不推荐使用。</strong></p>
-<p><strong>事务补偿机制的优缺点：</strong></p>
-<ul>
-<li><p>优点：逻辑清晰、流程简单</p>
-</li>
-<li><p>缺点：数据一致性比XA还要差，可能出错的点比较多</p>
-</li>
-<li><p>TCC属于应用层的一种补偿方式，程序员需要写大量的代码</p>
-</li>
-</ul>
-<h3 id="4-2-3-基于本地消息表的的最终一致性方案"><a href="#4-2-3-基于本地消息表的的最终一致性方案" class="headerlink" title="4.2.3 基于本地消息表的的最终一致性方案"></a>4.2.3 基于本地消息表的的最终一致性方案</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210726213335173.png" alt="image-20210726213335173"></p>
-<ul>
-<li>采用BASE原理，保证事务最终一致</li>
-<li>在一致性方面，允许一段时间内的不一致，但最终会一致</li>
-<li>在实际的系统中，要根据具体情况，判断是否采用</li>
-<li>基于本地消息表的方案中，将<font color=red><strong>本事务外</strong></font>操作，记录在消息表中</li>
-<li>其他的事务要提供操作接口（例如支付宝、微信支付的接口）</li>
-<li>定时任务轮训本地消息表，将未执行的的消息发送给操作接口</li>
-<li>操作接口处理成功，返回成功标识，处理失败返回失败标识</li>
-<li>定时任务接到标识，更新消息的状态</li>
-<li>定时任务按照一定的周期反复执行</li>
-<li>对于屡次失败的消息，可以设置最大失败次数</li>
-<li>超过最大失败次数的消息，不再进行接口调用</li>
-<li>等待人工处理</li>
-</ul>
-<p>那么这个方案有什么优缺点呢？</p>
-<ul>
-<li>优点：避免了了分布式事务，实现了最终一致性</li>
-<li>缺点：要注意重试时的幂等性操作</li>
-</ul>
-<h3 id="4-2-4-基于MQ的最终一致性方案"><a href="#4-2-4-基于MQ的最终一致性方案" class="headerlink" title="4.2.4 基于MQ的最终一致性方案"></a>4.2.4 基于MQ的最终一致性方案</h3><ul>
-<li>原理、流程与本地消息表类似</li>
-<li>不同点1：本地消息表改为 MQ</li>
-<li>不同点2：定时任务改为MQ的消费者</li>
-</ul>
-<p>这样就不在依赖于定时任务了，架构图如下所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210728232239034.png" alt="image-20210728232239034"></p>
 <ol>
-<li><p>首先，业务系统将数据保存到数据库中</p>
+<li><p>初始标记（Initial Marking）：</p>
+<p>与G1一样，首先标记与GC Roots直接关联的对象，存在Stop The World</p>
 </li>
-<li><p>然后，业务系统把另外一条消息存放到消息队列中</p>
+<li><p>并发标记（Concurrent Marking）</p>
+<p>与G1一样，标记出全部可达的对象，该阶段并发执行，无Stop The World</p>
 </li>
-<li><p>消费者从消息队列中去取消息</p>
+<li><p>最终标记（Final Marking）</p>
+<p>统计出回收价值最高的Region、构建回收集（Collection Set）。存在Stop The World</p>
 </li>
-<li><p>消费者执行分布式事务的第二段的服务，把数据落入到数据库中去</p>
+<li><p>并发清理（Concurrent Cleanup）</p>
+<p>用于清理那些整个区域内连一个存活对象都没有找到的Region（这类Region被称为Immediate Garbage Region）</p>
+</li>
+<li><p>并发回收（Concurrent Evacuation）</p>
+<p>并发回收阶段是Shenandoah与之前HotSpot中其他收集器的核心差异。在这个阶段，Shenandoah要把回收集里面的存活对象先复制一份到其他未被使用的Region之中。<strong>复制对象这件事情如果将用户线程冻结起来再做那是相当简单的，但如果两者必须要同时并发进行的话，就变得复杂起来了。</strong>其困难点是在移动对象的同时，用户线程仍然可能不停对被移动的对象进行读写访问，移动对象是一次性的行为，但移动之后整个内存中所有指向该对象的引用都还是旧对象的地址，这是很难一瞬间全部改变过来的。对于并发回收阶段遇到的这些困难，<strong>Shenandoah将会通过读屏障和被称为“Brooks Pointers”的转发指针来解决</strong>。并发回收阶段运行的时间长短取决于回收集的大小。</p>
+</li>
+<li><p>初始引用更新（Initial Update Reference）</p>
+<p>并发回收阶段复制对象结束后，还需要<strong>把堆中所有指向旧对象的引用修正到复制后的新地址</strong>，这个操作称为引用更新。引用更新的初始化阶段实际上并未做什么具体的处理，设立这个阶段只是为了建立一个线程集合点，确保所有并发回收阶段中进行的收集器线程都已完成分配给它们的对象移动任务而已。初始引用更新时间很短，会产生一个非常短暂的停顿。</p>
+</li>
+<li><p>并发引用更新（Concurrent Update Reference）</p>
+<p>真正开始进行引用更新操作，这个阶段是与用户线程一起并发的，时间长短取决于内存中涉及的引用数量的多少。主要是按照内存物理地址的顺序，线性地搜索出引用类型，把旧值改为新值即可。</p>
+</li>
+<li><p>最终引用更新（Final Update Reference）</p>
+<p>解决了堆中的引用更新后，还要修正存在于GC Roots中的引用。这个阶段是Shenandoah的最后一次停顿，停顿时间只与GC Roots的数量相关</p>
+</li>
+<li><p>并发清理（Concurrent Cleanup）</p>
+<p>经过并发回收和引用更新之后，整个回收集中所有的Region已再无存活对象，这些Region都变成Immediate Garbage Regions了，最后再调用一次并发清理过程来回收这些Region的内存空间，供以后新对象分配使用</p>
 </li>
 </ol>
-<p><strong>优点</strong></p>
+<blockquote>
+<p><strong>TIPS</strong></p>
+<p>步骤较多，重点是：并发标记、并发回收、并发引用更新这三个阶段。</p>
+</blockquote>
+<p>性能表现</p>
+<p><img src="https://climg.mukewang.com/5ed0d8070980492622440516.png" alt="图片描述"></p>
+<h2 id="ZGC"><a href="#ZGC" class="headerlink" title="ZGC"></a>ZGC</h2><p>厂商：Oracle</p>
+<p>定位：低延迟垃圾收集器</p>
+<p>状态：实验性</p>
+<p>限制：JDK14之前，无法在Windows、macOS机器上使用，每个版本的特性解介绍详见：<a target="_blank" rel="noopener" href="https://wiki.openjdk.java.net/display/zgc/Main">https://wiki.openjdk.java.net/display/zgc/Main</a></p>
+<p>核心技术：染色指针技术</p>
+<p>适用场景：</p>
 <ul>
-<li>不依赖于定时任务，基于MQ更高效、更可靠</li>
-<li>适合公司内部的系统</li>
-<li>不同公司之间无法基于MQ，本地消息表更合适</li>
+<li>低延迟、响应快的业务场景</li>
+</ul>
+<p>启用参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UnlockExperimentalVMOptions -XX:+UseZGC</span><br></pre></td></tr></table></figure>
+
+<p>内存布局：</p>
+<ul>
+<li>ZGC也采用基于Region的堆内存布局，但与它们不同的是，ZGC的Region（在一些官方资料中将它称为Page或者ZPage，本章为行文一致继续称为Region）具有动态性，可以动态创建和销毁，以及动态的区域容量大小。region的容量：<ul>
+<li>小型Region（Small Region）：容量固定为2MB，<strong>用于放置小于256KB的小对象</strong>。</li>
+<li>中型Region（Medium Region）：容量固定为32MB，<strong>用于放置大于等于256KB但小于4MB的对象</strong>。</li>
+<li>大型Region（Large Region）：容量不固定，可以动态变化，但必须为2MB的整数倍，<strong>用于放置4MB或以上的大对象</strong>。每个大型Region中只会存放一个大对象，这也预示着虽然名字叫作“大型Region”，但它的实际容量完全有可能小于中型Region，最小容量可低至4MB。大型Region在ZGC的实现中是不会被重分配（重分配是ZGC的一种处理动作，用于复制对象的收集器阶段，稍后会介绍到）的，因为复制一个大对象的代价非常高昂</li>
+</ul>
+</li>
+</ul>
+<p>工作步骤：</p>
+<ul>
+<li>并发标记（Concurrent Mark）：与G1、Shenandoah一样，并发标记是遍历对象图做可达性分析的阶段，前后也要经过类似于G1、Shenandoah的初始标记、最终标记（尽管ZGC中的名字不叫这些）的短暂停顿，而且这些停顿阶段所做的事情在目标上也是相类似的。与G1、Shenandoah不同的是，ZGC的标记是在指针上而不是在对象上进行的，标记阶段会更新染色指针中的Marked 0、Marked 1标志位。</li>
+<li>并发预备重分配（Concurrent Prepare for Relocate）：这个阶段需要根据特定的查询条件统计得出本次收集过程要清理哪些Region，将这些Region组成重分配集（Relocation Set）。重分配集与G1收集器的回收集（Collection Set）还是有区别的，ZGC划分Region的目的并非为了像G1那样做收益优先的增量回收。相反，ZGC每次回收都会扫描所有的Region，用范围更大的扫描成本换取省去G1中记忆集的维护成本。因此，ZGC的重分配集只是决定了里面的存活对象会被重新复制到其他的Region中，里面的Region会被释放，而并不能说回收行为就只是针对这个集合里面的Region进行，因为标记过程是针对全堆的。此外，在JDK 12的ZGC中开始支持的类卸载以及弱引用的处理，也是在这个阶段中完成的。</li>
+<li>并发重分配（Concurrent Relocate）：<strong>重分配是ZGC执行过程中的核心阶段</strong>，这个过程要把重分配集中的存活对象复制到新的Region上，并为重分配集中的每个Region维护一个转发表（Forward Table），记录从旧对象到新对象的转向关系。</li>
+<li>并发重映射（Concurrent Remap）：重映射所做的就是修正整个堆中指向重分配集中旧对象的所有引用，这一点从目标角度看是与Shenandoah并发引用更新阶段一样的，但是ZGC的并发重映射并不是一个必须要“迫切”去完成的任务，因为前面说过，即使是旧引用，它也是可以自愈的，最多只是第一次使用时多一次转发和修正操作。</li>
+</ul>
+<p>性能表现：</p>
+<ul>
+<li><p>吞吐量：<br><img src="https://climg.mukewang.com/5ed0d8320970ce9712820860.png" alt="图片描述"></p>
+</li>
+<li><p>停顿时间：<br><img src="https://gitee.com/littlefxc/oss/raw/master/images/5ed0d84009abfa3022661182.png" alt="图片描述"></p>
+</li>
+</ul>
+<h2 id="Epsilon"><a href="#Epsilon" class="headerlink" title="Epsilon"></a>Epsilon</h2><p>Epsilon（A No-Op Garbage Collector）垃圾回收器控制内存分配，但是不执行任何垃圾回收工作。一旦java的堆被耗尽，jvm就直接关闭。设计的目的是提供一个完全消极的GC实现，分配有限的内存分配，最大限度降低消费内存占用量和内存吞吐时的延迟时间。一个好的实现是隔离代码变化，不影响其他GC，最小限度的改变其他的JVM代码。</p>
+<p>定位：不干活儿的垃圾收集器</p>
+<p>状态：实验性</p>
+<p>启用参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UnlockExperimentalVMOptions -XX:+UseEpsilonGC</span><br></pre></td></tr></table></figure>
+
+<p>适用场景：</p>
+<ul>
+<li>Performance testing,什么都不执行的GC非常适合用于差异性分析。no-op GC可以用于过滤掉GC诱发的新能损耗，比如GC线程的调度，GC屏障的消耗，GC周期的不合适触发，内存位置变化等。此外有些延迟者不是由于GC引起的，比如scheduling hiccups, compiler transition hiccups，所以去除GC引发的延迟有助于统计这些延迟。</li>
+<li>Memory pressure testing, 在测试java代码时，确定分配内存的阈值有助于设置内存压力常量值。这时no-op就很有用，它可以简单地接受一个分配的内存分配上限，当内存超限时就失败。例如：测试需要分配小于1G的内存，就使用-Xmx1g参数来配置no-op GC，然后当内存耗尽的时候就直接crash。</li>
+<li>VM interface testing, 以VM开发视角，有一个简单的GC实现，有助于理解VM-GC的最小接口实现。它也用于证明VM-GC接口的健全性。</li>
+<li>Extremely short lived jobs, 一个短声明周期的工作可能会依赖快速退出来释放资源，这个时候接收GC周期来清理heap其实是在浪费时间，因为heap会在退出时清理。并且GC周期可能会占用一会时间，因为它依赖heap上的数据量。</li>
+<li>Last-drop latency improvements, 对那些极端延迟敏感的应用，开发者十分清楚内存占用，或者是几乎没有垃圾回收的应用，此时耗时较长的GC周期将会是一件坏事。</li>
+<li>Last-drop throughput improvements, 即便对那些无需内存分配的工作，选择一个GC意味着选择了一系列的GC屏障，所有的OpenJDK GC都是分代的，所以他们至少会有一个写屏障。避免这些屏障可以带来一点点的吞吐量提升。</li>
+</ul>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li>周志明《深入理解Java虚拟机》</li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a06c8e9e7931">https://www.jianshu.com/p/a06c8e9e7931</a></li>
 </ul>
 
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/03/11/docs/JVM/JVM-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/03/11/docs/JVM/JVM-%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8/" class="post-title-link" itemprop="url">JVM 垃圾收集器</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-03-11 08:45:21" itemprop="dateCreated datePublished" datetime="2022-03-11T08:45:21+08:00">2022-03-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:24:27" itemprop="dateModified" datetime="2022-05-10T09:24:27+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[TOC]</p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>下面这张图是 Java 中比较主流的基于分代收集理论的垃圾收集器，以及它们能够作用的JVM内存区域。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220311164628901.png" alt="image-20220311164628901"></p>
+<h2 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h2><ul>
+<li><p>STW：全局停顿，Java 代码停止运行，native 代码继续运行，但不能与 JVM 进行交互。</p>
+<ul>
+<li><p>STW 原因：多半由于垃圾回收导致；也可能是由 Dump 线程、死锁检查和 Dump 堆等导致的。</p>
+</li>
+<li><p>STW 危害：服务停止、毫无响应；主从切换、危害生产环境。</p>
+</li>
+</ul>
+</li>
+<li><p>并行收集：指多个垃圾回收线程并行工作，但是收集的过程中，用户线程还是处于等待状态。</p>
+</li>
+<li><p>并发收集：指用户线程与垃圾收集线程同时工作。</p>
+</li>
+<li><p>吞吐量：CPU 用于运行用户代码的时间与 CPU 总消耗时间的对比</p>
+<ul>
+<li>公式：运行用户代码时间/(运行用户代码时间+垃圾收集时间)</li>
+</ul>
+</li>
+</ul>
+<h2 id="垃圾收集器介绍"><a href="#垃圾收集器介绍" class="headerlink" title="垃圾收集器介绍"></a>垃圾收集器介绍</h2><h3 id="Serial-收集器（新生代）"><a href="#Serial-收集器（新生代）" class="headerlink" title="Serial 收集器（新生代）"></a>Serial 收集器（新生代）</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220311171643510.png" alt="image-20220311171643510"></p>
+<ul>
+<li>最基本的、历史最悠久的收集器</li>
+<li>算法：复制算法</li>
+<li>特点：<ul>
+<li>简单、高效</li>
+<li>单线程</li>
+<li>垃圾回收过程中 STW</li>
+</ul>
+</li>
+</ul>
+<h3 id="ParNew收集器（新生代）"><a href="#ParNew收集器（新生代）" class="headerlink" title="ParNew收集器（新生代）"></a>ParNew收集器（新生代）</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220311173051813.png" alt="image-20220311173051813"></p>
+<ul>
+<li><p>Serial 收集器的多线程版，除了使用多线程外，其它的和Serial收集器一样。</p>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>多线程</li>
+<li>可以设置垃圾收集的线程数（-XX:ParallelGCThreads）</li>
+</ul>
+</li>
+<li><p>使用场景：主要用来和 CMS 收集器配合使用</p>
+</li>
+</ul>
+<h3 id="Parallel-Scavenge收集器（新生代）"><a href="#Parallel-Scavenge收集器（新生代）" class="headerlink" title="Parallel Scavenge收集器（新生代）"></a>Parallel Scavenge收集器（新生代）</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220314152651631.png" alt="image-20220314152651631"></p>
+<ul>
+<li>关注的是吞吐量，也叫吞吐量收集器</li>
+<li>采用的也是复制算法</li>
+<li>也是并行的多线程收集器，这一点和 ParNew 类似</li>
+<li>特点：<ul>
+<li>可以达到一个可控制的吞吐量，有两个 JVM 参数可以配置：<ul>
+<li>-XX:MaxGCPauseMillis:控制最大的垃圾收集停顿时间（尽力）</li>
+<li>-XX:GCTimeRatio:设置吞吐量的大小，取值 0-100， 系统花费不超过 1/(1+n) 的时间用于垃圾收集</li>
+</ul>
+</li>
+<li>自适应 GC 策略：可用 -XX:+UseAdptiveSizePolicy 打开<ul>
+<li>打开自适应策略后，无需手动设置新生代的大小（-Xmn）、Eden 与 Survivor 区的比例（-XX:SurvivorRatio）等参数</li>
+<li>虚拟机会自动根据系统的运行状况收集性能情况，动态的调整这些参数，从而达到最优的停顿时间以及最高的的吞吐量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>使用场景：注重吞吐量的场景</li>
+</ul>
+<h3 id="Serial-Old-收集器（老年代）"><a href="#Serial-Old-收集器（老年代）" class="headerlink" title="Serial Old 收集器（老年代）"></a>Serial Old 收集器（老年代）</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220314161053707.png" alt="image-20220314161053707"></p>
+<ul>
+<li>Serial收集器的老年代</li>
+<li>算法：标记-整理</li>
+<li>使用场景：<ul>
+<li>可以和 Serial、ParNew、Parallel Scavenge 这三个新生代的垃圾收集器配合使用</li>
+<li>CMS 收集器出现故障的时候，会用 Serial Old 作为后备</li>
+</ul>
+</li>
+</ul>
+<h3 id="Parallel-Old-收集器（老年代）"><a href="#Parallel-Old-收集器（老年代）" class="headerlink" title="Parallel Old 收集器（老年代）"></a>Parallel Old 收集器（老年代）</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220314161516210.png" alt="image-20220314161516210"></p>
+<ul>
+<li>Parallel Scavenge 收集器的老年代版本</li>
+<li>算法：标记整理</li>
+<li>特点：只能和 Parallel Scavenge 配合使用</li>
+<li>使用场景：关注吞吐量的场景</li>
+</ul>
+<h3 id="CMS-收集器（老年代）"><a href="#CMS-收集器（老年代）" class="headerlink" title="CMS 收集器（老年代）"></a>CMS 收集器（老年代）</h3><p>全称叫做 Concurrent Mark Sweep</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220314162206027.png" alt="image-20220314162206027"></p>
+<ul>
+<li><p>并发收集器</p>
+</li>
+<li><p>算法：标记-清除</p>
+</li>
+<li><p>CMS 收集器执行过程</p>
+<ul>
+<li><strong>初始标记</strong>（initial mark）<ul>
+<li>标记 GC Roots 能直接关联到的对象 </li>
+<li>Stop The World</li>
+</ul>
+</li>
+<li><strong>并发标记</strong>（concurrent mark）<ul>
+<li>找出所有 GC Roots 能关联到的对象</li>
+<li>并发执行，无 Stop The World</li>
+</ul>
+</li>
+<li>并发预清理（concurrent-preclean）<ul>
+<li>重新标记那些在并发标记阶段，引用被更新的对象，从而减少后面重新标记阶段的工作量</li>
+<li>并发执行，无 Stop The World</li>
+<li>可用 -XX:-CMSPrecleaningEnabled 关闭并发预发清理阶段，默认打开。</li>
+</ul>
+</li>
+<li>并发可中止的预清理阶段（concurrent-abort-oreclan）<ul>
+<li>和并发预清理做的事一样，并发执行，无 StopTheWorld。</li>
+<li>当 Eden 的使用量大于 CMSScheduleRemarkEdenSizeThreashold 的阈值（默认 2M）时，才会执行该阶段</li>
+<li>主要作用：允许我们能够控制预清理阶段的结束时机。比如扫描多长时间（CMSMaxAbortablePrecleanTime， 默认 5 秒）或者 Eden 区使用占比打到一定阈值（CMSScheduleRemarkEdenPenetration，默认 50%）就结束本阶段</li>
+</ul>
+</li>
+<li><strong>重新标记</strong><ul>
+<li>修正并发标记期间，因为用户程序继续运行，导致标记发生变动的那些对象的标记</li>
+<li>一般来说，重新标记花费的时间会比初始标记阶段长一点，但比并发标记的时间短</li>
+<li>存在 Stop The World</li>
+</ul>
+</li>
+<li><strong>并发清除</strong><ul>
+<li>基于标记结果，清除掉要清除前面标记出来的垃圾</li>
+<li>并发执行，无 Stop The World</li>
+</ul>
+</li>
+<li><strong>并发重置</strong><ul>
+<li>清理本次 CMS GC 的上下文信息，为下一次 GC 做准备</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>优点：</p>
+<ul>
+<li>Stop The World 的时间比较短，只有初始标记和重新标记阶段存在 Stop The World，其它阶段都是并发执行的</li>
+<li>大多数的过程都是并发执行的</li>
+</ul>
+</li>
+<li><p>缺点：</p>
+<ul>
+<li><p>CPU 资源比较敏感：并发阶段可能导致应用吞吐量的降低</p>
+</li>
+<li><p>无法处理浮动垃圾（并发清除阶段时，用户线程生产出来的垃圾，无法在本次收集时间内处理）</p>
+</li>
+<li><p>不能等老年代几乎满了才开始收集</p>
+<ul>
+<li>预留的内存不够 -&gt;  Concurrent Mode Failure -&gt; Serial Old 作为后备</li>
+<li>CMSInitiatingOccupancyFraction 设置老年代占比达到多少就触发垃圾收集，默认 68%</li>
+</ul>
+</li>
+<li><p>内存碎片</p>
+<ul>
+<li>标记-清除导致碎片的产生</li>
+<li>UseCMSCompactAtFullCollection：在完成 Full GC 后是否要进行内存碎片整理，默认开启</li>
+<li>CMSFullGCsBeforeCompaction：进行几次 Full GC 后就进行一次内存碎片整理，默认 0</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>使用场景：</p>
+<ul>
+<li>希望系统停顿时间短，响应速度快的场景，比如各种应用程序</li>
+</ul>
+</li>
+</ul>
+<h3 id="G1-收集器"><a href="#G1-收集器" class="headerlink" title="G1 收集器"></a>G1 收集器</h3><ul>
+<li><p>Garbge First</p>
+</li>
+<li><p>面向服务端应用的垃圾收集器</p>
+</li>
+<li><p>内存布局<br><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220314171405933.png" alt="image-20220314171405933"></p>
+<ul>
+<li>将整个JVM分成若干个大小相等的区域，每个区域叫做 Region</li>
+<li>每个 Region的大小可通过 -XX:G1HeapRegionSize 指定 Region 的大小</li>
+<li>Region 取值范围为 1M～32M，应为 2 的 N 次幂</li>
+<li>Region 的分类：Eden、survivor、Old、Humongous</li>
+<li>在 G1 里面，同一个代里面的对象可能是不连续的</li>
+<li>Humongous 是用来存储大对象的，某个对象超过了 Region的一半就认为是大对象，如果对象超级大，就放在多个联系的 humongous 里面</li>
+<li>G1 会将 Humongous 也看作老年代来处理</li>
+</ul>
+</li>
+<li><p>设计思想</p>
+<ul>
+<li>若干个 Region</li>
+<li>跟踪每个 Region 里面的垃圾堆积的价值大小</li>
+<li>G1 在后台构建一个优先列表，根据允许的收集时间，优先回收价值高的 Region，这样就可以获得更高的回收效率</li>
+</ul>
+</li>
+<li><p>垃圾收集机制</p>
+<ul>
+<li><p>Young GC</p>
+<ul>
+<li>当所有的Eden都满了的时候，就会触发 Young GC，</li>
+<li>所有的 Eden 里面的对象会转移到 Survivor Region 里面去，</li>
+<li>而原先 Survivor Region 里面的对象转移到新的Survivor Region中，或者晋升到 Old Region，</li>
+<li>最后，空闲Region会被放入空闲列表中，等待下次被使用</li>
+</ul>
+</li>
+<li><p>Mixed GC</p>
+<ul>
+<li><p>当老年代大小占整个堆的百分比达到一定阈值（可用<code>-XX:InitiatingHeapOccupancyPercent</code>指定，默认 45%），就触发 Mixed GC，</p>
+</li>
+<li><p>Mixed GC 会回收所有 Young Region，同时回收<strong>部分</strong> Old Region，</p>
+</li>
+<li><p>Mixed GC 执行过程</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220316150715171.png" alt="image-20220316150715171"></p>
+<ul>
+<li>初始标记，标记 GC Roots 能直接关联到的对象，和 CMS 类似，<strong>存在</strong> Stop The World</li>
+<li>并发标记，同 CMS 的并发标记，并发执行，<strong>没有</strong> Stop The World</li>
+<li>最终标记，修正在并发标记期间引起的变动，<strong>存在</strong> Stop The World</li>
+<li>筛选回收，对各个Region的回收价值和成本进行排序，根据用户所期望的的停顿时间（根据MaxGCPauseMillis来指定）来制定回收计划，并选择一些 Region 回收，回收过程如下：<ul>
+<li>选择一系列 Region 构成一个回收集</li>
+<li>把决定回收的 Region 中的存活对象复制到空的 Region 中</li>
+<li>删掉需回收的Region（无内存碎片）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Full GC</p>
+<ul>
+<li>复制对象的内存不够，或者无法分配足够的内存（比如，巨型对象没有足够的连续分区分配）时，会触发Full GC，</li>
+<li>Full GC 模式下，使用 Serial Old 模式，</li>
+<li>因此 G1 的优化原则就是尽量减少 Full GC 的发生。</li>
+<li>那么，如何减少Full GC呢？<ul>
+<li>增加预留内存（增大 -XX:G1ReservePercent，默认为堆的 10%）；</li>
+<li>更早地回收垃圾（减少 -XX:InitatingHeapOccupancyPercent，老年代达到该阈值就会触发 Mixed GC，默认 45%）；</li>
+<li>增加并发阶段使用的线程数（增大 -XX:ConcGCThreads）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>特点：</p>
+<ul>
+<li>可以作用在整个堆、</li>
+<li>可控的停顿（MaxGCPauseMillis=200）、</li>
+<li>无内存碎片</li>
+</ul>
+</li>
+<li><p>使用场景：</p>
+<ul>
+<li>占用内存较大的应用（6G 以上）</li>
+<li>替换 CMS 垃圾收集器</li>
+</ul>
+</li>
+</ul>
+<h3 id="G1-收集器-VS-CMS收集器"><a href="#G1-收集器-VS-CMS收集器" class="headerlink" title="G1 收集器 VS CMS收集器"></a>G1 收集器 VS CMS收集器</h3><p>对于JDK 8：都可以用</p>
+<ul>
+<li>如果内存小于等于 6G，建议用 CMS，如果内存大于6G，考虑使用 G1。</li>
+</ul>
+<p>如果 JDK 版本大于 8 以上，则用 G1， 因为从 JDK9 开始，CMS已被废弃了。</p>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/122603669?spm=1001.2014.3001.5502">分代收集理论</a></p>
+<p>本文所讲述的垃圾收集器都是基于分代收集理论的</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/114004380?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164698905416780269867798%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=164698905416780269867798&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-5-114004380.nonecase&utm_term=JVM&spm=1018.2226.3001.4450">JVM内存结构简单分析</a></p>
+<p>垃圾收集器回收的都有哪些JVM内存区域，这些内存区域在JVM中是怎么分布的？分别有哪些数据？</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/123266153?spm=1001.2014.3001.5501">JVM-垃圾回收算法</a></p>
+<p>本文提到的垃圾收集器所使用的垃圾回收算法的原理</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/123210008?spm=1001.2014.3001.5501">JVM-垃圾回收</a></p>
+<p>提到的 GC Roots 是怎么回事</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/03/01/docs/JVM/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/03/01/docs/JVM/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">JVM 垃圾回收算法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-03-01 09:19:01" itemprop="dateCreated datePublished" datetime="2022-03-01T09:19:01+08:00">2022-03-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:24:23" itemprop="dateModified" datetime="2022-05-10T09:24:23+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="0-概述"><a href="#0-概述" class="headerlink" title="0 概述"></a>0 概述</h2><p>基础垃圾算法：标记-清除、标记-整理、复制</p>
+<p>综合垃圾回收算法：分代收集算法、增量算法</p>
+<h2 id="1-标记-清除（Mark-Sweep）"><a href="#1-标记-清除（Mark-Sweep）" class="headerlink" title="1 标记-清除（Mark-Sweep）"></a>1 标记-清除（Mark-Sweep）</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/20220303214940.png"></p>
+<ol>
+<li><p>标记需要回收的对象</p>
+</li>
+<li><p>清理掉要回收的对象</p>
+</li>
+</ol>
+<p>缺点：垃圾回收之后会存在内存碎片</p>
+<h2 id="2-标记-整理（Mark-Compact）"><a href="#2-标记-整理（Mark-Compact）" class="headerlink" title="2 标记-整理（Mark-Compact）"></a>2 标记-整理（Mark-Compact）</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/20220303222629.png"></p>
+<ol>
+<li><p>标记需要回收的对象</p>
+</li>
+<li><p>把所有的存活对象压缩的内存的一端</p>
+</li>
+<li><p>清理掉边界外的所有空间</p>
+</li>
+</ol>
+<p>这个算法可以避免标记-清除算法会产生的内存碎片</p>
+<h2 id="3-复制（Copy）"><a href="#3-复制（Copy）" class="headerlink" title="3 复制（Copy）"></a>3 复制（Copy）</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220303223424546.png" alt="image-20220303223424546"></p>
+<ol>
+<li><p>把内存分为两块，每次只使用一块</p>
+</li>
+<li><p>把当前使用的内存中的存活对象复制到未使用的内存中去，然后清除掉正在使用的内存中的所有对象</p>
+</li>
+<li><p>交换两个内存的角色，等待下次回收</p>
+</li>
+</ol>
+<h2 id="4-三种算法对比"><a href="#4-三种算法对比" class="headerlink" title="4 三种算法对比"></a>4 三种算法对比</h2><table>
+<thead>
+<tr>
+<th>回收算法</th>
+<th>有点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>标记-清除</td>
+<td>实现简单</td>
+<td>存在内存碎片、分配内存速度会受影响</td>
+</tr>
+<tr>
+<td>标记-整理</td>
+<td>无碎片</td>
+<td>整理内存存在开销</td>
+</tr>
+<tr>
+<td>复制</td>
+<td>性能好、无碎片</td>
+<td>内存利用率低</td>
+</tr>
+</tbody></table>
+<h2 id="5-分代收集算法"><a href="#5-分代收集算法" class="headerlink" title="5 分代收集算法"></a>5 分代收集算法</h2><ol>
+<li><p>各种商业虚拟机堆内存的垃圾回收基本上都采用了垃圾回收</p>
+</li>
+<li><p>根据对象的存活周期，把内存分成多个区域，不同区域使用不同的回收算法回收对象</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220311113729890.png" alt="image-20220311113729890"></p>
+</li>
+</ol>
+<h3 id="5-1-回收类型"><a href="#5-1-回收类型" class="headerlink" title="5.1 回收类型"></a>5.1 回收类型</h3><ul>
+<li>新生代回收（Minor GC|Young GC）</li>
+<li>老年代回收（Major GC）</li>
+<li>清理整个堆的回收（Full GC）</li>
+</ul>
+<p>一般的，发生 Major GC 时同时一般也会发生 Minor GC，所以 Major GC 约等于 Full GC。</p>
+<p>对象分配过程见<a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/118633548?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164697019016780366533422%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=164697019016780366533422&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-118633548.nonecase&utm_term=%E5%AF%B9%E8%B1%A1&spm=1018.2226.3001.4450">JVM之对象的创建过程</a></p>
+<p>分代收集算法调优原则：</p>
+<ul>
+<li>合理设置 survivor 区域的大小，避免内存浪费；</li>
+<li>GC尽量发生在新生代，尽量减少 Full GC 的发生。</li>
+</ul>
+<p>相关的JVM参数</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220311162205506.png" alt="image-20220311162205506"></p>
+<h2 id="6-增量算法"><a href="#6-增量算法" class="headerlink" title="6 增量算法"></a>6 增量算法</h2><p>如果内存非常大，如果一次性回收所有垃圾，势必会消耗很多的时间，从而造成系统长时间停摆。</p>
+<ol>
+<li>每次只收集一小片区域的内存空间的垃圾</li>
+</ol>
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/123210008?spm=1001.2014.3001.5501">垃圾回收</a></p>
+<p>什么场景下该使用什么垃圾回收策略？垃圾回收发生在哪些区域？对象在什么时候能够被回收？</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/122603669?spm=1001.2014.3001.5501">JVM分代收集理论</a></p>
+<p>与章节 5 相关，主要介绍分代收集算法实现的理论依据</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Little_fxc/article/details/114004380?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164698742116780269896838%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=164698742116780269896838&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-6-114004380.nonecase&utm_term=JVM&spm=1018.2226.3001.4450">JVM-内存结构</a></p>
+<p>主要是基于分代收集理论的JVM内存结构简单分析，包括堆、虚拟机栈、本地方法栈、程序计数器和方法区</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/03/01/docs/JVM/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/03/01/docs/JVM/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/" class="post-title-link" itemprop="url">JVM 垃圾回收</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-03-01 07:15:03" itemprop="dateCreated datePublished" datetime="2022-03-01T07:15:03+08:00">2022-03-01</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:24:19" itemprop="dateModified" datetime="2022-05-10T09:24:19+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>什么场景下该使用什么垃圾回收策略？</li>
+<li>垃圾回收发生在哪些区域？</li>
+<li>对象在什么时候能够被回收？</li>
+</ul>
+<h2 id="什么场景下该使用什么垃圾回收策略？"><a href="#什么场景下该使用什么垃圾回收策略？" class="headerlink" title="什么场景下该使用什么垃圾回收策略？"></a>什么场景下该使用什么垃圾回收策略？</h2><ul>
+<li>场景一：在对内存要求苛刻的场景：想办法提高对象的回收效率，多回收掉一些对象，腾出更多内存；</li>
+<li>场景二：在CPU 使用率高的场景下：降低高并发垃圾回收的频率，让 CPU 更多地去执行你的业务而不是垃圾回收；</li>
+</ul>
+<h2 id="垃圾回收发生在哪些区域？"><a href="#垃圾回收发生在哪些区域？" class="headerlink" title="垃圾回收发生在哪些区域？"></a>垃圾回收发生在哪些区域？</h2><p>JVM 内存结构如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220301152640105.png" alt="JVM内存结构"></p>
+<ul>
+<li>虚拟机栈、本地方法栈、程序计数器是线程隔离的，这 3 个区域与线程的生命周期保持一致，同生共死，是不需要考虑垃圾回收的。</li>
+<li>堆和方法区市线程共享的，才需要考虑。</li>
+</ul>
+<h2 id="对象在什么时候能够被回收？"><a href="#对象在什么时候能够被回收？" class="headerlink" title="对象在什么时候能够被回收？"></a>对象在什么时候能够被回收？</h2><p>就目前来说，有两种算法区判断算法什么时候回收。</p>
+<h3 id="引用计数法"><a href="#引用计数法" class="headerlink" title="引用计数法"></a>引用计数法</h3><p>通过对象的引用计数器来判断对象是否被引用；</p>
+<p>如下图所示，对象被引用一次，计数器就加 1 ，但是一旦遇到有循环引用的情况，对象就无法被回收。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220301153530892.png" alt="image-20220301153530892"></p>
+<h3 id="可达性分析"><a href="#可达性分析" class="headerlink" title="可达性分析"></a>可达性分析</h3><p>Java并没有采用引用计数法，而是使用了可达性分析。</p>
+<p>可达性分析：以根对象（GC Roots）作为起点向下搜索，走过的路径被称为引用链（Reference Chain），如果某个对象到根对象没有引用链相连时，就认为这个对象是不可大的，可以被回收。</p>
+<p>如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220301154408408.png" alt="可达性分析"></p>
+<h4 id="GC-Roots-包括哪些对象"><a href="#GC-Roots-包括哪些对象" class="headerlink" title="GC Roots 包括哪些对象"></a>GC Roots 包括哪些对象</h4><ul>
+<li>虚拟机栈（栈帧中的本地变量表）中引用的对象</li>
+<li>方法区中类静态属性引用的对象</li>
+<li>方法区中常量引用的对象</li>
+<li>本地方法栈中JNI（即 native 方法）引用的对象</li>
+</ul>
+<h4 id="那什么是引用？"><a href="#那什么是引用？" class="headerlink" title="那什么是引用？"></a>那什么是引用？</h4><h5 id="强引用"><a href="#强引用" class="headerlink" title="强引用"></a>强引用</h5><ul>
+<li>形如 <code>Object obj = new Object()</code> 的引用</li>
+<li>只要强引用在，永远不会回收被引用的对象，哪怕是内存溢出</li>
+</ul>
+<h5 id="软引用"><a href="#软引用" class="headerlink" title="软引用"></a>软引用</h5><ul>
+<li>形如 <code>SoftReference&lt;String&gt; str = new SoftReference&lt;String&gt;(&quot;hello&quot;)</code></li>
+<li>是用来描述一些有用但非必需的对象</li>
+<li>软引用关联的对象只有在内存不足的时候才会回收</li>
+</ul>
+<h5 id="弱引用"><a href="#弱引用" class="headerlink" title="弱引用"></a>弱引用</h5><ul>
+<li>形如 <code>WeakReference&lt;String&gt; str = new WeakReference&lt;String&gt;(&quot;hello&quot;)</code></li>
+<li>弱引用也用来描述非必需对象的</li>
+<li>被弱引用关联的对象只能生存到下一次垃圾收集发生为止</li>
+<li>无论当前内存是否足够,都会回收掉只被弱引用关联的对象</li>
+</ul>
+<h5 id="虚引用"><a href="#虚引用" class="headerlink" title="虚引用"></a>虚引用</h5><ul>
+<li><p>形如</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ReferenceQueue&lt;String&gt; queue = <span class="keyword">new</span> ReferenceQueue&lt;&gt;();</span><br><span class="line">PhantomReference&lt;String&gt; pr = <span class="keyword">new</span> PhantomReference&lt;&gt;(<span class="string">&quot;hello&quot;</span>, queue);</span><br></pre></td></tr></table></figure></li>
+<li><p>个对象是否有虚引用的存在,完全不会对其生存时间构成影响,也无法通过虚引用来取得一个对象实例。</p>
+</li>
+<li><p>为一个对象设置虚引用关联的<strong>唯一目的</strong>只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
+</li>
+</ul>
+<h3 id="可达性分析注意点"><a href="#可达性分析注意点" class="headerlink" title="可达性分析注意点"></a>可达性分析注意点</h3><h4 id="一个对象即使不可达，也不一定会被回收"><a href="#一个对象即使不可达，也不一定会被回收" class="headerlink" title="一个对象即使不可达，也不一定会被回收"></a>一个对象即使不可达，也不一定会被回收</h4><p>即使在可达性分析算法中判定为不可达的对象,也不是“非死不可”的,这时候它们暂时还处于“缓刑”阶段,要真正宣告一个对象死亡,至少要经历两次标记过程：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220301162604333.png" alt="image-20220301162604333"></p>
+<ul>
+<li><p>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链,那它将会被第一次标记,随后进行一次筛选,筛选的条件是此对象是否有必要执行finalize()方法。假如对象没有覆盖finalize()方法,或者finalize()方法已经被虚拟机调用过,那么虚拟机将这两种情况都视为“没有必要执行”。</p>
+</li>
+<li><p>如果这个对象被判定为确有必要执行finalize()方法,那么该对象将会被放置在一个名为F-Queue的队列之中,并在稍后由一条由虚拟机自动建立的、低调度优先级的Finalizer线程去执行它们的finalize() 方法。这里所说的“执行”是指虚拟机会触发这个方法开始运行,但并不承诺一定会等待它运行结束。<br>这样做的原因是,如果某个对象的finalize()方法执行缓慢,或者更极端地发生了死循环,将很可能导致F-Queue队列中的其他对象永久处于等待,甚至导致整个内存回收子系统的崩溃。finalize()方法是对象逃脱死亡命运的最后一次机会,稍后收集器将对F-Queue中的对象进行第二次小规模的标记,如果对象要在finalize()中成功拯救自己——只要重新与引用链上的任何一个对象建立关联即可,譬如把自己(this关键字)赋值给某个类变量或者对象的成员变量,那在第二次标记时它将被移出“即将回收”的集合;如果对象这时候还没有逃脱,那基本上它就真的要被回收了。</p>
+</li>
+</ul>
+<h4 id="代码演示："><a href="#代码演示：" class="headerlink" title="代码演示："></a>代码演示：</h4>  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.fengxuechao.jvm;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 此代码演示了两点:</span></span><br><span class="line"><span class="comment"> * * 1.对象可以在被GC时自我拯救。</span></span><br><span class="line"><span class="comment"> * * 2.这种自救的机会只有一次,因为一个对象的finalize()方法最多只会被系统自动调用一次</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FinalizeEscapeGC</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> FinalizeEscapeGC SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        SAVE_HOOK = <span class="keyword">new</span> FinalizeEscapeGC();</span><br><span class="line">        <span class="comment">//对象第一次成功拯救自己</span></span><br><span class="line">        SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line">        System.gc();</span><br><span class="line">        <span class="comment">// 因为Finalizer方法优先级很低,暂停0.5秒,以等待它</span></span><br><span class="line">        Thread.sleep(<span class="number">500</span>);</span><br><span class="line">        <span class="keyword">if</span> (SAVE_HOOK != <span class="keyword">null</span>) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;no, i am dead :(&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 下面这段代码与上面的完全相同,但是这次自救却失败了</span></span><br><span class="line">        SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line">        System.gc();</span><br><span class="line">        <span class="comment">// 因为Finalizer方法优先级很低,暂停0.5秒,以等待它</span></span><br><span class="line">        Thread.sleep(<span class="number">500</span>);</span><br><span class="line">        <span class="keyword">if</span> (SAVE_HOOK != <span class="keyword">null</span>) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;no, i am dead :(&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">isAlive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;yes, i am still alive :)&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.finalize();</span><br><span class="line">        System.out.println(<span class="string">&quot;finalize method executed!&quot;</span>);</span><br><span class="line">        FinalizeEscapeGC.SAVE_HOOK = <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  结果展示：</p>
+<p>  <img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220301163844090.png" alt="image-20220301163844090"></p>
+<p>事实上假如将代码第24行也就是第二次调用 System.gc() 前没有将SAVE_HOOK 设为 null，那么 SAVE_HOOK 对象将永远不会被回收。</p>
+<h4 id="finalize-的建议"><a href="#finalize-的建议" class="headerlink" title="finalize() 的建议"></a>finalize() 的建议</h4><ul>
+<li><p>避免使用finalize()方法，操作不当可能会导致问题；</p>
+</li>
+<li><p>finalize() 优先级低，何时会被调用无法确定，因为什么时间发生 GC 不确定；</p>
+</li>
+<li><p>建议使用 try…catch…finally来替代 finalize()。 </p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/02/28/docs/5G/NIDD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/28/docs/5G/NIDD/" class="post-title-link" itemprop="url">NIDD</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-28 06:03:48" itemprop="dateCreated datePublished" datetime="2022-02-28T06:03:48+08:00">2022-02-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:30:04" itemprop="dateModified" datetime="2022-05-10T09:30:04+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%80%9A%E4%BF%A1/" itemprop="url" rel="index"><span itemprop="name">通信</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="NIDD概述"><a href="#NIDD概述" class="headerlink" title="NIDD概述"></a>NIDD概述</h1><p>NIDD: Non-IP Data Delivery</p>
+<p>NIDD 的功能可用于处理非结构化的数据（也被称为非IP）的移动发起（MO）和移动（MT）通信 。这种对AF的输送是通过以下两种机制之一完成的：</p>
+<ul>
+<li><p>通过NIDD的API传输</p>
+</li>
+<li><p>使用UPF基于点对点的N6通道传输</p>
+</li>
+</ul>
+<p>NIDD使用一个非结构化的PDU会话来处理NEF。UE可以在PDU会话建立过程中获得一个非结构化的PDU会话到NEF。NIDD API是否应该为一个PDU会话调用，取决于订阅中DNN/S-NSSAI组合的“NIDD的NEF标识”的存在。如果订阅包含与DNN和S-NSSAI信息对应的“NIDD的NEF标识”，则SMF选择该NEF并为该PDU会话使用NIDD API。</p>
+<p>如果没有启用RDS (Reliable Data Service)服务，NEF将使用配置的策略将AF Identifier和UE Identity映射到DNN/S-NSSAI组合。如果启用了RDS, NEF将根据RDS端口号和可能用于将AF Identifier和User identity映射到DNN的策略来确定关联关系。</p>
+<p>NEF还支持基于NIDD API向一组终端分发移动终止消息。如果在MT NIDD请求中包含外部组标识符，NEF使用UDM将外部组标识符解析为一个SUPIs列表，并将消息发送给组中的每个终端，并建立一个PDU会话。</p>
+<p>协议配置选项(PCO)可用于传输NIDD参数进出终端(如最大包大小)。在UE和SMF之间的5GSM信令中，PCO被发送。NIDD参数通过N29接口发送给NEF，也通过NIDD接口发送给NEF。</p>
+<h1 id="通过NEF触发NIDD配置"><a href="#通过NEF触发NIDD配置" class="headerlink" title="通过NEF触发NIDD配置"></a>通过NEF触发NIDD配置</h1><p>如果NEF收到SMF的NIDD连接建立请求，如果终端没有NIDD配置，NEF可能会向AF发送NIDD配置触发，NEF根据本地配置确定目的URI。NEF应向确定的目标URL发送一个HTTP POST请求，该请求应包含一个NiddConfiguarationTrigger数据类型:</p>
+<ul>
+<li>NEF标识符，</li>
+<li>AF标识符，和</li>
+<li>gpsi作为终端标识。</li>
+</ul>
+<p>AF应该用一个HTTP 200 OK响应来确认HTTP POST请求。然后，AF可以按照章节4.4.12.3中的描述启动NIDD配置过程。</p>
+<h1 id="通过AF和NIDD-delivery触发NIDD配置"><a href="#通过AF和NIDD-delivery触发NIDD配置" class="headerlink" title="通过AF和NIDD delivery触发NIDD配置"></a>通过AF和NIDD delivery触发NIDD配置</h1><p>3GPP TS 29.122[4]第4.4.5小节描述了AF触发NIDD配置和NIDD交付的过程，但有以下差异:</p>
+<ul>
+<li>SCS/AS的描述适用于AF;</li>
+<li>对SCEF的描述适用于NEF;</li>
+<li>MME/SGSN的描述适用于SMF;</li>
+<li>对于连接的建立，NEF和SMF之间的交互应使用3GPP TS 29.541[24]中规定的Nnef_SMContext服务;</li>
+<li>对于MO NIDD, SMF和NEF之间的交互应使用3GPP TS 29.541[24]中规定的Nnef_SMContext服务;和</li>
+<li>对于MT NIDD, SMF和NEF之间的交互应使用3GPP TS 29.542[25]中规定的Nsmf_NIDD服务。</li>
+</ul>
+<h1 id="基于NIDD的NEF的相关程序"><a href="#基于NIDD的NEF的相关程序" class="headerlink" title="基于NIDD的NEF的相关程序"></a>基于NIDD的NEF的相关程序</h1><h2 id="SMF-NEF-建立连接"><a href="#SMF-NEF-建立连接" class="headerlink" title="SMF-NEF 建立连接"></a>SMF-NEF 建立连接</h2><p>当终端使用“非结构化”PDU Session类型建立PDU Session时，终端请求的DNN对应的订阅信息包含“NEF Identity for NIDD”(NEF ID)，然后，SMF向DNN / S-NSSAI组合的“NEF ID”对应的NEF发起SMF-NEF连接建立过程。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220301145433879.png" alt="image-20220301145433879"></p>
+<ol>
+<li><p>步骤1-7和步骤9是非漫游场景下PDU会话建立过程；步骤1-9是漫游场景下的建立过程</p>
+</li>
+<li><p>如果DNN和S-NSSAI对应的订阅信息包含“NIDD的NEF标识”(NEF ID)，则SMF应向NEF创建一个PDU会话。SMF向NEF调用Nnef_SMContext_Create Request (User Identity, PDU Session ID, SMF ID, NIDD信息，S-NSSAI, DNN， [RDS support indication]， [Small Data Rate Control parameters]， [Small Data Rate Control Status]， [Serving PLMN Rate Control parameters])消息。如果在PDU会话建立请求消息中的PCO中包含支持可靠数据服务(RDS)的UE能力，则包括RDS支持指示。如果需要，SMF向NEF提供PDU会话的小数据速率控制参数。如果从AMF接收到SMF，则SMF向NEF提供小数据率控制状态(Small Data Rate Control Status)。如果服务PLMN打算对这个PDU会话实施服务PLMN速率控制(参见TS 23.501[2]的5.31.14.2条款)，则SMF应向NEF提供服务PLMN速率控制参数，用于限制下行控制平面数据包的速率。</p>
+<p>如果之前没有AF使用NEF对步骤2中收到的用户身份执行NIDD配置过程，那么NEF在步骤3之前启动NIDD配置过程(参见4.25.3)。</p>
+</li>
+<li><p>NEF创建一个NEF PDU session Context，并将其与User Identity和PDU session ID相关联。NEF调用Nnef_SMContext_Create Response (Cause， [RDS support indication]， [Extended Buffering support indication]， [NIDD parameters])向SMF确认UE的PDU会话建立。如果NEF支持并允许使用RDS，则它包括对SMF的RDS支持指示，而SMF将其包含在PCO中。如果NEF支持扩展缓冲，NEF在响应中包括扩展缓冲支持指示，并使用AMF订阅与移动相关的事件，以便在终端可达时接收指示。如果可用，NIDD参数(例如，最大数据包大小)将发送给SMF。</p>
+</li>
+<li><p>非漫游场景下，4.3.2.2.1条款第11-13步骤，home- routing漫游场景下，4.3.2.2.2条款第13-16步骤，UE请求PDU会话建立步骤。</p>
+</li>
+</ol>
+<h2 id="非IP数据传输配置"><a href="#非IP数据传输配置" class="headerlink" title="非IP数据传输配置"></a>非IP数据传输配置</h2><p>通过NIDD API下发数据时，配置必要信息的流程如图4.25.3-1所示。</p>
+<p>NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF触发从第2步开始。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220303145547497.png" alt="image-20220303145547497"></p>
+<ol>
+<li><p>[可选]如果 NEF 对给定的 AF 要求 NIDD 配置，则 NEF 向 AF 发送 Nnef_NIDDConfiguration_TriggerNotify (GPSI, AF 标识, NEF ID)消息，请求对 GPSI 识别的 UE 进行 Nnef_NIDDConfiguration_Create 请求。</p>
+</li>
+<li><p>AF 向 NEF 发送一个 Nnef_NIDDConfiguration_Create 请求消息( GPSI 或外部组标识、AF标识、NIDD持续时间、T8目的地址、请求动作、TLTRI、可靠数据服务配置、MTC提供方信息)。</p>
+<p>可靠数据业务配置是一个可选参数，用于配置可靠数据业务(如TS 23.501[2]第5.31.6条定义)，包括发起方应用和接收方应用的端口号。如果请求动作被设置为“Update”或“Cancel”，则请求中包含TLTRI，否则请求中不包含TLTRI, NEF会将TLTRI分配给NIDD配置。如果存在可靠数据业务配置，可靠数据业务配置可能包括 MO 和 MT 的序列化格式，这些格式由AF为每个端口号支持。</p>
+</li>
+</ol>
+<ul>
+<li>注1：NIDD 持续时间是否可以设置为永不过期是由 AF 决定的。</li>
+<li>注2：预计 AF 将被配置去使用的 NEF 与 SMF 在 UE 建立基于 NEF 的 NIDD 的 PDU 会话时所选择的 NEF 相同。</li>
+<li>注3：当一个 PDU Session 有多个 AF 关联时，步骤 2 中提供的参数可以根据操作符策略或配置在 NEF 中配置。在这种情况下，步骤 2 中提供的任何与预置值冲突的参数都将被忽略。</li>
+<li>注4：如果 AF 没有选择序列化格式，则假设 UE 应用程序知道 MT 通信将使用哪种序列化格式，或者 AF 将使用与 MO 通信相同的格式。</li>
+</ul>
+<ol start="3">
+<li>如果请求动作被设置为“取消”;它表明请求的目的是取消由TLTRI标识的事务，然后流继续进行第7步。如果被请求的动作设置为&quot;Update&quot;，事务的目的是更新与配置相关的参数(即可靠数据服务)。否则，请求为新的NIDD配置，NEF存储收到的GPSI或外部组标识符、AF标识符、T8目的地址和NIDD持续时间。如果AF没有被授权执行此请求(例如，基于策略，如果SLA不允许)，或者Nnef_NIDDConfiguration_Create请求格式不正确，NEF执行第7步，并提供一个Cause值适当地指示错误。根据配置的不同，NEF可能会更改NIDD持续时间。</li>
+<li>NEF 向 UDM 发送一个Nudm_NIDDAuthorisation_Get Request ( GPSI 或 External Group Identifier, S-NSSAI, DNN, AF Identifier, MTC Provider Information)消息，授权NIDD配置请求接收到外部组标识符或GPSI。</li>
+</ol>
+<ul>
+<li><p>注5：NEF使用在步骤2中获得的AF标识符、外部组标识符或GPSI来确定将使用什么DNN来实现终端和AF之间的非结构化数据传输。这种确定是基于本地策略的。</p>
+</li>
+<li><p>注6：步骤2中的“MTC Provider Information”为可选参数。NEF应该验证所提供的MTC提供者信息，并可以根据配置将其覆盖到NEF选择的MTC提供者信息。NEF如何确定MTC提供者信息，如果在步骤2中没有出现，则留给实现(例如，基于请求的AF)。</p>
+</li>
+</ul>
+<ol start="5">
+<li><p>UDM检查Nudm_NIDDAuthorisation_Get请求消息。</p>
+<p>如果授权成功，并且步骤4中包含外部组标识符，则UDM将外部组标识符映射到内部组标识符和GPSIs列表，并将GPSIs映射到SUPIs。</p>
+</li>
+</ol>
+<ul>
+<li>注7：如果在第4步中包含了外部组标识符，那么当多个GPSI与同一个SUPI相关联时，UDM如何选择一个GPSI，则有待实现，例如，根据MTC提供商信息(如果收到了)或默认GPSI(如果没有收到)。</li>
+</ul>
+<ol start="6">
+<li>UDM 向 NEF 发送一个Nudm_NIDDAuthorisation_Get 响应消息(单值或(SUPI和GPSI)、Result的列表)，以确认接受了Nudm_NIDDAuthorisation_Get请求。如果UDM确定列表的大小超过了消息的容量，UDM将对列表进行分段，并将其以多个消息的形式发送(分段的详细信息见TS 29.503[52])。在此响应中，UDM返回SUPI(s)和GPSI(s)(如果可用的话)(当Nnef_NIDDConfiguration_Create Request包含GPSI时)。这允许NEF将该过程第2步中收到的AF请求与为每个UE或每个组成员UE建立的SMF-NEF连接关联起来。</li>
+<li>NEF向AF发送Nnef_NIDDConfiguration_Create 响应消息 (TLTRI、最大包大小、可靠数据服务指示和原因)，以确认接受Nnef_NIDDConfiguration_Create请求。如果NIDD配置被接受,NEF分配一个TLTRI NIDD配置并将其发送给AF, NEF 在TLTRI、GPSI或外部组标识符,SUPI, PDU会话ID之间创建了一个关联关系, 是从SMF-NEF连接过程的步骤2中的 SMF 收到的（见图4.25.2-1: SMF-NEF Connection Procedure）。在MT NIDD过程中，NEF将使用TLTRI和GPSI或External Group Identifier来确定用于发送非结构化数据的PDU会话的SUPI(s)和PDU会话ID。在MO NIDD过程中，NEF将使用SUPI(s)和PDU会话ID(s)来获得TLTRI, GPSI。“可靠数据服务指示”表示NIDD配置中是否启用了“可靠数据服务”。“Maximum Packet Size”是NIDD报文的最大大小。</li>
+</ol>
+<h2 id="非IP数据传输支持NEF锚定上行（MO）数据传输"><a href="#非IP数据传输支持NEF锚定上行（MO）数据传输" class="headerlink" title="非IP数据传输支持NEF锚定上行（MO）数据传输"></a>非IP数据传输支持NEF锚定上行（MO）数据传输</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309110731767.png" alt="image-20220309110731767"></p>
+<ol>
+<li>UE根据控制平面CIoT 5GS优化中UPF锚定上行数据传输的步骤1-4发送带有非结构化数据的NAS消息(见4.24.1条款)。如果启用了可靠数据服务，则包含可靠数据服务头。</li>
+<li>[可选] 家用路由漫游时，V-SMF向H-SMF发送Nsmf_PDUSession_TransferMOData请求，包括上行（MO）小数据。</li>
+<li>(H-)SMF向NEF发送Nnef_SMContext_Delivery Request (User Identity, PDU会话ID，非结构化数据)消息。</li>
+<li>当NEF接收非结构化数据,并找到一个NEF PDU会话上下文和相关T8目的地址,那么它将非结构化数据发送到AF所确定的T8目的地址在Nnef_NIDD_DeliveryNotify请求(GPSI,非结构化数据,可靠的数据服务配置)。如果终端的PDN连接没有关联T8目的地址，则丢弃数据，不发送Nnef_NIDD_DeliveryNotify请求，从步骤6继续流。当启用可靠数据服务时，可靠数据服务配置用于为AF提供额外的信息，如表明确认是否被请求，以及发起者应用程序和接收者应用程序的端口号。</li>
+<li>AF以Nnef_NIDD_DeliveryNotify Response (Cause)响应NEF。</li>
+<li>NEF向SMF发送Nnef_SMContext_Delivery Response。如果NEF无法交付数据，例如由于AF配置缺失，NEF会向SMF发送适当的错误码。</li>
+<li>[可选]家用路由漫游时，H-SMF响应V-SMF的Nsmf_PDUSession_TransferMOData (Result Indication)响应。</li>
+</ol>
+<h2 id="NEF-锚定下行（MT）数据传输"><a href="#NEF-锚定下行（MT）数据传输" class="headerlink" title="NEF 锚定下行（MT）数据传输"></a>NEF 锚定下行（MT）数据传输</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309135200190.png" alt="image-20220309135200190"></p>
+<p>1a. 如果AF已经激活了某个终端的NIDD服务，并且有下行非结构化数据要发送给终端，AF会向NEF发送一个Nnef_NIDD_Delivery Request (GPSI, TLTRI，非结构化数据，可靠数据服务配置)消息。可靠数据服务配置是一个可选参数，用于配置可靠数据服务，它可以用来指示是否请求可靠数据服务的确认以及发起方应用程序和接收方应用程序的端口号。</p>
+<p>1b. AMF向NEF表示该UE已可达。在此基础上，NEF重新开始向UE交付缓冲的非结构化数据。</p>
+<ol start="2">
+<li><p>NEF根据与NIDD配置和用户身份相关联的DNN确定5GS QoS流上下文。如果在第1步中发现了与GPSI相对应的NEF 5GS QoS Flow Context，则NEF检查AF是否被授权发送数据，以及是否没有超过其配额或速率。如果这些检查失败，则跳过步骤3-15，并在步骤17中返回适当的错误代码。</p>
+</li>
+<li><p>NEF使用Nsmf_NIDD_Delivery Request将非结构化数据转发给(H-)SMF。如果NEF在建立SMF-NEF连接期间在Nnef_SMContext_Create Response中表示支持扩展缓冲，那么NEF将保留一份数据的副本。NEF使用Nsmf_NIDD_Delivery Request将非结构化数据转发给(H-)SMF。如果NEF在建立SMF-NEF连接期间在Nnef_SMContext_Create Response中表示支持扩展缓冲，那么NEF将保留一份数据的副本。</p>
+</li>
+<li><p>漫游时，H-SMF向V-SMF发送Nsmf_PDUSession_TransferMTData，包括下行（MT）小数据。</p>
+</li>
+<li><p>(V-)SMF根据本地策略和在建立SMF-NEF连接时NEF是否在Nnef_SMContext_Create Response中表示支持扩展缓冲来决定是否应用扩展缓冲。(V-)SMF压缩报头，通过Namf_Communication_N1N2MessageTransfer服务操作将数据和PDU会话ID转发给AMF。如果扩展缓冲应用，那么(V-SMF)在Namf_Communication_N1N2Message Transfer中包含“扩展缓冲支持”的指示。</p>
+</li>
+<li><p>如果AMF确定SMF无法访问终端(例如，如果终端处于MICO模式或终端被配置为扩展空闲模式DRX)，那么AMF拒绝来自SMF的请求。如果SMF没有订阅UE可达事件，AMF可以在拒绝消息中包括指示SMF不需要向AMF触发Namf_Communication_N1N2MessageTransfer请求。</p>
+<p>如果SMF包含扩展缓冲支持指示，AMF在拒绝消息中表示SMF确定扩展缓冲时间的估计最大等待时间。当终端处于MICO模式时，AMF会根据下次预期的定时注册定时器更新过期时间或实际执行情况来确定“最大等待时间预估”。如果终端配置为扩展空闲模式DRX, AMF将根据下一个PagingTime Window的启动时间来确定“估计最大等待时间”。AMF会存储SMF已被告知UE不可达的指示。</p>
+</li>
+<li><p>漫游时，V-SMF向H-SMF发送Nsmf_PDUSession_TransferMTData (Result Indication)响应。如果V-SMF从AMF收到一个“估计的最大等待时间”，并且应用了扩展缓冲，V-SMF也会把这个“估计的最大等待时间”传递给H-SMF。</p>
+</li>
+<li><p>如果(H-)SMF收到故障提示，(H-)SMF也会向NEF发送故障提示。如果(H-)SMF收到了“估计的最大等待时间”并且应用了扩展缓冲，(H-)SMF在故障指示中包含扩展缓冲时间。扩展缓冲时间由(H-)SMF决定，应该大于或等于估计的最大等待时间。NEF为扩展缓冲时间存储DL数据。如果收到后续的下行数据包，NEF不会再发送任何Nsmf_NIDD_Delivery Request消息。这个过程在这个步骤停止。</p>
+</li>
+<li><p>如果AMF在步骤5中确定终端可达，则应用控制平面CIoT 5GS优化程序(第4.24.2条)中UPF锚定的移动终端数据传输步骤3至6。<br>如果可靠数据服务头指示确认被请求，则UE应对接收到的DL数据响应确认。</p>
+</li>
+<li><p>如果AMF在第9步中对终端进行了分页触发NAS过程，AMF应启动第4.2.4.2条中定义的UE配置更新过程，以分配一个新的5G-GUTI。</p>
+</li>
+<li><p>如果终端对寻呼没有响应，AMF会向(V-)SMF发送寻呼失败通知。否则，该过程在步骤13继续。</p>
+</li>
+<li><p>在漫游情况下，如果V-SMF收到AMF的故障通知，则V-SMF向H-SMF发送Nsmf_PDUSession_TransferMTData (Result Indication)响应。</p>
+</li>
+<li><p>如果(H-)SMF收到失败通知，则SMF指示NEF请求的Nsmf_NIDD_Delivery失败。如果应用扩展缓冲，则NEF将清除数据副本。这个过程在第17步继续。</p>
+</li>
+<li><p>在控制平面CIoT 5GS优化程序(第4.24.2条)中应用UPF锚定的移动终端数据传输的步骤9至11。</p>
+</li>
+<li><p>AMF通知(V-)SMF数据已被转发。</p>
+</li>
+<li><p>漫游时，V-SMF向H-SMF发送Nsmf_PDUSession_TransferMTData (Result Indication)响应，表示数据已被转发</p>
+</li>
+<li><p>(H-)SMF表示数据已转发给NEF。如果应用扩展缓冲，则NEF将清除数据副本。</p>
+</li>
+<li><p>NEF向AF发送一个Nnef_NIDD_Delivery Response (cause)。<br>可靠数据服务确认指示用于指示是否从终端收到了对MT NIDD的确认。在步骤1中如果可靠数据服务请求,然后Nnef_NIDD_Delivery响应发送到AF从问题或收到确认后,如果没有收到确认,那么Nnef_NIDD_Delivery响应发送到AF导致价值表明还没有收到任何确认。</p>
+</li>
+</ol>
+<h2 id="NIDD-授权更新"><a href="#NIDD-授权更新" class="headerlink" title="NIDD 授权更新"></a>NIDD 授权更新</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309152114864.png" alt="image-20220309152114864"></p>
+<ol>
+<li><p>UDM可以使用Nudm_NIDDAuthorisation_UpdateNotify Request (SUPI, GPSI, S-NSSAI, DNN, Result)消息向NEF发送NIDD授权更新信息来更新用户的NIDD授权。</p>
+</li>
+<li><p>   NEF向UDM发送Nudm_NIDDAuthorisation_UpdateNotify Response (cause)消息以确认授权更新。</p>
+</li>
+<li><p>   如果授权被删除，NEF应启动第4.25.8条规定的SMF-NEF连接释放程序。</p>
+</li>
+<li><p>   NEF通过向AF发送Nnef_NIDDConfiguration_UpdateNotify Request (GPSI, TLTRI, Result)消息来通知AF用户的授权状态已经改变。</p>
+</li>
+<li><p>   AF用Nnef_NIDDConfiguration_UpdateNotify Response消息响应NEF。</p>
+</li>
+</ol>
+<h2 id="SMF-启动-SMF-NEF-连接释放"><a href="#SMF-启动-SMF-NEF-连接释放" class="headerlink" title="SMF 启动 SMF-NEF 连接释放"></a>SMF 启动 SMF-NEF 连接释放</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309154936239.png" alt="image-20220309154936239"></p>
+<p>当PDU会话释放被启动，并且如果NEF被选择为控制平面CIoT的锚定，5GS优化启用了非结构化PDU会话类型，如第4.3.4.2条所述，然后SMF对该DNN / S-NSSAI组合对应的“NEF ID”对应的NEF启动一个SMF-NEF Connection Release过程。</p>
+<ol>
+<li><p>SMF执行4.3.4.2章节中的“PDU会话释放步骤”中的步骤1。</p>
+</li>
+<li><p>   如果NEF被选为锚定控制平面CIoT 5 g的优化使PDU会话的非结构化PDU会话类型如4.3.2.2条款所述,SMF发起SMF-NEF连接释放这个PDU会话发送Nnef_SMContext_Delete请求(用户标识、PDU会话ID、S-NSSAI款,释放原因(Release Cause)消息给NEF。</p>
+</li>
+<li><p>   NEF删除与User Identity和PDU Session ID相关联的NEF PDU Session Context。NEF发送Nnef_SMContext_Delete Response (Cause， [Small Data Control Rate Status]， [APN Rate Control Status])给终端确认释放SMF-NEF会话。如果PDU会话使用小数据速率控制，NEF包含“小数据速率控制状态”。</p>
+</li>
+<li><p>   4.3.4.2章节中的“PDU Session释放步骤”中的步骤3-15。</p>
+</li>
+</ol>
+<h2 id="NEF-启动-SMF-NEF-连接释放"><a href="#NEF-启动-SMF-NEF-连接释放" class="headerlink" title="NEF 启动 SMF-NEF 连接释放"></a>NEF 启动 SMF-NEF 连接释放</h2><p>在以下情况下，NEF会启动SMF-NEF连接释放过程:<br>—当UDM的NIDD授权更新请求表示该用户不再被授权使用NIDD时，或者</p>
+<ul>
+<li><p>failure of AF或failure of AF connection，或</p>
+</li>
+<li><p>基于AF的请求。</p>
+</li>
+</ul>
+<p>图4.25.8-1描述了NEF Initiated SMF-NEF Connection Release procedure(基于AF的请求)。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309164017922.png" alt="image-20220309164017922"></p>
+<ol>
+<li><p>AF可以通过向NEF调用Nnef_NIDDConfiguration_Delete Request (TLTRI)来指示用户的NIDD SMF-NEF连接不再需要。</p>
+</li>
+<li><p>   NEF删除与TLTRI相关的NEF PDU session Context，并通过调用Nnef_NIDDConfiguration_Delete Response对AF的响应来确认NIDD配置的删除。</p>
+</li>
+<li><p>   NEF通过向SMF调用Nnef_SMContext_DeleteNotify Request来通知SM上下文信息的删除。</p>
+</li>
+<li><p>   SMF通过对NEF调用Nnef_SMContext_DeleteNotify Response来确认该通知。</p>
+</li>
+<li><p>   如果不再需要PDU会话，SMF将执行PDU会话释放步骤(参见4.3.4.2)中的步骤2-11。</p>
+</li>
+</ol>
+<p>基于NIDD Authorization Update的NEF Initiated SMF-NEF Connection Release流程如图4.25.8-2所示。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309164127290.png" alt="image-20220309164127290"></p>
+<ol>
+<li>   在UDM的NIDD授权更新中，NEF可能决定它需要释放相应的SMF-NEF连接。</li>
+<li>   NEF会删除对应的NEF PDU session Context，并通过对SMF调用Nnef_SMContext_DeleteNotify Request来通知SM上下文信息的删除。</li>
+<li>   SMF通过对NEF调用Nnef_SMContext_DeleteNotify Response来确认该通知。</li>
+<li>   如果不再需要PDU会话，SMF将执行PDU会话释放步骤(参见4.3.4.2)中的步骤2-11。</li>
+</ol>
+<h2 id="NEF-锚定组NIDD通过NEF锚定单播MT数据"><a href="#NEF-锚定组NIDD通过NEF锚定单播MT数据" class="headerlink" title="NEF 锚定组NIDD通过NEF锚定单播MT数据"></a>NEF 锚定组NIDD通过NEF锚定单播MT数据</h2><p>图4.25.9-1描述了AF发送组NIDD到外部组标识符的过程。在第4.25.3条规定的NIDD配置过程中，NEF已经在UDM的帮助下解决了外部组标识符到单个supi的映射，这是一个先决条件。NEF在第4.25.5条中规定的独立MT NIDD程序被NEF重用，以单播MT数据到每个终端。</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220309164647308.png" alt="image-20220309164647308"></p>
+<ol>
+<li>   如果AF已经使用NIDD配置程序条款4.25.3激活NIDD服务的问题,非结构化数据发送到组被外部组标识符,AF发送一个Nnef_NIDD_Delivery请求(外部组标识符、TLTRI非结构化数据,可靠数据服务配置)消息发送给NEF。“可靠数据服务配置”为可选参数，用于配置“可靠数据服务”。当非结构化数据被发送到外部组标识符时，AF不应在可靠数据服务配置中请求确认。</li>
+<li>   根据现有的终端组NIDD配置(参见4.25.3)，NEF向AF发送单个Nnef_NIDD_Delivery Response，以确认步骤1中的组NIDD delivery请求已被接受。</li>
+<li>   NEF使用NEF锚定的移动终端数据传输程序(在第4.25.5条的步骤2-16中指定)向组中的每个终端发送相同的MT NIDD。</li>
+<li>   对组内所有终端执行步骤3后，NEF以Nnef_NIDD_GroupDeliveryNotify消息发送聚合响应。如果由于UE省电导致某些目标UE无法到达，那么NEF不会缓冲MT NIDD，但在这一步中，它可以在响应AF时包括这些UE的预期可达性的指示。如果向特定终端交付失败，NEF中可能会包含cause值。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/02/25/docs/MySQL/SQL%E8%AF%AD%E5%8F%A5%E5%9C%A8MySQL%E4%B8%AD%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/25/docs/MySQL/SQL%E8%AF%AD%E5%8F%A5%E5%9C%A8MySQL%E4%B8%AD%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">SQL语句在MySQL中的执行流程</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-25 07:28:58" itemprop="dateCreated datePublished" datetime="2022-02-25T07:28:58+08:00">2022-02-25</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:22:27" itemprop="dateModified" datetime="2022-05-10T09:22:27+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[TOC]</p>
+<h2 id="1-基本架构概述"><a href="#1-基本架构概述" class="headerlink" title="1 基本架构概述"></a>1 基本架构概述</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16.png" alt="https://img-blog.csdnimg.cn/311f0d0b4e094ce38436b88815fcc82e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16"><img src="https://gitee.com/littlefxc/oss/raw/master/images/SQL%E8%AF%AD%E5%8F%A5%E5%9C%A8MySQL%E4%B8%AD%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B.jpg" alt="SQL语句在MySQL中的执行流程"></p>
+<ul>
+<li><p>MySQL 分为两层，Server 层和存储引擎层：</p>
+</li>
+<li><p>Server层：</p>
+<ul>
+<li>主要包括连接器、查询缓存、分析器、优化器和执行器等，</li>
+<li>还有一些跨存储引擎的功能也在这里，如：存储过程、视图、函数和通用日志模块binglog等。</li>
+</ul>
+</li>
+<li><p>存储引擎；</p>
+<ul>
+<li>主要负责数据的读写，它提供了读写IO，</li>
+<li>采用了可替换的插件式架构，支持 InnoDB（有自有的redolog日志模块，默认引擎）、MyISAM、Memory等</li>
+</ul>
+</li>
+<li><p>查询流程：</p>
+<ol>
+<li>客户端请求</li>
+<li>连接器（验证用户身份，给予权限）</li>
+<li>查询缓存（存在缓存则直接返回，不存在则执行后续操作）</li>
+<li>分析器（对SQL语句进行词法分析和语法分析）</li>
+<li>优化器（主要对执行的SQL优化选择最优的执行方案）</li>
+<li>执行期（执行时先验证有无权限，有则使用指定引擎提供的接口）</li>
+<li>存储引擎（获取返回的数据，如果开启查询缓存则会缓存查询结果）</li>
+</ol>
+</li>
+</ul>
+<h2 id="2-组件介绍"><a href="#2-组件介绍" class="headerlink" title="2 组件介绍"></a>2 组件介绍</h2><h3 id="2-1-连接器"><a href="#2-1-连接器" class="headerlink" title="2.1 连接器"></a>2.1 连接器</h3><p>连接器主要和身份认证和权限相关的功能相关，主要负责用户登录数据库，进行用户的身份认证，包括校验账户密码，权限等操作。</p>
+<p>值得注意的是，身份认证和权限校验这些操作，连接器会去数据库权限表中查询该用户的所有权限，之后只要连接不中断，后面的所有SQL语句都会以连接中的权限去执行，及时我们修改了权限。</p>
+<h3 id="2-2-查询缓存"><a href="#2-2-查询缓存" class="headerlink" title="2.2 查询缓存"></a>2.2 查询缓存</h3><p>查询缓存主要用来缓存我们所执行的 SELECT 语句以及该语句的结果集。</p>
+<p>连接建立后，执行查询语句时，会先去查询缓存，MySQL会先校验这个SQL是否执行过，以 Key-Value 的形式缓存在内存中。如果 Key 被命中，则直接返回给客户端，如果没有命中，则执行后续操作后把结果缓存起来。</p>
+<p>MySQL 8.0 版本后删除了这个缓存功能，可能是因为查询缓存失效在实际业务场景中可能会非常频繁，例如我们对一个表执行更新操作，那么这个表的所有查询缓存都会失效。</p>
+<h3 id="2-3-分析器"><a href="#2-3-分析器" class="headerlink" title="2.3 分析器"></a>2.3 分析器</h3><p>分析器主要用来分析 SQL 语句是来干嘛的，它有这些步骤：</p>
+<ol>
+<li>词法分析：提取一条SQL语句中的关键子，如：SELECT、查询的表、字段名、查询条件；</li>
+<li>语法分析：判断SQL语句是否正确，符合语法。</li>
+</ol>
+<h3 id="2-4-优化器"><a href="#2-4-优化器" class="headerlink" title="2.4 优化器"></a>2.4 优化器</h3><p>优化器的作用就是它认为的最优的执行方案去执行，比如多个索引的时候该如何选择索引，多表查询的时候如何选择关联顺序等。</p>
+<h3 id="2-5-执行器"><a href="#2-5-执行器" class="headerlink" title="2.5 执行器"></a>2.5 执行器</h3><p>当选择了执行方案后，MySQL 就准备开始执行了，首先执行前会校验该用户有没有权限，如果没有权限，就会返回错误信息，如果有权限，就会去调用引擎的接口，返回接口执行的结果。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/02/15/docs/JVM/JVM-%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/15/docs/JVM/JVM-%E7%BC%96%E8%AF%91%E5%99%A8%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">JVM 编译器优化</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-15 06:49:00" itemprop="dateCreated datePublished" datetime="2022-02-15T06:49:00+08:00">2022-02-15</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:24:00" itemprop="dateModified" datetime="2022-05-10T09:24:00+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>[TOC]</p>
+<h2 id="1-编译器优化"><a href="#1-编译器优化" class="headerlink" title="1 编译器优化"></a>1 编译器优化</h2><h3 id="1-1-字节码是如何运行的？"><a href="#1-1-字节码是如何运行的？" class="headerlink" title="1.1 字节码是如何运行的？"></a>1.1 字节码是如何运行的？</h3><ul>
+<li><p>解释执行：由解释器一行一行翻译执行</p>
+<ul>
+<li>优势在于没有编译的等待时间</li>
+<li>性能相对差一些</li>
+</ul>
+</li>
+<li><p>编译执行：把字节码编译成机器码，直接执行机器码</p>
+<ul>
+<li>运行效率会高很多，一般认为比解释执行快一个数量级</li>
+<li>带来了额外的开销</li>
+</ul>
+</li>
+</ul>
+<p>那么如何查看自己的java是解释执行还是编译执行呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ java -version</span><br><span class="line">java version <span class="string">&quot;1.8.0_251&quot;</span></span><br><span class="line">Java(TM) <span class="function">SE Runtime <span class="title">Environment</span> <span class="params">(build <span class="number">1.8</span><span class="number">.0_251</span>-b08)</span></span></span><br><span class="line"><span class="function">Java <span class="title">HotSpot</span><span class="params">(TM)</span> 64-Bit Server <span class="title">VM</span> <span class="params">(build <span class="number">25.251</span>-b08, mixed mode)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>mixed mode 代表混合执行，部分解释执行、部分编译执行。</p>
+<ul>
+<li><p>-Xint:设置JVM的执行模式为解释执行模式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ java -Xint -version</span><br><span class="line">java version <span class="string">&quot;1.8.0_251&quot;</span></span><br><span class="line">Java(TM) <span class="function">SE Runtime <span class="title">Environment</span> <span class="params">(build <span class="number">1.8</span><span class="number">.0_251</span>-b08)</span></span></span><br><span class="line"><span class="function">Java <span class="title">HotSpot</span><span class="params">(TM)</span> 64-Bit Server <span class="title">VM</span> <span class="params">(build <span class="number">25.251</span>-b08, interpreted mode)</span></span></span><br></pre></td></tr></table></figure></li>
+<li><p>-Xcomp:JVM优先以编译模式运行，不能编译的，以解释模式运行</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ java -Xcomp -version</span><br><span class="line">java version <span class="string">&quot;1.8.0_251&quot;</span></span><br><span class="line">Java(TM) <span class="function">SE Runtime <span class="title">Environment</span> <span class="params">(build <span class="number">1.8</span><span class="number">.0_251</span>-b08)</span></span></span><br><span class="line"><span class="function">Java <span class="title">HotSpot</span><span class="params">(TM)</span> 64-Bit Server <span class="title">VM</span> <span class="params">(build <span class="number">25.251</span>-b08, compiled mode)</span></span></span><br></pre></td></tr></table></figure></li>
+<li><p>-Xmixed:以混合模式运行</p>
+</li>
+</ul>
+<p>一般情况下，我们的代码一开始一般由解释器解释执行。但是当虚拟机发现某个方法或代码块的运行特别频繁的时候，就会认为这些代码是<strong>热点代码（如何定位？）</strong>。为了提高热点代码的执行效率，会用即使编译器（也就是JIT）把这些热点代码编译城与本地平台相关的机器码，<strong>并进行各层次的优化（操作系统的不同、CPU架构的不同）</strong></p>
+<h3 id="1-2-Hotspot-的即时编译器-C1"><a href="#1-2-Hotspot-的即时编译器-C1" class="headerlink" title="1.2 Hotspot 的即时编译器 C1"></a>1.2 Hotspot 的即时编译器 C1</h3><ul>
+<li>是一个简单快速的编译器</li>
+<li>主要关注局部性的优化</li>
+<li>适用于执行时间较短或启动性能有要求的程序。例如。GUI应用对界面启动速度就有一定要求。、</li>
+<li>也被称为 Client Compiler</li>
+</ul>
+<h3 id="1-3-Htospot-的即时编译器-C2"><a href="#1-3-Htospot-的即时编译器-C2" class="headerlink" title="1.3 Htospot 的即时编译器 C2"></a>1.3 Htospot 的即时编译器 C2</h3><ul>
+<li>是为长期运行的服务器端应用程序做性能调优的编译器</li>
+<li>适用于执行时间较长或对峰值性能有要求的程序</li>
+<li>也被称为是 Server Compiler</li>
+</ul>
+<h3 id="1-4-分层编译"><a href="#1-4-分层编译" class="headerlink" title="1.4 分层编译"></a>1.4 分层编译</h3><p>从JDK7开始，正式引入了分层编译的概念，可以细分为 5 种编译级别：</p>
+<ul>
+<li><ol start="0">
+<li>解释执行</li>
+</ol>
+</li>
+<li><ol>
+<li>简单 C1 编译：会用 C1 编译器进行一些简单的优化，不开启 Profiling（JVM性能监控）</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>受限的 C1 编译：仅执行带<strong>方法调用次数</strong>以及<strong>循环回边执行次数</strong>Profiling的 C1 编译</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>完全C1编译：会执行带有所有Profiling的C1代码</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>C2 编译：使用C2编译器进行优化，该级别会启用一些编译耗时较长的优化，一些情况下会根据性能监控信息进行一些非常激进的性能优化</li>
+</ol>
+</li>
+</ul>
+<p>级别越高，应用启动越慢，优化的开销越高，峰值性能也越高。</p>
+<h3 id="1-5-分层编译-JVM参数配置示例"><a href="#1-5-分层编译-JVM参数配置示例" class="headerlink" title="1.5 分层编译- JVM参数配置示例"></a>1.5 分层编译- JVM参数配置示例</h3><ul>
+<li>只想开启 C2：-XX:-TieredCompilation（禁用中间编译层（123层））</li>
+<li>只想开启 C1：-XX:+TieredCompilation -XX:TieredStopAtLevel=1</li>
+</ul>
+<h3 id="1-6-如何找到热点代码？思路？"><a href="#1-6-如何找到热点代码？思路？" class="headerlink" title="1.6 如何找到热点代码？思路？"></a>1.6 如何找到热点代码？思路？</h3><ul>
+<li><p>基于采样的热点探测</p>
+<p>周期性检查各个线程的栈顶，如果发现某一些方法总是出现在各个栈顶，那就说明是热点代码。</p>
+</li>
+<li><p>基于计数器的热点探测</p>
+<p>大致思路是为每一个方法甚至是代码块建立计数器，然后统计执行的次数，如果超过一定的阈值，那就说明它是热点代码。Hotspot虚拟机采用的就是基于计数器的热点探测。</p>
+</li>
+</ul>
+<h3 id="1-7-Hotspot-内置的两类计数器"><a href="#1-7-Hotspot-内置的两类计数器" class="headerlink" title="1.7 Hotspot 内置的两类计数器"></a>1.7 Hotspot 内置的两类计数器</h3><ul>
+<li><p>方法调用计数器（Invocation Counter）</p>
+<p>用于统计方法被调用的次数，在不开启分层编译的情况下，在 C1 编译器下的默认阈值是 1500 次，在 C2 模式下是 10000次。也可以哦那个 -XX:CompileThreshold=X 指定阈值</p>
+</li>
+<li><p>回边计数器（Back Edge Counter）</p>
+<ul>
+<li>用于统计一个方法中循环体代码执行的次数，在字节码中遇到控制流向后跳转的指令称为“回边”（Back Edge）。在不开启分层编译的情况下，C1 编译器心爱的默认阈值 13995，C2 默认为 10700，可使用 -XX:OnStackReplacePercentage=X指定阈值</li>
+<li>建立回边计数器的主要目的是为了触发 OSR （OnStackReplacement）编译，参考文档（<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/45910849/answer/100636125">https://www.zhihu.com/question/45910849/answer/100636125</a>）</li>
+</ul>
+</li>
+<li><p>当开启分层编译时，JVM会根据当前编译的方法数以及编译线程数来动态调整阈值，-XX:CompileThreshold、-XX:OnStackReplacePercentage 都会失效。</p>
+</li>
+</ul>
+<h3 id="1-8-方法调用计数器流程"><a href="#1-8-方法调用计数器流程" class="headerlink" title="1.8 方法调用计数器流程"></a>1.8 方法调用计数器流程</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210809233815237.png" alt="image-20210809233815237"></p>
+<p>如果不做任何设置，方法调用次数统计的并不是方法被调用的绝对次数，而是一个相对的执行频，即一段时间之内方法被调用的次数。当超过一定的时间限度，如果方法的调用次数荏苒不足以让它提交给及时编译器编译，那这个方法的调用计数器就会减少一半，这个过程称为方法调用计数器热度的衰减，而这段时间就称为此方法统计的半衰周期。进行热度衰减的动作是在虚拟机进行垃圾手机是顺便进行的，可以使用虚拟机参数-XX:-UseCounterDecay来关闭热度衰减，让方法计数器统计方法调用的绝对次数，这样，只要系统运行时间足够长，绝大部分方法都会被编译成本地代码。另外，可以使用-XX:CounterHalfLifeTime参数设置半衰周期的时间，单位是秒。</p>
+<h3 id="1-9-回边计数器流程"><a href="#1-9-回边计数器流程" class="headerlink" title="1.9 回边计数器流程"></a>1.9 回边计数器流程</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210809234920524.png" alt="image-20210809234920524"></p>
+<h3 id="1-10-方法内联"><a href="#1-10-方法内联" class="headerlink" title="1.10 方法内联"></a>1.10 方法内联</h3><h4 id="1-10-1-什么是方法内联？示例？"><a href="#1-10-1-什么是方法内联？示例？" class="headerlink" title="1.10.1 什么是方法内联？示例？"></a>1.10.1 什么是方法内联？示例？</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InlineTest1</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add1</span><span class="params">(<span class="keyword">int</span> x1, <span class="keyword">int</span> x2, <span class="keyword">int</span> x3, <span class="keyword">int</span> x4)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> add2(x1, x2) + add2(x3, x4);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add2</span><span class="params">(<span class="keyword">int</span> x1, <span class="keyword">int</span> x2)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x1 + x2;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 内联后</span></span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">addInline</span><span class="params">(<span class="keyword">int</span> x1, <span class="keyword">int</span> x2, <span class="keyword">int</span> x3, <span class="keyword">int</span> x4)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x1 + x2 + x3 + x4;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>所谓的方法内联就是把目标方法的代码复制到发起调用的方法之中，避免发生真实的方法调用，从而减少压栈和出栈的作用</strong></p>
+<h4 id="1-10-2-发生方法内联的条件"><a href="#1-10-2-发生方法内联的条件" class="headerlink" title="1.10.2 发生方法内联的条件"></a>1.10.2 发生方法内联的条件</h4><ol>
+<li><p>方法体足够小</p>
+<p>热点方法：如果方法体小于325字节会尝试内联，可用 <code>-XX:FreqInlineSize</code> 修改方法体大小。</p>
+<p>非热点方法：如果方法体小于35字节，也会尝试内联，可用<code>-XX:MaxInlineSize</code>修改大小。</p>
+</li>
+<li><p>被调用方法运行时的实现可唯一确定</p>
+<p>static方法、private方法及final方法，JIT可以唯一确定具体的实现代码。</p>
+<p>public的实例方法，指向的实现可能是自身、父类、子类的代码，当且仅当JIT能够唯一确定方法的具体实现时，才有可能完成内联。</p>
+</li>
+</ol>
+<h4 id="1-10-3-使用方法内联的注意点："><a href="#1-10-3-使用方法内联的注意点：" class="headerlink" title="1.10.3 使用方法内联的注意点："></a>1.10.3 使用方法内联的注意点：</h4><ol>
+<li>尽量让方法体小一点；</li>
+<li>尽量使用 final、private、static关键字修饰方法，避免因为多态，需要对方法做额外检查；</li>
+<li>在某些场景下，可通过JVM 参数修改阈值，从而让更多方法内联。</li>
+</ol>
+<h4 id="1-10-4-方法内联可能带来的问题"><a href="#1-10-4-方法内联可能带来的问题" class="headerlink" title="1.10.4 方法内联可能带来的问题"></a>1.10.4 方法内联可能带来的问题</h4><p>内联是用空间换时间的一种做法，也就是及时编译器在方法调用期间把方法调用连接在一起，但是经过内联的代码会变多，而增加的代码量取决于方法的调用次数以及方法本身的大小。</p>
+<p>在一些极端情况下，内联可能会导致</p>
+<ul>
+<li>CodeCache（热点代码的缓存区，及时编译代码和本地方法代码）的溢出，导致JVM退化成解释执行模式；</li>
+</ul>
+<h4 id="1-10-5-内联相关JVM参数"><a href="#1-10-5-内联相关JVM参数" class="headerlink" title="1.10.5 内联相关JVM参数"></a>1.10.5 内联相关JVM参数</h4><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220215160030958.png" alt="image-20220215160030958"></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220215160113222.png" alt="image-20220215160113222"></p>
+<h4 id="1-10-6-方法内联测试代码"><a href="#1-10-6-方法内联测试代码" class="headerlink" title="1.10.6 方法内联测试代码"></a>1.10.6 方法内联测试代码</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InlineTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> Logger log = LoggerFactory.getLogger(InlineTest.class);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> cost = compute();</span><br><span class="line">        log.info(<span class="string">&quot;执行花费 &#123;&#125; ms&quot;</span>, cost);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">compute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">int</span> result;</span><br><span class="line">        Random random = <span class="keyword">new</span> Random();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i&lt; <span class="number">10000000</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> a = random.nextInt();</span><br><span class="line">            <span class="keyword">int</span> b = random.nextInt();</span><br><span class="line">            <span class="keyword">int</span> c = random.nextInt();</span><br><span class="line">            <span class="keyword">int</span> d = random.nextInt();</span><br><span class="line">            result = add1(a, b, c, d);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">return</span> end - start;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add1</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2, <span class="keyword">int</span> n3, <span class="keyword">int</span> n4)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> add2(n1, n2) + add2(n3, n4);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">add2</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> n1 + n2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>内联启动JVM参数：<code>-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining</code></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220215163048392.png" alt="image-20220215163048392"></p>
+<p>不内联启动JVM参数：<code>-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining -XX:+FreqInlineSize=1</code></p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220215162940763.png" alt="image-20220215162940763"></p>
+<p>但是，一般来说不建议使用这些JVM参数，默认的就好，现代JVM是相当智能的。</p>
+<h3 id="1-11-逃逸分析、标量替换、栈上分配"><a href="#1-11-逃逸分析、标量替换、栈上分配" class="headerlink" title="1.11 逃逸分析、标量替换、栈上分配"></a>1.11 逃逸分析、标量替换、栈上分配</h3><h4 id="1-11-1-逃逸分析"><a href="#1-11-1-逃逸分析" class="headerlink" title="1.11.1 逃逸分析"></a>1.11.1 逃逸分析</h4><p>逃逸分析：分析变量能否逃出它的作用域。</p>
+<p>可以细分为 4 种场景：</p>
+<ol>
+<li>全局变量赋值逃逸</li>
+<li>方法返回值逃逸</li>
+<li>实例引用逃逸</li>
+<li>线程逃逸<ul>
+<li>赋值给类变量或可以在其他线程中访问的实例变量</li>
+</ul>
+</li>
+</ol>
+<p>代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> fengxuechao</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2022/2/15</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EscapeTest1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> SomeClass someClass;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 全局变量赋值逃逸</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">globalVariablePointerEscape</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        someClass = <span class="keyword">new</span> SomeClass();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 方法返回值逃逸</span></span><br><span class="line"><span class="comment">     * someMethod() &#123;</span></span><br><span class="line"><span class="comment">     *     SomeClass someClass = methodPointerEscape();</span></span><br><span class="line"><span class="comment">     * &#125;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SomeClass <span class="title">methodPointerEscape</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SomeClass();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实例引用传递逃逸</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">instancePassPointerEscape</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.methodPointerEscape()</span><br><span class="line">                .printClassName(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SomeClass</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printClassName</span><span class="params">(EscapeTest1 escapeTest)</span> </span>&#123;</span><br><span class="line">        System.out.println(escapeTest.getClass().getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JVM 会针对以上4种场景进行分析，然后会为对象做一个<strong>逃逸状态标识</strong>，一个对象主要有 3 种逃逸状态标识：</p>
+<ul>
+<li>全局级别逃逸：一个对象可能从方法或者当前线程中逃逸，主要有以下几种场景：<ol>
+<li>对象被作为方法的返回值；</li>
+<li>对象作为静态字段（static field）或者成员变量（field）；</li>
+<li>如果重写了某个类的 <code>finialze()</code>方法，那么这个类的对象都会被标记为全局逃逸状态并且一定会放在堆内存中。</li>
+</ol>
+</li>
+<li>参数级别逃逸<ol>
+<li>对象被作为参数传递给一个方法，但是在这个方法之外无法访问/对其他线程不可见；</li>
+</ol>
+</li>
+<li>无逃逸状态：一个对象不会逃逸</li>
+</ul>
+<h4 id="1-11-2-标量替换"><a href="#1-11-2-标量替换" class="headerlink" title="1.11.2 标量替换"></a>1.11.2 标量替换</h4><p>标量：不能被进一步分解的量</p>
+<ul>
+<li>基础数据类型</li>
+<li>对象引用</li>
+</ul>
+<p>聚合量：可以进一步分解的量</p>
+<ul>
+<li>字符串</li>
+</ul>
+<p>那么什么是标量替换呢？逃逸分析确定该对象不会被外部访问，并且对象可以进一步被分解，JVM不会创建该对象，而是创建它的成员变量来代替。</p>
+<p>代码展示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Person person = <span class="keyword">new</span> Person();</span><br><span class="line">    person.id = <span class="number">1</span>;</span><br><span class="line">    person.age = <span class="number">18</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 上面这段代码，标量替换后，原本的对象就不用分配内存空间了，就会优化成如下所示：</span></span><br><span class="line">    <span class="keyword">int</span> id = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> age = <span class="number">18</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JVM 参数：<code>-XX:+EliminateAllocaions</code> 开启标量替换（JDK8 默认开启）</p>
+<h4 id="1-11-3-栈上分配"><a href="#1-11-3-栈上分配" class="headerlink" title="1.11.3 栈上分配"></a>1.11.3 栈上分配</h4><p>在 Java 中，绝大多数对象都是放在堆里面的，当对象无用时，由垃圾回收器回收。</p>
+<p>栈上分配，顾名思义，就是通过逃逸分析，能够确认对象不会被外部访问，就在栈上分配对象，在栈上分配对象，就可以在栈帧出栈的时候销毁对象了，通过栈上分配就可以降低垃圾回收的压力。</p>
+<h4 id="1-11-4-相关JVM参数"><a href="#1-11-4-相关JVM参数" class="headerlink" title="1.11.4 相关JVM参数"></a>1.11.4 相关JVM参数</h4><p><img src="https://img-blog.csdnimg.cn/5b8ca757bfc34cb1ade3d2e9e32ed132.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16" alt="image-20220215212537078"></p>
+<h2 id="2-参考资源"><a href="#2-参考资源" class="headerlink" title="2 参考资源"></a>2 参考资源</h2>
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/02/11/docs/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Feign/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/11/docs/%E5%BE%AE%E6%9C%8D%E5%8A%A1/Feign/" class="post-title-link" itemprop="url">Feign</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-02-11 07:31:01" itemprop="dateCreated datePublished" datetime="2022-02-11T07:31:01+08:00">2022-02-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:28:09" itemprop="dateModified" datetime="2022-05-10T09:28:09+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="深入Feign-体系架构、底层机制、动态代理、重试"><a href="#深入Feign-体系架构、底层机制、动态代理、重试" class="headerlink" title="深入Feign 体系架构、底层机制、动态代理、重试"></a>深入Feign 体系架构、底层机制、动态代理、重试</h2><h3 id="构建请求"><a href="#构建请求" class="headerlink" title="构建请求"></a>构建请求</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e12fe9b09c5379227001716-20220211161545138.png"></p>
+<ul>
+<li><p>ribbon、hystrix：引入feign的同时，ribbon和hystrix这两个组件也会被一同引入。</p>
+<ul>
+<li>ribbon：利用负载均衡策略选定目标机器</li>
+<li>hystrix：根据熔断器的开启状态，决定是否发起此次调用</li>
+</ul>
+</li>
+<li><p>动态代理</p>
+<p>Feign是通过一个代理接口进行远程调用，这一步就是为了构造接口的动态代理对象，用来代理远程服务的真实调用，这样你就可以像调用本地方法一样发起HTTP请求，不需要像Ribbon或者Eureka那样在方法调用的地方提供服务名。在Feign中动态代理是通过<code>Feign.build</code>返回的构造器来装配相关参数，然后调用<code>ReflectFeign</code>的<code>newInstance</code>方法创建的。这里就应用到了Builder设计模式。</p>
+</li>
+<li><p>Contract</p>
+<p>协议，顾名思义，就像HTTP协议，RPC协议一样，Feign也有自己的一套协议的规范，只不过他解析的不是HTTP请求，而是上一步提到的动态代理类。通过解析动态代理接口+Builder模式，Contract协议会构造复杂的元数据对象MethodMetadata，这里面包含了动态代理接口定义的所有特征。接下来，根据这些元数据生成一系列MethodHandler对象用来处理Request和Response请求。 </p>
+<ul>
+<li>Contract具有高度可扩展性，可以经由对Contract的扩展，将Feign集成到其他开源组件之中。</li>
+</ul>
+</li>
+</ul>
+<h3 id="发起调用"><a href="#发起调用" class="headerlink" title="发起调用"></a>发起调用</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e12fea8099390f030181540.png"></p>
+<ul>
+<li><p>拦截器</p>
+<p> 拦截器是Spring处理网络请求的经典方案，Feign这里也沿用了这个做法，通过一系列的拦截器对Request和Response对象进行装饰，比如通过RequestInterceptor给Request对象构造请求头。整装待发之后，就是正式发起调用的时候了。</p>
+</li>
+<li><p>发起请求</p>
+<p>又到了Ribbon和Hystrix的出场镜头了。这哼哈二将绝不放过开头和结尾两处重要镜头，正所谓从头到尾都参与了进来。 </p>
+<ul>
+<li><p>重试</p>
+<p>Feign这里借助Ribbon的配置重试器实现了重试操作，可以指定对当前服务节点发起重试，也可以让Feign换一个服务节点重试。</p>
+</li>
+<li><p>降级</p>
+<p>Feign接口在声明时可以指定Hystrix的降级策略实现类，如果达到了Hystrix的超时判定，或得到了异常结果，将执行指定的降级逻辑。Hystrix降级熔断的内容，将在下一个大章节和大家见面。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>慕课网</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/01/20/docs/JVM/JVM-%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86%E7%90%86%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/01/20/docs/JVM/JVM-%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86%E7%90%86%E8%AE%BA/" class="post-title-link" itemprop="url">JVM 分代收集理论</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-01-20 03:58:09" itemprop="dateCreated datePublished" datetime="2022-01-20T03:58:09+08:00">2022-01-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:24:09" itemprop="dateModified" datetime="2022-05-10T09:24:09+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20220120124433404.png" alt="image-20220120124433404"></p>
+<h2 id="分代收集理论"><a href="#分代收集理论" class="headerlink" title="分代收集理论"></a>分代收集理论</h2><p>当前大多数的虚拟机都遵循了“分代收集”的理论进行设计，分代收集名为理论,实质是一套符合大多数程序运行实际情况的经验法则,它建立在两个分代假说之上：</p>
+<p>1）弱分代假说：绝大多数对象都是朝生夕灭的。</p>
+<p>2）强分代假说：熬过越多次垃圾收集过程的对象就越难以消亡。</p>
+<p>这两个假说共同奠定了多款常用垃圾收集器的设计原则：</p>
+<p><strong>收集器应该将Java堆划分出不同的区域,然后将回收对象依据其年龄(年龄即对象熬过垃圾收集过程的次数)分配到不同的区域之中存储。</strong></p>
+<h3 id="弱分代假说"><a href="#弱分代假说" class="headerlink" title="弱分代假说"></a>弱分代假说</h3><p>如果一个区域中大多数对象都是朝生夕灭,难以熬过垃圾收集过程的话,那么把它们集中放在一起,每次回收时只关注如何保留少量存活而不是去标记那些大量将要被回收的对象,就能以较低代价回收到大量的空间;</p>
+<h3 id="强分代假说"><a href="#强分代假说" class="headerlink" title="强分代假说"></a>强分代假说</h3><p>如果剩下的都是难以消亡的对象,那把它们集中放在一块, 虚拟机便可以使用较低的频率来回收这个区域,这就同时兼顾了垃圾收集的时间开销和内存的空间有效利用。</p>
+<p>从这里开始就可以对Java 堆划分不同的区域了，垃圾收集器才可以每次只回收其中某一个或或者某些部分的区域——因而才会有“Minor GC”“Major GC”“Full GC”这样的回收类型的划分。</p>
+<p>故此，垃圾收集至少有新生代和老年代。</p>
+<p>但是，根据实际情况，对象与对象之间并不是孤立的，对象之间存在跨代引用。新生代对象完全有可能被年老代对象引用。</p>
+<p>由此，就有了第三条经验法则：“跨代引用假说”。</p>
+<h3 id="跨代引用假说"><a href="#跨代引用假说" class="headerlink" title="跨代引用假说"></a>跨代引用假说</h3><p>跨代引用相对于同代引用来说仅占极少数。</p>
+<p>存在互相引用关系的两个对象,是应该倾向于同时生存或者同时消亡的。</p>
+<p>举个例子,如果某个新生代对象存在跨代引用,由于老年代对象难以消亡,该引用会使得新生代对象在收集时同样得以存活,进而在年龄增长之后晋升到老年代中,这时跨代引用也随即被消除了。</p>
+<ul>
+<li><p>如何对存在跨代引用的对象进行回收？</p>
+<p>我们就不应再为了少量的跨代引用去扫?整个老年代,也不必浪费空间专门记录每一个对象是否存在及存在哪些跨代引用,只需在新生代上建立一个全局的数据结构(该结构被称为“记忆集”,Remembered Set),这个结构把老年代划分成若干小块,标识出老年代的哪一块内存会存在跨代引用。此后当发生Minor GC时,只有包含了跨代引用的小块内存里的对象才会被加入到GC Roots进行扫描。虽然这种方法需要在对象改变引用关系(如将自己或者某个属性赋值)时维护记录数据的正确性,会增加一些运行时的开销,但比起收集时扫描整个老年代来说仍然是划算的。</p>
+</li>
+</ul>
+<h3 id="垃圾收集分类"><a href="#垃圾收集分类" class="headerlink" title="垃圾收集分类"></a>垃圾收集分类</h3><ul>
+<li>部分收集：指目标不是完整收集整个Java堆的垃圾收集<ul>
+<li>新生代收集：指目标只是新生代的垃圾收集</li>
+<li>老年代收集：指目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。</li>
+<li>混合收集：指目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
+</ul>
+</li>
+<li>整堆收集：收集整个Java堆和方法区的垃圾收集。</li>
+</ul>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p>《深入理解Java虚拟机：JVM高级特性与最佳实践（第3版）》 - 3.3.1</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2022/01/18/docs/JVM/JVM-%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="一年春又来">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一年春又来">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/01/18/docs/JVM/JVM-%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/" class="post-title-link" itemprop="url">类文件结构</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-01-18 07:15:05" itemprop="dateCreated datePublished" datetime="2022-01-18T07:15:05+08:00">2022-01-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2022-05-10 09:24:43" itemprop="dateModified" datetime="2022-05-10T09:24:43+08:00">2022-05-10</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="Class-类文件的结构"><a href="#Class-类文件的结构" class="headerlink" title="Class 类文件的结构"></a>Class 类文件的结构</h2><p>Java技术能够一直保持着非常良好的向后兼容性，Class文件结构的稳定功不可没，任何一门程序语言能够获得商业上的成功，都不可能去做升级版本后，旧版本编译的产品就不再能够运行这种事情。</p>
+<p>Java 虚拟机关心的只是Class类文件结构，与是否使用Java语言并没有太大的关系。如下图所示：</p>
+<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8F%90%E4%BE%9B%E7%9A%84%E8%AF%AD%E8%A8%80%E6%97%A0%E5%85%B3%E6%80%A7.png" alt="Java虚拟机提供的语言无关性 "></p>
+<p>同时，从动态代理中的 Cglib 这个包的存在，Class 类文件都不一定都得定义在磁盘文件里。</p>
+<p>Class文件是一组以8个字节为基础单位的二进制流，各个数据项目严格按照顺序紧凑地排列在文 件之中，中间没有添加任何分隔符，这使得整个Class文件中存储的内容几乎全部是程序运行的必要数 据，没有空隙存在。当遇到需要占用8个字节以上空间的数据项时，则会按照高位在前[2]的方式分割 成若干个8个字节进行存储。</p>
+<p>Class文件格式采用一种类似于C语言结构体的伪结构来存储数 据，这种伪结构中只有两种数据类型：“无符号数”和“表”。</p>
+<ul>
+<li><p>无符号数</p>
+<p>无符号数属于基本的数据类型，以u1、u2、u4、u8来分别代表1个字节、2个字节、4个字节和8个 字节的无符号数，无符号数可以用来描述数字、索引引用、数量值或者按照UTF-8编码构成字符串 值。</p>
+</li>
+<li><p>表</p>
+<p>表是由多个无符号数或者其他表作为数据项构成的复合数据类型，为了便于区分，所有表的命名 都习惯性地以“_info”结尾。表用于描述有层次关系的复合结构的数据，整个Class文件本质上也可以视作是一张表.<br>例如:<br><img src="https://gitee.com/littlefxc/oss/raw/master/images/class%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F.png" alt="class文件格式"></p>
+</li>
+</ul>
+<p>无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的 容量计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的“集 合”。</p>
+<blockquote>
+<p>Class的结构不像XML等描述语言，由于它没有任何分隔符号，所以在上图中的数据项，无论是顺序还是数量，甚至于数据存储的字节序（Byte Ordering，Class 文件中字节序为Big-Endian）这样的细节，都是被严格限定的，哪个字节代表什么含义，长度是多少， 先后顺序如何，全部都不允许改变。</p>
+</blockquote>
+<h3 id="类文件的16进制、反编译和解读"><a href="#类文件的16进制、反编译和解读" class="headerlink" title="类文件的16进制、反编译和解读"></a>类文件的16进制、反编译和解读</h3><h4 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h4><h4 id="访问标识"><a href="#访问标识" class="headerlink" title="访问标识"></a>访问标识</h4><h4 id="类索引、父类索引与接口索引集合"><a href="#类索引、父类索引与接口索引集合" class="headerlink" title="类索引、父类索引与接口索引集合"></a>类索引、父类索引与接口索引集合</h4>
       
     </div>
 
@@ -1405,7 +2060,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1439,7 +2094,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
