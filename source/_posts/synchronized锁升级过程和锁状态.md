@@ -21,15 +21,15 @@ tags:
 所以目前锁状态一种有四种，从级别由低到高依次是：无锁、偏向锁，轻量级锁，重量级锁，锁状态只能升级，不能降级
 
 如图所示：
-![img](https://gitee.com/littlefxc/oss/raw/master/images/1460000022904666.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904666.jpg)
 
 ### 三、锁状态的思路以及特点
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/1460000022904667.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904667.png)
 
 ### 四、锁对比
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/1460000022904669-20210807194327994.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904669-20210807194327994.png)
 
 ### 五、Synchronized锁
 
@@ -118,7 +118,7 @@ Synchronized是通过对象内部的一个叫做监视器锁（monitor）来实�
 
 ### 6.4 轻量级锁（自旋锁）
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/1460000022904671.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904671.jpg)
 
 轻量级锁是指当锁是偏向锁的时候，却被另外的线程所访问，此时偏向锁就会升级为轻量级锁，其他线程会通过自旋（关于自旋的介绍见文末）的形式尝试获取锁，线程不会阻塞，从而提高性能。
 

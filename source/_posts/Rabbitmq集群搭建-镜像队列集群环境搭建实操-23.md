@@ -7,7 +7,7 @@ tags:
 - rabbitmq
 ---
 
-![rabbitmq_23_1](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_1.png)
+![rabbitmq_23_1](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_1.png)
 
-![rabbitmq_23_2](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_2.png)
+![rabbitmq_23_2](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_2.png)
 

@@ -16,9 +16,9 @@ tags:
 
 简单的说一下io，了解的直接跳过看代码吧:IO常见的使用场景就是网络通信或读取文件等方面。IO流分为字节流和字符流。字节即Byte，包含八位二进制数，一个二进制数就是1bit，中文名称叫位。字符即一个字母或者一个汉字。一个字母由一个字节组成，而汉字根据编码不同由2个或者3个组成。Java.io包如下:详细的API可自行查阅资料
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410142107890-242008210.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200410142107890-242008210.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410142107890-242008210.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200410142107890-242008210.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410142126015-790268014.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200410142126015-790268014.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410142126015-790268014.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200410142126015-790268014.png)
 
 **Socket定义**：套接字（socket）是一个抽象层，应用程序可以通过它发送或接收数据，可对其进行像对文件一样的打开、读写和关闭等操作。套接字允许应用程序将I/O插入到网络中，并与网络中的其他应用程序进行通信。网络套接字是IP地址与端口的组合。
 
@@ -116,8 +116,8 @@ public class Server {
 
 然后打开两个命令终端，通过javac编译后，一个运行Server代表服务器，一个运行Client代表客户端。
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410144802569-1725038127.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200410144802569-1725038127.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410144802569-1725038127.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200410144802569-1725038127.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410144811290-2056832827.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200410144811290-2056832827.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200410144811290-2056832827.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200410144811290-2056832827.png)
 
 下一篇 [手动搭建I/O网络通信框架2：BIO编程模型实现群聊](%E6%89%8B%E5%8A%A8%E6%90%AD%E5%BB%BAI%20O%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1%E6%A1%86%E6%9E%B62%EF%BC%9ABIO%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E7%BE%A4%E8%81%8A%202d2b7fd177844b1ab85c0276e7ae1e7b.md)  。

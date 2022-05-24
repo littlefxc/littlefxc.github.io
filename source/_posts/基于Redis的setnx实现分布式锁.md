@@ -30,7 +30,7 @@ tags:
 
 - 释放锁的LUA脚本（为什么？因为delete并没有提供校验的功能）
 
-  ![原理](https://gitee.com/littlefxc/oss/raw/master/images/QQ20210507-231010@2x.png)
+  ![原理](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/QQ20210507-231010@2x.png)
   
   为了防止出现上面这种情况（A释放了B的锁），于是就有了下面的这段代码，释放锁之前检查一下值正不正确。
 
@@ -133,7 +133,7 @@ public String redisLock(){
 
 ### 通过定时任务（spring-task）集群部署校验编写的分布式锁
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/Springtaskredislock.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Springtaskredislock.png)
 
 说明：哪个服务获取锁，就哪个服务执行任务A，来解决任务A重复执行的问题。
 

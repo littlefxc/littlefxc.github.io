@@ -32,7 +32,7 @@ tags:
 
 # 2 **ReentrantLock数据结构**
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/271417467039316.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271417467039316.jpg)
 
 从图中可以看出：
 

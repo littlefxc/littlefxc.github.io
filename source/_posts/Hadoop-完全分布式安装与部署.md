@@ -31,7 +31,7 @@ $ hostnamectl set-hostname centos-node1
 
 可以使用 `netstat -r` 来查询网关如下图所示：
 
-![image-20200911142643578](https://gitee.com/littlefxc/oss/raw/master/images/image-20200911142643578.png)
+![image-20200911142643578](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200911142643578.png)
 
 然后将 dhcp 改为 静态IP
 
@@ -108,7 +108,7 @@ $ passwd hdfs # 修改密码
 
 为 `/etc/sudoers`添加如下图所示：
 
-![image-20200911170014063](https://gitee.com/littlefxc/oss/raw/master/images/image-20200911170014063.png)
+![image-20200911170014063](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200911170014063.png)
 
 # 设置 SSH 无密码登录
 
@@ -463,19 +463,19 @@ ps: Hadoop 3.3.0 版本时用这个命令启动`mapred --daemon start`
 
 位于`centos-node1`的`50070`端口:http://centos-node1:50070/
 
-![image-20200913152341967](https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152341967.png)
+![image-20200913152341967](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200913152341967.png)
 
 ### 查看YARN Web 页面
 
 位于`centos-node3`的`8088`端口:http://centos-node3:8088/
 
-![image-20200913152504612](https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152504612.png)
+![image-20200913152504612](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200913152504612.png)
 
 ### 查看历史WEB页面
 
 位于`centos-node3`的`19888`端口:http://centos-node3:19888/
 
-![image-20200913152549303](https://gitee.com/littlefxc/oss/raw/master/images/image-20200913152549303.png)
+![image-20200913152549303](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200913152549303.png)
 
 # 测试
 

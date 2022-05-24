@@ -39,7 +39,7 @@ bash configure --with-debug-level=slowdebug --enable-dtrace --with-jvm-variants=
 
 结果如下：
 
-![image-20210706183317055](https://gitee.com/littlefxc/oss/raw/master/images/image-20210706183317055.png)
+![image-20210706183317055](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210706183317055.png)
 
 ### 1.2.2 make images
 
@@ -49,7 +49,7 @@ make images
 
 结果如下：
 
-![image-20210706190102890](https://gitee.com/littlefxc/oss/raw/master/images/image-20210706190102890.png)
+![image-20210706190102890](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210706190102890.png)
 
 1.2.3 验证
 
@@ -59,13 +59,13 @@ make images
 
 结果如下：
 
-![image-20210706190321790](https://gitee.com/littlefxc/oss/raw/master/images/image-20210706190321790.png)
+![image-20210706190321790](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210706190321790.png)
 
 ## 1.3 FAQ
 
 1. 没有安装 `xcode.app`
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/1460000020736821.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000020736821.png)
 
 解决办法：去应用商店安装
 

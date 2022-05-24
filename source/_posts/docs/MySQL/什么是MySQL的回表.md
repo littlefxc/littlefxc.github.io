@@ -66,7 +66,7 @@ MySQL 的索引有不同的角度的分类方式，例如：按数据结构分�
 
 用一幅图来表示，其它的就不再过多解释了：
 
-![https://gitee.com/littlefxc/oss/raw/master/images/KjXSSU.jpg](https://gitee.com/littlefxc/oss/raw/master/images/8ec43769f81ea5e901077f047b8da974.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/KjXSSU.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/8ec43769f81ea5e901077f047b8da974.png)
 
 这里只是简单介绍一下 B-Tree 和 B+Tree 的区别：
 

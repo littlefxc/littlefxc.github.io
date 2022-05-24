@@ -33,7 +33,7 @@ tags:
 
 > `SpringBoot`中集成`Jasypt`，可直接使用开源的`jasypt-spring-boot`直接集成，使用简单方便。
 
-![mark](https://gitee.com/littlefxc/oss/raw/master/images/WTvOjzNR7Xt5.png)
+![mark](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/WTvOjzNR7Xt5.png)
 
 ### 常规集成示例
 
@@ -65,7 +65,7 @@ jasypt.encryptor.password=lqdev
 
 > 在一些使用`javaBean`配置和`xml`两种混合模式时，使用第一种配置时，`xml`参数并未替换。此时看了官方文档，可以使用另一方式进行配置即可。
 
-![官方说明](https://gitee.com/littlefxc/oss/raw/master/images/bPoPUpE8uk4A.png)
+![官方说明](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/bPoPUpE8uk4A.png)
 
 1. 引入pom依赖
 
@@ -161,7 +161,7 @@ pause
 
 **注意：相应加密串，每次加密的结果是不同的。**
 
-![使用示例](https://gitee.com/littlefxc/oss/raw/master/images/568wfkAWA5Tl.png)
+![使用示例](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/568wfkAWA5Tl.png)
 
 ## 总结
 

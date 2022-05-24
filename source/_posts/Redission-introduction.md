@@ -10,7 +10,7 @@ tags:
 # Redisson概述
 
 在前面的章节中，我们已经接触了Redis，也知道了如何在Java中调用Redis。Redis有很多Java客户端，我们比较常用有Jedis，spring-data-redis，lettuce等。今天我们给大家介绍另外一个非常好用的Redis的Java客户端——Redisson。我们先看一下Redis官网中介绍的Java客户端列表：
-![图片描述](https://gitee.com/littlefxc/oss/raw/master/images/5df98c910958344319200842.png)在这个列表中，我们可以看到Redisson的后面有笑脸，有星，说明还是比较受欢迎的。再看看后面的简介，Redisson是一个在Redis服务之上的，分布式、可扩展的Java数据结构。我们进入到Redisson的官网，看看官网是怎么介绍的。
+![图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5df98c910958344319200842.png)在这个列表中，我们可以看到Redisson的后面有笑脸，有星，说明还是比较受欢迎的。再看看后面的简介，Redisson是一个在Redis服务之上的，分布式、可扩展的Java数据结构。我们进入到Redisson的官网，看看官网是怎么介绍的。
 
 > Redisson是一个在Redis的基础上实现的Java驻内存数据网格（In-Memory Data Grid）。充分的利用了Redis键值数据库提供的一系列优势，基于Java实用工具包中常用接口，为使用者提供了一系列具有分布式特性的常用工具类。使得原本作为协调单机多线程并发程序的工具包获得了协调分布式多机多线程并发系统的能力，大大降低了设计和研发大规模分布式系统的难度。同时结合各富特色的分布式服务，更进一步简化了分布式环境中程序相互之间的协作。它不仅提供了一系列的分布式的Java常用对象，还提供了许多分布式服务。Redisson提供了使用Redis的最简单和最便捷的方法。Redisson的宗旨是促进使用者对Redis的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。
 

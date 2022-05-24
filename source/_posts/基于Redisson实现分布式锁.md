@@ -63,7 +63,7 @@ public class RedissonLockApplicationTests {
 
 结果演示：
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/MBFX4f.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/MBFX4f.png)
 
 # 使用示例
 
@@ -114,9 +114,9 @@ public class RedissonLockController {
 
 结果演示：
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/2lvzmZ.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/2lvzmZ.png)
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/skDIpq.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/skDIpq.png)
 
 # 参考资源
 

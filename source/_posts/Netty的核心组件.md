@@ -22,7 +22,7 @@ tags:
 
 EventLoop 定义了 Netty 的核心抽象，用于处理连接的生命周期中所发生的事件。下图在高层次上说明了 Channel、EventLoop、Thread 以及 EventLoopGroup 之间的关系。
 
-![image-20210621191716357](https://gitee.com/littlefxc/oss/raw/master/images/image-20210621191716357.png)
+![image-20210621191716357](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210621191716357.png)
 
 这些关系是：
 
@@ -63,11 +63,11 @@ ChannelHandler 是专为支持广泛的用途而设计的，可以将它看作�
 
 Pipeline 事件(包括数据)的任何代码的通用容器。下图说明了这一点，其展示了从 ChannelHandler 派生的 ChannelInboundHandler 和 ChannelOutboundHandler 接口。
 
-![image-20210621192959857](https://gitee.com/littlefxc/oss/raw/master/images/image-20210621192959857.png)
+![image-20210621192959857](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210621192959857.png)
 
 使得事件流经 ChannelPipeline 是 ChannelHandler 的工作，它们是在应用程序的初始化或者引导阶段被安装的。这些对象接收事件、执行它们所实现的处理逻辑，并将数据传递给 链中的下一个 ChannelHandler。它们的执行顺序是由它们被添加的顺序所决定的。实际上， 被我们称为 ChannelPipeline 的是这些 ChannelHandler 的编排顺序。
 
 下图说明了一个 Netty 应用程序中入站和出站数据流之间的区别。从一个客户端应用程序 的角度来看，如果事件的运动方向是从客户端到服务器端，那么我们称这些事件为**出站**的，反之则称为**入站**的。
 
-![image-20210621193108690](https://gitee.com/littlefxc/oss/raw/master/images/image-20210621193108690.png)
+![image-20210621193108690](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210621193108690.png)
 

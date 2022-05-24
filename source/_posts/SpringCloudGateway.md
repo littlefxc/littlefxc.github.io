@@ -55,7 +55,7 @@ SpringCloud官方，对SpringCloud Gateway 特征介绍如下：
 Spring在2017年下半年迎来了Webflux，Webflux的出现填补了Spring在响应式编程上的空白，Webflux的响应式编程不仅仅是编程风格的改变，而且对于一系列的著名框架，都提供了响应式访问的开发包，比如Netty、Redis等等。
 
 SpringCloud Gateway 使用的Webflux中的reactor-netty响应式编程组件，底层使用了Netty通讯框架。
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/strip-20210407151947510.gif)](https://upload-images.jianshu.io/upload_images/19816137-8758f092be21e6f7.gif?imageMogr2/auto-orient/strip)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/strip-20210407151947510.gif)](https://upload-images.jianshu.io/upload_images/19816137-8758f092be21e6f7.gif?imageMogr2/auto-orient/strip)
 
 ## **1.3.1** SpringCloud Zuul的IO模型
 
@@ -64,7 +64,7 @@ Springcloud中所集成的Zuul版本，采用的是Tomcat容器，使用的是�
 大家知道，servlet由servlet container进行生命周期管理。container启动时构造servlet对象并调用servlet init()进行初始化；container关闭时调用servlet destory()销毁servlet；container运行时接受请求，并为每个请求分配一个线程（一般从线程池中获取空闲线程）然后调用service()。
 
 弊端：servlet是一个简单的网络IO模型，当请求进入servlet container时，servlet container就会为其绑定一个线程，在并发不高的场景下这种模型是适用的，但是一旦并发上升，线程数量就会上涨，而线程资源代价是昂贵的（上线文切换，内存消耗大）严重影响请求的处理时间。在一些简单的业务场景下，不希望为每个request分配一个线程，只需要1个或几个线程就能应对极大并发的请求，这种业务场景下servlet模型没有优势。
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/1240-20210407151947526.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-bb466f6b0135bb71?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1240-20210407151947526.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-bb466f6b0135bb71?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
 
 所以Springcloud Zuul 是基于servlet之上的一个阻塞式处理模型，即spring实现了处理所有request请求的一个servlet（DispatcherServlet），并由该servlet阻塞式处理处理。所以Springcloud Zuul无法摆脱servlet模型的弊端。虽然Zuul 2.0开始，使用了Netty，并且已经有了大规模Zuul 2.0集群部署的成熟案例，但是，Springcloud官方已经没有集成改版本的计划了。
 
@@ -72,7 +72,7 @@ Springcloud中所集成的Zuul版本，采用的是Tomcat容器，使用的是�
 
 Webflux模式替换了旧的Servlet线程模型。用少量的线程处理request和response io操作，这些线程称为Loop线程，而业务交给响应式编程框架处理，响应式编程是非常灵活的，用户可以将业务中阻塞的操作提交到响应式框架的work线程中执行，而不阻塞的操作依然可以在Loop线程中进行处理，大大提高了Loop线程的利用率。官方结构图：
 
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/1240-20210407151947542.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-dad0e43fc31f4536?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1240-20210407151947542.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-dad0e43fc31f4536?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
 
 Webflux虽然可以兼容多个底层的通信框架，但是一般情况下，底层使用的还是Netty，毕竟，Netty是目前业界认可的最高性能的通信框架。而Webflux的Loop线程，正好就是著名的Reactor 模式IO处理模型的Reactor线程，如果使用的是高性能的通信框架Netty，这就是Netty的EventLoop线程。
 
@@ -81,7 +81,7 @@ Webflux虽然可以兼容多个底层的通信框架，但是一般情况下，�
 ## **1.3.3** Spring Cloud Gateway的处理流程
 
 客户端向 Spring Cloud Gateway 发出请求。然后在 Gateway Handler Mapping 中找到与请求相匹配的路由，将其发送到 Gateway Web Handler。Handler 再通过指定的过滤器链来将请求发送到我们实际的服务执行业务逻辑，然后返回。过滤器之间用虚线分开是因为过滤器可能会在发送代理请求之前（“pre”）或之后（“post”）执行业务逻辑。
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/1240-20210407151947561.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-eeedbd49be096c05?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1240-20210407151947561.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-eeedbd49be096c05?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
 
 # 2 路由配置方式
 
@@ -195,7 +195,7 @@ Spring Cloud Gateway 的功能很强大，我们仅仅通过 Predicates 的设�
 
 Spring Cloud Gateway 是通过 Spring WebFlux 的 HandlerMapping 做为底层支持来匹配到转发路由，Spring Cloud Gateway 内置了很多 Predicates 工厂，这些 Predicates 工厂通过不同的 HTTP 请求参数来匹配，多个 Predicates 工厂可以组合使用。
 
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzIyNDc1,size_16,color_FFFFFF,t_70-20210407151947718.png)](https://img-blog.csdnimg.cn/20200527213652534.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzIyNDc1,size_16,color_FFFFFF,t_70)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzIyNDc1,size_16,color_FFFFFF,t_70-20210407151947718.png)](https://img-blog.csdnimg.cn/20200527213652534.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzIyNDc1,size_16,color_FFFFFF,t_70)
 
 gateWay的主要功能之一是转发请求，转发规则的定义主要包含三个部分
 
@@ -230,7 +230,7 @@ spring:
 Predicate 来源于 Java 8，是 Java 8 中引入的一个函数，Predicate 接受一个输入参数，返回一个布尔值结果。该接口包含多种默认方法来将 Predicate 组合成其他复杂的逻辑（比如：与，或，非）。可以用于接口请求参数校验、判断新老数据是否有变化需要进行更新操作。
 
 在 Spring Cloud Gateway 中 Spring 利用 Predicate 的特性实现了各种路由匹配规则，有通过 Header、请求参数等不同的条件来进行作为条件匹配到对应的路由。网上有一张图总结了 Spring Cloud 内置的几种 Predicate 的实现。
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/strip-20210407151947740.gif)](https://upload-images.jianshu.io/upload_images/19816137-bb046dbf19bee1b4.gif?imageMogr2/auto-orient/strip)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/strip-20210407151947740.gif)](https://upload-images.jianshu.io/upload_images/19816137-bb046dbf19bee1b4.gif?imageMogr2/auto-orient/strip)
 [
 说白了 Predicate 就是为了实现一组匹配规则，方便让请求过来找到对应的 Route 进行处理，接下来我们接下 Spring Cloud GateWay 内置几种 Predicate 的使用。
 
@@ -912,10 +912,10 @@ public class FallbackController {
 ## 4.1 分布式限流
 
 从某种意义上讲，令牌桶算法是对漏桶算法的一种改进，桶算法能够限制请求调用的速率，而令牌桶算法能够在限制调用的平均速率的同时还允许一定程度的突发调用。在令牌桶算法中，存在一个桶，用来存放固定数量的令牌。算法中存在一种机制，以一定的速率往桶中放令牌。每次请求调用需要先获取令牌，只有拿到令牌，才有机会继续执行，否则选择选择等待可用的令牌、或者直接拒绝。放令牌这个动作是持续不断的进行，如果桶中令牌数达到上限，就丢弃令牌，所以就存在这种情况，桶中一直有大量的可用令牌，这时进来的请求就可以直接拿到令牌执行，比如设置qps为100，那么限流器初始化完成一秒后，桶中就已经有100个令牌了，这时服务还没完全启动好，等启动完成对外提供服务时，该限流器可以抵挡瞬时的100个请求。所以，只有桶中没有令牌时，请求才会进行等待，最后相当于以一定的速率执行。
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/1240-20210407151947763.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-89297e59a487540d?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1240-20210407151947763.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-89297e59a487540d?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
 
 在Spring Cloud Gateway中，有Filter过滤器，因此可以在“pre”类型的Filter中自行实现上述三种过滤器。但是限流作为网关最基本的功能，Spring Cloud Gateway官方就提供了RequestRateLimiterGatewayFilterFactory这个类，适用在Redis内的通过执行Lua脚本实现了令牌桶的方式。具体实现逻辑在RequestRateLimiterGatewayFilterFactory类中，lua脚本在如下图所示的文件夹中：
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/1240-20210407151947778.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-0456652619daecaa?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1240-20210407151947778.jpeg)](https://upload-images.jianshu.io/upload_images/19816137-0456652619daecaa?imageMogr2/auto-orient/strip|imageView2/2/w/1240)
 
 首先在工程的pom文件中引入gateway的起步依赖和redis的reactive依赖，代码如下：
 
@@ -1291,7 +1291,7 @@ public class NacosDynamicRouteService implements ApplicationEventPublisherAware 
 
 访问网关的路由规则，能看到刚刚加入的规则，访问*http://localhost:9022/baidu*时请求直接被转发到百度的首页了。
 
-[![生效的路径](https://gitee.com/littlefxc/oss/raw/master/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvdXNlXw==,size_16,color_FFFFFF,t_70-20210407151947799.png)](https://img-blog.csdnimg.cn/20200325164150414.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvdXNlXw==,size_16,color_FFFFFF,t_70#pic_center)
+[![生效的路径](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvdXNlXw==,size_16,color_FFFFFF,t_70-20210407151947799.png)](https://img-blog.csdnimg.cn/20200325164150414.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0ZvdXNlXw==,size_16,color_FFFFFF,t_70#pic_center)
 
 # 6 整合Swagger聚合微服务系统API文档
 
@@ -1554,7 +1554,7 @@ public class SwaggerConfig implements SwaggerResourcesProvider
 
 ## 效果：
 
-[![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NyYXp5bWFrZXJjaXJjbGU=,size_16,color_FFFFFF,t_70-20210407151947874.png)](https://img-blog.csdnimg.cn/20210112153623924.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NyYXp5bWFrZXJjaXJjbGU=,size_16,color_FFFFFF,t_70)
+[![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NyYXp5bWFrZXJjaXJjbGU=,size_16,color_FFFFFF,t_70-20210407151947874.png)](https://img-blog.csdnimg.cn/20210112153623924.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NyYXp5bWFrZXJjaXJjbGU=,size_16,color_FFFFFF,t_70)
 
 # 7 Gatway 网关的过滤器开发
 
@@ -1564,7 +1564,7 @@ Spring-Cloud-Gateway 基于过滤器实现，同 zuul 类似，有**pre**和**po
 
 过滤器执行流程如下，**order 越大，优先级越低**
 
-[![img](https://gitee.com/littlefxc/oss/raw/master/images/spring-cloud-gateway-fliter-order-20210407151948451.png)](https://gitee.com/idea360/oss/raw/master/images/spring-cloud-gateway-fliter-order.png)
+[![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/spring-cloud-gateway-fliter-order-20210407151948451.png)](https://gitee.com/idea360/oss/raw/master/images/spring-cloud-gateway-fliter-order.png)
 
 分为全局过滤器和局部过滤器
 

@@ -17,50 +17,50 @@ tags:
 
 - 异步化
   
-  ![kafka_1_1](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_1.png)
+  ![kafka_1_1](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_1.png)
 
 - 服务解耦、削峰填谷
   
-  ![kafka_1_2](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_2.png)
+  ![kafka_1_2](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_2.png)
   
 
 <!-- more -->
 
 ### 1.1.2 Kafka 海量日志收集
 
-![kafka_1_3](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_3.png)
+![kafka_1_3](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_3.png)
 
-![image-20210203211950113](https://gitee.com/littlefxc/oss/raw/master/images/image-20210203211950113.png)
+![image-20210203211950113](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210203211950113.png)
 
 - Kafka 之数据同步应用
 
-  ![kafka_1_4](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_4.png)
+  ![kafka_1_4](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_4.png)
 
 - Kafka 之实时计算
   
-  ![kafka_1_5](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_5.png)
+  ![kafka_1_5](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_5.png)
 
 ## 1.2 Kafka 基本概念
 
 ### 1.2.1 集群架构概念
 
-![kafka_1_6](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_6.png)
+![kafka_1_6](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_6.png)
 
 ### 1.2.2 Topic、Partition
 
-![kafka_1_7](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_7.png)
+![kafka_1_7](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_7.png)
 
 ### 1.2.3 副本(replica)
 
-![kafka_1_8](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_8.png)
+![kafka_1_8](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_8.png)
 
 ### 1.2.4 ISR详解(In Sync Replicas)
 
-![kafka_1_9](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_9.png)
+![kafka_1_9](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_9.png)
 
 上图表示拉取及时的情况
 
-![kafka_1_10](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_10.png)
+![kafka_1_10](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_10.png)
 
 上图表示拉取滞后的情况。
 
@@ -72,15 +72,15 @@ tags:
 
 - ISR 集合与 HW 和 LEO 直接存在着密不可分的关系
 
-![kafka_1_11](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_11.png)
+![kafka_1_11](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_11.png)
 
-![kafka_1_12](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_12.png)
+![kafka_1_12](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_12.png)
 
-![kafka_1_13](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_13.png)
+![kafka_1_13](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_13.png)
 
 上图右边的图形表示数据传入到leader节点，但还没有同步到follower节点上
 
-![kafka_1_14](https://gitee.com/littlefxc/oss/raw/master/images/kafka_1_14.png)
+![kafka_1_14](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/kafka_1_14.png)
 
 上图HW移动了一格，表示 follower1 节点和follower2 节点都同步了第3条数据，而第4条数据因为follower2节点没有同步到，Kafka消费者就消费不了第4条数据。
 
@@ -392,7 +392,7 @@ PS: 一条消息会通过 Key 去计算出来实际的 partition，按照 partit
 
 ### 1.6.3 发送消息的3种方法
 
-![image-20210225221350755](https://gitee.com/littlefxc/oss/raw/master/images/image-20210225221350755.png)
+![image-20210225221350755](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210225221350755.png)
 
 Kafka 发送消息提供了 3 种方法：
 
@@ -411,7 +411,7 @@ Kafka 发送消息提供了 3 种方法：
 
 - acks: 指定发送消息后，Broker端至少有多少个副本接收到该消息；默认 acks = 1；（Broker端只要主分区写入成功，就可以给客户端去回送响应，**如果leader宕机了，则会丢失数据** ）
 
-  ![这里写图片描述](https://gitee.com/littlefxc/oss/raw/master/images/format,png.png)
+  ![这里写图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/format,png.png)
 
 - acks = 0：生产者发送消息之后不需要等待任何服务端的响应；（这种情况下数据传输效率最高，但是数据可靠性确是最低的。）
 
@@ -427,11 +427,11 @@ Kafka 发送消息提供了 3 种方法：
     
   - ISR中的flower全部完成数据同步后，leader此时挂掉，会重新选举leader，数据不会丢失。
 
-  ![这里写图片描述](https://gitee.com/littlefxc/oss/raw/master/images/format,png-20210322221324553.png)
+  ![这里写图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/format,png-20210322221324553.png)
   
   - 数据发送到leader后 ，部分ISR的副本同步，leader此时挂掉。比如follower1和follower2都有可能变成新的leader, producer端会得到返回异常，producer端会重新发送数据，数据可能会重复。
   
-  ![这里写图片描述](https://gitee.com/littlefxc/oss/raw/master/images/format,png-20210322221608062.png)
+  ![这里写图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/format,png-20210322221608062.png)
 
 - max.request.size:该参数用来限制生产者客户端能发送的消息的最大值，默认 1M（10485768）
 - retries 和 retry.backoff.msretries: 重试次数和重试间隔，默认100
@@ -566,7 +566,7 @@ Kafka 发送消息提供了 3 种方法：
 
 ## 1.10 Kafka 之分区器
 
-![image-20210325223028295](https://gitee.com/littlefxc/oss/raw/master/images/image-20210325223028295.png)
+![image-20210325223028295](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210325223028295.png)
 
 上图是生产者发送消息后会经历一系列的过程：
 
@@ -714,7 +714,7 @@ public class UserPartitioner implements Partitioner {
 
 ### 1.11.1 概念
 
-![image-20210325232006969](https://gitee.com/littlefxc/oss/raw/master/images/image-20210325232006969.png)
+![image-20210325232006969](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210325232006969.png)
 
 说明：
 
@@ -726,9 +726,9 @@ public class UserPartitioner implements Partitioner {
 
 - 每一个分区可以被多个消费者组消费，每一个分区只能被一个消费者组中的一个消费者所消费，详见下图
 
-    ![image-20210329224142774](https://gitee.com/littlefxc/oss/raw/master/images/image-20210329224142774.png)
+    ![image-20210329224142774](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210329224142774.png)
     
-    ![image-20210329224552763](https://gitee.com/littlefxc/oss/raw/master/images/image-20210329224552763.png)
+    ![image-20210329224552763](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210329224552763.png)
     
     一个消费者组内的消费者数量多于分区时，多出来的消费者不做任何事。
 
@@ -757,7 +757,7 @@ public class UserPartitioner implements Partitioner {
 
 ### 1.11.4 kafka 消费者提交位移
 
-![image-20210331223055144](https://gitee.com/littlefxc/oss/raw/master/images/image-20210331223055144.png)
+![image-20210331223055144](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210331223055144.png)
 
 在实际的工作中一般采用手动提交位移的方式，这样会有比较好的容错性，我们会知道这条消息到底有没有消费成功，如果处理失败，那我们可以再次提交等兜底的策略。
 
@@ -774,7 +774,7 @@ public class UserPartitioner implements Partitioner {
 
 ### 1.11.5 消费者subscribe 与 assign 详解
 
-![image-20210331233706053](https://gitee.com/littlefxc/oss/raw/master/images/image-20210331233706053.png)
+![image-20210331233706053](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210331233706053.png)
 
 从上图中可以看到 subscribe 方法有 4 个重载的方法，对于 KafkaConsumer  消息的订阅，可以有多个主题，也可以支持正则表达式匹配。
 
@@ -815,11 +815,11 @@ consumer.assign(Arrays.asList(new TopicPartition("topic", 0)))
 - KafkaConsumer中定义了一个 `acquire`方法用来检测是否只有一个线程在操作，如果有其它线程操作则会抛出 ConcurrentModifactionException
 - KafkaConsumer在执行所有动作时都会先执行 `acquire` 方法检测是否线程安全
 
-![image-20210406221942118](https://gitee.com/littlefxc/oss/raw/master/images/image-20210406221942118.png)
+![image-20210406221942118](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210406221942118.png)
 
-![image-20210406224758405](https://gitee.com/littlefxc/oss/raw/master/images/image-20210406224758405.png)
+![image-20210406224758405](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210406224758405.png)
 
-![image-20210406230608886](https://gitee.com/littlefxc/oss/raw/master/images/image-20210406230608886.png)
+![image-20210406230608886](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210406230608886.png)
 
 ### 1.11.7 Kafka 消费者重要参数
 
@@ -983,9 +983,9 @@ public class ApplicationTests {
 
 ## 2.1 架构设计
 
-![image-20210408215126380](https://gitee.com/littlefxc/oss/raw/master/images/image-20210408215126380.png)
+![image-20210408215126380](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210408215126380.png)
 
-![image-20210408224353954](https://gitee.com/littlefxc/oss/raw/master/images/image-20210408224353954.png)
+![image-20210408224353954](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210408224353954.png)
 
 说明：
 
@@ -999,7 +999,7 @@ public class ApplicationTests {
 
   方便后面做数据告警、分析，不选择 app.log 是因其日志太多
 
-![image-20210408225148721](https://gitee.com/littlefxc/oss/raw/master/images/image-20210408225148721.png)
+![image-20210408225148721](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210408225148721.png)
 
 说明：
 
@@ -1007,7 +1007,7 @@ public class ApplicationTests {
 
 ## 2.2 日志输出
 
-![image-20210408230441675](https://gitee.com/littlefxc/oss/raw/master/images/image-20210408230441675.png)
+![image-20210408230441675](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210408230441675.png)
 
 Log4j2.xml：
 
@@ -1070,7 +1070,7 @@ Log4j2.xml：
 
 ## 2.3 日志收集
 
-![image-20210419220943341](https://gitee.com/littlefxc/oss/raw/master/images/image-20210419220943341.png)
+![image-20210419220943341](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210419220943341.png)
 
 filebeat.yml配置文件
 
@@ -1150,7 +1150,7 @@ filebeat.inputs:
 
 ## 2.4 日志过滤
 
-![image-20210420223154642](https://gitee.com/littlefxc/oss/raw/master/images/image-20210420223154642.png)
+![image-20210420223154642](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210420223154642.png)
 
 [Logstash使用介绍](https://www.cnblogs.com/huhangfei/p/7605511.html)
 
@@ -1404,7 +1404,7 @@ filebeat.inputs:
 
 试想，由于业务需要，我们引入了Redis、Memcached或者Elasticsearch、Solr等服务。使得我们的应用程序可能会从不同的服务中读取数据，如下图所示。
 
-![20200806110610852](https://gitee.com/littlefxc/oss/raw/master/images/20200806110610852.png)
+![20200806110610852](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110610852.png)
 
 本质上讲，无论我们引入了何种服务或者中间件，数据最终都是从我们的MySQL数据库中读取出来的。那么，问题来了，如何将MySQL中的数据实时同步到其他的服务或者中间件呢？
 
@@ -1463,7 +1463,7 @@ public ResponseResult updateStatus(Long[] ids, String status){
 
 我们可以使用下图来简单的标识通过MQ实现数据同步的过程。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110631185.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110631185.png)
 
 我们可以使用如下代码实现这个过程。
 
@@ -1502,7 +1502,7 @@ Canal是阿里巴巴开源的一款数据库日志增量解析组件，通过Can
 
 使用Canal可以做到业务代码完全解耦，API完全解耦，可以做到准实时。
 
-![image-20210426224407408](https://gitee.com/littlefxc/oss/raw/master/images/image-20210426224407408.png)
+![image-20210426224407408](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210426224407408.png)
 
 ## 3.3 数据同步框架：Canal
 
@@ -1516,7 +1516,7 @@ Canal开源地址：https://github.com/alibaba/canal。
 
 **MySQL主从复制的实现**
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110656500.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110656500.png)
 
 从上图可以看出，主从复制主要分成三步：
 
@@ -1530,7 +1530,7 @@ Canal开源地址：https://github.com/alibaba/canal。
 
 首先，我们来看下Canal的原理图，如下所示。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110711964.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110711964.png)
 
 原理大致描述如下：
 
@@ -1549,7 +1549,7 @@ Canal开源地址：https://github.com/alibaba/canal。
 
 ### 3.3.4 Canal内部结构
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110725934.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110725934.png)
 
 说明如下：
 
@@ -1558,7 +1558,7 @@ Canal开源地址：https://github.com/alibaba/canal。
 
 接下来，我们再来看下Instance下的子模块，如下所示。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/2020080611073643.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/2020080611073643.png)
 
 - EventParser：数据源接入，模拟Slave协议和Master节点进行交互，协议解析。
 - EventSink：EventParser和EventStore的连接器，对数据进行过滤、加工、归并和分发等处理。
@@ -1588,7 +1588,7 @@ SHOW VARIABLES LIKE 'binlog_format';
 
 执行效果如下所示。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110746949.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110746949.png)
 
 可以看到，在MySQL中默认的binlog格式为STATEMENT，这里我们需要将STATEMENT修改为ROW。修改/etc/my.cnf文件。
 
@@ -1616,7 +1616,7 @@ service mysqld restart
 SHOW VARIABLES LIKE 'binlog_format';
 ```
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110759401.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110759401.png)
 
 可以看到，此时，MySQL的binlog模式已经被设置为ROW了。
 
@@ -1630,7 +1630,7 @@ GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'canal'@'localhost
 FLUSH PRIVILEGES;
 ```
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110810452.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110810452.png)
 
 ### 3.3.6 Canal部署安装
 
@@ -1638,7 +1638,7 @@ FLUSH PRIVILEGES;
 
 这里，我们以Canal 1.1.1版本进行说明，小伙伴们可以到链接 https://github.com/alibaba/canal/releases/tag/canal-1.1.1 下载Canal 1.1.1版本。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110822997.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110822997.png)
 
 #### 3.3.6.2 上传解压
 
@@ -1651,7 +1651,7 @@ tar -zxvf canal.deployer-1.1.1.tar.gz -C /usr/local/canal/
 
 解压后的目录如下所示。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110834262.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110834262.png)
 
 各目录的说明如下：
 
@@ -1729,7 +1729,7 @@ canal.instance.filter.regex = canaldb\\..*
 
 这里，我们使用Canal的源码进行测试，下载Canal的源码后，将其导入到IDEA中。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/20200806110843888.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20200806110843888.png)
 
 接下来，我们找到example下的SimpleCanalClientTest类进行测试。这个类的源码如下所示。
 
@@ -1891,7 +1891,7 @@ name : aaac    type=varchar(255)    update=true
 
 ### 3.3.11 数据同步实现
 
-![image-20210426230029824](https://gitee.com/littlefxc/oss/raw/master/images/image-20210426230029824.png)
+![image-20210426230029824](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210426230029824.png)
 
 #### 3.3.11.1 需求
 

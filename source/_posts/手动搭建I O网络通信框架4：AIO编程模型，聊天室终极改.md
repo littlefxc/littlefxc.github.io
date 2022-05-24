@@ -49,7 +49,7 @@ BIO和NIO的区别是阻塞和非阻塞，而AIO代表的是异步IO。在此之
 
     address为服务器的IP和端口，后面两个参数与前几个一样。
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417161130725-1186191947.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200417161130725-1186191947.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417161130725-1186191947.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200417161130725-1186191947.png)
 
 ## **Future**
 
@@ -65,7 +65,7 @@ Integer是read()的返回类型，此时变量readResult实际上并不一定有
 
 # **AIO编程模型**
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417161442138-580814692.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200417161442138-580814692.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417161442138-580814692.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200417161442138-580814692.png)
 
 上面只说了些零碎的概念，为了更好的理解，下面讲一讲大概的工作流程(主要针对服务器，客户端逻辑较为简单，代码注释也比较少，可以看前面几章)：
 
@@ -342,8 +342,8 @@ public class UserInputHandler implements Runnable {
 
 运行测试:
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417164605075-508533365.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200417164605075-508533365.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417164605075-508533365.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200417164605075-508533365.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417164620441-2122640649.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200417164620441-2122640649.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417164620441-2122640649.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200417164620441-2122640649.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417164642458-1627643597.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200417164642458-1627643597.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200417164642458-1627643597.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200417164642458-1627643597.png)

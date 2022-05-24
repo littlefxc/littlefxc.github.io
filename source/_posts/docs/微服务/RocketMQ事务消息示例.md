@@ -12,7 +12,7 @@ tags:
 
  ## 概念
 
-![RocketMQ事务消息示例](https://gitee.com/littlefxc/oss/raw/master/images/RocketMQ%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF%E7%A4%BA%E4%BE%8B.jpg)
+![RocketMQ事务消息示例](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/RocketMQ%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF%E7%A4%BA%E4%BE%8B.jpg)
 
 整体的流程如上所示。
 

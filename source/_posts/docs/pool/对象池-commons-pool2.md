@@ -98,9 +98,9 @@ ObjectPool 是一个接口
 
 **PooledObject状态**
 
-![image-20210801162749626](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801162749626.png)
+![image-20210801162749626](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801162749626.png)
 
-![image-20210801162852280](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801162852280.png)
+![image-20210801162852280](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801162852280.png)
 
 ### 3.2.2 示例代码 
 
@@ -206,23 +206,23 @@ passivateObject..state = RETURNING
 
 ### 3.4.1 GenericObjectPoolPoolConfig
 
-![image-20210801211018346](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801211018346.png)
+![image-20210801211018346](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801211018346.png)
 
 ### 3.4.2 AbandonedConfig
 
-![image-20210801211157285](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801211157285.png)
+![image-20210801211157285](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801211157285.png)
 
 ### 3.4.3 注意点
 
-![image-20210801211531498](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801211531498.png)
+![image-20210801211531498](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801211531498.png)
 
-![image-20210801211544503](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801211544503.png)
+![image-20210801211544503](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801211544503.png)
 
 ## 3.5 Abandon 与 Evict 区别
 
-![image-20210801212906811](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801212906811.png)
+![image-20210801212906811](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801212906811.png)
 
-![image-20210801212937024](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801212937024.png)
+![image-20210801212937024](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801212937024.png)
 
-![image-20210801213320219](https://gitee.com/littlefxc/oss/raw/master/images/image-20210801213320219.png)
+![image-20210801213320219](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210801213320219.png)
 

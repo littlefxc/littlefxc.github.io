@@ -68,7 +68,7 @@ network.host: 0.0.0.0
 
 如果出现如下错误：
 
-![https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg](https://gitee.com/littlefxc/oss/raw/master/images/es-17_1.jpg)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-17_1.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-17_1.jpg)
 
 那么需要切换到root用户下去修改配置如下：
 
@@ -81,7 +81,7 @@ soft nofile 65536
 vim /etc/sysctl.conf
 ```
 
-![https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg](https://gitee.com/littlefxc/oss/raw/master/images/es-17_2.jpg)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-17_2.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-17_2.jpg)
 
 别忘记 `sysctl -p` 刷新一下
 

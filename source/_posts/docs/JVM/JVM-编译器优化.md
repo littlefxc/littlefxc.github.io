@@ -108,13 +108,13 @@ mixed mode 代表混合执行，部分解释执行、部分编译执行。
 
 ### 1.8 方法调用计数器流程
 
-![image-20210809233815237](https://gitee.com/littlefxc/oss/raw/master/images/image-20210809233815237.png)
+![image-20210809233815237](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210809233815237.png)
 
 如果不做任何设置，方法调用次数统计的并不是方法被调用的绝对次数，而是一个相对的执行频，即一段时间之内方法被调用的次数。当超过一定的时间限度，如果方法的调用次数荏苒不足以让它提交给及时编译器编译，那这个方法的调用计数器就会减少一半，这个过程称为方法调用计数器热度的衰减，而这段时间就称为此方法统计的半衰周期。进行热度衰减的动作是在虚拟机进行垃圾手机是顺便进行的，可以使用虚拟机参数-XX:-UseCounterDecay来关闭热度衰减，让方法计数器统计方法调用的绝对次数，这样，只要系统运行时间足够长，绝大部分方法都会被编译成本地代码。另外，可以使用-XX:CounterHalfLifeTime参数设置半衰周期的时间，单位是秒。
 
 ### 1.9 回边计数器流程
 
-![image-20210809234920524](https://gitee.com/littlefxc/oss/raw/master/images/image-20210809234920524.png)
+![image-20210809234920524](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210809234920524.png)
 
 ### 1.10 方法内联
 
@@ -171,9 +171,9 @@ public class InlineTest1 {
 
 #### 1.10.5 内联相关JVM参数
 
-![image-20220215160030958](https://gitee.com/littlefxc/oss/raw/master/images/image-20220215160030958.png)
+![image-20220215160030958](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220215160030958.png)
 
-![image-20220215160113222](https://gitee.com/littlefxc/oss/raw/master/images/image-20220215160113222.png)
+![image-20220215160113222](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220215160113222.png)
 
 #### 1.10.6 方法内联测试代码
 
@@ -214,11 +214,11 @@ public class InlineTest {
 
 内联启动JVM参数：`-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining`
 
-![image-20220215163048392](https://gitee.com/littlefxc/oss/raw/master/images/image-20220215163048392.png)
+![image-20220215163048392](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220215163048392.png)
 
 不内联启动JVM参数：`-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining -XX:+FreqInlineSize=1`
 
-![image-20220215162940763](https://gitee.com/littlefxc/oss/raw/master/images/image-20220215162940763.png)
+![image-20220215162940763](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220215162940763.png)
 
 但是，一般来说不建议使用这些JVM参数，默认的就好，现代JVM是相当智能的。
 

@@ -20,7 +20,7 @@ tracker和storage都是同一个fastdfs的主程序的两个不同概念，配�
 vim tracker.conf
 ```
 
-![https://climg.mukewang.com/5e0ef55e08c034fc11160388.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef55e08c034fc11160388.jpg)
+![https://climg.mukewang.com/5e0ef55e08c034fc11160388.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef55e08c034fc11160388.jpg)
 
 - 修改tracker配置文件，此为tracker的工作目录，保存数据以及日志
 
@@ -44,7 +44,7 @@ vim tracker.conf
 ps -ef|grep tracker
 ```
 
-![https://climg.mukewang.com/5e0ef5720852057816000146.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef5720852057816000146.jpg)
+![https://climg.mukewang.com/5e0ef5720852057816000146.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef5720852057816000146.jpg)
 
 - 停止tracker
 

@@ -191,4 +191,4 @@ curl -s -X DELETE “<http://localhost:9200/new_twitter”>
 
 贴一张 生产环境执行后的index的截图，可以看到新的index的每个shard体积只有老index的一半，这样也就分摊了index的压力：
 
-![https://www.xiaohuait.com/wp-content/uploads/2020/09/774.jpg](https://gitee.com/littlefxc/oss/raw/master/images/774.jpg)
+![https://www.xiaohuait.com/wp-content/uploads/2020/09/774.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/774.jpg)

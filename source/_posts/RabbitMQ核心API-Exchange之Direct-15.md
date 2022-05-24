@@ -7,15 +7,15 @@ tags:
 - rabbitmq
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_3.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_3.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_3.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_3.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_5.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_5.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_5.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_5.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_6.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_6.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_6.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_6.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_7.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_7.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_7.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_7.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_8.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_8.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_8.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_8.png)
 
 ## 生产者
 

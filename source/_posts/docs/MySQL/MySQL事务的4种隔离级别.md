@@ -86,11 +86,11 @@ Query OK, 0 rows affected (0.00 sec)
 
 事务A：
 
-![Untitled](https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_0.png)
+![Untitled](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_0.png)
 
 事务B：
 
-![Untitled](https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_1.png)
+![Untitled](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_1.png)
 
 >💡 读未提交是隔离级别最低的，会造成脏读。
 
@@ -103,11 +103,11 @@ Query OK, 0 rows affected (0.00 sec)
 
 事务A：
 
-![Untitled](https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_2.png)
+![Untitled](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_2.png)
 
 事务B：
 
-![Untitled](https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_3.png)
+![Untitled](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_3.png)
 
 由此可以得出结论，隔离级别设置为**已提交读（READ COMMITTED）**
  时，已经不会出现脏读问题了，当前事务只能读取到其他事务提交的数据。但是，站在事务A的角度想想，存在其他问题吗？
@@ -122,13 +122,13 @@ Query OK, 0 rows affected (0.00 sec)
 
 事务A：
 
-![Untitled](https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_4-20220415155652729.png)
+![Untitled](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_4-20220415155652729.png)
 
 事务B：
 
-![Untitled](https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_5.png)
+![Untitled](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_5.png)
 
-https://gitee.com/littlefxc/oss/raw/master/images/mysql_transaction_5.png
+https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/mysql_transaction_5.png
 
 到了这一步，可以发现事务隔离级别设置为可重复读，可以解决幻读问题。
 

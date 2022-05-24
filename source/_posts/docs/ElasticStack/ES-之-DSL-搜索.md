@@ -240,7 +240,7 @@ POST /shop/_doc/_search
 
 - Head 可视化操作
 
-    ![https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_1.jpg](https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_1.jpg)
+    ![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/match_all_12_1.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/match_all_12_1.jpg)
 
 ### 3.3.2 分页查询
 
@@ -273,7 +273,7 @@ POST /shop/_doc/_search
 
 - Head 可视化操作
 
-    ![https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_2.jpg](https://gitee.com/littlefxc/oss/raw/master/images/match_all_12_2.jpg)
+    ![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/match_all_12_2.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/match_all_12_2.jpg)
 
 ## 3.4 term - 精确查询
 
@@ -311,9 +311,9 @@ POST /shop/_doc/_search
 
 - head 可视化操作对比：
 
-    ![https://climg.mukewang.com/5df73ae408b52e4b14850283.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5df73ae408b52e4b14850283.jpg)
+    ![https://climg.mukewang.com/5df73ae408b52e4b14850283.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5df73ae408b52e4b14850283.jpg)
 
-    ![https://climg.mukewang.com/5df73af9088d880314890314.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5df73af9088d880314890314.jpg)
+    ![https://climg.mukewang.com/5df73af9088d880314890314.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5df73af9088d880314890314.jpg)
 
 ### 3.4.2 terms 多个词语匹配检索
 
@@ -559,7 +559,7 @@ POST /shop/_doc/_search
 
 - Head 可视化组合查询
 
-    ![https://gitee.com/littlefxc/oss/raw/master/images/es-12_3.jpg](https://gitee.com/littlefxc/oss/raw/master/images/es-12_3.jpg)
+    ![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-12_3.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-12_3.jpg)
 
 - 为指定词语加权
 

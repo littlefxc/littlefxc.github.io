@@ -13,21 +13,21 @@ tags:
 
 [RabbitMQ基础概念详细介绍](https://www.cnblogs.com/williamjie/p/9481774.html)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_1.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_1.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_2.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_2.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_3.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_3.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_3.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_3.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_4.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_4.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_4.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_4.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_5.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_5.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_5.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_5.png)
 
 # 2 AMQP协议中间的几个重要概念：
 
 下图是AMQP的协议模型：
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_6.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_6.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_6.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_6.png)
 
 正如图中所看到的，AMQP协议模型有三部分组成：生产者、消费者和服务端。
 
@@ -53,9 +53,9 @@ tags:
 
 RabbitMQ是基于AMQP协议实现的，其结构如下图所示，和AMQP协议简直就是一模一样。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_7.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_7.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_7.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_7.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_11.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_11.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_11.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_11.png)
 
 # 3 **常用交换器**
 
@@ -65,7 +65,7 @@ RabbitMQ常用的交换器类型有direct、topic、fanout、headers四种。
 
 该类型的交换器将所有发送到该交换器的消息被转发到RoutingKey指定的队列中，也就是说路由到BindingKey和RoutingKey完全匹配的队列中。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_8.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_8.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_8.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_8.png)
 
 ## 3.2 Topic Exchange
 
@@ -73,13 +73,13 @@ RabbitMQ常用的交换器类型有direct、topic、fanout、headers四种。
 
 Exchange将RoutingKey和某Topic进行模糊匹配，其中“*”用来匹配一个词，“#”用于匹配一个或者多个词。例如“com.#”能匹配到“com.rabbitmq.oa”和“com.rabbitmq”；而"login.*"只能匹配到“com.rabbitmq”。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_9.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_9.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_9.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_9.png)
 
 ## 3.3 Fanout Exchange
 
 该类型不处理路由键，会把所有发送到交换器的消息路由到所有绑定的队列中。优点是转发消息最快，性能最好。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_10.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_11_10.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_10.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_11_10.png)
 
 ## 3.4 Headers Exchange
 

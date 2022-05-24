@@ -6,7 +6,7 @@ tags:
 - jvm
 ---
 
-![image-20210709171519463](https://gitee.com/littlefxc/oss/raw/master/images/isn4Ur.png)
+![image-20210709171519463](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/isn4Ur.png)
 
 <!-- more -->
 

@@ -12,7 +12,7 @@ Java技术能够一直保持着非常良好的向后兼容性，Class文件结�
 
 Java 虚拟机关心的只是Class类文件结构，与是否使用Java语言并没有太大的关系。如下图所示：
 
-![Java虚拟机提供的语言无关性 ](https://gitee.com/littlefxc/oss/raw/master/images/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8F%90%E4%BE%9B%E7%9A%84%E8%AF%AD%E8%A8%80%E6%97%A0%E5%85%B3%E6%80%A7.png)
+![Java虚拟机提供的语言无关性 ](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8F%90%E4%BE%9B%E7%9A%84%E8%AF%AD%E8%A8%80%E6%97%A0%E5%85%B3%E6%80%A7.png)
 
 同时，从动态代理中的 Cglib 这个包的存在，Class 类文件都不一定都得定义在磁盘文件里。
 
@@ -28,7 +28,7 @@ Class文件格式采用一种类似于C语言结构体的伪结构来存储数 �
 
   表是由多个无符号数或者其他表作为数据项构成的复合数据类型，为了便于区分，所有表的命名 都习惯性地以“_info”结尾。表用于描述有层次关系的复合结构的数据，整个Class文件本质上也可以视作是一张表.
 例如:
- ![class文件格式](https://gitee.com/littlefxc/oss/raw/master/images/class文件格式.png)
+ ![class文件格式](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/class文件格式.png)
 
 无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个前置的 容量计数器加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的“集 合”。
 

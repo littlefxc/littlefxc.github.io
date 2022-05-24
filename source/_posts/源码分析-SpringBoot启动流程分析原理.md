@@ -12,7 +12,7 @@ tags:
 
 首先，我们先介绍下我们的演示的项目环境，我们先试用**`Spring Initializr`**来创建一个**`SpirngBoot`**工程。我们使用的版本是**`SpringBoot 2.1.5.RELEASE`**。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_1.png)
 
 接下来就只在**pom.xml**文件中添加一个web工程的依赖，是为了观察后面容器类型的源码。
 
@@ -27,7 +27,7 @@ tags:
 
 我们跟着**SpringBoot**的源码来探究它的启动流程，首先，先找到这个应用程序的入口主方法，在上面打一个断点
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_2.png)
 
 启动之后，**F5** 进入到 `run()` 方法
 
@@ -175,23 +175,23 @@ public static final String FACTORIES_RESOURCE_LOCATION = "META-INF/spring.factor
 
 双击Shift搜索spring.factories可以看到它存在于以下工程中
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_3.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_3.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_3.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_3.png)
 
 **`spring-boot-2.1.5.RELEASE.jar`**下的**`spring.factores`**（截图未完整截取）
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_4.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_4.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_4.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_4.png)
 
 **`spring-boot-autoconfigure-2.1.5.RELEASE.jar`**下的**`spring.factores`** 
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_5.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_5.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_5.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_5.png)
 
 **`spring-beans-5.1.7.RELEASE.jar`**下的**`spring.factores`** 
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_6.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_6.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_6.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_6.png)
 
 从Map中根据**`org.springframework.context.ApplicationContextInitializer`**的类型拿到需要的类初始化类，断点进入**`getOrDefault(factoryClassName, Collections.emptyList());`**方法
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_7.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_7.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_7.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_7.png)
 
 之后就是把加载到的需要初始化的类进行实例化添加到一个集合中等待备用
 
@@ -207,7 +207,7 @@ public void setInitializers(
 
 最关键的的还是这句
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_8.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_8.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_8.png)
 
 当我们跟进去之后，会发现在初始化监听类的时候和上面初始化应用上下文是一样的代码。唯一不同的是**`getSpringFactoriesInstances(ApplicationListener.class))`**传进去的是**`ApplicationListener.class`**所以这里就不再赘述。
 
@@ -219,9 +219,9 @@ public void setInitializers(
 **this.mainApplicationClass = deduceMainApplicationClass();**
 ```
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_9.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_9.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_9.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png](https://gitee.com/littlefxc/oss/raw/master/images/springbootllanuch_10.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_10.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/springbootllanuch_10.png)
 
 到这里就完成了**`SpringBoot`**启动过程中初始化**`SpringApplication`**的过程。
 

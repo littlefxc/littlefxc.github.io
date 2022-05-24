@@ -10,7 +10,7 @@ tags:
 
 ### 构建请求
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/5e12fe9b09c5379227001716-20220211161545138.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e12fe9b09c5379227001716-20220211161545138.png)
 
 - ribbon、hystrix：引入feign的同时，ribbon和hystrix这两个组件也会被一同引入。
 
@@ -29,7 +29,7 @@ tags:
 
 ### 发起调用
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/5e12fea8099390f030181540.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e12fea8099390f030181540.png)
 
 - 拦截器
 

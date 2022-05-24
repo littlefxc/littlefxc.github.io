@@ -9,7 +9,7 @@ tags:
 
 ## 1.1 内存结构
 
-![https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构.png](https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构.png)
 
 - 线程共享：堆，方法区
 - 线程隔离：虚拟机栈，本地方法栈，程序计数器
@@ -20,7 +20,7 @@ tags:
 
 堆又做了细分如下图所示：
 
-![https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-堆.png](https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-堆.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-堆.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-堆.png)
 
 JDK8 之前堆分为新生代、老年代和持久代（也叫永久代），其中新生代中又有伊甸园和存活区，而存活区又分为 “From survivor” 和 “To survivor”。
 
@@ -30,7 +30,7 @@ JDK8 之后，持久代被废弃，由元空间代替，而元空间并不是堆
 
 虚拟机栈是线程独享的，当创建一个现成的时候就会创建虚拟机栈。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-虚拟机栈.png](https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-虚拟机栈.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-虚拟机栈.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-虚拟机栈.png)
 
 - 虚拟机栈由栈帧组成。
 - 每一次方法调用都会创建一个栈帧，然后去压栈。
@@ -51,7 +51,7 @@ JDK8 之后，持久代被废弃，由元空间代替，而元空间并不是堆
 
 ### 1.1.5 方法区
 
-![https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-方法区.png](https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-方法区.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-方法区.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-方法区.png)
 
 方法区主要包括 4 个部分：类信息、运行时常量池、字符串常量池和静态变量。
 
@@ -110,7 +110,7 @@ class Demo {
 
 上面这段代码的内存分布大致是这样的：
 
-![image-20210223220317252](https://gitee.com/littlefxc/oss/raw/master/images/image-20210223220317252.png)
+![image-20210223220317252](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210223220317252.png)
 
 1. 在启动的时候首先将类加载到方法区，要加载两个类分别是 JVMTest1.class 和 Demo.class 。
 

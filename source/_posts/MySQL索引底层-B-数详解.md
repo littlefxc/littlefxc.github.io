@@ -26,7 +26,7 @@ tags:
 
 树跟数组、链表、堆栈一样，是一种数据结构。它由有限个节点，组成具有层次关系的集合。因为它看起来像一棵树，所以得其名。一颗普通的树如下:
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141128650.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141128650.png)
 
 树是包含n（n为整数，大于0）个结点， n-1条边的有穷集，它有以下特点：
 
@@ -53,7 +53,7 @@ tags:
 
 #### 树的种类
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039205.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039205.png)
 
 按照有序性，可以分为有序树和无序树：
 
@@ -105,7 +105,7 @@ B-树，也称为B树，是一种平衡的多叉树（可以对比一下平衡�
 
 一棵简单的B-树如下：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039307.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039307.png)
 
 #### B+ 树简介 
 
@@ -121,7 +121,7 @@ B+树是B-树的变体，也是一颗多路搜索树。一棵m阶的B+树主要�
 
 一颗3阶的B+树如下：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039396.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039396.png)
 
 B+树和B-树的主要区别如下：
 
@@ -144,33 +144,33 @@ B+树插入要记住这几个步骤：
 
 1. 在空树中插入43
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039451.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039451.png)
 
 这时候根结点就一个关键值，此时它是根结点也是叶子结点。
 
 1. 依次插入48，36
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039479.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039479.png)
 
 这时候跟节点拥有3个关键字，已经满了
 
 1. 继续插入 32，发现当前节点关键字已经不小于阶数4了，于是分裂 第⌈4/2⌉=2（下标0,1,2）个，也即43上移到父节点。
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039528.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039528.png)
 
 1. 继续插入37，49，前节点关键字都是还没满的，直接插入，如下：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039570.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039570.png)
 
 1. 最后插入28，发现当前节点关键字也是不小于阶数4了，于是分裂，于是分裂， 第 ⌈4/2⌉=2个，也就是36上移到父节点，因父子节点只有2个关键值，还是小于4的，所以不用继续分裂，插入完成
 
-   ![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039628.png)
+   ![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039628.png)
 
 ### B+树的查找 
 
 因为B+树的数据都是在叶子节点上的，内部节点只是指针索引的作用，因此，查找过程需要搜索到叶子节点上。还是以这颗B+树为例吧：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039695.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039695.png)
 
 #### B+ 树单值查询 
 
@@ -178,15 +178,15 @@ B+树插入要记住这几个步骤：
 
 第一次磁盘 I/O，查找磁盘块1，即根节点（36,43）,因为32小于36，因此访问根节点的左边第一个孩子节点
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039753.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039753.png)
 
 第二次磁盘 I/O, 查找磁盘块2，即根节点的第一个孩子节点，获得区间(28,32),遍历即可得32.
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039811.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039811.png)
 
 动态图如下：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640.gif)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640.gif)
 
 #### B+ 树范围查询 
 
@@ -194,11 +194,11 @@ B+树插入要记住这几个步骤：
 
 第一步先访问根节点，发现区间的左端点32小于36,则访问根节点的第一个左子树(28,32);
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141039753.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141039753.png)
 
 第二步访问节点（28,32），找到32，于是开始遍历链表，把[32,40]区间值找出来，这也是B+树比B-树高效的地方。
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040015.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040015.png)
 
 ### B+树的删除 
 
@@ -213,39 +213,39 @@ B+树删除关键字，分这几种情况
 
 假设当前有这么一颗5阶的B+树
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040073.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040073.png)
 
 如果删除22，因为关键字个数为3 > ⌈5/2⌉-1=2， 直接删除（⌈⌉表示向上取整的意思）
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040297.gif)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040297.gif)
 
 #### 如果关键字个数大于⌈m/2⌉-1，并且删除的关键字存在于父子节点中，那么需要相应调整父子节点的值 
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040356.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040356.png)
 
 如果删除20，因为关键字个数为3 > ⌈5/2⌉-1=2，并且20是当前节点的边界值，且存在父子节点中，所以删除后，其父子节点也要响应调整。
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040470.gif)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040470.gif)
 
 #### 如果删除该关键字后，关键字个数小于⌈m/2⌉-1，兄弟节点可以借用
 
 以下这颗5阶的B+树，
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040508.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040508.png)
 
 如果删除15,删除关键字的结点只剩1个关键字，小于⌈5/2⌉-1=2，不满足B+树特点，但是其兄弟节点拥有3个元素（7,8,9），可以借用9过来，如图：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141040618.gif)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141040618.gif)
 
 #### 在删除关键字后，如果导致其结点中关键字个数不足，并且兄弟结点没有得借用的话，需要合并兄弟结点 
 
 以下这颗5阶的B+树：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041062.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141041062.png)
 
 如果删除关键字7，删除关键字的结点只剩1个关键字，小于⌈5/2⌉-1=2，不满足B+树特点，并且兄弟结点没法借用，因此发生合并，如下：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041325.gif)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141041325.gif)
 
 主要流程酱紫：
 
@@ -256,7 +256,7 @@ B+树删除关键字，分这几种情况
 
 所以删除关键字7后的结果如下：
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041459.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141041459.png)
 
 ### B+树经典面试题 
 
@@ -272,11 +272,11 @@ B+树删除关键字，分这几种情况
 - 文件系统中，最小单位是块，一个块大小就是4k；
 - InnoDB存储引擎最小储存单元是页，一页大小就是16k。
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640-20210512141041528.png)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210512141041528.png)
 
 因为B+树叶子存的是数据，内部节点存的是键值+指针。索引组织表通过非叶子节点的二分查找法以及指针确定数据在哪个页中，进而再去数据页中找到需要的数据；
 
-![图片](https://gitee.com/littlefxc/oss/raw/master/images/640.jpg)
+![图片](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640.jpg)
 
 假设B+树的高度为2的话，即有一个根结点和若干个叶子结点。这棵B+树的存放总记录数为=根结点指针数*单个叶子节点记录行数。
 

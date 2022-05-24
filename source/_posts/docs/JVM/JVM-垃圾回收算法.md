@@ -14,7 +14,7 @@ tags:
 
 ## 1 标记-清除（Mark-Sweep）
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/20220303214940.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20220303214940.png)
 
 1. 标记需要回收的对象
 
@@ -24,7 +24,7 @@ tags:
 
 ## 2 标记-整理（Mark-Compact）
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/20220303222629.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/20220303222629.png)
 
 1. 标记需要回收的对象
 
@@ -35,7 +35,7 @@ tags:
 
 ## 3 复制（Copy）
 
-![image-20220303223424546](https://gitee.com/littlefxc/oss/raw/master/images/image-20220303223424546.png)
+![image-20220303223424546](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220303223424546.png)
 
 1. 把内存分为两块，每次只使用一块
 
@@ -56,7 +56,7 @@ tags:
 
 2. 根据对象的存活周期，把内存分成多个区域，不同区域使用不同的回收算法回收对象
 
-   ![image-20220311113729890](https://gitee.com/littlefxc/oss/raw/master/images/image-20220311113729890.png)
+   ![image-20220311113729890](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220311113729890.png)
 
 ### 5.1 回收类型
 
@@ -75,7 +75,7 @@ tags:
 
 相关的JVM参数
 
-![image-20220311162205506](https://gitee.com/littlefxc/oss/raw/master/images/image-20220311162205506.png)
+![image-20220311162205506](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220311162205506.png)
 
 ## 6 增量算法
 

@@ -21,7 +21,7 @@ tags:
 
 JVM 内存结构如下图所示：
 
-![JVM内存结构](https://gitee.com/littlefxc/oss/raw/master/images/image-20220301152640105.png)
+![JVM内存结构](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220301152640105.png)
 
 - 虚拟机栈、本地方法栈、程序计数器是线程隔离的，这 3 个区域与线程的生命周期保持一致，同生共死，是不需要考虑垃圾回收的。
 - 堆和方法区市线程共享的，才需要考虑。
@@ -36,7 +36,7 @@ JVM 内存结构如下图所示：
 
 如下图所示，对象被引用一次，计数器就加 1 ，但是一旦遇到有循环引用的情况，对象就无法被回收。
 
-![image-20220301153530892](https://gitee.com/littlefxc/oss/raw/master/images/image-20220301153530892.png)
+![image-20220301153530892](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220301153530892.png)
 
 ### 可达性分析
 
@@ -46,7 +46,7 @@ Java并没有采用引用计数法，而是使用了可达性分析。
 
 如下图所示：
 
-![可达性分析](https://gitee.com/littlefxc/oss/raw/master/images/image-20220301154408408.png)
+![可达性分析](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220301154408408.png)
 
 #### GC Roots 包括哪些对象
 
@@ -93,7 +93,7 @@ Java并没有采用引用计数法，而是使用了可达性分析。
 
 即使在可达性分析算法中判定为不可达的对象,也不是“非死不可”的,这时候它们暂时还处于“缓刑”阶段,要真正宣告一个对象死亡,至少要经历两次标记过程：
 
-![image-20220301162604333](https://gitee.com/littlefxc/oss/raw/master/images/image-20220301162604333.png)
+![image-20220301162604333](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220301162604333.png)
 
 - 如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链,那它将会被第一次标记,随后进行一次筛选,筛选的条件是此对象是否有必要执行finalize()方法。假如对象没有覆盖finalize()方法,或者finalize()方法已经被虚拟机调用过,那么虚拟机将这两种情况都视为“没有必要执行”。
 
@@ -152,7 +152,7 @@ Java并没有采用引用计数法，而是使用了可达性分析。
 
   结果展示：
 
-  ![image-20220301163844090](https://gitee.com/littlefxc/oss/raw/master/images/image-20220301163844090.png)
+  ![image-20220301163844090](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220301163844090.png)
 
 事实上假如将代码第24行也就是第二次调用 System.gc() 前没有将SAVE_HOOK 设为 null，那么 SAVE_HOOK 对象将永远不会被回收。
 

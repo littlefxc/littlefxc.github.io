@@ -21,7 +21,7 @@ select * from emp where name = 'Jefabc';
 explain select * from emp where name = 'Jefabc';
 ```
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/512541-20180803142201303-545775900.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/512541-20180803142201303-545775900.png)
 
 expain出来的信息有10列，分别是id、select_type、table、type、possible_keys、key、key_len、ref、rows、Extra
 
@@ -58,7 +58,7 @@ SELECT识别符。这是SELECT的查询序列号
 explain select e.no, e.name from emp e left join dept d on e.dept_no = d.no where e.name like 'Jef%' and d.name = '研发部';
 ```
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/512541-20180803143413064-173136748.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/512541-20180803143413064-173136748.png)
 
  
 

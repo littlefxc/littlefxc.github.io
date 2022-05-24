@@ -16,7 +16,7 @@ tags:
 
 所谓BIO，就是Block IO，阻塞式的IO。这个阻塞主要发生在：ServerSocket接收请求时（accept()方法）、InputStream、OutputStream（输入输出流的读和写）都是阻塞的。这个可以在下面代码的调试中发现，比如在客户端接收服务器消息的输入流处打上断点，除非服务器发来消息，不然断点是一直停在这个地方的。也就是说这个线程在这时间是被阻塞的。
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411190359629-713089288.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411190359629-713089288.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411190359629-713089288.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200411190359629-713089288.png)
 
 如图：当一个客户端请求进来时，接收器会为这个客户端分配一个工作线程，这个工作线程专职处理客户端的操作。在上一章中，服务器接收到客户端请求后就跑去专门服务这个客户端了，所以当其他请求进来时，是处理不到的。
 
@@ -274,20 +274,20 @@ public class UserInputHandler implements Runnable {
 
 1.首先在一个终端里运行ChatServer，打开服务器
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193234531-59946096.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193234531-59946096.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193234531-59946096.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200411193234531-59946096.png)
 
 2.在第二个终端里打开ChatClient，暂且叫A，此时服务器的终端显示：
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193327017-1431424368.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193327017-1431424368.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193327017-1431424368.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200411193327017-1431424368.png)
 
 3.类似的，在第三个终端里打开ChatClient，暂且叫B，此时服务器显示：
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193358577-1779741867.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193358577-1779741867.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193358577-1779741867.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200411193358577-1779741867.png)
 
 4.A中输入hi,除了服务器会打印hi外，B中也会显示，图片中的端口号和前面的不一样，是因为中间出了点小问题，前三张截图和后面的不是同时运行的。实际中同一个客户端会显示一样的端口号：
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193747903-851197924.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193747903-851197924.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193747903-851197924.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200411193747903-851197924.png)
 
 5.当客户端输入quit时就会断开连接，最后，服务器的显示为：
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193923381-1365643546.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200411193923381-1365643546.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200411193923381-1365643546.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200411193923381-1365643546.png)

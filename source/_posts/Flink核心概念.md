@@ -12,14 +12,14 @@ tags:
 
 <!-- more -->
 
-![图2](https://gitee.com/littlefxc/oss/raw/master/images/2-20210408195606994.png)
+![图2](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/2-20210408195606994.png)
 
 Flink 实际运行时包括两类进程（下图所示）：
 
 - JobManager（又称为 JobMaster）：协调 Task 的分布式执行，包括调度 Task、协调创建 Checkpoint 以及当 Job failover 时协调各个 Task 从 Checkpoint 恢复等。
 - TaskManager（又称为 Worker）：执行 Dataflow 中的 Tasks，包括内存 Buffer 的分配、Data Stream 的传递等。
 
-![Flink Runtime 架构图](https://gitee.com/littlefxc/oss/raw/master/images/3-20210408195607193.png)
+![Flink Runtime 架构图](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/3-20210408195607193.png)
 
 Flink Runtime 架构图说明：
 
@@ -34,7 +34,7 @@ Flink Runtime 架构图说明：
 
 从下图中可以看出 Task Slot 是一个 TaskManager 中的最小资源分配单位，一个 TaskManager 中有多少个 Task Slot 就意味着能支持多少并发的 Task 处理。需要注意的是，一个 Task Slot 中可以执行多个 Operator，一般这些 Operator 是能被 Chain 在一起处理的。
 
-![Process](https://gitee.com/littlefxc/oss/raw/master/images/4-20210408195607317.png)
+![Process](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/4-20210408195607317.png)
 
 # 1 Apache Flink 的定义、架构及原理
 
@@ -70,7 +70,7 @@ Apache Flink 是一个分布式大数据处理引擎，可对有限数据流和�
 
 ##  4.1 Flink的应用场景：Data Pipeline
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/2-16.004.jpeg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/2-16.004.jpeg)
 
 Data Pipeline 的核心场景类似于数据搬运并在搬运的过程中进行部分数据清洗或者处理，而整个业务架构图的左边是Periodic ETL，它提供了流式ETL 或者实时ETL，能够订阅消息队列的消息并进行处理，清洗完成后实时写入到下游的Database或File system 中。场景举例：
 
@@ -84,13 +84,13 @@ Data Pipeline 的核心场景类似于数据搬运并在搬运的过程中进行
 
 ## 4.2 Flin 应用场景：Data Analytics
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/3-.005.jpeg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/3-.005.jpeg)
 
 Data Analytics，如图，左边是Batch Analytics，右边是Streaming Analytics。Batch Analytics 就是传统意义上使用类似于Map Reduce、Hive、Spark Batch 等，对作业进行分析、处理、生成离线报表；Streaming Analytics 使用流式分析引擎如Storm、Flink 实时处理分析数据，应用较多的场景如实时大屏、实时报表。
 
 ## 4.3 Flink 应用场景：Data Driven
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/4-.006.jpeg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/4-.006.jpeg)
 
 从某种程度上来说，所有的实时的数据处理或者是流式数据处理都是属于Data Driven，流计算本质上是Data Driven 计算。应用较多的如风控系统，当风控系统需要处理各种各样复杂的规则时，Data Driven 就会把处理的规则和逻辑写入到Datastream 的API 或者是ProcessFunction 的API 中，然后将逻辑抽象到整个Flink 引擎，当外面的数据流或者是事件进入就会触发相应的规则，这就是Data Driven 的原理。在触发某些规则后，Data Driven 会进行处理或者是进行预警，这些预警会发到下游产生业务通知，这是Data Driven 的应用场景，Data Driven 在应用上更多应用于复杂事件的处理。
 

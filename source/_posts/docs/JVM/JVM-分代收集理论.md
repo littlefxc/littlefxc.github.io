@@ -6,7 +6,7 @@ tags:
 - jvm
 ---
 
-![image-20220120124433404](https://gitee.com/littlefxc/oss/raw/master/images/image-20220120124433404.png)
+![image-20220120124433404](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220120124433404.png)
 
 ## 分代收集理论
 

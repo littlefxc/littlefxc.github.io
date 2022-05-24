@@ -121,7 +121,7 @@ select @@transaction_isolation;
 show variables like 'transaction_isolation'
 ```
 
-![image-20210914160820416](https://gitee.com/littlefxc/oss/raw/master/images/image-20210914160820416.png)
+![image-20210914160820416](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210914160820416.png)
 
 
 

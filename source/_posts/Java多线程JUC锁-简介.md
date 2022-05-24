@@ -24,7 +24,7 @@ JUC包中的锁，包括：Lock接口，ReadWriteLock接口，LockSupport阻塞�
 
 先看看锁的框架图，如下所示。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/271147386096273.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271147386096273.jpg)
 
 ## Lock
 
@@ -52,7 +52,7 @@ Condition 接口描述了可能会与锁有关联的条件变量。这些变量�
 ReentrantLock是独占锁。所谓独占锁，是指只能被独自占领，即同一个时间点只能被一个线程锁获取到的锁。ReentrantLock锁包括"公平的ReentrantLock"和"非公平的ReentrantLock"。"公平的ReentrantLock"是指"不同线程获取锁的机制是公平的"，而"非公平的　　ReentrantLock"则是指"不同线程获取锁的机制是非公平的"，ReentrantLock是"可重入的锁"。
 ReentrantLock的UML类图如下：
 
-[![img](https://gitee.com/littlefxc/oss/raw/master/images/271152070311302.jpg)](https://images0.cnblogs.com/blog/497634/201401/271152070311302.jpg)
+[![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271152070311302.jpg)](https://images0.cnblogs.com/blog/497634/201401/271152070311302.jpg)
 
 1. ReentrantLock实现了Lock接口。
 2. ReentrantLock中有一个成员变量sync，sync是Sync类型；Sync是一个抽象类，而且它继承于AQS。
@@ -63,7 +63,7 @@ ReentrantLock的UML类图如下：
 ReentrantReadWriteLock是读写锁接口ReadWriteLock的实现类，它包括子类ReadLock和WriteLock。ReentrantLock是共享锁，而WriteLock是独占锁。
 ReentrantReadWriteLock的UML类图如下：
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/271152304845270.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271152304845270.jpg)
 
 1. ReentrantReadWriteLock实现了ReadWriteLock接口。
 2. ReentrantReadWriteLock中包含sync对象，读锁readerLock和写锁writerLock。读锁ReadLock和写锁WriteLock都实现了Lock接口。
@@ -74,7 +74,7 @@ ReentrantReadWriteLock的UML类图如下：
 CountDownLatch是一个同步辅助类，在完成一组正在其他线程中执行的操作之前，它允许一个或多个线程一直等待。 
 CountDownLatch的UML类图如下：
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/271151497193557.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271151497193557.jpg)
 
 CountDownLatch包含了sync对象，sync是Sync类型。CountDownLatch的Sync是实例类，它继承于AQS。
 
@@ -83,7 +83,7 @@ CountDownLatch包含了sync对象，sync是Sync类型。CountDownLatch的Sync是
 CyclicBarrier是一个同步辅助类，允许一组线程互相等待，直到到达某个公共屏障点 (common barrier point)。因为该 barrier 在释放等待线程后可以重用，所以称它为循环 的 barrier。
 CyclicBarrier的UML类图如下：
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/271151078288989.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271151078288989.jpg)
 
 CyclicBarrier是包含了"ReentrantLock对象lock"和"Condition对象trip"，它是通过独占锁实现的。
 **CyclicBarrier和CountDownLatch的区别**是：
@@ -99,6 +99,6 @@ Semaphore是一个计数信号量，它的本质是一个"共享锁"。
 
 Semaphore的UML类图如下：
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/271150551567427.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/271150551567427.jpg)
 
 和"ReentrantLock"一样，Semaphore包含了sync对象，sync是Sync类型；而且，Sync也是一个继承于AQS的抽象类。Sync也包括"公平信号量"FairSync和"非公平信号量"NonfairSync。

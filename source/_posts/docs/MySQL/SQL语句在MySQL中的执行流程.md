@@ -10,7 +10,7 @@ tags:
 
 ## 1 基本架构概述
 
-![https://img-blog.csdnimg.cn/311f0d0b4e094ce38436b88815fcc82e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16](https://gitee.com/littlefxc/oss/raw/master/images/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16.png)![SQL语句在MySQL中的执行流程](https://gitee.com/littlefxc/oss/raw/master/images/SQL语句在MySQL中的执行流程.jpg)
+![https://img-blog.csdnimg.cn/311f0d0b4e094ce38436b88815fcc82e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5LiA5bm05pil5Y-I5p2l,size_20,color_FFFFFF,t_70,g_se,x_16.png)![SQL语句在MySQL中的执行流程](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/SQL语句在MySQL中的执行流程.jpg)
 
 - MySQL 分为两层，Server 层和存储引擎层：
 

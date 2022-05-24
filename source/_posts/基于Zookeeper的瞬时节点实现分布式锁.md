@@ -8,7 +8,7 @@ tags:
 
 # Zookeeper 的数据结构
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/UE5cYm.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/UE5cYm.png)
 
 详细内容见官网
 
@@ -16,15 +16,15 @@ tags:
 
 # 实现原理
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/JbLkYC.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JbLkYC.png)
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/o3SdiJ.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/o3SdiJ.png)
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/7D9zYJ.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/7D9zYJ.png)
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/X36dAV.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/X36dAV.png)
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/GUkIWX.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/GUkIWX.png)
 
 1. 线程A、B、C、D在zookeeper中的节点序号分别是1、2、3、4。
 2. 节点序号最小的线程A 获得锁
@@ -161,11 +161,11 @@ public String zookeeperLock(){
 
 第一个程序的日志：
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/Y2fTpH.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Y2fTpH.png)
 
 第二个程序的日志：
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/rYNilY.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rYNilY.png)
 
 结论：第一个程序在11:04:51获得锁，10秒后即11:05:01释放锁，第二个程序在11:05:01获得锁，10妙后释放锁。ZkLock已经完成了我们的期望结果。
 

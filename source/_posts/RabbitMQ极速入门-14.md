@@ -7,9 +7,9 @@ tags:
 - rabbitmq
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_1.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_1.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_2.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_14_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_14_2.png)
 
 ## 生产者
 

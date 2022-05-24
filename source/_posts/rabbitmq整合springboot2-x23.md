@@ -8,15 +8,15 @@ tags:
 - spring-boot
 ---
 
-![rabbitmq_23_3](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_3.png)
+![rabbitmq_23_3](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_3.png)
 
-![rabbitmq_23_4](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_4.png)
+![rabbitmq_23_4](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_4.png)
 
-![rabbitmq_23_5](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_5.png)
+![rabbitmq_23_5](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_5.png)
 
-![rabbitmq_23_6](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_6.png)
+![rabbitmq_23_6](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_6.png)
 
-![rabbitmq_23_8](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_23_8.png)
+![rabbitmq_23_8](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_23_8.png)
 
 ## 生产者关键代码
 

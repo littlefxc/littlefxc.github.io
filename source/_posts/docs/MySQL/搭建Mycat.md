@@ -15,7 +15,7 @@ tags:
 5. 下载 Mycat 软件包
 6. 在第3台机器上安装mycat，并修改配置文件
 
-   ![image-20210609210635587](https://gitee.com/littlefxc/oss/raw/master/images/image-20210609210635587.png)
+   ![image-20210609210635587](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210609210635587.png)
 
 7. 连接mycat，体验数据的增删改查
 
@@ -122,7 +122,7 @@ vi /etc/sysconfig/iptables
 
 注意：开通3306 端口的行必须在icmp-host-prohibited前，否则无效：以下为配置结果图：
 
-![图片描述](https://gitee.com/littlefxc/oss/raw/master/images/5e81a3ba087c42ce05540189.jpg)
+![图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e81a3ba087c42ce05540189.jpg)
 
 ### 2.8.3 重启防火墙，使配置生效：
 
@@ -220,7 +220,7 @@ bin/mycat start
 
 启动后，验证一些基本操作，如下图所示：
 
-![image-20210610162658349](https://gitee.com/littlefxc/oss/raw/master/images/image-20210610162658349.png)
+![image-20210610162658349](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210610162658349.png)
 
 可以看到，我们成功连上了 mycat 服务器，MyCat 服务器默认定义了一个名为 TESTDB 的逻辑数据库，并且也在该逻辑数据库中定义了一些逻辑表。
 
@@ -230,7 +230,7 @@ bin/mycat start
 
 ## 3.3 配置
 
-![image-20210610163531656](https://gitee.com/littlefxc/oss/raw/master/images/image-20210610163531656.png)
+![image-20210610163531656](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210610163531656.png)
 
 其中 ,
 
@@ -392,7 +392,7 @@ Function 配置节点则定义了具体的拆分算法。例如使用对 1000 �
 
 具体错误如下：
 
-![image-20210611093234112](https://gitee.com/littlefxc/oss/raw/master/images/image-20210611093234112.png)
+![image-20210611093234112](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210611093234112.png)
 
 错误原因有两种可能：
 

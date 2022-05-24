@@ -108,11 +108,11 @@ scan 't_employee'
 
 查询结果：
 
-![Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled.png](https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase.png)
+![Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/hive_on_hbase.png)
 
 然后切换到hive中查询该表
 
-![Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled%201.png](https://gitee.com/littlefxc/oss/raw/master/images/hive_on_hbase2.png)
+![Hive%E9%9B%86%E6%88%90HBase%20%E8%AF%A6%E8%A7%A3%20100037f2aa264a2c835a0530a373a912/Untitled%201.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/hive_on_hbase2.png)
 
 至此，hive 集成hbase 就到此告一段落。
 

@@ -22,7 +22,7 @@ create table if not exists capacity_stats_live_access (
 ) COMMENT '直播调阅日志统计';
 ```
 
-![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled.png](https://gitee.com/littlefxc/oss/raw/master/images/hive中文注释乱码.png)
+![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/hive中文注释乱码.png)
 
 这是因为在MySQL中的元数据出现乱码
 
@@ -30,7 +30,7 @@ create table if not exists capacity_stats_live_access (
 
 因为我们知道 metastore 支持数据库级别，表级别的字符集是 `latin1` 。
 
-![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%201.png](https://gitee.com/littlefxc/oss/raw/master/images/Untitled%201-20201102170449594.png)
+![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%201.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Untitled%201-20201102170449594.png)
 
 那么我们只需要把相应注释的地方的字符集由 latin1 改成 utf-8，就可以了。用到注释的就三个地方，表、分区、视图。如下修改分为两个步骤：
 
@@ -56,10 +56,10 @@ create table if not exists capacity_stats_live_access (
 
 ## 2.3. 验证
 
-![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%202.png](https://gitee.com/littlefxc/oss/raw/master/images/Untitled%202-20201102170449708.png)
+![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%202.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Untitled%202-20201102170449708.png)
 
 发现注释还是乱码。
 
 把表删除然后重新创建。效果如下：
 
-![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%203.png](https://gitee.com/littlefxc/oss/raw/master/images/Untitled%203-20201102170449863.png)
+![Hive%E6%B3%A8%E9%87%8A%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%2044812d6495e341f4aec7117aac2ec503/Untitled%203.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Untitled%203-20201102170449863.png)

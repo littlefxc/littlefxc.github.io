@@ -75,7 +75,7 @@ tags:
    ./make.sh install
    ```
 
-   ![https://climg.mukewang.com/5e0ef484082a831c05840194.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef484082a831c05840194.jpg)
+   ![https://climg.mukewang.com/5e0ef484082a831c05840194.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef484082a831c05840194.jpg)
 
    如上图，
 
@@ -83,9 +83,9 @@ tags:
 
    - `/etc/fdfs` 包含了配置文件；
 
-     ![https://climg.mukewang.com/5e0ef4aa082ddd3610940470.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef4aa082ddd3610940470.jpg)
+     ![https://climg.mukewang.com/5e0ef4aa082ddd3610940470.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef4aa082ddd3610940470.jpg)
 
-     ![https://climg.mukewang.com/5e0ef4bc083b7c0109940238.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef4bc083b7c0109940238.jpg)
+     ![https://climg.mukewang.com/5e0ef4bc083b7c0109940238.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef4bc083b7c0109940238.jpg)
 
 - 拷贝配置文件如下：
 
@@ -93,4 +93,4 @@ tags:
 cp /home/software/FastDFS/fastdfs-6.04/conf/* /etc/fdfs/
 ```
 
-![https://climg.mukewang.com/5e0ef4cf08b65f3b13560470.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef4cf08b65f3b13560470.jpg)
+![https://climg.mukewang.com/5e0ef4cf08b65f3b13560470.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef4cf08b65f3b13560470.jpg)

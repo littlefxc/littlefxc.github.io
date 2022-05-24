@@ -29,7 +29,7 @@ Flink 实际运行时包括两类进程（下图所示）：
 - JobManager（又称为 JobMaster）：协调 Task 的分布式执行，包括调度 Task、协调创建 Checkpoint 以及当 Job failover 时协调各个 Task 从 Checkpoint 恢复等。
 - TaskManager（又称为 Worker）：执行 Dataflow 中的 Tasks，包括内存 Buffer 的分配、Data Stream 的传递等。
 
-![Flink Runtime 架构图](https://gitee.com/littlefxc/oss/raw/master/images/3.png)
+![Flink Runtime 架构图](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/3.png)
 
 Flink Runtime 架构图说明：
 
@@ -49,7 +49,7 @@ Flink Runtime 架构图说明：
 
 安装好Flink后，再来看下安装路径下的配置文件有哪些吧
 
-![image-20210409111154176](https://gitee.com/littlefxc/oss/raw/master/images/image-20210409111154176.png)
+![image-20210409111154176](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210409111154176.png)
 
 安装目录下主要有 flink-conf.yaml 配置、日志的配置文件、zk 配置、Flink SQL Client 配置。
 

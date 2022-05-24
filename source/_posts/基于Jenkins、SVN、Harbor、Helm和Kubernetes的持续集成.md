@@ -99,7 +99,7 @@ spec:
 
 # 6 持续构建流程
 
-![在这里插入图片描述](https://gitee.com/littlefxc/oss/raw/master/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70.png)
+![在这里插入图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0xpdHRsZV9meGM=,size_16,color_FFFFFF,t_70.png)
 
 
 1. 开发人员提交代码到 SVN 代码仓库

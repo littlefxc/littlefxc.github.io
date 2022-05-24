@@ -5,7 +5,7 @@ categories: elk
 tags: logstash
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png](https://gitee.com/littlefxc/oss/raw/master/images/logstash_1_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/logstash_1_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/logstash_1_1.png)
 
 # 1 Logstash
 
@@ -28,7 +28,7 @@ Logstash是elastic技术栈中的一个技术。它是一个数据采集引擎�
 
 同步数据到es中，前提得要有索引，这个需要手动先去创建，名字随意。比如：`foodie-items`
 
-![https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e01cbe1086da30502810316.jpg)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e01cbe1086da30502810316.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e01cbe1086da30502810316.jpg)
 
 # 5 JDK
 

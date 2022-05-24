@@ -7,7 +7,7 @@ tags:
 - rabbitmq
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_13_1.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_13_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_13_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_13_1.png)
 
 # RabbitMQ急速入门
 

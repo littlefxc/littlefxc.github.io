@@ -22,7 +22,7 @@ Apache Kylin™是一个开源的、分布式的分析型数据仓库，提供 H
 如果想要知道Kylin是如何实现超大数据集的秒级多维分析查询，那么就得了解Kylin的架构原理。
 Kylin实现秒级查询的关键点是预计算，对于超大数据集的复杂查询，既然现场计算需要花费较长时间，那么根据空间换时间的原理，我们就可以提前将所有可能的计算结果计算并存储下来，把高复杂度的聚合运算、多表连接等操作转换成对预计算结果的查询，比如把本该进行的Join、Sum、CountDistinct等操作改写成Cube的查询操作。从而实现超大数据集的秒级多维分析查询。
 
-![image-20200924112848747](https://gitee.com/littlefxc/oss/raw/master/images/image-20200924112848747.png)
+![image-20200924112848747](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200924112848747.png)
 
 - REST Server:
   REST Server是一套面向应用程序开发的入口点，旨在实现针对Kylin平台的应用开发工作。 此类应用程序可以提供查询、获取结果、触发cube构建任务、获取元数据以及获取用户权限等等。 另外可以通过Restful接口实现SQL查询。
@@ -92,7 +92,7 @@ brew install findutils
 /usr/local/kylin/bin/kylin.sh restart
 ```
 
-![image-20200924103518462](https://gitee.com/littlefxc/oss/raw/master/images/image-20200924103518462.png)
+![image-20200924103518462](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200924103518462.png)
 
 # 核心概念
 

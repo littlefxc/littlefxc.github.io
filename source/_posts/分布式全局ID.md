@@ -51,7 +51,7 @@ tags:
 
 - ID 的值统一的从一个集中的ID序列生成器中获取
 
-  ![](https://gitee.com/littlefxc/oss/raw/master/images/bH5oQj-20210718211022587.png)
+  ![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/bH5oQj-20210718211022587.png)
 
 - ID序列生成器MyCat支持，Sharding-Jdbc不支持
 - MyCat中有两种方式：本地文件方式、数据库方式
@@ -65,7 +65,7 @@ tags:
 - 一个64 bit 的 long 型的数字（是二进制数，在程序中会转化为10进制数）
 - 引入了时间戳，保持自增
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/ZvQWuo.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/ZvQWuo.png)
 
 - 基本保持全局唯一，毫秒内并发最大 4096 个ID
 - 时间回调，可能引起ID重复

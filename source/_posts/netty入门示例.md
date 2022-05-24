@@ -225,10 +225,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
 # 结果
 
-![vYiVSQ.png](https://gitee.com/littlefxc/oss/raw/master/images/vYiVSQ.png)
+![vYiVSQ.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/vYiVSQ.png)
 
 客户端向服务端发送数据
 
-![eUQopw.png](https://gitee.com/littlefxc/oss/raw/master/images/eUQopw.png)
+![eUQopw.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/eUQopw.png)
 
 客户端收到服务端返回的数据

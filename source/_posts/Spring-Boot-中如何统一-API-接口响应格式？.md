@@ -33,7 +33,7 @@ public interface HandlerMethodReturnValueHandler {
 
 HandlerMethodReturnValueHandler 有很多默认的实现类，我们来看下：
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/640.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640.png)
 
 接下来我们来把这些实现类的作用捋一捋：
 
@@ -318,7 +318,7 @@ public class User {
 
 项目启动成功后，访问 `/user` 接口，如下：
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/640-20210322193325348.png)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/640-20210322193325348.png)
 
 
 

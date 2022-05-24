@@ -6,7 +6,7 @@ tags:
 - redis
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/redis_thread_model1.png](https://gitee.com/littlefxc/oss/raw/master/images/redis_thread_model1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_thread_model1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_thread_model1.png)
 
 ## **Redis线程模型的组成**
 
@@ -24,7 +24,7 @@ tags:
 
 ------
 
-![redis_thread_model](https://gitee.com/littlefxc/oss/raw/master/images/redis_thread_model.png)
+![redis_thread_model](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_thread_model.png)
 
 1. 客户端socket01请求redis的server scoket建立连接，此时server socket生成`AE_READABLE`事件，[IO多路复用程序](https://www.notion.so/IO-3896961f1af045ba8a7d2f184f87748d)监听到server socket产生的事件，并将该事件压入队列。
 

@@ -7,11 +7,11 @@ tags:
 - rabbitmq
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_1.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_16_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_16_1.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_2.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_16_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_16_2.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_3.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_16_3.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_16_3.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_16_3.png)
 
 ## Sender4TopicExchange
 

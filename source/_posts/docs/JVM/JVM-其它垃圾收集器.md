@@ -134,7 +134,7 @@ tags:
   ![图片描述](https://climg.mukewang.com/5ed0d8320970ce9712820860.png)
 
 - 停顿时间：
-  ![图片描述](https://gitee.com/littlefxc/oss/raw/master/images/5ed0d84009abfa3022661182.png)
+  ![图片描述](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5ed0d84009abfa3022661182.png)
 
 ## Epsilon
 

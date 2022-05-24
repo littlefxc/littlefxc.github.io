@@ -41,9 +41,9 @@ RocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自
 
 如下图所示，我们要带小伙伴们一起来看看RocketMQ源码包的组成，这样更方便我们日后对他有一个深入的学习。
 
-![https://climg.mukewang.com/5df8401d0919472f03410264.png](https://gitee.com/littlefxc/oss/raw/master/images/5df8401d0919472f03410264.png)
+![https://climg.mukewang.com/5df8401d0919472f03410264.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5df8401d0919472f03410264.png)
 
-![https://climg.mukewang.com/5df8404409bd481303400274.png](https://gitee.com/littlefxc/oss/raw/master/images/5df8404409bd481303400274.png)
+![https://climg.mukewang.com/5df8404409bd481303400274.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5df8404409bd481303400274.png)
 
 - rocketmq-broker 主要的业务逻辑，消息收发，主从同步, pagecache
 - rocketmq-client 客户端接口，比如生产者和消费者
@@ -64,7 +64,7 @@ RocketMQ是一款分布式、队列模型的消息中间件，由阿里巴巴自
 
 RocketMQ为我们提供了丰富的集群架构模型，包括单点模式、主从模式、双主模式、以及生产上使用最多的双主双从模式（或者说多主多从模式），在这里我们仅介绍一下经典的双主双从集群模型，如下图所示：
 
-![https://climg.mukewang.com/5df8407b0950a18b08540381.png](https://gitee.com/littlefxc/oss/raw/master/images/5df8407b0950a18b08540381.png)
+![https://climg.mukewang.com/5df8407b0950a18b08540381.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5df8407b0950a18b08540381.png)
 
 - Producer集群就是生产者集群（他们在同一个生产者组 Producer Group）
 - Consumer集群就是消费者集群（他们在同一个消费者组 Consumer Group）

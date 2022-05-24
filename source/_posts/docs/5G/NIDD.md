@@ -50,7 +50,7 @@ AF应该用一个HTTP 200 OK响应来确认HTTP POST请求。然后，AF可以�
 
 当终端使用“非结构化”PDU Session类型建立PDU Session时，终端请求的DNN对应的订阅信息包含“NEF Identity for NIDD”(NEF ID)，然后，SMF向DNN / S-NSSAI组合的“NEF ID”对应的NEF发起SMF-NEF连接建立过程。
 
-![image-20220301145433879](https://gitee.com/littlefxc/oss/raw/master/images/image-20220301145433879.png)
+![image-20220301145433879](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220301145433879.png)
 
 1. 步骤1-7和步骤9是非漫游场景下PDU会话建立过程；步骤1-9是漫游场景下的建立过程
 
@@ -68,7 +68,7 @@ AF应该用一个HTTP 200 OK响应来确认HTTP POST请求。然后，AF可以�
 
 NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF触发从第2步开始。
 
-![image-20220303145547497](https://gitee.com/littlefxc/oss/raw/master/images/image-20220303145547497.png)
+![image-20220303145547497](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220303145547497.png)
 
 1. [可选]如果 NEF 对给定的 AF 要求 NIDD 配置，则 NEF 向 AF 发送 Nnef_NIDDConfiguration_TriggerNotify (GPSI, AF 标识, NEF ID)消息，请求对 GPSI 识别的 UE 进行 Nnef_NIDDConfiguration_Create 请求。
 
@@ -99,7 +99,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 ## 非IP数据传输支持NEF锚定上行（MO）数据传输
 
-![image-20220309110731767](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309110731767.png)
+![image-20220309110731767](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309110731767.png)
 
 1. UE根据控制平面CIoT 5GS优化中UPF锚定上行数据传输的步骤1-4发送带有非结构化数据的NAS消息(见4.24.1条款)。如果启用了可靠数据服务，则包含可靠数据服务头。
 2. [可选] 家用路由漫游时，V-SMF向H-SMF发送Nsmf_PDUSession_TransferMOData请求，包括上行（MO）小数据。
@@ -111,7 +111,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 ## NEF 锚定下行（MT）数据传输
 
-![image-20220309135200190](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309135200190.png)
+![image-20220309135200190](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309135200190.png)
 
 1a. 如果AF已经激活了某个终端的NIDD服务，并且有下行非结构化数据要发送给终端，AF会向NEF发送一个Nnef_NIDD_Delivery Request (GPSI, TLTRI，非结构化数据，可靠数据服务配置)消息。可靠数据服务配置是一个可选参数，用于配置可靠数据服务，它可以用来指示是否请求可靠数据服务的确认以及发起方应用程序和接收方应用程序的端口号。
 
@@ -157,7 +157,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 ## NIDD 授权更新
 
-![image-20220309152114864](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309152114864.png)
+![image-20220309152114864](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309152114864.png)
 
 1. UDM可以使用Nudm_NIDDAuthorisation_UpdateNotify Request (SUPI, GPSI, S-NSSAI, DNN, Result)消息向NEF发送NIDD授权更新信息来更新用户的NIDD授权。
 
@@ -168,7 +168,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 ## SMF 启动 SMF-NEF 连接释放
 
-![image-20220309154936239](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309154936239.png)
+![image-20220309154936239](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309154936239.png)
 
 当PDU会话释放被启动，并且如果NEF被选择为控制平面CIoT的锚定，5GS优化启用了非结构化PDU会话类型，如第4.3.4.2条所述，然后SMF对该DNN / S-NSSAI组合对应的“NEF ID”对应的NEF启动一个SMF-NEF Connection Release过程。
 
@@ -188,7 +188,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 图4.25.8-1描述了NEF Initiated SMF-NEF Connection Release procedure(基于AF的请求)。
 
-![image-20220309164017922](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309164017922.png)
+![image-20220309164017922](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309164017922.png)
 
 1. AF可以通过向NEF调用Nnef_NIDDConfiguration_Delete Request (TLTRI)来指示用户的NIDD SMF-NEF连接不再需要。
 
@@ -199,7 +199,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 基于NIDD Authorization Update的NEF Initiated SMF-NEF Connection Release流程如图4.25.8-2所示。
 
-![image-20220309164127290](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309164127290.png)
+![image-20220309164127290](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309164127290.png)
 
 1.	在UDM的NIDD授权更新中，NEF可能决定它需要释放相应的SMF-NEF连接。
 2.	NEF会删除对应的NEF PDU session Context，并通过对SMF调用Nnef_SMContext_DeleteNotify Request来通知SM上下文信息的删除。
@@ -210,7 +210,7 @@ NIDD配置过程可以是NEF 发起或AF 触发: NEF发起从第1步开始，AF�
 
 图4.25.9-1描述了AF发送组NIDD到外部组标识符的过程。在第4.25.3条规定的NIDD配置过程中，NEF已经在UDM的帮助下解决了外部组标识符到单个supi的映射，这是一个先决条件。NEF在第4.25.5条中规定的独立MT NIDD程序被NEF重用，以单播MT数据到每个终端。
 
-![image-20220309164647308](https://gitee.com/littlefxc/oss/raw/master/images/image-20220309164647308.png)
+![image-20220309164647308](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220309164647308.png)
 
 1.	如果AF已经使用NIDD配置程序条款4.25.3激活NIDD服务的问题,非结构化数据发送到组被外部组标识符,AF发送一个Nnef_NIDD_Delivery请求(外部组标识符、TLTRI非结构化数据,可靠数据服务配置)消息发送给NEF。“可靠数据服务配置”为可选参数，用于配置“可靠数据服务”。当非结构化数据被发送到外部组标识符时，AF不应在可靠数据服务配置中请求确认。
 2.	根据现有的终端组NIDD配置(参见4.25.3)，NEF向AF发送单个Nnef_NIDD_Delivery Response，以确认步骤1中的组NIDD delivery请求已被接受。

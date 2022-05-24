@@ -47,7 +47,7 @@ HBase可执行基于Yarn平台的计算任务，但不擅长。
 
 ## hbase 架构
 
-![image-20200916184659443](https://gitee.com/littlefxc/oss/raw/master/images/image-20200916184659443.png)
+![image-20200916184659443](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200916184659443.png)
 
 HRegionServer结构：
 
@@ -258,7 +258,7 @@ $ systemctl disable firewalld
 
 # UI 展示
 
-![image-20200921184311647](https://gitee.com/littlefxc/oss/raw/master/images/image-20200921184311647.png)
+![image-20200921184311647](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200921184311647.png)
 
 # hbase shell的一些命令
 
@@ -267,35 +267,35 @@ $ systemctl disable firewalld
 $ hbase shell
 ```
 
-![image-20200921185108081](https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185108081.png)
+![image-20200921185108081](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200921185108081.png)
 
 ```sh
 # 查询表
 $ list
 ```
 
-![image-20200921185132638](https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185132638.png)
+![image-20200921185132638](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200921185132638.png)
 
 ```sh
 # 显示服务器状态
 $ status
 ```
 
-![image-20200921185249611](https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185249611.png)
+![image-20200921185249611](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200921185249611.png)
 
 ```sh
 # 显示当前用户
 $ whoami
 ```
 
-![image-20200921185450703](https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185450703.png)
+![image-20200921185450703](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200921185450703.png)
 
 ```sh
 # 创建表
 $ create '表名', '列族1', '列族2'
 ```
 
-![image-20200921185551041](https://gitee.com/littlefxc/oss/raw/master/images/image-20200921185551041.png)
+![image-20200921185551041](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20200921185551041.png)
 
 ```sh
 # 表的一些操作

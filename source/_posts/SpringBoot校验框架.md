@@ -71,7 +71,7 @@ public class PersonController {
 
 基于 Spring Boot 的话，就比较简单了，只需要给项目添加上 `spring-boot-starter-web` 依赖就够了，它的子依赖包含了我们所需要的东西。另外，我们的示例项目中还使用到了 Lombok。
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/608807950001a11805540409-20210608162556698.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807950001a11805540409-20210608162556698.jpg)
 
 ```xml
 <dependencies>
@@ -100,7 +100,7 @@ public class PersonController {
 
 但是！！！ Spring Boot 2.3 1 之后，`spring-boot-starter-validation` 已经不包括在了 `spring-boot-starter-web` 中，需要我们手动加上！
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/608807970001718b19801193-20210608162556753.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807970001718b19801193-20210608162556753.jpg)
 
 ```xml
 <dependency>
@@ -216,7 +216,7 @@ public class PersonControllerTest {
 
 **使用 `Postman` 验证**
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/608807980001efe108610589-20210608162556897.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807980001efe108610589-20210608162556897.jpg)
 
 ### 验证请求参数
 
@@ -276,9 +276,9 @@ public void should_check_request_param_value2() throws Exception {
 
 **使用 `Postman` 验证**
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/6088079800014eab08330472-20210608162556919.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079800014eab08330472-20210608162556919.jpg)
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/608807990001847608740443-20210608162557043.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807990001847608740443-20210608162557043.jpg)
 
 ## 验证 Service 中的方法
 
@@ -422,7 +422,7 @@ mockMvc.perform(post("/api/person")
 
 **使用 `Postman` 验证**
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/6088079a0001ae5808670574-20210608162557178.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079a0001ae5808670574-20210608162557178.jpg)
 
 ### 案例二:校验电话号码
 
@@ -477,7 +477,7 @@ mockMvc.perform(post("/api/person")
   .andExpect(MockMvcResultMatchers.jsonPath("phoneNumber").value("phoneNumber 格式不正确"));
 ```
 
-![img](https://gitee.com/littlefxc/oss/raw/master/images/6088079a00019ccb08820559-20210608162557277.jpg)
+![img](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079a00019ccb08820559-20210608162557277.jpg)
 
 ## 使用验证组
 

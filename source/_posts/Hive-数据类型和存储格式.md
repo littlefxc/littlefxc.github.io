@@ -15,7 +15,7 @@ tags: 大数据,hive
 
 毕竟HIVE穿着SQL的外壳，肯定支持诸如Mysql这种RDBMS的数据类型，如`int`,`varchar`,但是它还具有非常多自有的数据类型，包括复杂的数据类型（数组，Map等）也是支持的！
 
-![Hive 支持的数据类型 - 摘自官网wiki](https://gitee.com/littlefxc/oss/raw/master/images/Untitled.png)
+![Hive 支持的数据类型 - 摘自官网wiki](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/Untitled.png)
 
 数字类型，日期类型，String类型，Boolean类型我们都是比较熟悉的，也比较简单，就不讲解了。演示一下复杂数据类型：
 

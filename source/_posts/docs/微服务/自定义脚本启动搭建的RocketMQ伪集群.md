@@ -98,13 +98,13 @@ abortFile=/usr/local/var/lib/rocketmq/broker-a/about
 vim rocketmq-4.9.3/bin/runbroker.sh
 ```
 
-![image-20220402143803612](/Users/fengxuechao/Library/Application%20Support/typora-user-images/image-20220402143803612.png)
+![image-20220402143803612](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220402143803612.png)
 
 ```shell
 vim rocketmq-4.9.3/bin/runserver.sh
 ```
 
-![image-20220402143514440](/Users/fengxuechao/Library/Application%20Support/typora-user-images/image-20220402143514440.png)
+![image-20220402143514440](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220402143514440.png)
 
 ## 一键启动脚本
 

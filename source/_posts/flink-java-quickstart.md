@@ -23,7 +23,7 @@ brew install apache-flink
 
 查看 flink 的 Web 界面 [http://localhost:8081/](http://localhost:8081/)
 
-![flink_quickstart_launch_flink.png](https://gitee.com/littlefxc/oss/raw/master/images/flink_quickstart_launch_flink.png)
+![flink_quickstart_launch_flink.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/flink_quickstart_launch_flink.png)
 
 ## 新建一个 maven 工程
 
@@ -117,7 +117,7 @@ mvn clean package
 nc -l 9000
 ```
 
-![img.png](https://gitee.com/littlefxc/oss/raw/master/images/flink_quickstart_nc.png)
+![img.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/flink_quickstart_nc.png)
 
 ### 使用 flink 运行程序
 
@@ -127,4 +127,4 @@ flink run -c org.fengxuechao.example.flink.quickstart.SocketTextStreamWordCount 
 
 ### 查看 flink 界面的日志
 
-![img.png](https://gitee.com/littlefxc/oss/raw/master/images/flink_quickstart_webui_log.png)
+![img.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/flink_quickstart_webui_log.png)

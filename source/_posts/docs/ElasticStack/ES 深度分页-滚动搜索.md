@@ -20,7 +20,7 @@ POST /shop/_doc/_search
 
 # 深度分页
 
-![https://gitee.com/littlefxc/oss/raw/master/images/es-13_1.png](https://gitee.com/littlefxc/oss/raw/master/images/es-13_1-20210112211825281.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-13_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-13_1-20210112211825281.png)
 
 深度分页其实就是搜索的深浅度，比如第1页，第2页，第10页，第20页，是比较浅的；第10000页，第20000页就是很深了。
 
@@ -50,7 +50,7 @@ POST /shop/_doc/_search
 
 譬如淘宝搜索限制分页最多100页，如下：
 
-![https://gitee.com/littlefxc/oss/raw/master/images/es-13_2.jpg](https://gitee.com/littlefxc/oss/raw/master/images/es-13_2.jpg)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-13_2.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es-13_2.jpg)
 
 # 通过设置index.max_result_window来突破10000数据
 

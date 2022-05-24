@@ -12,7 +12,7 @@ tags:
 
 下面这张图是 Java 中比较主流的基于分代收集理论的垃圾收集器，以及它们能够作用的JVM内存区域。
 
-![image-20220311164628901](https://gitee.com/littlefxc/oss/raw/master/images/image-20220311164628901.png)
+![image-20220311164628901](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220311164628901.png)
 
 ## 术语
 
@@ -32,7 +32,7 @@ tags:
 
 ### Serial 收集器（新生代）
 
-![image-20220311171643510](https://gitee.com/littlefxc/oss/raw/master/images/image-20220311171643510.png)
+![image-20220311171643510](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220311171643510.png)
 
 - 最基本的、历史最悠久的收集器
 - 算法：复制算法
@@ -43,7 +43,7 @@ tags:
 
 ### ParNew收集器（新生代）
 
-![image-20220311173051813](https://gitee.com/littlefxc/oss/raw/master/images/image-20220311173051813.png)
+![image-20220311173051813](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220311173051813.png)
 
 - Serial 收集器的多线程版，除了使用多线程外，其它的和Serial收集器一样。
 - 特点：
@@ -54,7 +54,7 @@ tags:
 
 ### Parallel Scavenge收集器（新生代）
 
-![image-20220314152651631](https://gitee.com/littlefxc/oss/raw/master/images/image-20220314152651631.png)
+![image-20220314152651631](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220314152651631.png)
 
 - 关注的是吞吐量，也叫吞吐量收集器
 - 采用的也是复制算法
@@ -70,7 +70,7 @@ tags:
 
 ### Serial Old 收集器（老年代）
 
-![image-20220314161053707](https://gitee.com/littlefxc/oss/raw/master/images/image-20220314161053707.png)
+![image-20220314161053707](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220314161053707.png)
 
 - Serial收集器的老年代
 - 算法：标记-整理
@@ -80,7 +80,7 @@ tags:
 
 ### Parallel Old 收集器（老年代）
 
-![image-20220314161516210](https://gitee.com/littlefxc/oss/raw/master/images/image-20220314161516210.png)
+![image-20220314161516210](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220314161516210.png)
 
 - Parallel Scavenge 收集器的老年代版本
 - 算法：标记整理
@@ -91,7 +91,7 @@ tags:
 
 全称叫做 Concurrent Mark Sweep
 
-![image-20220314162206027](https://gitee.com/littlefxc/oss/raw/master/images/image-20220314162206027.png)
+![image-20220314162206027](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220314162206027.png)
 
 - 并发收集器
 - 算法：标记-清除
@@ -146,7 +146,7 @@ tags:
 - 面向服务端应用的垃圾收集器
 
 - 内存布局
-  ![image-20220314171405933](https://gitee.com/littlefxc/oss/raw/master/images/image-20220314171405933.png)
+  ![image-20220314171405933](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220314171405933.png)
   
   - 将整个JVM分成若干个大小相等的区域，每个区域叫做 Region
   - 每个 Region的大小可通过 -XX:G1HeapRegionSize 指定 Region 的大小
@@ -179,7 +179,7 @@ tags:
 
     - Mixed GC 执行过程
 
-      ![image-20220316150715171](https://gitee.com/littlefxc/oss/raw/master/images/image-20220316150715171.png)
+      ![image-20220316150715171](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220316150715171.png)
       
       - 初始标记，标记 GC Roots 能直接关联到的对象，和 CMS 类似，**存在** Stop The World
       - 并发标记，同 CMS 的并发标记，并发执行，**没有** Stop The World

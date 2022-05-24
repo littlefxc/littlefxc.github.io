@@ -7,12 +7,12 @@ tags:
 - rabbitmq
 ---
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_1.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_1.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_2.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_2.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_3.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_3.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_3.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_3.png)
 
-![rabbitmq_18_5](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_5.png)
+![rabbitmq_18_5](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_5.png)
 
-![rabbitmq_18_6](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_18_6.png)
+![rabbitmq_18_6](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_18_6.png)

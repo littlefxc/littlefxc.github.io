@@ -15,7 +15,7 @@ tags: consul
 
 Server负责组成 cluster 的复杂工作（选举、状态维护、转发请求到 lead），以及 consul 提供的服务（响应 RCP 请求）。考虑到容错和收敛，一般部署 3 ~ 5 个比较合适，而client数量不做限制，架构如下:
 
-![consul 架构](https://gitee.com/littlefxc/oss/raw/master/images/consul架构1.png)
+![consul 架构](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/consul架构1.png)
 
 ## 1.2 Consul 节点规划
 
@@ -150,15 +150,15 @@ consul-server-1/bin/consul leave -http-addr=127.0.0.1:8501
 
 1. 移除 Consul 服务端节点前：
 
-![image-20210112101929745](https://gitee.com/littlefxc/oss/raw/master/images/image-20210112101929745.png)
+![image-20210112101929745](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210112101929745.png)
 
 2. 移除 Consul 服务端节点。命令参考章节2.3。
 
    结果如下：
 
-   ![image-20210112102147403](https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102147403.png)
+   ![image-20210112102147403](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210112102147403.png)
 
-   ![image-20210112102223434](https://gitee.com/littlefxc/oss/raw/master/images/image-20210112102223434.png)
+   ![image-20210112102223434](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210112102223434.png)
 
 # 4 结论
 

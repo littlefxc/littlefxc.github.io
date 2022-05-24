@@ -18,25 +18,25 @@ tags:
 
 ## 客户端负载均衡
 
-![image-20211021155325000](https://gitee.com/littlefxc/oss/raw/master/images/image-20211021155325000.png)
+![image-20211021155325000](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20211021155325000.png)
 
 基于客户端做负载均衡，有一个前提是需要在客户端本地维护一个服务的机器列表，同时在本地指定一个LB策略，然后输出一个服务。服务列表并不是一成不变的，机器列表需要通过注册中心动态更新机器列表。
 
 ## 服务端负载均衡
 
-![image-20211021160108842](https://gitee.com/littlefxc/oss/raw/master/images/image-20211021160108842.png)
+![image-20211021160108842](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20211021160108842.png)
 
 - 大型应用通常是客户端+服务端负载均衡搭配使用
 
 ## 技术选型
 
-![image-20211021160704789](https://gitee.com/littlefxc/oss/raw/master/images/image-20211021160704789.png)
+![image-20211021160704789](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20211021160704789.png)
 
 # 深入Ribbon
 
 ## 负载均衡策略和原理，加载方式，IPing 机制
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/5e12e23709f43f6528861210.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e12e23709f43f6528861210.png)
 
 一个HttpRequest发过来，先被转发到Eureka上。此时Eureka仍然通过服务发现获取了所有服务节点的物理地址，但问题是他不知道该调用哪一个，只好把请求转到了Ribbon手里。
 
@@ -58,7 +58,7 @@ tags:
 
 ##   LoadBalanced 原理解析
 
-![](https://gitee.com/littlefxc/oss/raw/master/images/5e12e63009550a2029541170.png)
+![](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e12e63009550a2029541170.png)
 
 ### @LoadBalanced
 

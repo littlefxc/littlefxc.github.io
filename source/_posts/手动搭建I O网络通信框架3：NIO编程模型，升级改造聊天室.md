@@ -49,7 +49,7 @@ Channel有如下三个常用的类：FileChannel、SocketChannel、ServerSocketC
 
 ## **Selector**
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414150122707-1475260423.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414150122707-1475260423.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414150122707-1475260423.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414150122707-1475260423.png)
 
 多个Channel可以注册到Selector，就可以直接通过一个Selector管理多个通道。Channel在不同的时间或者不同的事件下有不同的状态，Selector会通过轮询来达到监视的效果，如果查到Channel的状态正好是我们注册时声明的所要监视的状态，我们就可以查出这些通道，然后做相应的处理。这些状态如下：　　1.客户端的SocketChannel和服务器端建立连接，SocketChannel状态就是**Connect**。　　2.服务器端的ServerSocketChannel接收了客户端的请求，ServerSocketChannel状态就是**Accept**。　　3.当SocketChannel有数据可读，那么它们的状态就是**Read**。　　4.当我们需要向Channel中写数据时，那么它们的状态就是**Write**。　　
 
@@ -317,18 +317,18 @@ public class UserInputHandler implements Runnable {
 
 测试运行：之前用的是win10的终端运行的，以后直接用IDEA运行，方便些。不过一个类同时运行多个，以实现多个客户端的场景，需要先做以下设置
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152051636-927905062.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152051636-927905062.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152051636-927905062.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152051636-927905062.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152100412-1057042302.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152100412-1057042302.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152100412-1057042302.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152100412-1057042302.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152130678-206345317.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152130678-206345317.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152130678-206345317.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152130678-206345317.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152204091-2069873206.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152204091-2069873206.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152204091-2069873206.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152204091-2069873206.png)
 
 设置完后，就可以同时运行两个ChatClient了，上图中得Unnamed就是第二个ChatClient，选中后点击右边运行按钮就行了。效果如下：
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152412715-1986061599.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152412715-1986061599.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152412715-1986061599.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152412715-1986061599.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152438453-1030565064.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152438453-1030565064.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152438453-1030565064.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152438453-1030565064.png)
 
-![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152450583-1807958534.png](https://gitee.com/littlefxc/oss/raw/master/images/1383122-20200414152450583-1807958534.png)
+![https://img2020.cnblogs.com/blog/1383122/202004/1383122-20200414152450583-1807958534.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1383122-20200414152450583-1807958534.png)

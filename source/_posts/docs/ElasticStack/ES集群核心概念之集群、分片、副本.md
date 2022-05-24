@@ -27,9 +27,9 @@ ES 为分配不同的任务，定义了以下几个节点角色：`Master`,`Data
 
 - 文档读写原理
 
-  ![https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png](https://gitee.com/littlefxc/oss/raw/master/images/es_8_2.png)
+  ![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_8_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_8_2.png)
 
-  ![https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png](https://gitee.com/littlefxc/oss/raw/master/images/es_8_3.png)
+  ![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_8_3.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_8_3.png)
 
 **说明：**
 
@@ -70,10 +70,10 @@ Elasticsearch 如何知道一个文档应该存放到哪个分片中呢？当我
 
 启动 2 个 ES 节点，配置分片个数为 3，副本个数为 1（每个分片有一个副本）。如下图，蓝色的代表主分片，绿色的是副本，仔细一点不难发现，分片与其副本不在同一个节点内。这是非常合理的，因为副本本来就是主分片的备胎，当主分片节点挂了，另外一个节点的副本将会充当主分片，如果它们在同一个节点内，副本将发挥不到作用。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png](https://gitee.com/littlefxc/oss/raw/master/images/es_9_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_9_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_9_1.png)
 
 **水平扩展原理**
 
 单个节点的容量是有限的，如果后期两个节点的容量不能够支持三个分片，那么另外启动一个节点就可以了，ES 会自动的重新规划分片，如下图：可以看到 A3 节点已经被自动的分配到 Node3 节点里面了，另外副本 B1 从 Node2 移动到 Node3 节点，B3 分片从 Node1 节点被分配到 Node2 节点。这里想一下，如果再启动一个节点呢？是的，再启动一个节点将不会对主分片起到任何作用，因为主分片不可以修改，只有三个，但是副本可以修改，能够起到扩容的作用。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png](https://gitee.com/littlefxc/oss/raw/master/images/es_9_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_9_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/es_9_2.png)

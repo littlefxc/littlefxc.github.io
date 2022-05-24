@@ -28,7 +28,7 @@ fastdfs安装好以后是无法通过http访问的，这个时候就需要借助
   cp mod_fastdfs.conf /etc/fdfs
   ```
 
-  ![https://climg.mukewang.com/5e0ef6d608a9590613200494.jpg](https://gitee.com/littlefxc/oss/raw/master/images/5e0ef6d608a9590613200494.jpg)
+  ![https://climg.mukewang.com/5e0ef6d608a9590613200494.jpg](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0ef6d608a9590613200494.jpg)
 
 - 修改/fastdfs-nginx-module/src/config文件，主要是修改路径，把`local`删除，因为fastdfs安装的时候我们没有修改路径，原路径是`/usr`：
 

@@ -11,9 +11,9 @@ tags:
 
 # 1. 整体功能概述
 
-![rabbitmq_24_1](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_24_1.png)
+![rabbitmq_24_1](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_24_1.png)
 
-![rabbitmq_24_2](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_24_2.png)
+![rabbitmq_24_2](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_24_2.png)
 
 # 2. 基础组件模块划分
 
@@ -29,10 +29,10 @@ rabbit-parent
 
 # 3. 可靠性消息投递
 
-![rabbitmq_19_13](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_19_13.png)
+![rabbitmq_19_13](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_19_13.png)
 
-![rabbitmq_24_4](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_24_4.png)
+![rabbitmq_24_4](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_24_4.png)
 
 # 4. 思维导图
 
-![rabbitmq_xmind.png](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_xmind.png)
+![rabbitmq_xmind.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_xmind.png)

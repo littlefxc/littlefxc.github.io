@@ -9,19 +9,19 @@ tags:
 
 [TOC]
 
-![rabbitmq_20_1](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_1.png)
+![rabbitmq_20_1](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_1.png)
 
-![rabbitmq_20_2](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_2.png)
+![rabbitmq_20_2](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_2.png)
 
-![rabbitmq_20_3](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_3.png)
+![rabbitmq_20_3](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_3.png)
 
-![rabbitmq_20_4](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_4.png)
+![rabbitmq_20_4](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_4.png)
 
-![rabbitmq_20_5](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_5.png)
+![rabbitmq_20_5](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_5.png)
 
-![rabbitmq_20_6](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_6.png)
+![rabbitmq_20_6](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_6.png)
 
-![rabbitmq_20_7](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_20_7.png)
+![rabbitmq_20_7](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_20_7.png)
 
 ## Sender4ConfirmListener
 

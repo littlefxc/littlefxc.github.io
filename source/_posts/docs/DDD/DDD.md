@@ -14,7 +14,7 @@ DDD 的目标是帮助我们创造一个可测试的、可伸缩的、组织良�
 
 ## 分层架构
 
-![image-20220401113015069](/Users/fengxuechao/Library/Application%20Support/typora-user-images/image-20220401113015069.png)
+![image-20220401113015069](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220401113015069.png)
 
 - 重要原则：每层只能与位于其下方的层发生耦合
 

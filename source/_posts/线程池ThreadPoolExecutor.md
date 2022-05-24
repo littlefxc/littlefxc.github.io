@@ -96,7 +96,7 @@ protected void beforeExecute(Thread t, Runnable r) { }
 
 # 线程池状态
 
-![image-20210804224722984](https://gitee.com/littlefxc/oss/raw/master/images/image-20210804224722984.png)
+![image-20210804224722984](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210804224722984.png)
 
 # 合理的配置线程池
 
@@ -372,11 +372,11 @@ protected void beforeExecute(Thread t, Runnable r) { }
 
 ## BlockQueue 核心API
 
-![image-20210804230153040](https://gitee.com/littlefxc/oss/raw/master/images/image-20210804230153040.png)
+![image-20210804230153040](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210804230153040.png)
 
 ## 常用BlockQueue
 
-![image-20210804230529147](https://gitee.com/littlefxc/oss/raw/master/images/image-20210804230529147.png)
+![image-20210804230529147](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210804230529147.png)
 
 ## 调优技巧
 
@@ -390,5 +390,5 @@ protected void beforeExecute(Thread t, Runnable r) { }
 
 # Executors 工具API
 
-![image-20210805230140225](https://gitee.com/littlefxc/oss/raw/master/images/image-20210805230140225.png)
+![image-20210805230140225](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210805230140225.png)
 

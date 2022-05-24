@@ -7,17 +7,17 @@ tags:
 - rabbitmq
 ---
 
-![rabbitmq_22_1](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_22_1.png)
+![rabbitmq_22_1](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_22_1.png)
 
-![rabbitmq_22_2](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_22_2.png)
+![rabbitmq_22_2](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_22_2.png)
 
-![rabbitmq_22_3](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_22_3.png)
+![rabbitmq_22_3](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_22_3.png)
 
-![rabbitmq_22_4](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_22_4.png)
+![rabbitmq_22_4](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_22_4.png)
 
-![rabbitmq_22_5](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_22_5.png)
+![rabbitmq_22_5](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_22_5.png)
 
-![rabbitmq_22_7](https://gitee.com/littlefxc/oss/raw/master/images/rabbitmq_22_7.png)
+![rabbitmq_22_7](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/rabbitmq_22_7.png)
 
 ## Sender4DLXExchange
 

@@ -43,7 +43,7 @@ Sentinel 是面向分布式服务架构的流量控制组件，主要以流量�
 - **广泛的开源生态**：Sentinel 提供开箱即用的与其它开源框架/库的整合模块，例如与 Spring Cloud、Dubbo、gRPC 的整合。您只需要引入相应的依赖并进行简单的配置即可快速地接入 Sentinel。
 - **完善的 SPI 扩展点**：Sentinel 提供简单易用、完善的 SPI 扩展接口。您可以通过实现扩展接口来快速地定制逻辑。例如定制规则管理、适配动态数据源等。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png](https://gitee.com/littlefxc/oss/raw/master/images/sentinel的主要特性.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/sentinel的主要特性.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/sentinel的主要特性.png)
 
 部分是 sentinel-dashboard。
 
@@ -55,7 +55,7 @@ Sentinel 是面向分布式服务架构的流量控制组件，主要以流量�
 
 ## Sentinel 的生态
 
-![https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png](https://gitee.com/littlefxc/oss/raw/master/images/sentinel_2_6.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/sentinel_2_6.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/sentinel_2_6.png)
 
 ## Sentinel 的组成部分
 

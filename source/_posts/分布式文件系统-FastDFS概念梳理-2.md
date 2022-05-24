@@ -29,8 +29,8 @@ tags:
 - group：组，同组节点提供冗余备份，不同组用于扩容。
 - mata data：文件的元数据信息，比如长宽信息，图片后缀，视频的帧数等。
 
-![https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_2_1.png](https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_2_1.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/fastdfs_2_1.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/fastdfs_2_1.png)
 
-![https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_2_2.png](https://gitee.com/littlefxc/oss/raw/master/images/fastdfs_2_2.png)
+![https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/fastdfs_2_2.png](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/fastdfs_2_2.png)
 
 [happyfish100/fastdfs](https://github.com/happyfish100/fastdfs/wiki)
