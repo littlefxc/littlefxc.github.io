@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -15,42 +13,40 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-
-<script class="hexo-configurations">
+<script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
-<meta name="description" content="转载自 http:&#x2F;&#x2F;www.imooc.com&#x2F;article&#x2F;316995  数据的校验的重要性就不用说了，即使在前端对数据进行校验的情况下，我们还是要对传入后端的数据再进行一遍校验，避免用户绕过浏览器直接通过一些 HTTP 工具直接向后端请求一些违法数据。 最普通的做法就像下面这样。我们通过 if&#x2F;else 语句对请求的每一个参数一一校验。 1234567891011121314@Rest">
+
+  <meta name="description" content="转载自 http:&#x2F;&#x2F;www.imooc.com&#x2F;article&#x2F;316995  数据的校验的重要性就不用说了，即使在前端对数据进行校验的情况下，我们还是要对传入后端的数据再进行一遍校验，避免用户绕过浏览器直接通过一些 HTTP 工具直接向后端请求一些违法数据。 最普通的做法就像下面这样。我们通过 if&#x2F;else 语句对请求的每一个参数一一校验。 1234567891011121314@Rest">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SpringBoot校验框架">
 <meta property="og:url" content="http://littlefxc.github.io/2021/06/08/SpringBoot%E6%A0%A1%E9%AA%8C%E6%A1%86%E6%9E%B6/index.html">
 <meta property="og:site_name" content="一年春又来">
 <meta property="og:description" content="转载自 http:&#x2F;&#x2F;www.imooc.com&#x2F;article&#x2F;316995  数据的校验的重要性就不用说了，即使在前端对数据进行校验的情况下，我们还是要对传入后端的数据再进行一遍校验，避免用户绕过浏览器直接通过一些 HTTP 工具直接向后端请求一些违法数据。 最普通的做法就像下面这样。我们通过 if&#x2F;else 语句对请求的每一个参数一一校验。 1234567891011121314@Rest">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/608807950001a11805540409-20210608162556698.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/608807970001718b19801193-20210608162556753.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/608807980001efe108610589-20210608162556897.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/6088079800014eab08330472-20210608162556919.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/608807990001847608740443-20210608162557043.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/6088079a0001ae5808670574-20210608162557178.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/6088079a00019ccb08820559-20210608162557277.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807950001a11805540409-20210608162556698.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807970001718b19801193-20210608162556753.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807980001efe108610589-20210608162556897.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079800014eab08330472-20210608162556919.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807990001847608740443-20210608162557043.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079a0001ae5808670574-20210608162557178.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079a00019ccb08820559-20210608162557277.jpg">
 <meta property="article:published_time" content="2021-06-08T08:23:59.000Z">
-<meta property="article:modified_time" content="2021-06-08T08:29:39.707Z">
+<meta property="article:modified_time" content="2022-05-24T03:09:12.501Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="spring boot">
 <meta property="article:tag" content="spring">
 <meta property="article:tag" content="validation">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/608807950001a11805540409-20210608162556698.jpg">
-
+<meta name="twitter:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807950001a11805540409-20210608162556698.jpg">
 
 <link rel="canonical" href="http://littlefxc.github.io/2021/06/08/SpringBoot%E6%A0%A1%E9%AA%8C%E6%A1%86%E6%9E%B6/">
 
 
-<script class="page-configurations">
+<script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -59,70 +55,61 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>SpringBoot校验框架 | 一年春又来</title>
+
+  <title>SpringBoot校验框架 | 一年春又来</title>
   
+
+
 
 
 
 
   <noscript>
   <style>
-  body { margin-top: 2rem; }
-
+  .use-motion .brand,
   .use-motion .menu-item,
-  .use-motion .sidebar,
+  .sidebar-inner,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
+  .use-motion .site-subtitle {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
+      <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">一年春又来</h1>
-      <i class="logo-line"></i>
+      <span class="logo-line-after"><i></i></span>
     </a>
   </div>
 
@@ -135,12 +122,29 @@
 
 
 
+
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home                          //首页"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive          //归档"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th           //分类"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags                     //标签"></i>标签</a>
+
+  </li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -151,22 +155,23 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
+    <div class="popup search-popup">
+        <div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
+    <input autocomplete="off" autocapitalize="off"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close" role="button">
+  <span class="popup-btn-close">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
   </div>
 </div>
 
@@ -174,95 +179,27 @@
   </div>
 
 </div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="nav-text">添加相关依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-Controller-%E7%9A%84%E8%BE%93%E5%85%A5"><span class="nav-text">验证 Controller 的输入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%AF%B7%E6%B1%82%E4%BD%93"><span class="nav-text">验证请求体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="nav-text">验证请求参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-Service-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">验证 Service 中的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Validator-%E7%BC%96%E7%A8%8B%E6%96%B9%E5%BC%8F%E6%89%8B%E5%8A%A8%E8%BF%9B%E8%A1%8C%E5%8F%82%E6%95%B0%E9%AA%8C%E8%AF%81"><span class="nav-text">Validator 编程方式手动进行参数验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%BB%A5-Validator-%E5%AE%9E%E7%94%A8"><span class="nav-text">自定以 Validator(实用)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E4%B8%80-%E6%A0%A1%E9%AA%8C%E7%89%B9%E5%AE%9A%E5%AD%97%E6%AE%B5%E7%9A%84%E5%80%BC%E6%98%AF%E5%90%A6%E5%9C%A8%E5%8F%AF%E9%80%89%E8%8C%83%E5%9B%B4"><span class="nav-text">案例一:校验特定字段的值是否在可选范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E4%BA%8C-%E6%A0%A1%E9%AA%8C%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81"><span class="nav-text">案例二:校验电话号码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%AA%8C%E8%AF%81%E7%BB%84"><span class="nav-text">使用验证组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%A0%A1%E9%AA%8C%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93"><span class="nav-text">常用校验注解总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%93%E5%B1%95"><span class="nav-text">拓展</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">一年春又来</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">234</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">38</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">125</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
     </header>
 
     
-  <div class="back-to-top" role="button">
+  <div class="back-to-top">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
 
-    <div class="main-inner post posts-expand">
+          <div class="content post posts-expand">
+            
 
-
-  
-
-
-<div class="post-block">
+    
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/06/08/SpringBoot%E6%A0%A1%E9%AA%8C%E6%A1%86%E6%9E%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -279,29 +216,33 @@
           SpringBoot校验框架
         </h1>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-06-08 16:23:59 / 修改时间：16:29:39" itemprop="dateCreated datePublished" datetime="2021-06-08T16:23:59+08:00">2021-06-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
-        </span>
-    </span>
+              <time title="创建时间：2021-06-08 16:23:59" itemprop="dateCreated datePublished" datetime="2021-06-08T16:23:59+08:00">2021-06-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-24 11:09:12" itemprop="dateModified" datetime="2022-05-24T11:09:12+08:00">2022-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spring/" itemprop="url" rel="index"><span itemprop="name">spring</span></a>
+                </span>
+            </span>
 
-  
-</div>
+          
 
         </div>
       </header>
@@ -310,6 +251,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
+
+      
         <blockquote>
 <p>转载自 <a target="_blank" rel="noopener" href="http://www.imooc.com/article/316995">http://www.imooc.com/article/316995</a></p>
 </blockquote>
@@ -329,11 +272,11 @@
 
 <p>不过，相信大家都是使用的 Spring Boot 框架来做开发。</p>
 <p>基于 Spring Boot 的话，就比较简单了，只需要给项目添加上 <code>spring-boot-starter-web</code> 依赖就够了，它的子依赖包含了我们所需要的东西。另外，我们的示例项目中还使用到了 Lombok。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/608807950001a11805540409-20210608162556698.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807950001a11805540409-20210608162556698.jpg" alt="img"></p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.13.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>但是！！！ Spring Boot 2.3 1 之后，<code>spring-boot-starter-validation</code> 已经不包括在了 <code>spring-boot-starter-web</code> 中，需要我们手动加上！</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/608807970001718b19801193-20210608162556753.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807970001718b19801193-20210608162556753.jpg" alt="img"></p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="验证-Controller-的输入"><a href="#验证-Controller-的输入" class="headerlink" title="验证 Controller 的输入"></a>验证 Controller 的输入</h2><h3 id="验证请求体"><a href="#验证请求体" class="headerlink" title="验证请求体"></a>验证请求体</h3><p>验证请求体即使验证被 <code>@RequestBody</code> 注解标记的方法参数。</p>
@@ -361,7 +304,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="meta">@AutoConfigureMockMvc</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonControllerTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MockMvc mockMvc;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ObjectMapper objectMapper;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 验证出现参数不合法的情况抛出异常并且可以正确被捕获</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">should_check_person_value</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        PersonRequest personRequest = PersonRequest.builder().sex(<span class="string">&quot;Man22&quot;</span>)</span><br><span class="line">                .classId(<span class="string">&quot;82938390&quot;</span>).build();</span><br><span class="line">        mockMvc.perform(post(<span class="string">&quot;/api/personRequest&quot;</span>)</span><br><span class="line">                .contentType(MediaType.APPLICATION_JSON)</span><br><span class="line">                .content(objectMapper.writeValueAsString(personRequest)))</span><br><span class="line">                .andExpect(MockMvcResultMatchers.jsonPath(<span class="string">&quot;sex&quot;</span>).value(<span class="string">&quot;sex 值不在可选范围&quot;</span>))</span><br><span class="line">                .andExpect(MockMvcResultMatchers.jsonPath(<span class="string">&quot;name&quot;</span>).value(<span class="string">&quot;name 不能为空&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>使用 <code>Postman</code> 验证</strong></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/608807980001efe108610589-20210608162556897.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807980001efe108610589-20210608162556897.jpg" alt="img"></p>
 <h3 id="验证请求参数"><a href="#验证请求参数" class="headerlink" title="验证请求参数"></a>验证请求参数</h3><p>验证请求参数（Path Variables 和 Request Parameters）即是验证被 <code>@PathVariable</code> 以及 <code>@RequestParam</code> 标记的方法参数。</p>
 <p><strong><code>PersonController</code></strong></p>
 <p><strong>一定一定不要忘记在类上加上 <code>Validated</code> 注解了，这个参数可以告诉 Spring 去校验方法参数。</strong></p>
@@ -374,8 +317,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">should_check_path_variable</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    mockMvc.perform(get(<span class="string">&quot;/api/person/6&quot;</span>)</span><br><span class="line">                    .contentType(MediaType.APPLICATION_JSON))</span><br><span class="line">      .andExpect(status().isBadRequest())</span><br><span class="line">      .andExpect(content().string(<span class="string">&quot;getPersonByID.id: 超过 id 的范围了&quot;</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">should_check_request_param_value2</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    mockMvc.perform(put(<span class="string">&quot;/api/person&quot;</span>)</span><br><span class="line">                    .param(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;snailclimbsnailclimb&quot;</span>)</span><br><span class="line">                    .contentType(MediaType.APPLICATION_JSON))</span><br><span class="line">      .andExpect(status().isBadRequest())</span><br><span class="line">      .andExpect(content().string(<span class="string">&quot;getPersonByName.name: 超过 name 的范围了&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>使用 <code>Postman</code> 验证</strong></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/6088079800014eab08330472-20210608162556919.jpg" alt="img"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/608807990001847608740443-20210608162557043.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079800014eab08330472-20210608162556919.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/608807990001847608740443-20210608162557043.jpg" alt="img"></p>
 <h2 id="验证-Service-中的方法"><a href="#验证-Service-中的方法" class="headerlink" title="验证 Service 中的方法"></a>验证 Service 中的方法</h2><p>我们还可以验证任何 Spring Bean 的输入，而不仅仅是 <code>Controller</code> 级别的输入。通过使用<code>@Validated</code>和<code>@Valid</code>注释的组合即可实现这一需求！</p>
 <p>一般情况下，我们在项目中也更倾向于使用这种方案。</p>
 <p><strong>一定一定不要忘记在类上加上 <code>Validated</code> 注解了，这个参数可以告诉 Spring 去校验方法参数。</strong></p>
@@ -412,7 +355,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PersonRequest personRequest = PersonRequest.builder()</span><br><span class="line"> 	 .region(<span class="string">&quot;Shanghai&quot;</span>).build();</span><br><span class="line">mockMvc.perform(post(<span class="string">&quot;/api/person&quot;</span>)</span><br><span class="line">                .contentType(MediaType.APPLICATION_JSON)</span><br><span class="line">                .content(objectMapper.writeValueAsString(personRequest)))</span><br><span class="line">  .andExpect(MockMvcResultMatchers.jsonPath(<span class="string">&quot;region&quot;</span>).value(<span class="string">&quot;Region 值不在可选范围内&quot;</span>));</span><br></pre></td></tr></table></figure>
 
 <p><strong>使用 <code>Postman</code> 验证</strong></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/6088079a0001ae5808670574-20210608162557178.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079a0001ae5808670574-20210608162557178.jpg" alt="img"></p>
 <h3 id="案例二-校验电话号码"><a href="#案例二-校验电话号码" class="headerlink" title="案例二:校验电话号码"></a>案例二:校验电话号码</h3><p>校验我们的电话号码是否合法，这个可以通过正则表达式来做，相关的正则表达式都可以在网上搜到，你甚至可以搜索到针对特定运营商电话号码段的正则表达式。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">PhoneNumber.java</span><br><span class="line">@Documented</span><br><span class="line">@Constraint(validatedBy &#x3D; PhoneNumberValidator.class)</span><br><span class="line">@Target(&#123;FIELD, PARAMETER&#125;)</span><br><span class="line">@Retention(RUNTIME)</span><br><span class="line">public @interface PhoneNumber &#123;</span><br><span class="line">    String message() default &quot;Invalid phone number&quot;;</span><br><span class="line">    Class[] groups() default &#123;&#125;;</span><br><span class="line">    Class[] payload() default &#123;&#125;;</span><br><span class="line">&#125;</span><br><span class="line">PhoneNumberValidator.java</span><br><span class="line">public class PhoneNumberValidator implements ConstraintValidator&lt;PhoneNumber, String&gt; &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean isValid(String phoneField, ConstraintValidatorContext context) &#123;</span><br><span class="line">        if (phoneField &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; can be null</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F;  大陆手机号码11位数，匹配格式：前三位固定格式+后8位任意数</span><br><span class="line">        &#x2F;&#x2F; ^ 匹配输入字符串开始的位置</span><br><span class="line">        &#x2F;&#x2F; \d 匹配一个或多个数字，其中 \ 要转义，所以是 \\d</span><br><span class="line">        &#x2F;&#x2F; $ 匹配输入字符串结尾的位置</span><br><span class="line">        String regExp &#x3D; &quot;^[1]((3[0-9])|(4[5-9])|(5[0-3,5-9])|([6][5,6])|(7[0-9])|(8[0-9])|(9[1,8,9]))\\d&#123;8&#125;$&quot;;</span><br><span class="line">        return phoneField.matches(regExp);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -422,7 +365,7 @@
 <p><strong>通过测试验证</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">PersonRequest personRequest = PersonRequest.builder()</span><br><span class="line">  	.phoneNumber(<span class="string">&quot;1816313815&quot;</span>).build();</span><br><span class="line">mockMvc.perform(post(<span class="string">&quot;/api/person&quot;</span>)</span><br><span class="line">                .contentType(MediaType.APPLICATION_JSON)</span><br><span class="line">                .content(objectMapper.writeValueAsString(personRequest)))</span><br><span class="line">  .andExpect(MockMvcResultMatchers.jsonPath(<span class="string">&quot;phoneNumber&quot;</span>).value(<span class="string">&quot;phoneNumber 格式不正确&quot;</span>));</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/6088079a00019ccb08820559-20210608162557277.jpg" alt="img"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/6088079a00019ccb08820559-20210608162557277.jpg" alt="img"></p>
 <h2 id="使用验证组"><a href="#使用验证组" class="headerlink" title="使用验证组"></a>使用验证组</h2><p>验证组我们基本是不会用到的，也不太建议在项目中使用，理解起来比较麻烦，写起来也比较麻烦。简单了解即可！</p>
 <p>当我们对对象操作的不同方法有不同的验证规则的时候才会用到验证组。</p>
 <p>我写一个简单的例子，你们就能看明白了！</p>
@@ -475,7 +418,7 @@
     
     
 
-    <footer class="post-footer">
+      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/spring-boot/" rel="tag"># spring boot</a>
               <a href="/tags/spring/" rel="tag"># spring</a>
@@ -484,27 +427,29 @@
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2021/06/02/%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86%E3%80%81%E6%B0%B4%E5%B9%B3%E5%88%87%E5%88%86/" rel="prev" title="如何选择垂直切分、水平切分">
-                  <i class="fa fa-chevron-left"></i> 如何选择垂直切分、水平切分
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2021/06/09/Netty%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" rel="next" title="Netty的核心组件">
-                  Netty的核心组件 <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/02/%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86%E3%80%81%E6%B0%B4%E5%B9%B3%E5%88%87%E5%88%86/" rel="prev" title="如何选择垂直切分、水平切分">
+      <i class="fa fa-chevron-left"></i> 如何选择垂直切分、水平切分
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/09/Netty%E7%9A%84%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6/" rel="next" title="Netty的核心组件">
+      Netty的核心组件 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-</div>
+  
+  
+  
 
 
 
-
-
-
+          </div>
+          
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -513,7 +458,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -522,35 +467,133 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
+      let commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="nav-text">添加相关依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-Controller-%E7%9A%84%E8%BE%93%E5%85%A5"><span class="nav-text">验证 Controller 的输入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%AF%B7%E6%B1%82%E4%BD%93"><span class="nav-text">验证请求体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="nav-text">验证请求参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-Service-%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">验证 Service 中的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Validator-%E7%BC%96%E7%A8%8B%E6%96%B9%E5%BC%8F%E6%89%8B%E5%8A%A8%E8%BF%9B%E8%A1%8C%E5%8F%82%E6%95%B0%E9%AA%8C%E8%AF%81"><span class="nav-text">Validator 编程方式手动进行参数验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%BB%A5-Validator-%E5%AE%9E%E7%94%A8"><span class="nav-text">自定以 Validator(实用)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E4%B8%80-%E6%A0%A1%E9%AA%8C%E7%89%B9%E5%AE%9A%E5%AD%97%E6%AE%B5%E7%9A%84%E5%80%BC%E6%98%AF%E5%90%A6%E5%9C%A8%E5%8F%AF%E9%80%89%E8%8C%83%E5%9B%B4"><span class="nav-text">案例一:校验特定字段的值是否在可选范围</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B%E4%BA%8C-%E6%A0%A1%E9%AA%8C%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81"><span class="nav-text">案例二:校验电话号码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%AA%8C%E8%AF%81%E7%BB%84"><span class="nav-text">使用验证组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%A0%A1%E9%AA%8C%E6%B3%A8%E8%A7%A3%E6%80%BB%E7%BB%93"><span class="nav-text">常用校验注解总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%93%E5%B1%95"><span class="nav-text">拓展</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-  </main>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">126</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
 
-  <footer class="footer">
-    <div class="footer-inner">
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
 
 <div class="copyright">
+  
   &copy; 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">一年春又来</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-    </div>
-  </footer>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
 
   
 <script src="/js/local-search.js"></script>
@@ -560,11 +603,16 @@
 
 
 
+
+
+
+
+
+
+
   
 
-
-
-
+  
 
 </body>
 </html>

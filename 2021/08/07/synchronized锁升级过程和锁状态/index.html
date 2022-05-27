@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -15,40 +13,38 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-
-<script class="hexo-configurations">
+<script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
-<meta name="description" content="转载自https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000022904663  一、前言锁的状态总共有四种，级别由低到高依次为：无锁、偏向锁、轻量级锁、重量级锁，这四种锁状态分别代表什么，为什么会有锁升级？其实在 JDK 1.6之前，synchronized 还是一个重量级锁，是一个效率比较低下的锁，但是在JDK 1.6后，Jvm为了提高锁的获取与释放效率对（synchroniz">
+
+  <meta name="description" content="转载自https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000022904663  一、前言锁的状态总共有四种，级别由低到高依次为：无锁、偏向锁、轻量级锁、重量级锁，这四种锁状态分别代表什么，为什么会有锁升级？其实在 JDK 1.6之前，synchronized 还是一个重量级锁，是一个效率比较低下的锁，但是在JDK 1.6后，Jvm为了提高锁的获取与释放效率对（synchroniz">
 <meta property="og:type" content="article">
 <meta property="og:title" content="synchronized锁升级过程和锁状态">
 <meta property="og:url" content="http://littlefxc.github.io/2021/08/07/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E5%92%8C%E9%94%81%E7%8A%B6%E6%80%81/index.html">
 <meta property="og:site_name" content="一年春又来">
 <meta property="og:description" content="转载自https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000022904663  一、前言锁的状态总共有四种，级别由低到高依次为：无锁、偏向锁、轻量级锁、重量级锁，这四种锁状态分别代表什么，为什么会有锁升级？其实在 JDK 1.6之前，synchronized 还是一个重量级锁，是一个效率比较低下的锁，但是在JDK 1.6后，Jvm为了提高锁的获取与释放效率对（synchroniz">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904666.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904667.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904669-20210807194327994.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904666.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904667.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904669-20210807194327994.png">
 <meta property="og:image" content="https://segmentfault.com/img/remote/1460000022904668">
 <meta property="og:image" content="https://segmentfault.com/img/remote/1460000022904670">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904671.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904671.jpg">
 <meta property="article:published_time" content="2021-08-07T11:41:22.000Z">
-<meta property="article:modified_time" content="2021-12-06T07:57:53.358Z">
+<meta property="article:modified_time" content="2022-05-24T03:09:12.559Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="synchronized">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904666.jpg">
-
+<meta name="twitter:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904666.jpg">
 
 <link rel="canonical" href="http://littlefxc.github.io/2021/08/07/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E5%92%8C%E9%94%81%E7%8A%B6%E6%80%81/">
 
 
-<script class="page-configurations">
+<script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -57,70 +53,61 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>synchronized锁升级过程和锁状态 | 一年春又来</title>
+
+  <title>synchronized锁升级过程和锁状态 | 一年春又来</title>
   
+
+
 
 
 
 
   <noscript>
   <style>
-  body { margin-top: 2rem; }
-
+  .use-motion .brand,
   .use-motion .menu-item,
-  .use-motion .sidebar,
+  .sidebar-inner,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
+  .use-motion .site-subtitle {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
+      <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">一年春又来</h1>
-      <i class="logo-line"></i>
+      <span class="logo-line-after"><i></i></span>
     </a>
   </div>
 
@@ -133,12 +120,29 @@
 
 
 
+
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home                          //首页"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive          //归档"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th           //分类"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags                     //标签"></i>标签</a>
+
+  </li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -149,22 +153,23 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
+    <div class="popup search-popup">
+        <div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
+    <input autocomplete="off" autocapitalize="off"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close" role="button">
+  <span class="popup-btn-close">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
   </div>
 </div>
 
@@ -172,95 +177,27 @@
   </div>
 
 </div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E8%A8%80"><span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%94%81%E7%9A%84%E5%9B%9B%E7%A7%8D%E7%8A%B6%E6%80%81"><span class="nav-text">二、锁的四种状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%94%81%E7%8A%B6%E6%80%81%E7%9A%84%E6%80%9D%E8%B7%AF%E4%BB%A5%E5%8F%8A%E7%89%B9%E7%82%B9"><span class="nav-text">三、锁状态的思路以及特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%94%81%E5%AF%B9%E6%AF%94"><span class="nav-text">四、锁对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81Synchronized%E9%94%81"><span class="nav-text">五、Synchronized锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-Java-%E5%AF%B9%E8%B1%A1%E5%A4%B4"><span class="nav-text">5.1 Java 对象头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-Monitor"><span class="nav-text">5.2 Monitor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%94%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">六、锁的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E6%97%A0%E9%94%81"><span class="nav-text">6.2 无锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E5%81%8F%E5%90%91%E9%94%81"><span class="nav-text">6.3 偏向锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81%EF%BC%88%E8%87%AA%E6%97%8B%E9%94%81%EF%BC%89"><span class="nav-text">6.4 轻量级锁（自旋锁）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81"><span class="nav-text">6.4 重量级锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">五、总结</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">一年春又来</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">234</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">38</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">125</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
     </header>
 
     
-  <div class="back-to-top" role="button">
+  <div class="back-to-top">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
 
-    <div class="main-inner post posts-expand">
+          <div class="content post posts-expand">
+            
 
-
-  
-
-
-<div class="post-block">
+    
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/08/07/synchronized%E9%94%81%E5%8D%87%E7%BA%A7%E8%BF%87%E7%A8%8B%E5%92%8C%E9%94%81%E7%8A%B6%E6%80%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -277,26 +214,24 @@
           synchronized锁升级过程和锁状态
         </h1>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-08-07 19:41:22" itemprop="dateCreated datePublished" datetime="2021-08-07T19:41:22+08:00">2021-08-07</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-12-06 15:57:53" itemprop="dateModified" datetime="2021-12-06T15:57:53+08:00">2021-12-06</time>
-      </span>
+              <time title="创建时间：2021-08-07 19:41:22" itemprop="dateCreated datePublished" datetime="2021-08-07T19:41:22+08:00">2021-08-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-24 11:09:12" itemprop="dateModified" datetime="2022-05-24T11:09:12+08:00">2022-05-24</time>
+              </span>
 
-  
-</div>
+          
 
         </div>
       </header>
@@ -305,6 +240,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
+
+      
         <blockquote>
 <p>转载自<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000022904663">https://segmentfault.com/a/1190000022904663</a></p>
 </blockquote>
@@ -313,9 +250,9 @@
 
 <h3 id="二、锁的四种状态"><a href="#二、锁的四种状态" class="headerlink" title="二、锁的四种状态"></a>二、锁的四种状态</h3><p>在 synchronized 最初的实现方式是 “阻塞或唤醒一个Java线程需要操作系统切换CPU状态来完成，这种状态切换需要耗费处理器时间，如果同步代码块中内容过于简单，这种切换的时间可能比用户代码执行的时间还长”，这种方式就是 synchronized实现同步最初的方式，这也是当初开发者诟病的地方，这也是在JDK6以前 synchronized效率低下的原因，JDK6中为了减少获得锁和释放锁带来的性能消耗，引入了“偏向锁”和“轻量级锁”。</p>
 <p>所以目前锁状态一种有四种，从级别由低到高依次是：无锁、偏向锁，轻量级锁，重量级锁，锁状态只能升级，不能降级</p>
-<p>如图所示：<br><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904666.jpg" alt="img"></p>
-<h3 id="三、锁状态的思路以及特点"><a href="#三、锁状态的思路以及特点" class="headerlink" title="三、锁状态的思路以及特点"></a>三、锁状态的思路以及特点</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904667.png" alt="img"></p>
-<h3 id="四、锁对比"><a href="#四、锁对比" class="headerlink" title="四、锁对比"></a>四、锁对比</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904669-20210807194327994.png" alt="img"></p>
+<p>如图所示：<br><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904666.jpg" alt="img"></p>
+<h3 id="三、锁状态的思路以及特点"><a href="#三、锁状态的思路以及特点" class="headerlink" title="三、锁状态的思路以及特点"></a>三、锁状态的思路以及特点</h3><p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904667.png" alt="img"></p>
+<h3 id="四、锁对比"><a href="#四、锁对比" class="headerlink" title="四、锁对比"></a>四、锁对比</h3><p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904669-20210807194327994.png" alt="img"></p>
 <h3 id="五、Synchronized锁"><a href="#五、Synchronized锁" class="headerlink" title="五、Synchronized锁"></a>五、Synchronized锁</h3><p>synchronized 用的锁是存在Java对象头里的，那么什么是对象头呢？</p>
 <h3 id="5-1-Java-对象头"><a href="#5-1-Java-对象头" class="headerlink" title="5.1 Java 对象头"></a>5.1 Java 对象头</h3><p>我们以 Hotspot 虚拟机为例，Hopspot 对象头主要包括两部分数据：Mark Word（标记字段） 和 Class Pointer（类型指针）</p>
 <p>Mark Word：默认存储对象的HashCode，分代年龄和锁标志位信息。这些信息都是与对象自身定义无关的数据，所以Mark Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的数据。它会根据对象的状态复用自己的存储空间，也就是说在运行期间Mark Word里存储的数据会随着锁标志位的变化而变化。</p>
@@ -345,7 +282,7 @@
 <p>当一个线程访问同步代码块并获取锁时，会在 Mark Word 里存储锁偏向的线程 ID。在线程进入和退出同步块时不再通过 CAS 操作来加锁和解锁，而是检测 Mark Word 里是否存储着指向当前线程的偏向锁。轻量级锁的获取及释放依赖多次 CAS 原子指令，而偏向锁只需要在置换 ThreadID 的时候依赖一次 CAS 原子指令即可。</p>
 <p>偏向锁只有遇到其他线程尝试竞争偏向锁时，持有偏向锁的线程才会释放锁，线程是不会主动释放偏向锁的。</p>
 <p>关于偏向锁的撤销，需要等待全局安全点，即在某个时间点上没有字节码正在执行时，它会先暂停拥有偏向锁的线程，然后判断锁对象是否处于被锁定状态。如果线程不处于活动状态，则将对象头设置成无锁状态，并撤销偏向锁，恢复到无锁（标志位为01）或轻量级锁（标志位为00）的状态。</p>
-<h3 id="6-4-轻量级锁（自旋锁）"><a href="#6-4-轻量级锁（自旋锁）" class="headerlink" title="6.4 轻量级锁（自旋锁）"></a>6.4 轻量级锁（自旋锁）</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/1460000022904671.jpg" alt="img"></p>
+<h3 id="6-4-轻量级锁（自旋锁）"><a href="#6-4-轻量级锁（自旋锁）" class="headerlink" title="6.4 轻量级锁（自旋锁）"></a>6.4 轻量级锁（自旋锁）</h3><p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/1460000022904671.jpg" alt="img"></p>
 <p>轻量级锁是指当锁是偏向锁的时候，却被另外的线程所访问，此时偏向锁就会升级为轻量级锁，其他线程会通过自旋（关于自旋的介绍见文末）的形式尝试获取锁，线程不会阻塞，从而提高性能。</p>
 <p>轻量级锁的获取主要由两种情况：<br>① 当关闭偏向锁功能时；<br>② 由于多个线程竞争偏向锁导致偏向锁升级为轻量级锁。</p>
 <p>一旦有第二个线程加入锁竞争，偏向锁就升级为轻量级锁（自旋锁）。这里要明确一下什么是锁竞争：如果多个线程轮流获取一个锁，但是每次获取锁的时候都很顺利，没有发生阻塞，那么就不存在锁竞争。只有当某线程尝试获取锁的时候，发现该锁已经被占用，只能等待其释放，这才发生了锁竞争。</p>
@@ -362,7 +299,7 @@
     
     
 
-    <footer class="post-footer">
+      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/Java/" rel="tag"># Java</a>
               <a href="/tags/synchronized/" rel="tag"># synchronized</a>
@@ -370,27 +307,29 @@
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2021/08/05/jstat/" rel="prev" title="内置监控工具 - jstat">
-                  <i class="fa fa-chevron-left"></i> 内置监控工具 - jstat
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2021/08/10/jinfo/" rel="next" title="内置故障排查工具-jinfo">
-                  内置故障排查工具-jinfo <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/05/jstat/" rel="prev" title="内置监控工具 - jstat">
+      <i class="fa fa-chevron-left"></i> 内置监控工具 - jstat
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/08/10/jinfo/" rel="next" title="内置故障排查工具-jinfo">
+      内置故障排查工具-jinfo <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-</div>
+  
+  
+  
 
 
 
-
-
-
+          </div>
+          
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -399,7 +338,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -408,35 +347,133 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
+      let commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E8%A8%80"><span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%94%81%E7%9A%84%E5%9B%9B%E7%A7%8D%E7%8A%B6%E6%80%81"><span class="nav-text">二、锁的四种状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%94%81%E7%8A%B6%E6%80%81%E7%9A%84%E6%80%9D%E8%B7%AF%E4%BB%A5%E5%8F%8A%E7%89%B9%E7%82%B9"><span class="nav-text">三、锁状态的思路以及特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%94%81%E5%AF%B9%E6%AF%94"><span class="nav-text">四、锁对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81Synchronized%E9%94%81"><span class="nav-text">五、Synchronized锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-Java-%E5%AF%B9%E8%B1%A1%E5%A4%B4"><span class="nav-text">5.1 Java 对象头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-Monitor"><span class="nav-text">5.2 Monitor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E9%94%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">六、锁的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E6%97%A0%E9%94%81"><span class="nav-text">6.2 无锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E5%81%8F%E5%90%91%E9%94%81"><span class="nav-text">6.3 偏向锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E8%BD%BB%E9%87%8F%E7%BA%A7%E9%94%81%EF%BC%88%E8%87%AA%E6%97%8B%E9%94%81%EF%BC%89"><span class="nav-text">6.4 轻量级锁（自旋锁）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E9%87%8D%E9%87%8F%E7%BA%A7%E9%94%81"><span class="nav-text">6.4 重量级锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">五、总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-  </main>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">126</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
 
-  <footer class="footer">
-    <div class="footer-inner">
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
 
 <div class="copyright">
+  
   &copy; 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">一年春又来</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-    </div>
-  </footer>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
 
   
 <script src="/js/local-search.js"></script>
@@ -446,11 +483,16 @@
 
 
 
+
+
+
+
+
+
+
   
 
-
-
-
+  
 
 </body>
 </html>

@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -15,43 +13,41 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-
-<script class="hexo-configurations">
+<script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
-<meta name="description" content="1 概述 CAP原理  ACID原理与BASE原理  基于XA协议的两阶段提交  事务补偿机制  基于本地消息表的最终一致方案  基于MQ消息队列的最终一致方案   2 CAP原理2.1 简介在分布式系统中，我们经常听到CAP原理这个词，它是什么意思呢？其实和C、A、P这3个字母有关，C、A、P分别是这3个词的首字母。下面我们就看一下这3个词分别是什么意思？  C - Consistent ，一致">
+
+  <meta name="description" content="1 概述 CAP原理  ACID原理与BASE原理  基于XA协议的两阶段提交  事务补偿机制  基于本地消息表的最终一致方案  基于MQ消息队列的最终一致方案   2 CAP原理2.1 简介在分布式系统中，我们经常听到CAP原理这个词，它是什么意思呢？其实和C、A、P这3个字母有关，C、A、P分别是这3个词的首字母。下面我们就看一下这3个词分别是什么意思？  C - Consistent ，一致">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分布式事务">
 <meta property="og:url" content="http://littlefxc.github.io/2021/07/24/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/index.html">
 <meta property="og:site_name" content="一年春又来">
 <meta property="og:description" content="1 概述 CAP原理  ACID原理与BASE原理  基于XA协议的两阶段提交  事务补偿机制  基于本地消息表的最终一致方案  基于MQ消息队列的最终一致方案   2 CAP原理2.1 简介在分布式系统中，我们经常听到CAP原理这个词，它是什么意思呢？其实和C、A、P这3个字母有关，C、A、P分别是这3个词的首字母。下面我们就看一下这3个词分别是什么意思？  C - Consistent ，一致">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c0c0934d12d06200487.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c24092a8a2205300403.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724171356938.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724172152429.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724175921780.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724180456245.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5ec4e2810969290517080353.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210725155803128.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210726213335173.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210728232239034.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0f0c0c0934d12d06200487.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0f0c24092a8a2205300403.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724171356938.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724172152429.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724175921780.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724180456245.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5ec4e2810969290517080353.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210725155803128.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210726213335173.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210728232239034.png">
 <meta property="article:published_time" content="2021-07-24T08:38:01.000Z">
-<meta property="article:modified_time" content="2022-05-10T01:51:45.354Z">
+<meta property="article:modified_time" content="2022-05-24T03:09:12.591Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="事务">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c0c0934d12d06200487.png">
-
+<meta name="twitter:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0f0c0c0934d12d06200487.png">
 
 <link rel="canonical" href="http://littlefxc.github.io/2021/07/24/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">
 
 
-<script class="page-configurations">
+<script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -60,70 +56,61 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>分布式事务 | 一年春又来</title>
+
+  <title>分布式事务 | 一年春又来</title>
   
+
+
 
 
 
 
   <noscript>
   <style>
-  body { margin-top: 2rem; }
-
+  .use-motion .brand,
   .use-motion .menu-item,
-  .use-motion .sidebar,
+  .sidebar-inner,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
+  .use-motion .site-subtitle {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
+      <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">一年春又来</h1>
-      <i class="logo-line"></i>
+      <span class="logo-line-after"><i></i></span>
     </a>
   </div>
 
@@ -136,12 +123,29 @@
 
 
 
+
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home                          //首页"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive          //归档"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th           //分类"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags                     //标签"></i>标签</a>
+
+  </li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -152,22 +156,23 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
+    <div class="popup search-popup">
+        <div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
+    <input autocomplete="off" autocapitalize="off"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close" role="button">
+  <span class="popup-btn-close">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
   </div>
 </div>
 
@@ -175,95 +180,27 @@
   </div>
 
 </div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-text">1 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-CAP%E5%8E%9F%E7%90%86"><span class="nav-text">2 CAP原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E7%AE%80%E4%BB%8B"><span class="nav-text">2.1 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E8%AF%A6%E8%A7%A3"><span class="nav-text">2.2 详解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-ACID%E4%B8%8EBASE"><span class="nav-text">3 ACID与BASE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E7%94%B1%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%BC%95%E5%8F%91%E7%9A%84%E4%BA%8B%E7%89%A9%E9%97%AE%E9%A2%98%E5%92%8C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">4 由分库分表引发的事物问题和解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E7%94%B1%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%BC%95%E5%8F%91%E7%9A%84%E4%BA%8B%E7%89%A9%E9%97%AE%E9%A2%98"><span class="nav-text">4.1 由分库分表引发的事物问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">4.2 解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E5%9F%BA%E4%BA%8EXA%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4"><span class="nav-text">4.2.1 基于XA协议的两阶段提交</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-1-1-%E4%BD%BF%E7%94%A8Mycat-%E6%88%96%E8%80%85Sharding-Jdbc"><span class="nav-text">4.2.1.1 使用Mycat 或者Sharding-Jdbc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-%E4%BA%8B%E5%8A%A1%E8%A1%A5%E5%81%BF%E6%9C%BA%E5%88%B6"><span class="nav-text">4.2.2 事务补偿机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-%E5%9F%BA%E4%BA%8E%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8%E7%9A%84%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88"><span class="nav-text">4.2.3 基于本地消息表的的最终一致性方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-4-%E5%9F%BA%E4%BA%8EMQ%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88"><span class="nav-text">4.2.4 基于MQ的最终一致性方案</span></a></li></ol></li></ol></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">一年春又来</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">234</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">38</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">125</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
     </header>
 
     
-  <div class="back-to-top" role="button">
+  <div class="back-to-top">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
 
-    <div class="main-inner post posts-expand">
+          <div class="content post posts-expand">
+            
 
-
-  
-
-
-<div class="post-block">
+    
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2021/07/24/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -280,35 +217,33 @@
           分布式事务
         </h1>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-07-24 16:38:01" itemprop="dateCreated datePublished" datetime="2021-07-24T16:38:01+08:00">2021-07-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2022-05-10 09:51:45" itemprop="dateModified" datetime="2022-05-10T09:51:45+08:00">2022-05-10</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
-        </span>
-    </span>
+              <time title="创建时间：2021-07-24 16:38:01" itemprop="dateCreated datePublished" datetime="2021-07-24T16:38:01+08:00">2021-07-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-24 11:09:12" itemprop="dateModified" datetime="2022-05-24T11:09:12+08:00">2022-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">分布式系统</span></a>
+                </span>
+            </span>
 
-  
-</div>
+          
 
         </div>
       </header>
@@ -317,6 +252,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
+
+      
         <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h1><ul>
 <li><p>CAP原理</p>
 </li>
@@ -337,10 +274,10 @@
 <li>A - Availability ，可用性。指服务一致可用，在规定的时间内完成响应。</li>
 <li>P - Partition tolerance ，分区容错性。指分布式系统在遇到某节点或网络分区故障的时候，仍然能够对外提供服务。</li>
 </ul>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c0c0934d12d06200487.png"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0f0c0c0934d12d06200487.png"></p>
 <p>CAP原理指出，这3个指标不能同时满足，最多只能满足其中的两个。</p>
 <h2 id="2-2-详解"><a href="#2-2-详解" class="headerlink" title="2.2 详解"></a>2.2 详解</h2><p>我们之所以使用分布式系统，就是为了在某个节点不可用的情况下，整个服务对外还是可用的，这正是满足P（分区容错性）。如果我们的服务不满足P（分区容错性），那么我们的系统也就不是分布式系统了，所以，在分布式系统中，P（分布容错性）总是成立的。那么，A（可用性）和C（一致性）能不能同时满足呢？我们看一下下面的图例。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5e0f0c24092a8a2205300403.png"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5e0f0c24092a8a2205300403.png"></p>
 <p>A和B是两个数据节点，A向B同步数据，并且作为一个整体对外提供服务。由于我们的系统保证了P（分区容错性），那么A和B的同步，我们允许出现故障。接下来我们再保证A（可用性），也就是说A和B同步出现问题时，客户端还能够访问我们的系统，那么客户端既可能访问A也可能访问B，这时，A和B的数据是不一致的，所以C（一致性）不能满足。</p>
 <p>如果我们满足C（一致性），也就是说客户端无论访问A还是访问B，得到的结果都是一样的，那么现在A和B的数据不一致，需要等到A和B的数据一致以后，也就是同步恢复以后，才可对外提供服务。这样我们虽然满足了C（一致性），却不能满足A（可用性）。</p>
 <p>所以，我们的系统在满足P（分区容错性）的同时，只能在A（可用性）和C（一致性）当中选择一个不能CAP同时满足。我们的分布式系统只能是AP或者CP。</p>
@@ -371,9 +308,9 @@
 <p>BASE模型是传统ACID模型的反面，不同与ACID，BASE强调牺牲高一致性，从而获得可用性，数据允许在一段时间内的不一致，只要保证最终一致就可以了。</p>
 <p>在分布式事务的解决方案中，它们都是依赖了ACID或者BASE的模型而实现的。像基于XA协议的两阶段提交和实物补偿机制就是基于ACID实现的。而基于本地消息表和基于MQ的最终一致方案都是通过BASE原理实现的。这几种分布式事务的解决方案，我们会在视频的课程中给大家讲解。</p>
 <h1 id="4-由分库分表引发的事物问题和解决方案"><a href="#4-由分库分表引发的事物问题和解决方案" class="headerlink" title="4 由分库分表引发的事物问题和解决方案"></a>4 由分库分表引发的事物问题和解决方案</h1><h2 id="4-1-由分库分表引发的事物问题"><a href="#4-1-由分库分表引发的事物问题" class="headerlink" title="4.1 由分库分表引发的事物问题"></a>4.1 由分库分表引发的事物问题</h2><p>传统的应用都是单一数据库事物，所有的业务表都在同一数据库内，这时候数据库的事物可以得到很好的支持，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724171356938.png" alt="image-20210724171356938"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724171356938.png" alt="image-20210724171356938"></p>
 <p>然后在同一个业务内，再把数据库进行水平切分多个数据库，多个数据库之间是没有办法无法统一事务管理的，就会造成数据不一致的情况。如果按照垂直切分成多个数据库，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724172152429.png" alt="image-20210724172152429"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724172152429.png" alt="image-20210724172152429"></p>
 <p>比如：</p>
 <ul>
 <li><p>一个下单操作，用户使用积分购买商品</p>
@@ -401,8 +338,8 @@
 </li>
 <li><p>提交阶段分为两个阶段：prepare 和 commit</p>
 <p>也就是说在提交之前，让所有的数据库先进行准备，准备好了之后通知事务管理器，然后由事务管理器统一的提交事务，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724175921780.png" alt="image-20210724175921780"></p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210724180456245.png" alt="image-20210724180456245"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724175921780.png" alt="image-20210724175921780"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210724180456245.png" alt="image-20210724180456245"></p>
 </li>
 <li><p>XA协议保证了数据的强一致性</p>
 </li>
@@ -419,12 +356,12 @@
 </ul>
 <h4 id="4-2-1-1-使用Mycat-或者Sharding-Jdbc"><a href="#4-2-1-1-使用Mycat-或者Sharding-Jdbc" class="headerlink" title="4.2.1.1 使用Mycat 或者Sharding-Jdbc"></a>4.2.1.1 使用Mycat 或者Sharding-Jdbc</h4><p><strong>配置Mycat</strong></p>
 <p>通过修改<code>conf/server.xml</code>配置分布式事务，如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/5ec4e2810969290517080353.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/5ec4e2810969290517080353.jpg"></p>
 <p>至于Sharding-Jdbc则默认为我们开启了分布式事务</p>
 <h3 id="4-2-2-事务补偿机制"><a href="#4-2-2-事务补偿机制" class="headerlink" title="4.2.2 事务补偿机制"></a>4.2.2 事务补偿机制</h3><p><strong>什么事务补偿机制？</strong></p>
 <p>其实就是针对每个操作，都要注册一个与其对应的补偿（撤销）操作，在执行失败时，调用补偿操作，撤销之前的操作。</p>
 <p>例如一个A给B转账的例子：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210725155803128.png" alt="image-20210725155803128"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210725155803128.png" alt="image-20210725155803128"></p>
 <ul>
 <li>A 和 B 在不两家不同的银行</li>
 <li>A 账户减 200元，B 账户加 200 元</li>
@@ -448,7 +385,7 @@
 <li><p>TCC属于应用层的一种补偿方式，程序员需要写大量的代码</p>
 </li>
 </ul>
-<h3 id="4-2-3-基于本地消息表的的最终一致性方案"><a href="#4-2-3-基于本地消息表的的最终一致性方案" class="headerlink" title="4.2.3 基于本地消息表的的最终一致性方案"></a>4.2.3 基于本地消息表的的最终一致性方案</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210726213335173.png" alt="image-20210726213335173"></p>
+<h3 id="4-2-3-基于本地消息表的的最终一致性方案"><a href="#4-2-3-基于本地消息表的的最终一致性方案" class="headerlink" title="4.2.3 基于本地消息表的的最终一致性方案"></a>4.2.3 基于本地消息表的的最终一致性方案</h3><p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210726213335173.png" alt="image-20210726213335173"></p>
 <ul>
 <li>采用BASE原理，保证事务最终一致</li>
 <li>在一致性方面，允许一段时间内的不一致，但最终会一致</li>
@@ -474,7 +411,7 @@
 <li>不同点2：定时任务改为MQ的消费者</li>
 </ul>
 <p>这样就不在依赖于定时任务了，架构图如下所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210728232239034.png" alt="image-20210728232239034"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210728232239034.png" alt="image-20210728232239034"></p>
 <ol>
 <li><p>首先，业务系统将数据保存到数据库中</p>
 </li>
@@ -498,34 +435,36 @@
     
     
 
-    <footer class="post-footer">
+      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
           </div>
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2021/07/18/%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%A8%E5%B1%80ID/" rel="prev" title="分布式全局ID">
-                  <i class="fa fa-chevron-left"></i> 分布式全局ID
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2021/07/27/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AAzipkin/" rel="next" title="链路追踪zipkin">
-                  链路追踪zipkin <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/18/%E5%88%86%E5%B8%83%E5%BC%8F%E5%85%A8%E5%B1%80ID/" rel="prev" title="分布式全局ID">
+      <i class="fa fa-chevron-left"></i> 分布式全局ID
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/07/27/%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AAzipkin/" rel="next" title="链路追踪zipkin">
+      链路追踪zipkin <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-</div>
+  
+  
+  
 
 
 
-
-
-
+          </div>
+          
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -534,7 +473,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -543,35 +482,133 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
+      let commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-text">1 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-CAP%E5%8E%9F%E7%90%86"><span class="nav-text">2 CAP原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E7%AE%80%E4%BB%8B"><span class="nav-text">2.1 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E8%AF%A6%E8%A7%A3"><span class="nav-text">2.2 详解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-ACID%E4%B8%8EBASE"><span class="nav-text">3 ACID与BASE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E7%94%B1%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%BC%95%E5%8F%91%E7%9A%84%E4%BA%8B%E7%89%A9%E9%97%AE%E9%A2%98%E5%92%8C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">4 由分库分表引发的事物问题和解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E7%94%B1%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E5%BC%95%E5%8F%91%E7%9A%84%E4%BA%8B%E7%89%A9%E9%97%AE%E9%A2%98"><span class="nav-text">4.1 由分库分表引发的事物问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">4.2 解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E5%9F%BA%E4%BA%8EXA%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4"><span class="nav-text">4.2.1 基于XA协议的两阶段提交</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-1-1-%E4%BD%BF%E7%94%A8Mycat-%E6%88%96%E8%80%85Sharding-Jdbc"><span class="nav-text">4.2.1.1 使用Mycat 或者Sharding-Jdbc</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-%E4%BA%8B%E5%8A%A1%E8%A1%A5%E5%81%BF%E6%9C%BA%E5%88%B6"><span class="nav-text">4.2.2 事务补偿机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-%E5%9F%BA%E4%BA%8E%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8%E7%9A%84%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88"><span class="nav-text">4.2.3 基于本地消息表的的最终一致性方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-4-%E5%9F%BA%E4%BA%8EMQ%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7%E6%96%B9%E6%A1%88"><span class="nav-text">4.2.4 基于MQ的最终一致性方案</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-  </main>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">126</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
 
-  <footer class="footer">
-    <div class="footer-inner">
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
 
 <div class="copyright">
+  
   &copy; 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">一年春又来</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-    </div>
-  </footer>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
 
   
 <script src="/js/local-search.js"></script>
@@ -581,11 +618,16 @@
 
 
 
+
+
+
+
+
+
+
   
 
-
-
-
+  
 
 </body>
 </html>

@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -15,41 +13,39 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-
-<script class="hexo-configurations">
+<script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
-<meta name="description" content="转载自https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844903874927525902#heading-21  什么是Redis持久化? Redis作为一个键值对内存数据库(NoSQL)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：  这样做有什么问题呢？">
+
+  <meta name="description" content="转载自https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844903874927525902#heading-21  什么是Redis持久化? Redis作为一个键值对内存数据库(NoSQL)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：  这样做有什么问题呢？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解Redis的持久化机制:RDB&amp;AOF">
 <meta property="og:url" content="http://littlefxc.github.io/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/index.html">
 <meta property="og:site_name" content="一年春又来">
 <meta property="og:description" content="转载自https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844903874927525902#heading-21  什么是Redis持久化? Redis作为一个键值对内存数据库(NoSQL)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：  这样做有什么问题呢？">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_3.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_4.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_5.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_6.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_7.jpg">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_8.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_1.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_2.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_3.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_4.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_5.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_6.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_7.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_8.jpg">
 <meta property="article:published_time" content="2020-12-24T03:33:37.000Z">
-<meta property="article:modified_time" content="2021-03-25T13:15:49.000Z">
+<meta property="article:modified_time" content="2022-05-24T03:09:12.571Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg">
-
+<meta name="twitter:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_1.jpg">
 
 <link rel="canonical" href="http://littlefxc.github.io/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/">
 
 
-<script class="page-configurations">
+<script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -58,70 +54,61 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>理解Redis的持久化机制:RDB&AOF | 一年春又来</title>
+
+  <title>理解Redis的持久化机制:RDB&AOF | 一年春又来</title>
   
+
+
 
 
 
 
   <noscript>
   <style>
-  body { margin-top: 2rem; }
-
+  .use-motion .brand,
   .use-motion .menu-item,
-  .use-motion .sidebar,
+  .sidebar-inner,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
+  .use-motion .site-subtitle {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
+      <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">一年春又来</h1>
-      <i class="logo-line"></i>
+      <span class="logo-line-after"><i></i></span>
     </a>
   </div>
 
@@ -134,12 +121,29 @@
 
 
 
+
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home                          //首页"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive          //归档"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th           //分类"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags                     //标签"></i>标签</a>
+
+  </li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -150,22 +154,23 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
+    <div class="popup search-popup">
+        <div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
+    <input autocomplete="off" autocapitalize="off"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close" role="button">
+  <span class="popup-btn-close">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
   </div>
 </div>
 
@@ -173,95 +178,27 @@
   </div>
 
 </div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFRedis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-text">什么是Redis持久化?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RDB"><span class="nav-text">RDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AFRDB%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-text">开启RDB持久化方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-save%E5%91%BD%E4%BB%A4"><span class="nav-text">1. save命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-bgsave"><span class="nav-text">2. bgsave</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E8%87%AA%E5%8A%A8%E8%A7%A6%E5%8F%91"><span class="nav-text">3. 服务器配置自动触发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rdb%E6%96%87%E4%BB%B6"><span class="nav-text">rdb文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E7%9A%84%E5%87%A0%E4%B8%AA%E4%BC%98%E7%82%B9"><span class="nav-text">RDB的几个优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E7%9A%84%E5%87%A0%E4%B8%AA%E7%BC%BA%E7%82%B9"><span class="nav-text">RDB的几个缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AOF"><span class="nav-text">AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AFAOF%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-text">开启AOF持久化方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%86%99%E5%85%A5%E7%AD%96%E7%95%A5"><span class="nav-text">三种写入策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-always"><span class="nav-text">1. always</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-everysec"><span class="nav-text">2. everysec</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-no"><span class="nav-text">3. no</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E6%96%87%E4%BB%B6%E9%87%8D%E5%86%99"><span class="nav-text">AOF文件重写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E9%87%8D%E5%86%99%E6%96%B9%E5%BC%8F"><span class="nav-text">两种重写方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%86%99aof%E6%96%87%E4%BB%B6%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-text">重写aof文件的好处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E6%96%87%E4%BB%B6%E6%8D%9F%E5%9D%8F"><span class="nav-text">AOF文件损坏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-text">AOF的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-text">AOF的缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%89%E6%8B%A9RDB%E8%BF%98%E6%98%AFAOF%E5%91%A2%EF%BC%9F"><span class="nav-text">选择RDB还是AOF呢？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-text">小结</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">一年春又来</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">234</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">38</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">125</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
     </header>
 
     
-  <div class="back-to-top" role="button">
+  <div class="back-to-top">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
 
-    <div class="main-inner post posts-expand">
+          <div class="content post posts-expand">
+            
 
-
-  
-
-
-<div class="post-block">
+    
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2020/12/24/%E7%90%86%E8%A7%A3Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6-RDB-AOF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -278,35 +215,33 @@
           理解Redis的持久化机制:RDB&AOF
         </h1>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2020-12-24 11:33:37" itemprop="dateCreated datePublished" datetime="2020-12-24T11:33:37+08:00">2020-12-24</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-25 21:15:49" itemprop="dateModified" datetime="2021-03-25T21:15:49+08:00">2021-03-25</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
-        </span>
-    </span>
+              <time title="创建时间：2020-12-24 11:33:37" itemprop="dateCreated datePublished" datetime="2020-12-24T11:33:37+08:00">2020-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-24 11:09:12" itemprop="dateModified" datetime="2022-05-24T11:09:12+08:00">2022-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index"><span itemprop="name">redis</span></a>
+                </span>
+            </span>
 
-  
-</div>
+          
 
         </div>
       </header>
@@ -315,20 +250,22 @@
     
     
     <div class="post-body" itemprop="articleBody">
+
+      
         <blockquote>
 <p>转载自<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903874927525902#heading-21">https://juejin.cn/post/6844903874927525902#heading-21</a></p>
 </blockquote>
 <h1 id="什么是Redis持久化"><a href="#什么是Redis持久化" class="headerlink" title="什么是Redis持久化?"></a>什么是Redis持久化?</h1><hr>
 <p><code>Redis</code>作为一个键值对内存数据库(<code>NoSQL</code>)，数据都存储在内存当中，在处理客户端请求时，所有操作都在内存当中进行，如下所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_1.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_1.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_1.jpg"></p>
 <p>这样做有什么问题呢？</p>
 <span id="more"></span>
 
 <p>其实，只要稍微有点计算机基础知识的人都知道，存储在内存当中的数据，只要服务器关机(各种原因引起的)，内存中的数据就会消失了，不仅服务器关机会造成数据消失，<code>Redis</code>服务器守护进程退出，内存中的数据也一样会消失。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_2.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_2.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_2.jpg"></p>
 <p>于只把<code>Redis</code>当缓存来用的项目来说，数据消失或许问题不大，重新从数据源把数据加载进来就可以了，但如果直接把用户提交的业务数据存储在<code>Redis</code>当中，把<code>Redis</code>作为数据库来使用，在其放存储重要业务数据，那么<code>Redis</code>的内存数据丢失所造成的影响也许是毁灭性。</p>
 <p>为了避免内存中数据丢失，Redis提供了对持久化的支持，我们可以选择不同的方式将数据从内存中保存到硬盘当中，使数据可以持久化保存。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_3.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_3.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_3.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_3.jpg"></p>
 <p>Redis提供了RDB和AOF两种不同的数据持久化方式，下面我们就来详细介绍一下这种不同的持久化方式吧。</p>
 <h1 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h1><hr>
 <p><code>RDB</code>是一种快照存储持久化方式，具体就是将Redis某一时刻的内存数据保存到硬盘的文件当中，默认保存的文件名为<code>dump.rdb</code>，而在<code>Redis</code>服务器启动时，会重新加载<code>dump.rdb</code>文件的数据到内存当中恢复数据。</p>
@@ -336,13 +273,13 @@
 <h3 id="1-save命令"><a href="#1-save命令" class="headerlink" title="1. save命令"></a>1. save命令</h3><p><code>save</code>命令是一个同步操作。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 同步数据到磁盘上</span></span><br><span class="line">&gt; save</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_4.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_4.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_4.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_4.jpg"></p>
 <p><strong>当客户端向服务器发送<code>save</code>命令请求进行持久化时，服务器会阻塞<code>save</code>命令之后的其他客户端的请求，直到数据同步完成。</strong></p>
 <p>如果数据量太大，同步数据会执行很久，而这期间Redis服务器也无法接收其他请求，所以，最好不要在生产环境使用save命令。</p>
 <h3 id="2-bgsave"><a href="#2-bgsave" class="headerlink" title="2. bgsave"></a>2. bgsave</h3><p>与<code>save</code>命令不同，<code>bgsave</code>命令是一个异步操作。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 异步保存数据集到磁盘上</span></span><br><span class="line">&gt; bgsave</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_5.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_5.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_5.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_5.jpg"></p>
 <p>当客户端发服务发出<code>bgsave</code>命令时，<code>Redis</code>服务器主进程会<code>forks</code>一个子进程来数据同步问题，在将数据保存到rdb文件之后，子进程会退出。</p>
 <p>所以，与<code>save</code>命令相比，<code>Redis</code>服务器在处理<code>bgsave</code>采用子线程进行IO写入，而主进程仍然可以接收其他请求，但<code>forks</code>子进程是同步的，所以<code>forks</code>子进程时，一样不能接收其他请求，这意味着，<strong>如果forks一个子进程花费的时间太久(一般是很快的)，<code>bgsave</code>命令仍然有阻塞其他客户的请求的情况发生。</strong></p>
 <h3 id="3-服务器配置自动触发"><a href="#3-服务器配置自动触发" class="headerlink" title="3. 服务器配置自动触发"></a>3. 服务器配置自动触发</h3><p>除了通过客户端发送命令外，还有一种方式，就是在<code>Redis</code>配置文件中的<code>save</code>指定到达触发RDB持久化的条件，比如【多少秒内至少达到多少写操作】就开启<code>RDB</code>数据同步。</p>
@@ -374,7 +311,7 @@
 </ol>
 <h1 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h1><p>聊完了<code>RDB</code>,来聊聊<code>Redis</code>的另外一个持久化方式：<code>AOF(Append-only file)</code>。</p>
 <p>与<code>RDB</code>存储某个时刻的快照不同，<code>AOF</code>持久化方式会记录客户端对服务器的每一次写操作命令，并将这些写操作以<code>Redis</code>协议追加保存到以后缀为<code>aof</code>文件末尾，在Redis服务器重启时，会加载并运行<code>aof</code>文件的命令，以达到恢复数据的目的。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_6.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_6.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_6.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_6.jpg"></p>
 <h2 id="开启AOF持久化方式"><a href="#开启AOF持久化方式" class="headerlink" title="开启AOF持久化方式"></a>开启AOF持久化方式</h2><p>Redis默认不开启AOF持久化方式，我们可以在配置文件中开启并进行更加详细的配置，如下面的redis.conf文件：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 开启aof机制</span><br><span class="line">appendonly yes</span><br><span class="line"></span><br><span class="line"># aof文件名</span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"># 写入策略,always表示每个写操作都保存到aof文件中,也可以是everysec或no</span><br><span class="line">appendfsync always</span><br><span class="line"></span><br><span class="line"># 默认不重写aof文件</span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"># 保存目录</span><br><span class="line">dir ~&#x2F;redis&#x2F;</span><br></pre></td></tr></table></figure>
 
@@ -401,7 +338,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 让服务器异步重写追加aof文件命令</span></span><br><span class="line">&gt; bgrewriteaof</span><br></pre></td></tr></table></figure>
 
 <p><strong>AOF重写方式也是异步操作</strong>，即如果要写入aof文件，则Redis主进程会forks一个子进程来处理，如下所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_7.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_7.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_7.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_7.jpg"></p>
 <h3 id="重写aof文件的好处"><a href="#重写aof文件的好处" class="headerlink" title="重写aof文件的好处"></a>重写aof文件的好处</h3><ol>
 <li>压缩aof文件，减少磁盘占用量。</li>
 <li>将aof的命令压缩为最小命令集，加快了数据恢复的速度。</li>
@@ -422,7 +359,7 @@
 </ol>
 <h1 id="选择RDB还是AOF呢？"><a href="#选择RDB还是AOF呢？" class="headerlink" title="选择RDB还是AOF呢？"></a>选择RDB还是AOF呢？</h1><p>通过上面的介绍，我们了解了RDB与AOF各自的优点与缺点，到底要如何选择呢？</p>
 <p>通过下面的表示，我们可以从几个方面对比一下RDB与AOF,在应用时，要根本自己的实际需求，选择RDB或者AOF，其实，如果想要数据足够安全，可以两种方式都开启，但两种持久化方式同时进行IO操作，会严重影响服务器性能，因此有时候不得不做出选择。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_8.jpg" alt="https://gitee.com/littlefxc/oss/raw/master/images/redis_rdb_aof_8.jpg"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_8.jpg" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/redis_rdb_aof_8.jpg"></p>
 <p>当RDB与AOF两种方式都开启时，Redis会优先使用AOF日志来恢复数据，因为AOF保存的文件比RDB文件更完整。</p>
 <h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>上面讲了一大堆<code>Redis</code>的持久化机制的知识，其实，如果你只是单纯把<code>Redis</code>作为缓存服务器，那么可以完全不用考虑持久化，但是，在如今的大多数服务器架构中，<code>Redis</code>的单单只是扮演一个缓存服务器的角色，还可以作为数据库，保存我们的业务数据，此时，我们则需要好好了解有关<code>Redis</code>持久化策略的区别与选择。</p>
 
@@ -432,34 +369,36 @@
     
     
 
-    <footer class="post-footer">
+      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/redis/" rel="tag"># redis</a>
           </div>
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/" rel="prev" title="Hive集成HBase 详解">
-                  <i class="fa fa-chevron-left"></i> Hive集成HBase 详解
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2021/01/09/%E4%BB%80%E4%B9%88%E6%98%AF%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95/" rel="next" title="什么是倒排索引?">
-                  什么是倒排索引? <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/11/Hive%E9%9B%86%E6%88%90HBase-%E8%AF%A6%E8%A7%A3/" rel="prev" title="Hive集成HBase 详解">
+      <i class="fa fa-chevron-left"></i> Hive集成HBase 详解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/09/%E4%BB%80%E4%B9%88%E6%98%AF%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95/" rel="next" title="什么是倒排索引?">
+      什么是倒排索引? <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-</div>
+  
+  
+  
 
 
 
-
-
-
+          </div>
+          
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -468,7 +407,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -477,35 +416,133 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
+      let commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFRedis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-text">什么是Redis持久化?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RDB"><span class="nav-text">RDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AFRDB%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-text">开启RDB持久化方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-save%E5%91%BD%E4%BB%A4"><span class="nav-text">1. save命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-bgsave"><span class="nav-text">2. bgsave</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E8%87%AA%E5%8A%A8%E8%A7%A6%E5%8F%91"><span class="nav-text">3. 服务器配置自动触发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rdb%E6%96%87%E4%BB%B6"><span class="nav-text">rdb文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E7%9A%84%E5%87%A0%E4%B8%AA%E4%BC%98%E7%82%B9"><span class="nav-text">RDB的几个优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E7%9A%84%E5%87%A0%E4%B8%AA%E7%BC%BA%E7%82%B9"><span class="nav-text">RDB的几个缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AOF"><span class="nav-text">AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E5%90%AFAOF%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-text">开启AOF持久化方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E5%86%99%E5%85%A5%E7%AD%96%E7%95%A5"><span class="nav-text">三种写入策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-always"><span class="nav-text">1. always</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-everysec"><span class="nav-text">2. everysec</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-no"><span class="nav-text">3. no</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E6%96%87%E4%BB%B6%E9%87%8D%E5%86%99"><span class="nav-text">AOF文件重写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E9%87%8D%E5%86%99%E6%96%B9%E5%BC%8F"><span class="nav-text">两种重写方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%86%99aof%E6%96%87%E4%BB%B6%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-text">重写aof文件的好处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E6%96%87%E4%BB%B6%E6%8D%9F%E5%9D%8F"><span class="nav-text">AOF文件损坏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-text">AOF的优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E7%9A%84%E7%BC%BA%E7%82%B9"><span class="nav-text">AOF的缺点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%89%E6%8B%A9RDB%E8%BF%98%E6%98%AFAOF%E5%91%A2%EF%BC%9F"><span class="nav-text">选择RDB还是AOF呢？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-  </main>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">126</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
 
-  <footer class="footer">
-    <div class="footer-inner">
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
 
 <div class="copyright">
+  
   &copy; 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">一年春又来</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-    </div>
-  </footer>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
 
   
 <script src="/js/local-search.js"></script>
@@ -515,11 +552,16 @@
 
 
 
+
+
+
+
+
+
+
   
 
-
-
-
+  
 
 </body>
 </html>

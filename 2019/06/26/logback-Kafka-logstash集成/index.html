@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -15,15 +13,14 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-
-<script class="hexo-configurations">
+<script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
-<meta name="description" content="我们是通过 logback 打印日志，然后将日志通过 kafka 消息队列发送到 Logstash,经过处理以后存储到 Elasticsearch 中，然后通过 Kibana 图形化界面进行分析和处理。 在 spring boot 应用程序中，默认使用 logback 来记录日志，并用 INFO 级别输出日志到控制台。 日志级别和顺序：TRACE &lt; DEBUG &lt; INFO &lt;">
+
+  <meta name="description" content="我们是通过 logback 打印日志，然后将日志通过 kafka 消息队列发送到 Logstash,经过处理以后存储到 Elasticsearch 中，然后通过 Kibana 图形化界面进行分析和处理。 在 spring boot 应用程序中，默认使用 logback 来记录日志，并用 INFO 级别输出日志到控制台。 日志级别和顺序：TRACE &lt; DEBUG &lt; INFO &lt;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="logback+Kafka+logstash集成">
 <meta property="og:url" content="http://littlefxc.github.io/2019/06/26/logback-Kafka-logstash%E9%9B%86%E6%88%90/index.html">
@@ -31,18 +28,17 @@
 <meta property="og:description" content="我们是通过 logback 打印日志，然后将日志通过 kafka 消息队列发送到 Logstash,经过处理以后存储到 Elasticsearch 中，然后通过 Kibana 图形化界面进行分析和处理。 在 spring boot 应用程序中，默认使用 logback 来记录日志，并用 INFO 级别输出日志到控制台。 日志级别和顺序：TRACE &lt; DEBUG &lt; INFO &lt;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2019-06-26T11:37:02.000Z">
-<meta property="article:modified_time" content="2021-09-01T00:54:34.159Z">
+<meta property="article:modified_time" content="2022-05-24T03:09:12.532Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="kafka">
 <meta property="article:tag" content="logstash">
 <meta property="article:tag" content="logback">
 <meta name="twitter:card" content="summary">
 
-
 <link rel="canonical" href="http://littlefxc.github.io/2019/06/26/logback-Kafka-logstash%E9%9B%86%E6%88%90/">
 
 
-<script class="page-configurations">
+<script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -51,70 +47,61 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>logback+Kafka+logstash集成 | 一年春又来</title>
+
+  <title>logback+Kafka+logstash集成 | 一年春又来</title>
   
+
+
 
 
 
 
   <noscript>
   <style>
-  body { margin-top: 2rem; }
-
+  .use-motion .brand,
   .use-motion .menu-item,
-  .use-motion .sidebar,
+  .sidebar-inner,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
+  .use-motion .site-subtitle {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
+      <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">一年春又来</h1>
-      <i class="logo-line"></i>
+      <span class="logo-line-after"><i></i></span>
     </a>
   </div>
 
@@ -127,12 +114,29 @@
 
 
 
+
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home                          //首页"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive          //归档"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th           //分类"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags                     //标签"></i>标签</a>
+
+  </li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -143,22 +147,23 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
+    <div class="popup search-popup">
+        <div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
+    <input autocomplete="off" autocapitalize="off"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close" role="button">
+  <span class="popup-btn-close">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
   </div>
 </div>
 
@@ -166,95 +171,27 @@
   </div>
 
 </div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-logback-%E4%B8%8E-Kafka-%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-text">1. logback 与 Kafka 的集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-KafkaAppender-%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="nav-text">1.1. KafkaAppender 配置说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%85%BC%E5%AE%B9%E6%80%A7-Compatibility"><span class="nav-text">1.2. 兼容性:Compatibility</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%88%86%E5%8F%91%E7%AD%96%E7%95%A5-Delivery-strategies"><span class="nav-text">1.3. 分发策略:Delivery strategies</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-%E5%85%B3%E4%BA%8E-broker-%E7%9A%84%E4%B8%AD%E6%96%AD"><span class="nav-text">1.3.1. 关于 broker 的中断</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8F%91%E7%AD%96%E7%95%A5-delivery-strategies"><span class="nav-text">1.3.2. 自定义分发策略(delivery strategies)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-3-%E5%A4%87%E7%94%A8%E8%BF%BD%E5%8A%A0%E7%A8%8B%E5%BA%8F-fallback-appender"><span class="nav-text">1.3.3. 备用追加程序:fallback appender</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-4-%E7%94%9F%E4%BA%A7%E8%80%85%E8%B0%83%E6%95%B4"><span class="nav-text">1.3.4. 生产者调整</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-5-%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">1.3.5. 序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-3-5-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">1.3.5.1 自定义序列化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E9%94%AE%E6%8E%A7%E7%AD%96%E7%95%A5-%E5%88%86%E5%8C%BA-Keying-strategies-Partitioning"><span class="nav-text">1.4 键控策略&#x2F;分区:Keying strategies &#x2F; Partitioning</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%AE%E6%8E%A7%E7%AD%96%E7%95%A5-Custom-keying-strategies"><span class="nav-text">1.4.1. 自定义键控策略 Custom keying strategies</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-logback-spring-xml-%E7%A4%BA%E4%BE%8B"><span class="nav-text">1.5. logback-spring.xml 示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Kafka-%E4%B8%8E-Logstash-%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-text">2. Kafka 与 Logstash 的集成</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">一年春又来</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">234</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">38</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">125</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
     </header>
 
     
-  <div class="back-to-top" role="button">
+  <div class="back-to-top">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
 
-    <div class="main-inner post posts-expand">
+          <div class="content post posts-expand">
+            
 
-
-  
-
-
-<div class="post-block">
+    
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/2019/06/26/logback-Kafka-logstash%E9%9B%86%E6%88%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -271,35 +208,33 @@
           logback+Kafka+logstash集成
         </h1>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2019-06-26 19:37:02" itemprop="dateCreated datePublished" datetime="2019-06-26T19:37:02+08:00">2019-06-26</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-01 08:54:34" itemprop="dateModified" datetime="2021-09-01T08:54:34+08:00">2021-09-01</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
-        </span>
-    </span>
+              <time title="创建时间：2019-06-26 19:37:02" itemprop="dateCreated datePublished" datetime="2019-06-26T19:37:02+08:00">2019-06-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-24 11:09:12" itemprop="dateModified" datetime="2022-05-24T11:09:12+08:00">2022-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elk/" itemprop="url" rel="index"><span itemprop="name">elk</span></a>
+                </span>
+            </span>
 
-  
-</div>
+          
 
         </div>
       </header>
@@ -308,6 +243,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
+
+      
         <p>我们是通过 logback 打印日志，然后将日志通过 kafka 消息队列发送到 Logstash,经过处理以后存储到 Elasticsearch 中，然后通过 Kibana 图形化界面进行分析和处理。</p>
 <p>在 spring boot 应用程序中，默认使用 logback 来记录日志，并用 INFO 级别输出日志到控制台。</p>
 <p>日志级别和顺序：TRACE &lt; DEBUG &lt; INFO &lt; WARN &lt; ERROR &lt; FATAL</p>
@@ -389,7 +326,7 @@
     
     
 
-    <footer class="post-footer">
+      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/kafka/" rel="tag"># kafka</a>
               <a href="/tags/logstash/" rel="tag"># logstash</a>
@@ -398,27 +335,29 @@
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2019/06/26/Spring-Security-Oauth2%E5%A6%82%E4%BD%95%E5%A2%9E%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F/" rel="prev" title="Spring-Security-Oauth2如何增加自定义授权模式">
-                  <i class="fa fa-chevron-left"></i> Spring-Security-Oauth2如何增加自定义授权模式
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2019/07/03/spring%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%AF%A6%E8%A7%A3%EF%BC%88-Scheduled%E6%B3%A8%E8%A7%A3%EF%BC%89/" rel="next" title="spring定时任务详解（@Scheduled注解）">
-                  spring定时任务详解（@Scheduled注解） <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/06/26/Spring-Security-Oauth2%E5%A6%82%E4%BD%95%E5%A2%9E%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F/" rel="prev" title="Spring-Security-Oauth2如何增加自定义授权模式">
+      <i class="fa fa-chevron-left"></i> Spring-Security-Oauth2如何增加自定义授权模式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/03/spring%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%AF%A6%E8%A7%A3%EF%BC%88-Scheduled%E6%B3%A8%E8%A7%A3%EF%BC%89/" rel="next" title="spring定时任务详解（@Scheduled注解）">
+      spring定时任务详解（@Scheduled注解） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-</div>
+  
+  
+  
 
 
 
-
-
-
+          </div>
+          
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -427,7 +366,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -436,35 +375,133 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
+      let commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-logback-%E4%B8%8E-Kafka-%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-text">1. logback 与 Kafka 的集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-KafkaAppender-%E9%85%8D%E7%BD%AE%E8%AF%B4%E6%98%8E"><span class="nav-text">1.1. KafkaAppender 配置说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%85%BC%E5%AE%B9%E6%80%A7-Compatibility"><span class="nav-text">1.2. 兼容性:Compatibility</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E5%88%86%E5%8F%91%E7%AD%96%E7%95%A5-Delivery-strategies"><span class="nav-text">1.3. 分发策略:Delivery strategies</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-%E5%85%B3%E4%BA%8E-broker-%E7%9A%84%E4%B8%AD%E6%96%AD"><span class="nav-text">1.3.1. 关于 broker 的中断</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E5%8F%91%E7%AD%96%E7%95%A5-delivery-strategies"><span class="nav-text">1.3.2. 自定义分发策略(delivery strategies)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-3-%E5%A4%87%E7%94%A8%E8%BF%BD%E5%8A%A0%E7%A8%8B%E5%BA%8F-fallback-appender"><span class="nav-text">1.3.3. 备用追加程序:fallback appender</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-4-%E7%94%9F%E4%BA%A7%E8%80%85%E8%B0%83%E6%95%B4"><span class="nav-text">1.3.4. 生产者调整</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-5-%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">1.3.5. 序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-3-5-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">1.3.5.1 自定义序列化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E9%94%AE%E6%8E%A7%E7%AD%96%E7%95%A5-%E5%88%86%E5%8C%BA-Keying-strategies-Partitioning"><span class="nav-text">1.4 键控策略&#x2F;分区:Keying strategies &#x2F; Partitioning</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%AE%E6%8E%A7%E7%AD%96%E7%95%A5-Custom-keying-strategies"><span class="nav-text">1.4.1. 自定义键控策略 Custom keying strategies</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-logback-spring-xml-%E7%A4%BA%E4%BE%8B"><span class="nav-text">1.5. logback-spring.xml 示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Kafka-%E4%B8%8E-Logstash-%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-text">2. Kafka 与 Logstash 的集成</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-  </main>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">126</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
 
-  <footer class="footer">
-    <div class="footer-inner">
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
 
 <div class="copyright">
+  
   &copy; 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">一年春又来</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-    </div>
-  </footer>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
 
   
 <script src="/js/local-search.js"></script>
@@ -474,11 +511,16 @@
 
 
 
+
+
+
+
+
+
+
   
 
-
-
-
+  
 
 </body>
 </html>

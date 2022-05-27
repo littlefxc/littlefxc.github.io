@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
-
-
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -15,38 +13,36 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
-
-<script class="hexo-configurations">
+<script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","images":"/images","scheme":"Mist","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
+    var CONFIG = {"hostname":"littlefxc.github.io","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
-<meta name="description" content="1.1 内存结构  线程共享：堆，方法区 线程隔离：虚拟机栈，本地方法栈，程序计数器">
+
+  <meta name="description" content="1.1 内存结构  线程共享：堆，方法区 线程隔离：虚拟机栈，本地方法栈，程序计数器">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM-内存结构">
 <meta property="og:url" content="http://littlefxc.github.io/0202/02/23/docs/JVM/JVM-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="一年春又来">
 <meta property="og:description" content="1.1 内存结构  线程共享：堆，方法区 线程隔离：虚拟机栈，本地方法栈，程序计数器">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E5%A0%86.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E6%96%B9%E6%B3%95%E5%8C%BA.png">
-<meta property="og:image" content="https://gitee.com/littlefxc/oss/raw/master/images/image-20210223220317252.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E5%A0%86.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E6%96%B9%E6%B3%95%E5%8C%BA.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210223220317252.png">
 <meta property="article:published_time" content="0202-02-23T12:49:02.000Z">
-<meta property="article:modified_time" content="2022-05-10T01:24:49.762Z">
+<meta property="article:modified_time" content="2022-05-24T03:12:13.484Z">
 <meta property="article:author" content="一年春又来">
 <meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png">
-
+<meta name="twitter:image" content="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png">
 
 <link rel="canonical" href="http://littlefxc.github.io/0202/02/23/docs/JVM/JVM-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
 
 
-<script class="page-configurations">
+<script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -55,70 +51,61 @@
     lang   : 'zh-CN'
   };
 </script>
-<title>JVM-内存结构 | 一年春又来</title>
+
+  <title>JVM-内存结构 | 一年春又来</title>
   
+
+
 
 
 
 
   <noscript>
   <style>
-  body { margin-top: 2rem; }
-
+  .use-motion .brand,
   .use-motion .menu-item,
-  .use-motion .sidebar,
+  .sidebar-inner,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header {
-    visibility: visible;
-  }
-
-  .use-motion .header,
-  .use-motion .site-brand-container .toggle,
-  .use-motion .footer { opacity: initial; }
+  .use-motion .collection-header { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle,
-  .use-motion .custom-logo-image {
+  .use-motion .site-subtitle {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line {
-    transform: scaleX(1);
-  }
-
-  .search-pop-overlay, .sidebar-nav { display: none; }
-  .sidebar-panel { display: block; }
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
   </style>
 </noscript>
 
 <link rel="alternate" href="/atom.xml" title="一年春又来" type="application/atom+xml">
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
 
-  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
+      <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">一年春又来</h1>
-      <i class="logo-line"></i>
+      <span class="logo-line-after"><i></i></span>
     </a>
   </div>
 
@@ -131,12 +118,29 @@
 
 
 
+
 <nav class="site-nav">
-  <ul class="main-menu menu">
-        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="home                          //首页 fa-fw"></i>首页</a></li>
-        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="archive          //归档 fa-fw"></i>归档</a></li>
-        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="th           //分类 fa-fw"></i>分类</a></li>
-        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="tags                     //标签 fa-fw"></i>标签</a></li>
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home                          //首页"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive          //归档"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th           //分类"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags                     //标签"></i>标签</a>
+
+  </li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -147,22 +151,23 @@
 
 
   <div class="search-pop-overlay">
-    <div class="popup search-popup"><div class="search-header">
+    <div class="popup search-popup">
+        <div class="search-header">
   <span class="search-icon">
     <i class="fa fa-search"></i>
   </span>
   <div class="search-input-container">
-    <input autocomplete="off" autocapitalize="off" maxlength="80"
+    <input autocomplete="off" autocapitalize="off"
            placeholder="搜索..." spellcheck="false"
            type="search" class="search-input">
   </div>
-  <span class="popup-btn-close" role="button">
+  <span class="popup-btn-close">
     <i class="fa fa-times-circle"></i>
   </span>
 </div>
-<div class="search-result-container no-result">
-  <div class="search-result-icon">
-    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
   </div>
 </div>
 
@@ -170,95 +175,27 @@
   </div>
 
 </div>
-        
-  
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="nav-text">1.1 内存结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-%E5%A0%86"><span class="nav-text">1.1.1 堆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-text">1.1.2 虚拟机栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="nav-text">1.1.2 本地方法栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-text">1.1.4 程序计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-5-%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-text">1.1.5 方法区</span></a></li></ol></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">一年春又来</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap site-overview-item animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">234</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-          
-        <span class="site-state-item-count">38</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-            <a href="/tags/">
-          
-        <span class="site-state-item-count">125</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-
-
-        </div>
-      </div>
-    </div>
-  </aside>
-  <div class="sidebar-dimmer"></div>
-
-
     </header>
 
     
-  <div class="back-to-top" role="button">
+  <div class="back-to-top">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
 
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
 
-    <div class="main-inner post posts-expand">
+          <div class="content post posts-expand">
+            
 
-
-  
-
-
-<div class="post-block">
+    
   
   
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://littlefxc.github.io/0202/02/23/docs/JVM/JVM-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -275,35 +212,33 @@
           JVM-内存结构
         </h1>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：0202-02-23 20:49:02" itemprop="dateCreated datePublished" datetime="0202-02-23T20:49:02+08:00">0202-02-23</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2022-05-10 09:24:49" itemprop="dateModified" datetime="2022-05-10T09:24:49+08:00">2022-05-10</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-        </span>
-    </span>
+              <time title="创建时间：0202-02-23 20:49:02" itemprop="dateCreated datePublished" datetime="0202-02-23T20:49:02+08:00">0202-02-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-24 11:12:13" itemprop="dateModified" datetime="2022-05-24T11:12:13+08:00">2022-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
 
-  
-</div>
+          
 
         </div>
       </header>
@@ -312,7 +247,9 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="1-1-内存结构"><a href="#1-1-内存结构" class="headerlink" title="1.1 内存结构"></a>1.1 内存结构</h2><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构.png"></p>
+
+      
+        <h2 id="1-1-内存结构"><a href="#1-1-内存结构" class="headerlink" title="1.1 内存结构"></a>1.1 内存结构</h2><p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构.png"></p>
 <ul>
 <li>线程共享：堆，方法区</li>
 <li>线程隔离：虚拟机栈，本地方法栈，程序计数器</li>
@@ -320,11 +257,11 @@
 <span id="more"></span>
 
 <h3 id="1-1-1-堆"><a href="#1-1-1-堆" class="headerlink" title="1.1.1 堆"></a>1.1.1 堆</h3><p>堆又做了细分如下图所示：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E5%A0%86.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-堆.png"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E5%A0%86.png" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-堆.png"></p>
 <p>JDK8 之前堆分为新生代、老年代和持久代（也叫永久代），其中新生代中又有伊甸园和存活区，而存活区又分为 “From survivor” 和 “To survivor”。</p>
 <p>JDK8 之后，持久代被废弃，由元空间代替，而元空间并不是堆内存的一部分，元空间是本地内存。</p>
 <h3 id="1-1-2-虚拟机栈"><a href="#1-1-2-虚拟机栈" class="headerlink" title="1.1.2 虚拟机栈"></a>1.1.2 虚拟机栈</h3><p>虚拟机栈是线程独享的，当创建一个现成的时候就会创建虚拟机栈。</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-虚拟机栈.png"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88.png" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-虚拟机栈.png"></p>
 <ul>
 <li>虚拟机栈由栈帧组成。</li>
 <li>每一次方法调用都会创建一个栈帧，然后去压栈。</li>
@@ -338,7 +275,7 @@
 <p>这是因为Java 是个多线程语言，当执行的线程数量超过CPU核心的时候，线程之间就会根据时间片争抢CPU资源。例如，某个线程它的任务还没有执行完成，CPU 就被其它线程抢走，如果之后又轮到这个线程执行任务，那么就得知道从哪里继续执行任务，所以会为每一个线程分配一个程序计数器，用来记录它下一条指令是什么等等。</p>
 </li>
 </ul>
-<h3 id="1-1-5-方法区"><a href="#1-1-5-方法区" class="headerlink" title="1.1.5 方法区"></a>1.1.5 方法区</h3><p><img src="https://gitee.com/littlefxc/oss/raw/master/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E6%96%B9%E6%B3%95%E5%8C%BA.png" alt="https://gitee.com/littlefxc/oss/raw/master/images/JVM内存结构-方法区.png"></p>
+<h3 id="1-1-5-方法区"><a href="#1-1-5-方法区" class="headerlink" title="1.1.5 方法区"></a>1.1.5 方法区</h3><p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84-%E6%96%B9%E6%B3%95%E5%8C%BA.png" alt="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/JVM内存结构-方法区.png"></p>
 <p>方法区主要包括 4 个部分：类信息、运行时常量池、字符串常量池和静态变量。</p>
 <p>方法区主要存放的是虚拟机加载的类相关的信息。</p>
 <p>从上图中可以看到好几种常量池：静态常量池、运行时常量池和字符串常量池。下面来分析一下这 3 种常量池的作用：</p>
@@ -372,7 +309,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JVMTest1</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    Demo demo = <span class="keyword">new</span> Demo(<span class="string">&quot;aaa&quot;</span>);</span><br><span class="line">    demo.printName();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> String name;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Demo</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="keyword">this</span>.name);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>上面这段代码的内存分布大致是这样的：</p>
-<p><img src="https://gitee.com/littlefxc/oss/raw/master/images/image-20210223220317252.png" alt="image-20210223220317252"></p>
+<p><img src="https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20210223220317252.png" alt="image-20210223220317252"></p>
 <ol>
 <li><p>在启动的时候首先将类加载到方法区，要加载两个类分别是 JVMTest1.class 和 Demo.class 。</p>
 </li>
@@ -388,34 +325,36 @@
     
     
 
-    <footer class="post-footer">
+      <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/jvm/" rel="tag"># jvm</a>
           </div>
 
         
 
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/0202/02/23/docs/JVM/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" rel="prev" title="JVM-类加载机制">
-                  <i class="fa fa-chevron-left"></i> JVM-类加载机制
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2018/11/28/hello-world/" rel="next" title="文章标题">
-                  文章标题 <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/0202/02/23/docs/JVM/JVM-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" rel="prev" title="JVM-类加载机制">
+      <i class="fa fa-chevron-left"></i> JVM-类加载机制
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/11/28/hello-world/" rel="next" title="文章标题">
+      文章标题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-</div>
+  
+  
+  
 
 
 
-
-
-
+          </div>
+          
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -424,7 +363,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -433,35 +372,133 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      const commentClass = event.target.classList[1];
+      let commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="nav-text">1.1 内存结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-%E5%A0%86"><span class="nav-text">1.1.1 堆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-text">1.1.2 虚拟机栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="nav-text">1.1.2 本地方法栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-text">1.1.4 程序计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-5-%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-text">1.1.5 方法区</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">一年春又来</p>
+  <div class="site-description" itemprop="description"></div>
 </div>
-  </main>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">235</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">39</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">126</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
 
-  <footer class="footer">
-    <div class="footer-inner">
 
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
 
 <div class="copyright">
+  
   &copy; 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">一年春又来</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/mist/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
-    </div>
-  </footer>
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
 
   
-  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
 
   
 <script src="/js/local-search.js"></script>
@@ -471,11 +508,16 @@
 
 
 
+
+
+
+
+
+
+
   
 
-
-
-
+  
 
 </body>
 </html>
