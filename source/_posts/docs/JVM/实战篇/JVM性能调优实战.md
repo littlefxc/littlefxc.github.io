@@ -16,7 +16,7 @@ tags:
 
 `top`命令可以显示当前系统正在执行的进程的相关信息，包括进程 ID、内存占用率、CPU 占用率等。
 
-### **定位的步骤**
+### 定位的步骤
 
 - 使用 top 命令查看当前 CPU 占用率最高的进程，并取得进程ID；
 
@@ -714,3 +714,5 @@ public class DirectMemoryTest4 {
   ![image-20220630172838035](https://raw.githubusercontent.com/littlefxc/littlefxc.github.io/images/images/image-20220630172838035.png)
 
 - 如果项目平时性能很OK，但突然出现性能下降，业务没有问题，可排查是否由代码缓存区满所导致
+
+
